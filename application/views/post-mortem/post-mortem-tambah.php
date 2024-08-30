@@ -38,14 +38,21 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Nopol Truk</label>
+                            <input type="text" name="nopol_truk" class="form-control <?= form_error('nopol_truk') ? 'invalid' : '' ?> " placeholder="Masukkan Nomor Polisi Truk" value="<?= set_value('nopol_truk'); ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('nopol_truk')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('nopol_truk') ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Ekspedisi</label>
                             <input type="text" name="ekspedisi" class="form-control <?= form_error('ekspedisi') ? 'invalid' : '' ?> " placeholder="Masukkan Nama Ekspedisi" value="<?= set_value('ekspedisi'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('ekspedisi')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('ekspedisi') ?>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Shift</label>
                             <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
@@ -58,11 +65,25 @@
                                 <?= form_error('shift') ?>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Nama Farm</label>
                             <input type="text" name="nama_farm" class="form-control <?= form_error('nama_farm') ? 'invalid' : '' ?> " placeholder="Masukkan Nama Farm" value="<?= set_value('nama_farm'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('nama_farm')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('nama_farm') ?>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Nama Mesin</label>
+                            <select class="form-control <?= form_error('nama_mesin') ? 'invalid' : '' ?>" name="nama_mesin">
+                                <option disabled selected>Pilihan</option>
+                                <option value="Marel Stork" <?= set_select('nama_mesin'); ?>>Marel Stork</option>
+                                <option value="Linco" <?= set_select('nama_mesin'); ?>>Linco</option>
+                                <option value="Manual" <?= set_select('nama_mesin'); ?>>Manual</option>
+                            </select>
+                            <div class="invalid-feedback <?= !empty(form_error('nama_mesin')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('nama_mesin') ?>
                             </div>
                         </div>
                     </div>
@@ -102,24 +123,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Nama Mesin</label>
-                            <select class="form-control <?= form_error('nama_mesin') ? 'invalid' : '' ?>" name="nama_mesin">
-                                <option disabled selected>Pilihan</option>
-                                <option value="Marel Stork" <?= set_select('nama_mesin'); ?>>Marel Stork</option>
-                                <option value="Linco" <?= set_select('nama_mesin'); ?>>Linco</option>
-                                <option value="Manual" <?= set_select('nama_mesin'); ?>>Manual</option>
-                            </select>
-                            <div class="invalid-feedback <?= !empty(form_error('nama_mesin')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('nama_mesin') ?>
-                            </div>
-                        </div>
-                    </div>
                     <hr>
                     <div class="table-responsive">                        
                         <table class="table" id="mytable2">
-                            <label class="label2">PEMERIKSAAN POST MORTEM</label>
+                            <label class="label2" >PEMERIKSAAN POST MORTEM</label>
                             <hr>
                             <tbody> 
                                 <tr>
@@ -616,7 +623,7 @@
                                 <div class="form-group">
                                     <tr>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -628,7 +635,7 @@
                                             <label class="defect">Sayap Memar Kemerahan</label>
                                         </td>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -640,7 +647,7 @@
                                             <label class="defect">Kaki Memar Kemerahan</label>
                                         </td>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -652,7 +659,7 @@
                                             <label class="defect">Dada Memar Kemerahan</label>
                                         </td>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -1083,13 +1090,13 @@
             width: 50%;
             height: 70px;
             text-align: center;
-            font-size: 23px;
+            font-size: 20px;
             font-weight: bold;
             border-right: none;
             border-left: none;
         }
         .btns {
-            width: 120px;
+            width: 130px;
             height: 70px;
             text-align: center;
         }
@@ -1101,7 +1108,7 @@
             font-size: 30px;
             cursor: pointer;
             font-weight: bold;
-            width: 35px;
+            width: 36px;
             text-align: center;
         }
 
@@ -1121,16 +1128,16 @@
         }
 
         #defect2 button{
-            background-color: #2E86C1;
+            background-color: #47D40B;
         }#defect2 button:hover{
-            background-color: #A9CCE3;
+            background-color: #BCEF94;
         }
 
         #defect3 button{
-            background-color: #1F618D;
+            background-color: #ED6C1D;
         }
         #defect3 button:hover{
-            background-color: #A9CCE3;
+            background-color: #EFB794;
         }
 
         #defect4 button{
@@ -1140,32 +1147,39 @@
             background-color: #D6DBDF;
         }
 
+        #defect9 button{
+            background-color: #47D40B;
+        }
+        #defect9 button:hover{
+            background-color: #BCEF94;
+        }
+
         #defect5 button{
-            background-color: #2E86C1;
+            background-color: #5DADE2;
         }
         #defect5 button:hover{
             background-color: #D6DBDF;
         }
 
         #defect6 button{
-            background-color: #1F618D;
+            background-color: #47D40B;
         }
         #defect6 button:hover{
-            background-color: #D6DBDF;
+            background-color: #BCEF94;
         }
 
         #defect7 button{
-            background-color: #5DADE2;
+            background-color: #ED6C1D;
         }
         #defect7 button:hover{
-            background-color: #CCD1D1;
+            background-color: #EFB794;
         }
 
         #defect8 button{
-            background-color: #2E86C1;
+            background-color: #47D40B;
         }
         #defect8 button:hover{
-            background-color: #CCD1D1;
+            background-color: #BCEF94;
         }
     </style>
 

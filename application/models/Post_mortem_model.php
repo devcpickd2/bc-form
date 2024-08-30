@@ -17,7 +17,7 @@ class Post_mortem_model extends CI_Model {
 			[
 				'field' => 'nama_farm',
 				'label' => 'Name'
-				// 'rules' => 'required'
+				// 'rules' => 'required' 
 			],
 			[
 				'field' => 'date',
@@ -27,6 +27,11 @@ class Post_mortem_model extends CI_Model {
 			[
 				'field' => 'nomor_truk',
 				'label' => 'Truck Number'
+				// 'rules' => 'required'
+			],
+			[
+				'field' => 'nopol_truk',
+				'label' => 'Police Number'
 				// 'rules' => 'required'
 			],
 			[
@@ -361,6 +366,7 @@ class Post_mortem_model extends CI_Model {
 		$nama_farm = $this->input->post('nama_farm');
 		$date = $this->input->post('date');
 		$nomor_truk = $this->input->post('nomor_truk');
+		$nopol_truk = $this->input->post('nopol_truk');
 		$ch_oh = $this->input->post('ch_oh');
 		$waktu_kedatangan = $this->input->post('waktu_kedatangan');
 		$shift = $this->input->post('shift');
@@ -550,6 +556,7 @@ class Post_mortem_model extends CI_Model {
 			'nama_farm' => $nama_farm,
 			'date' => $date,
 			'nomor_truk' => $nomor_truk,
+			'nopol_truk' => $nopol_truk,
 			'ch_oh' => $ch_oh,
 			'waktu_kedatangan' => $waktu_kedatangan,
 			'shift' => $shift,
@@ -693,6 +700,7 @@ public function update($uuid)
 	$nama_farm = $this->input->post('nama_farm');
 	$date = $this->input->post('date');
 	$nomor_truk = $this->input->post('nomor_truk');
+	$nopol_truk = $this->input->post('nopol_truk');
 	$ch_oh = $this->input->post('ch_oh');
 	$waktu_kedatangan = $this->input->post('waktu_kedatangan');
 	$shift = $this->input->post('shift');
@@ -879,6 +887,7 @@ public function update($uuid)
 		'nama_farm' => $nama_farm,
 		'date' => $date,
 		'nomor_truk' => $nomor_truk,
+		'nopol_truk' => $nopol_truk,
 		'ch_oh' => $ch_oh,
 		'waktu_kedatangan' => $waktu_kedatangan,
 		'shift' => $shift,
@@ -1072,7 +1081,7 @@ public function get_all_refresh()
 }
 
 public function get_by_uuid($uuid)
-{
+{ 
 	$data = $this->db->get_where('post_mortem', array('uuid' => $uuid))->row();
 	return $data;
 }

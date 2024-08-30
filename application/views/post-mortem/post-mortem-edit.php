@@ -38,14 +38,21 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Nopol Truk</label>
+                            <input type="text" name="nopol_truk" class="form-control <?= form_error('nopol_truk') ? 'invalid' : '' ?> " value="<?= $post_mortem->nopol_truk; ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('nopol_truk')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('nopol_truk') ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Nama Ekspedisi</label>
                             <input type="text" name="ekspedisi" class="form-control <?= form_error('ekspedisi') ? 'invalid' : '' ?> " value="<?= $post_mortem->ekspedisi; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('ekspedisi')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('ekspedisi') ?>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Shift</label>
                             <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
@@ -57,6 +64,8 @@
                                 <?= form_error('shift') ?>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Nama Farm</label>
                             <input type="text" name="nama_farm" class="form-control <?= form_error('nama_farm') ? 'invalid' : '' ?> " value="<?= $post_mortem->nama_farm; ?>">
@@ -64,7 +73,18 @@
                                 <?= form_error('nama_farm') ?>
                             </div>
                         </div>
-                    </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Nama Mesin</label>
+                            <select class="form-control <?= form_error('nama_mesin') ? 'invalid' : '' ?>" name="nama_mesin">
+                                <option value="Marel Stork" <?= $post_mortem->nama_mesin=="Marel Stork"?'selected':'';?>>Marel Stork</option>
+                                <option value="Linco" <?= $post_mortem->nama_mesin=="Linco"?'selected':'';?>>Linco</option>
+                                <option value="Manual" <?= $post_mortem->nama_mesin=="Manual"?'selected':'';?>>Manual</option>
+                            </select>
+                            <div class="invalid-feedback <?= !empty(form_error('nama_mesin')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('nama_mesin') ?>
+                            </div>
+                        </div>
+                    </div>            
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">CH/OH</label>
@@ -97,19 +117,6 @@
                             <input type="text" name="average_rpa" class="form-control <?= form_error('average_rpa') ? 'invalid' : '' ?> " value="<?= $post_mortem->average_rpa; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('average_rpa')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('average_rpa') ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Nama Mesin</label>
-                            <select class="form-control <?= form_error('nama_mesin') ? 'invalid' : '' ?>" name="nama_mesin">
-                                <option value="Marel Stork" <?= $post_mortem->nama_mesin=="Marel Stork"?'selected':'';?>>Marel Stork</option>
-                                <option value="Linco" <?= $post_mortem->nama_mesin=="Linco"?'selected':'';?>>Linco</option>
-                                <option value="Manual" <?= $post_mortem->nama_mesin=="Manual"?'selected':'';?>>Manual</option>
-                            </select>
-                            <div class="invalid-feedback <?= !empty(form_error('nama_mesin')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('nama_mesin') ?>
                             </div>
                         </div>
                     </div>
@@ -613,7 +620,7 @@
                                 <div class="form-group">
                                     <tr>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -625,7 +632,7 @@
                                             <label class="defect">Sayap Memar Kemerahan</label>
                                         </td>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -637,7 +644,7 @@
                                             <label class="defect">Kaki Memar Kemerahan</label>
                                         </td>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -649,7 +656,7 @@
                                             <label class="defect">Dada Memar Kemerahan</label>
                                         </td>
                                         <td>
-                                            <div class="input-group btns" id="defect4">
+                                            <div class="input-group btns" id="defect9">
                                                 <div class="input-group-prepend">
                                                     <button class="btn btn-secondary minus-btn" type="button">-</button>
                                                 </div>
@@ -1081,13 +1088,13 @@
             width: 50%;
             height: 70px;
             text-align: center;
-            font-size: 23px;
+            font-size: 20px;
             font-weight: bold;
             border-right: none;
             border-left: none;
         }
         .btns {
-            width: 120px;
+            width: 130px;
             height: 70px;
             text-align: center;
         }
@@ -1099,7 +1106,7 @@
             font-size: 30px;
             cursor: pointer;
             font-weight: bold;
-            width: 35px;
+            width: 36px;
             text-align: center;
         }
 
@@ -1111,7 +1118,7 @@
             margin-bottom: 5px;
         }
 
-        #defect1 button{
+       #defect1 button{
             background-color: #5DADE2;
         }
         #defect1 button:hover{
@@ -1119,16 +1126,16 @@
         }
 
         #defect2 button{
-            background-color: #2E86C1;
+            background-color: #47D40B;
         }#defect2 button:hover{
-            background-color: #A9CCE3;
+            background-color: #BCEF94;
         }
 
         #defect3 button{
-            background-color: #1F618D;
+            background-color: #ED6C1D;
         }
         #defect3 button:hover{
-            background-color: #A9CCE3;
+            background-color: #EFB794;
         }
 
         #defect4 button{
@@ -1138,32 +1145,39 @@
             background-color: #D6DBDF;
         }
 
+        #defect9 button{
+            background-color: #47D40B;
+        }
+        #defect9 button:hover{
+            background-color: #BCEF94;
+        }
+
         #defect5 button{
-            background-color: #2E86C1;
+            background-color: #5DADE2;
         }
         #defect5 button:hover{
             background-color: #D6DBDF;
         }
 
         #defect6 button{
-            background-color: #1F618D;
+            background-color: #47D40B;
         }
         #defect6 button:hover{
-            background-color: #D6DBDF;
+            background-color: #BCEF94;
         }
 
         #defect7 button{
-            background-color: #5DADE2;
+            background-color: #ED6C1D;
         }
         #defect7 button:hover{
-            background-color: #CCD1D1;
+            background-color: #EFB794;
         }
 
         #defect8 button{
-            background-color: #2E86C1;
+            background-color: #47D40B;
         }
         #defect8 button:hover{
-            background-color: #CCD1D1;
+            background-color: #BCEF94;
         }
     </style>
 

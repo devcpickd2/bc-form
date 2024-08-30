@@ -36,6 +36,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nomor Truk</th>
+                            <th>Nopol Truk</th>
                             <th>Date</th>
                             <th>Ekspedisi</th>
                             <th>Nama Farm</th>
@@ -62,6 +63,7 @@
                             <tr>
                                 <td><?= $no; ?></td>
                                 <td><?= $val->nomor_truk; ?></td>
+                                <td><?= $val->nopol_truk; ?></td>
                                 <td><?= $datetime; ?></td>
                                 <td><?= $val->ekspedisi; ?></td>
                                 <td><?= $val->nama_farm; ?></td>

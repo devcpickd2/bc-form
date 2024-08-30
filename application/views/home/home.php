@@ -214,7 +214,7 @@
                         <h6 class="m-0 font-weight-bold text-primary">Kedatangan Hari Ini</h6>
                       </div>
                       <div class="card-body">
-                        <table>
+                        <table class="table-limited">
                           <thead>
                             <tr>
                               <th>Waktu</th>
@@ -223,20 +223,16 @@
                           </thead>
                           <tbody>
                             <?php if (!empty($data_today)): ?>
-                              <ul>
-                                <?php foreach ($data_today as $data): ?>
-                                  <tr>
-                                    <td>
-                                      <li><?php echo $data['waktu_kedatangan']; ?></li>
-                                    </td>
-                                    <td>
-                                      <?php echo $data['nama_farm']; ?>
-                                    </td>
-                                  </tr>
-                                <?php endforeach; ?>
-                              </ul>
+                              <?php foreach ($data_today as $data): ?>
+                                <tr>
+                                  <td><?php echo $data['waktu_kedatangan']; ?></td>
+                                  <td><?php echo $data['nama_farm']; ?></td>
+                                </tr>
+                              <?php endforeach; ?>
                             <?php else: ?>
-                              <p>Tidak ada data untuk hari ini.</p>
+                              <tr>
+                                <td colspan="2">Tidak ada data untuk hari ini.</td>
+                              </tr>
                             <?php endif; ?>
                           </tbody>
                         </table>
@@ -244,6 +240,7 @@
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -279,4 +276,32 @@
             canvas {
               cursor: pointer;
             }
+
+            .table-limited {
+              width: 100%;
+              max-width: 100%;
+              table-layout: fixed;
+              overflow-x: auto; /* Add horizontal scrollbar if needed */
+            }
+
+            .table-limited thead, .table-limited tbody {
+              display: block; /* Make thead and tbody block elements */
+            }
+
+            .table-limited thead {
+              overflow-y: auto; /* Add vertical scrollbar if needed for header */
+              width: calc(100% - 1em); /* Adjust width to avoid scrollbar */
+            }
+
+            .table-limited tbody {
+              max-height: 185px; /* Set max height for tbody */
+              overflow-y: auto; /* Add vertical scrollbar for tbody */
+            }
+
+            .table-limited th, .table-limited td {
+              padding: 2px 10px;
+              text-align: left;
+            }
+
+
           </style>
