@@ -50,9 +50,9 @@
                                 <td><?= $val->plant; ?></td>
                                 <td><?= $val->created_at; ?></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('plant/edit/'.$val->uuid);?>" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit">Edit</i>
-                                    </a> 
+                                    <a href="<?= base_url('plant/edit/'.$val->uuid);?>" class="btn btn-primary btn-icon-split">
+                                        <span class="text">Edit</span>
+                                    </a>
                                 </td>
                             </tr>
                             <?php 
@@ -65,3 +65,10 @@
         </div>  
     </div>
 </div>
+</div>
+</div> 
+<style type="text/css">
+    .breadcrumb{
+        background-color: #2E86C1;
+    }
+</style>

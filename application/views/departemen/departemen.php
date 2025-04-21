@@ -50,8 +50,8 @@
                                 <td><?= $val->departemen; ?></td>
                                 <td><?= $val->created_at; ?></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('departemen/edit/'.$val->uuid);?>" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit">Edit</i>
+                                    <a href="<?= base_url('departemen/edit/'.$val->uuid);?>" class="btn btn-primary btn-icon-split">
+                                        <span class="text">Edit</span>
                                     </a> 
                                 </td>
                             </tr>
@@ -65,3 +65,9 @@
         </div>  
     </div>
 </div>
+</div>
+<style type="text/css">
+    .breadcrumb{
+        background-color: #2E86C1;
+    }
+</style>

@@ -37,3 +37,9 @@
             </div>
         </div>
     </div>
+</div>
+<style type="text/css">
+    .breadcrumb{
+        background-color: #2E86C1;
+    }
+</style>
