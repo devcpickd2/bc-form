@@ -48,260 +48,176 @@
 
       ?>
       <div class="h3 mb-0 text-gray-800">Update Hari Ini <?= $today ?>, <?= $date ?> <?= $now_month ?> <?= $year ?></div>
-
-      <!-- <h1 class="h3 mb-0 text-gray-800">Update Hari Ini <?= $today ?>, <?= $date ?> <?= $now_month ?> <?= $year ?></h1> -->
-      <a href="<?= base_url('post_mortem/report_pm')?>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
     </div>
 
-    <!-- Content Row -->
     <div class="row">
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
-          <div class="card-body">
+          <div class="card-body"> 
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                Total Kedatangan Hari ini</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                  <?php if ($count_today > 0): ?>
-                    <p><?php echo $count_today; ?> Kedatangan</p>
+                <div class="text-xs font-weight-bold text-gray-800" style="font-size: 18px;">
+                Current Product</div>
+                <hr>
+                <div class="h5 mb-0 font-weight-bold text-success text-uppercase mb-1" style="font-size: 18px;">
+                  <?php if (!empty($latest_today)): ?>
+                    <p style="font-size: 32px;">
+                      <?php echo $latest_today['nama_produk']; ?>
+                    </p>
+                    <p style="font-size: 15px;">
+                      Total Batch : <?php echo $count_batch; ?>
+                    </p>
                   <?php else: ?>
-                    <p>Tidak ada kedatangan untuk hari ini.</p>
-                    <?php endif; ?></div>
-                  </div>
-                  <div class="col-auto">
-                    <i class="fas fa-truck fa-2x text-gray-300"></i>
-                  </div>
+                    <p style="font-size: 15px;">No Process Today</p>
+                  <?php endif; ?>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-              <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                  <div class="col mr-2">
-                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                    Waktu Kedatangan Terakhir</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">
-                      <?php if (!empty($latest_today)): ?>
-                        <ul>
-                          <li><?php echo $latest_today['waktu_kedatangan']; ?></li>
-                        </ul>
-                      <?php else: ?>
-                        <p>Tidak ada kedatangan untuk hari ini.</p>
-                      <?php endif; ?>
-                    </div>
-                  </div>
-                  <div class="col-auto">
-                    <i class="fas fa-clock fa-2x text-gray-300"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-              <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                  <div class="col mr-2">
-                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                    Kedatangan Ayam Terakhir</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">
-                      <?php if (!empty($latest_today)): ?>
-                        <p>
-                          <?php echo $latest_today['jumlah_ayam']; ?>
-                        ekor</p>
-                      <?php else: ?>
-                        <p>Tidak ada kedatangan untuk hari ini.</p>
-                      <?php endif; ?>
-                    </div>
-                  </div>
-                  <div class="col-auto">
-                    <i class="fas fa-cubes fa-2x text-gray-300"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-              <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                  <div class="col mr-2">
-                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                    Total Defect Terakhir</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">
-                      <?php if (!empty($latest_today)): 
-                        $total = $latest_today['total_ayam_defect'] + $latest_today['total_defect_ayam_lebih'];
-                        ?>
-                        <p><?php echo $total ?> defect</p>
-                      <?php else: ?>
-                        <p>Tidak ada kedatangan untuk hari ini.</p>
-                      <?php endif; ?>
-                    </div>
-                  </div>
-                  <div class="col-auto">
-                    <i class="fas fa-times-circle fa-2x text-gray-300"></i>
-                  </div>
-                </div>
+              <div class="col-auto">
+                <i class="fas fa-inbox fa-2x text-gray-300"></i>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="row">
-          <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Total Defect Hari Ini</h6>
-              </div>
-              <div class="card-body">
-                <div class="chart-area">
-                  <div class="chartjs-size-monitor">
-                    <div class="chartjs-size-monitor-expand">
-                      <div class="chart2">
-                        <canvas id="myChart" width="100%" height="27" class="chartjs-render-monitor" style=" height: 100%; width: 100%;" ></canvas>
-                        <script>
-                          var ctx = document.getElementById('myChart').getContext('2d');
-                          var myChart = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                              labels: <?= json_encode(array_column($data_today, 'waktu_kedatangan')) ?>,
-                              datasets: [{
-                                label: 'Defect Tunggal ',
-                                data: <?= json_encode(array_column($data_today, 'total_ayam_defect')) ?>,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 3
-                              }, {
-                                label: 'Defect > 1 ',
-                                data: <?= json_encode(array_column($data_today, 'total_defect_ayam_lebih')) ?>,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 3
-                              }]
-                            },
-                            options: {
-                              scales: {
-                                yAxes: [{
-                                  ticks: {
-                                    beginAtZero: true
-                                  }
-                                }]
-                              },
-                              tooltips: {
-                                callbacks: {
-                                  label: function(tooltipItem, data) {
-                                            return tooltipItem.yLabel.toFixed(0); // Mengambil nilai tanpa desimal
-                                          }
-                                        }
-                                      }
-                                    }
-                                  });
-                                </script>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-xl-4 col-lg-5">
-                    <div class="card shadow mb-4">
-                      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Kedatangan Hari Ini</h6>
-                      </div>
-                      <div class="card-body">
-                        <table class="table-limited">
-                          <thead>
-                            <tr>
-                              <th>Waktu</th>
-                              <th>Nama Farm</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <?php if (!empty($data_today)): ?>
-                              <?php foreach ($data_today as $data): ?>
-                                <tr>
-                                  <td><?php echo $data['waktu_kedatangan']; ?></td>
-                                  <td><?php echo $data['nama_farm']; ?></td>
-                                </tr>
-                              <?php endforeach; ?>
-                            <?php else: ?>
-                              <tr>
-                                <td colspan="2">Tidak ada data untuk hari ini.</td>
-                              </tr>
-                            <?php endif; ?>
-                          </tbody>
-                        </table>
-                        <canvas width="100%" height="100%" class="chartjs-render-monitor"></canvas>
-                      </div>
-                    </div>
-                  </div>
-
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-gray-800" style="font-size: 18px;">
+                Latest Product Code</div>
+                <hr>
+                <div class="h5 mb-0 font-weight-bold text-info text-uppercase mb-1" style="font-size: 18px;">
+                  <?php if (!empty($latest_today)): ?>
+                    <p style="font-size: 32px;">
+                      <?php echo $latest_today['kode_produksi']; ?>
+                    </p>
+                    <p style="font-size: 15px;">
+                      Total Batch : <?php echo $count_batch; ?>
+                    </p>
+                  <?php else: ?>
+                    <p style="font-size: 15px;">No Process Today</p>
+                  <?php endif; ?>
                 </div>
               </div>
+              <div class="col-auto">
+                <i class="fas fa-code fa-2x text-gray-300"></i>
+              </div>
             </div>
-          </body>
-          </html>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-gray-800" style="font-size: 18px;">
+                Latest Production</div>
+                <hr>
+                <div class="h5 mb-0 font-weight-bold text-warning text-uppercase mb-1" style="font-size: 18px;">
+                  <?php if (!empty($latest_today)): ?>
+                    <p style="font-size: 32px;">
+                      <?php echo date('d-m-Y | H:i', strtotime($latest_today['created_at']));  ?>
+                    </p>
+                  <?php else: ?>
+                    <p style="font-size: 15px;">No Process Today</p>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-clock fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-gray-800" style="font-size: 18px;">
+                Stalling Time</div> 
+                <hr>
+                <div class="h5 mb-0 font-weight-bold text-primary text-uppercase mb-1" style="font-size: 18px;">
+                  <?php if (!empty($latest_today)): ?>
+                    <p style="font-size: 32px;">
+                     <?php echo $latest_today['stall_jam_mulai'] . '-' . $latest_today['stall_jam_berhenti']; ?></p>
+                   <?php else: ?>
+                    <p style="font-size: 15px;">No Process Today</p>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-spinner fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          <style type="text/css">
-            table {
-              border-collapse: collapse;
-              width: 100%;
-            }
+  </div>
+</div>
+</body>
+</html>
 
-            .text-xs {
-              font-size: 17px;
-            }
-            p {
-              font-size: 17px;
-            }
-            li {
-              font-size: 17px;
-            }
-            .h3{
-              font-size: 23px;
-              font-weight: bold;
-              font-style: italic;
-            }
-            .chart2 {
-              padding: 5px;
-            }
-            #chart {
-              width: 100%;
-            }
-            canvas {
-              cursor: pointer;
-            }
+<style type="text/css">
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
 
-            .table-limited {
-              width: 100%;
-              max-width: 100%;
-              table-layout: fixed;
-              overflow-x: auto; /* Add horizontal scrollbar if needed */
-            }
+  .text-xs {
+    font-size: 17px;
+  }
+  p {
+    font-size: 17px;
+  }
+  li {
+    font-size: 17px;
+  }
+  .h3{
+    font-size: 23px;
+    font-weight: bold;
+    font-style: italic;
+  }
+  .chart2 {
+    padding: 5px;
+  }
+  #chart {
+    width: 100%;
+  }
+  canvas {
+    cursor: pointer;
+  }
 
-            .table-limited thead, .table-limited tbody {
-              display: block; /* Make thead and tbody block elements */
-            }
+  .table-limited {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+    overflow-x: auto; 
+  }
 
-            .table-limited thead {
-              overflow-y: auto; /* Add vertical scrollbar if needed for header */
-              width: calc(100% - 1em); /* Adjust width to avoid scrollbar */
-            }
+  .table-limited thead, .table-limited tbody {
+    display: block; 
+  }
 
-            .table-limited tbody {
-              max-height: 185px; /* Set max height for tbody */
-              overflow-y: auto; /* Add vertical scrollbar for tbody */
-            }
+  .table-limited thead {
+    overflow-y: auto; 
+    width: calc(100% - 1em); 
+  }
 
-            .table-limited th, .table-limited td {
-              padding: 2px 10px;
-              text-align: left;
-            }
+  .table-limited tbody {
+    max-height: 185px; 
+    overflow-y: auto; 
+  }
+
+  .table-limited th, .table-limited td {
+    padding: 2px 10px;
+    text-align: left;
+  }
 
 
-          </style>
+</style>
