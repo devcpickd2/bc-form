@@ -49,65 +49,76 @@
                                 <td colspan="6"><?= $timbangan->lokasi;?></td>
                             </tr>
                             <tr>
-                                <td>Waktu Peneraan</td>
-                                <td colspan="6"><?= $timbangan->peneraan_waktu;?></td>
-                            </tr>
-                            <tr>
                                 <td>Standar</td>
                                 <td colspan="6"><?= $timbangan->peneraan_standar;?></td>
                             </tr>
+                            <?php
+                            $result = json_decode($timbangan->peneraan_hasil, true);
+                            if (!is_array($result)) $result = [];
+                            ?>
                             <tr>
-                                <td>Hasil Peneraan</td>
-                                <td colspan="6"><?= $timbangan->peneraan_hasil;?></td>
+                                <th colspan="7" style="text-align:center;">Daftar Hasil Pemeriksaan</th>
                             </tr>
                             <tr>
-                                <td>QC</td>
-                                <td colspan="6"><?= $timbangan->username;?></td>
+                                <th>No</th>
+                                <th colspan="3">Waktu</th>
+                                <th colspan="3">Hasil</th>
                             </tr>
-                        </tbody>
-                    </table>    
-                </div>
+                            <?php $no = 1; foreach ($result as $row): ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td colspan="3"><?= htmlspecialchars($row['pukul']) ?></td>
+                                <td colspan="3"><?= htmlspecialchars($row['hasil']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <tr>
+                            <td>QC</td>
+                            <td colspan="6"><?= $timbangan->username;?></td>
+                        </tr>
+                    </tbody>
+                </table>    
             </div>
         </div>
     </div>
+</div>
 
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            <form class="user" method="post" action="<?= base_url('timbangan/status/'.$timbangan->uuid);?>">
-                <div class="form-group row">
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Status</label>
-                        <select class="form-control <?= form_error('status_spv') ? 'invalid' : '' ?>" name="status_spv">
-                            <option value="1" <?= set_select('status_spv', '1'); ?> <?= $timbangan->status_spv == 1?'selected':'';?>>Verified</option>
-                            <option value="2" <?= set_select('status_spv', '2'); ?> <?= $timbangan->status_spv == 2?'selected':'';?>>Revision</option>
-                        </select>
-                        <div class="invalid-feedback <?= !empty(form_error('status_spv')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('status_spv') ?>
-                        </div>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form class="user" method="post" action="<?= base_url('timbangan/status/'.$timbangan->uuid);?>">
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Status</label>
+                    <select class="form-control <?= form_error('status_spv') ? 'invalid' : '' ?>" name="status_spv">
+                        <option value="1" <?= set_select('status_spv', '1'); ?> <?= $timbangan->status_spv == 1?'selected':'';?>>Verified</option>
+                        <option value="2" <?= set_select('status_spv', '2'); ?> <?= $timbangan->status_spv == 2?'selected':'';?>>Revision</option>
+                    </select>
+                    <div class="invalid-feedback <?= !empty(form_error('status_spv')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('status_spv') ?>
                     </div>
                 </div>
-                <div class="row form-group">
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Catatan Revisi</label>
-                        <textarea class="form-control" name="catatan_spv" ><?= $timbangan->catatan_spv; ?></textarea>
-                        <div class="invalid-feedback <?= !empty(form_error('catatan_spv')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('catatan_spv') ?>
-                        </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Catatan Revisi</label>
+                    <textarea class="form-control" name="catatan_spv" ><?= $timbangan->catatan_spv; ?></textarea>
+                    <div class="invalid-feedback <?= !empty(form_error('catatan_spv')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('catatan_spv') ?>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="btn btn-md btn-success mr-2">
-                            <i class="fa fa-save"></i> Simpan
-                        </button>
-                        <a href="<?= base_url('timbangan/verifikasi')?>" class="btn btn-md btn-danger">
-                            <i class="fa fa-times"></i> Batal
-                        </a>
-                    </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-md btn-success mr-2">
+                        <i class="fa fa-save"></i> Simpan
+                    </button>
+                    <a href="<?= base_url('timbangan/verifikasi')?>" class="btn btn-md btn-danger">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+</div>
 
 </div>
 </div>
@@ -130,7 +141,9 @@
     .table th, .table td {
         padding: 6px 8px;
         text-align: left;
-        border-bottom: 1px solid #ddd; /
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap;

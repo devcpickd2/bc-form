@@ -28,122 +28,91 @@
             </div>
             <hr>
             <div class="table-responsive">
-                <!-- <form action="<?= base_url('kontaminasi/cetak') ?>" method="post" id="form_cetak_pdf"> -->
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <!-- <th width="30px" class="text-center">
-                                    <i class="fas fa-print fa-lg"></i>
-                                </th> -->
-                                <th width="20px" class="text-center">No</th>
-                                <th>Tanggal</th>
-                                <th>Jenis Kontaminasi</th>
-                                <th>Bukti</th>
-                                <th>Produk</th>
-                                <th>Kode Produksi</th>
-                                <th>Produksi</th>
-                                <th>Supervisor</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $no = 1;
-                            foreach($kontaminasi as $val) {
-                                $datetime = new datetime($val->date);
-                                $datetime = $datetime->format('d-m-Y');
-                                ?>
-                                <tr>
-                                    <!-- <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td> -->
-                                    <td class="text-center"><?= $no; ?></td>
-                                    <td><?= $datetime; ?></td>
-                                    <td><?= $val->jenis_kontaminasi; ?></td>
-                                    <td>
-                                        <?php if (!empty($val->bukti)): ?>
-                                            <img src="<?= base_url('uploads/' . $val->bukti); ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
-                                        <?php else: ?>
-                                            <p>No image available</p>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= $val->nama_produk; ?></td>
-                                    <td><?= $val->kode_produksi; ?></td>
-                                    <td class="text-center">
-                                        <?php
-                                        if ($val->status_produksi == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($val->status_produksi == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                        } elseif ($val->status_produksi == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                        }
-                                        ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <?php
-                                        if ($val->status_spv == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($val->status_spv == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                        } elseif ($val->status_spv == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                        }
-                                        ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= base_url('kontaminasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                            <span class="text">Edit</span>
-                                        </a>
-                                        <a href="<?= base_url('kontaminasi/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
-                                            <span class="text">Detail</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <?php 
-                                $no++;
-                            }
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="20px" class="text-center">No</th>
+                            <th>Tanggal</th>
+                            <th>Jenis Kontaminasi</th>
+                            <th>Bukti</th>
+                            <th>Produk</th>
+                            <th>Kode Produksi</th>
+                            <th>Produksi</th>
+                            <th>Supervisor</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $no = 1;
+                        foreach($kontaminasi as $val) {
+                            $datetime = new datetime($val->date);
+                            $datetime = $datetime->format('d-m-Y');
                             ?>
-                        </tbody>
-                    </table>
-                    <!-- <input type="hidden" name="checkbox[]" id="selected_items"> -->
-                    <!-- </form> -->
-                </div>
-
-            <!-- <br>
-            <hr>
-            <div class="form-group">
-                <label>Pilih Data yang akan dicetak:</label>
-                <br>
-                <button type="submit" form="form_cetak_pdf" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
-            </div> -->
-        </div>
-    </div>
+                            <tr>
+                                <td class="text-center"><?= $no; ?></td>
+                                <td><?= $datetime; ?></td>
+                                <td><?= $val->jenis_kontaminasi; ?></td>
+                                <td>
+                                    <?php if (!empty($val->bukti)): ?>
+                                        <img src="<?= base_url('uploads/' . $val->bukti); ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
+                                    <?php else: ?>
+                                        <p>No image available</p>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= $val->nama_produk; ?></td>
+                                <td><?= $val->kode_produksi; ?></td>
+                                <td class="text-center">
+                                    <?php
+                                    if ($val->status_produksi == 0) {
+                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                    } elseif ($val->status_produksi == 1) {
+                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
+                                    } elseif ($val->status_produksi == 2) {
+                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
+                                    }
+                                    ?>
+                                </td>
+                                <td class="text-center">
+                                    <?php
+                                    if ($val->status_spv == 0) {
+                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                    } elseif ($val->status_spv == 1) {
+                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                    } elseif ($val->status_spv == 2) {
+                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                    }
+                                    ?>
+                                </td>
+                                <td class="text-center">
+                                    <a href="<?= base_url('kontaminasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                        <i class="fas fa-edit fa-lg"></i>
+                                    </a>
+                                    <a href="<?= base_url('kontaminasi/detail/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail">
+                                        <i class="fas fa-info-circle fa-lg"></i>
+                                    </a>
+                                    <a href="<?= base_url('kontaminasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                       <i class="fas fa-trash fa-lg"></i>
+                                   </td>
+                               </tr>
+                               <?php 
+                               $no++;
+                           }
+                           ?>
+                       </tbody>
+                   </table>
+               </div>
+           </div>
+       </div>
+   </div>
 </div>
-</div>
-<!-- <script>
-    document.getElementById('select_all').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('.select_row');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.checked = this.checked;
-        });
-    });
-
-    document.getElementById('form_cetak_pdf').addEventListener('submit', function(event) {
-        var selectedCheckboxes = document.querySelectorAll('.select_row:checked');
-        var selectedItems = [];
-
-        selectedCheckboxes.forEach(function(checkbox) {
-            selectedItems.push(checkbox.value); 
-        });
-        if (selectedItems.length === 0) {
-            event.preventDefault(); 
-            alert("Silakan pilih data yang ingin dicetak.");
-            return;
-        }
-        document.getElementById('selected_items').value = selectedItems.join(',');
-    });
-</script> -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script>
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl)
+})
+</script>   
 <style> 
     th {
         background-color: #f8f9fc;

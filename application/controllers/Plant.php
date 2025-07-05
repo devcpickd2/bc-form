@@ -77,4 +77,22 @@ class Plant extends CI_Controller {
 		$this->load->view('plant/plant-edit', $data);
 		$this->load->view('partials/footer');
 	}
+
+	public function delete($uuid)
+	{
+		if (!$uuid) {
+			$this->session->set_flashdata('error_msg', 'ID tidak ditemukan.');
+			redirect('plant');
+		}
+
+		$deleted = $this->plant_model->delete_by_uuid($uuid);
+
+		if ($deleted) {
+			$this->session->set_flashdata('success_msg', 'Data berhasil dihapus.');
+		} else {
+			$this->session->set_flashdata('error_msg', 'Gagal menghapus data.');
+		}
+
+		redirect('plant');
+	}
 }

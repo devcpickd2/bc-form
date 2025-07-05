@@ -31,14 +31,14 @@
                                 </th>
                                 <th width="20px" class="text-center">No</th>
                                 <th>Tanggal</th>
-                                <th>Kode Thermometer</th>
+                                <th>Kode Thermometer / Model</th>
                                 <th>Area</th>
                                 <th>Waktu</th>
+                                <th>Standar Suhu (°C)</th>
                                 <th>Hasil</th>
-                                <th>Perbaikan</th>
                                 <th>Last Updated</th>
                                 <th>Last Verified</th>
-                                <!-- <th>Produksi</th> -->
+                                <th>Produksi</th>
                                 <th>SPV</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -49,19 +49,51 @@
                             foreach($thermometer as $val) {
                                 $datetime = new datetime($val->date);
                                 $datetime = $datetime->format('d-m-Y');
+
+                                $result = json_decode($val->peneraan_hasil, true);
                                 ?>
                                 <tr>
                                     <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
                                     <td class="text-center"><?= $no; ?></td>
                                     <td><?= $datetime; ?></td>
-                                    <td><?= $val->kode_thermo; ?></td>
+                                    <td><?= $val->kode_thermo . " / " . $val->model; ?></td>
                                     <td><?= $val->area; ?></td>
-                                    <td><?= $val->peneraan_waktu; ?></td>
-                                    <td><?= $val->peneraan_hasil; ?></td>
-                                    <td><?= $val->tindakan_perbaikan; ?></td>
+                                    <td>
+                                        <ul>
+                                            <?php 
+                                            if (!empty($result)) {
+                                                foreach ($result as $theresult) {
+                                                    echo '<li>' . htmlspecialchars($theresult['pukul']) . '</li>';
+                                                }
+                                            }
+                                            ?>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <?php 
+                                            if (!empty($result)) {
+                                                foreach ($result as $theresult) {
+                                                    echo '<li>' . htmlspecialchars($theresult['standar']) . '</li>';
+                                                }
+                                            }
+                                            ?>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <?php 
+                                            if (!empty($result)) {
+                                                foreach ($result as $theresult) {
+                                                    echo '<li>' . htmlspecialchars($theresult['hasil']) . '</li>';
+                                                }
+                                            }
+                                            ?>
+                                        </ul>
+                                    </td>
                                     <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
                                     <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
-                                    <!-- <td class="text-center">
+                                    <td class="text-center">
                                         <?php
                                         if ($val->status_produksi == 0) {
                                             echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
@@ -71,7 +103,7 @@
                                             echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
                                         }
                                         ?>
-                                    </td> -->
+                                    </td>
                                     <td class="text-center">
                                         <?php
                                         if ($val->status_spv == 0) {

@@ -14,7 +14,7 @@
                 <div class="form-group row">
                     <div class="table-responsive">
                         <table class="table table-bordered" cellspacing="0">
-                           <thead>
+                         <thead>
                             <?php 
                             $datetime = new datetime($falserejection->date_false_rejection);
                             $datetime = $datetime->format('d-m-Y');
@@ -143,9 +143,11 @@
         border: none; 
     }
     .table th, .table td {
-        padding: 6px 8px; 
-        text-align: left; 
+        padding: 6px 8px;
+        text-align: left;
         border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap; 

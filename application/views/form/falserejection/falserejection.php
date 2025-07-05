@@ -21,12 +21,6 @@
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <!-- <div class="form-group text-right">
-                <a href="<?= base_url('falserejection/tambah') ?>" class="btn btn-md btn-primary shadow-sm">
-                    <i class="fas fa-plus fa-sm text-white-50"></i> Tambah
-                </a>
-            </div> -->
-            <!-- <hr> -->
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -37,7 +31,6 @@
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
                             <th>Jenis kontaminan</th>
-                            <th>Posisi Kontaminan</th>
                             <th>Produksi</th>
                             <th>Supervisor</th>
                             <th>Action</th>
@@ -59,7 +52,6 @@
                                 <td><?= $val->nama_produk; ?></td>
                                 <td><?= $val->kode_produksi; ?></td>
                                 <td><?= $val->jenis_kontaminasi; ?></td>
-                                <td><?= $val->posisi_kontaminasi; ?></td>
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_produksi_false == 0) {
@@ -83,11 +75,11 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('falserejection/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Update</span>
+                                    <a href="<?= base_url('falserejection/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Update">
+                                        <i class="fas fa-check fa-lg"></i>
                                     </a>
-                                    <a href="<?= base_url('falserejection/detail/'.$val->uuid);?>" class="btn btn-danger btn-icon-split">
-                                        <span class="text">Detail</span>
+                                    <a href="<?= base_url('falserejection/detail/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail">
+                                        <i class="fas fa-info-circle fa-lg"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -103,6 +95,13 @@
 </div>
 </div>
 </div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script>
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl)
+})
+</script>
 
 <style> 
     th {

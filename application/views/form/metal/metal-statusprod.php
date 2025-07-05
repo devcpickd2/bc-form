@@ -21,6 +21,10 @@
                                 $datetime = $datetime->format('d-m-Y');
                                 $timing = new DateTime($metal->time);
                                 $timing = $timing->format('H:i');
+                                $timing2 = new DateTime($metal->update_time_t);
+                                $timing2 = $timing2->format('H:i');
+                                $timing3 = new DateTime($metal->update_time_b);
+                                $timing3 = $timing3->format('H:i');
                                 ?>
                                 <tr>
                                     <th style="text-align:center;" colspan="5">PEMERIKSAAN METAL DETECTOR</th>
@@ -45,44 +49,61 @@
                                             <td colspan="4"><?= $metal->no_program;?></td>
                                         </tr>
                                         <tr>
-                                            <td><b>STD. Spesimen</b></td>
-                                            <td  class="text-center"><b>Fe 2.5 (mm)</b></td>
-                                            <td  class="text-center"><b>Non Fe 3.0 (mm)</b></td>
-                                            <td  class="text-center" colspan="2"><b>SUS 304 3.0 (mm)</b></td>
+                                            <td>No. Program</td>
+                                            <td colspan="4"><?= $metal->no_program;?></td>
                                         </tr>
                                         <tr>
-                                            <td>Deteksi</td>
-                                            <td class="text-center">    
-                                                <?php
-                                                if ($metal->std_fe == 'lolos') {
-                                                    echo '<span style="color: green; font-weight: bold;">&#10004;</span>'; 
-                                                } else {
-                                                    echo '<span style="color: red; font-weight: bold;">&#10006;</span>'; 
-                                                }
-                                                ?>
+                                            <td>Deteksi NG</td>
+                                            <td colspan="4">
+                                                <?= $metal->deteksi_ng == '1' ? 'Belt Conveyor Berhenti' : ($metal->deteksi_ng == '2' ? 'Rejector' : '-') ?>
                                             </td>
-                                            <td class="text-center">
-                                                <?php
-                                                if ($metal->std_nonfe == 'lolos') {
-                                                    echo '<span style="color: green; font-weight: bold;">&#10004;</span>'; 
-                                                } else {
-                                                    echo '<span style="color: red; font-weight: bold;">&#10006;</span>'; 
-                                                }
-                                                ?>
-                                            </td>
-                                            <td colspan="2" class="text-center">
-                                                <?php
-                                                if ($metal->std_sus304 == 'lolos') {
-                                                    echo '<span style="color: green; font-weight: bold;">&#10004;</span>'; 
-                                                } else {
-                                                    echo '<span style="color: red; font-weight: bold;">&#10006;</span>'; 
-                                                }
-                                                ?>
-                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>STD. Spesimen</b></td>  
+                                            <td><b>Pukul</b></td>  
+                                            <td class="text-center"><b>Fe <?= $metal->std_fe;?></b></td>
+                                            <td class="text-center"><b>Non Fe <?= $metal->std_nonfe;?></b></td>
+                                            <td class="text-center" colspan="2"><b>SUS 304 <?= $metal->std_sus304;?></b></td>
+                                        </tr>
+                                        <?php
+                                        function tampilkanIkon($nilai) {
+                                            if ($nilai === null || $nilai === '') {
+                                                return '<span style="color: gray; font-weight: bold;">-</span>';
+                                            } elseif ($nilai == 'terdeteksi') {
+                                                return '<span style="color: green; font-weight: bold;">&#10004;</span>';
+                                            } else {
+                                                return '<span style="color: red; font-weight: bold;">&#10006;</span>';
+                                            }
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td>Deteksi Pertama</td>
+                                            <td><?= $timing; ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->fe_d); ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_d); ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->sus_d); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Deteksi Kedua</td>
+                                            <td><?= $timing2; ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->fe_t); ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_t); ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->sus_t); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Deteksi Terakhir</td>
+                                            <td><?= $timing3; ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->fe_b); ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_b); ?></td>
+                                            <td class="text-center"><?= tampilkanIkon($metal->sus_b); ?></td>
                                         </tr>
                                         <tr>
                                             <td>Keterangan</td>
                                             <td colspan="4"><?= $metal->keterangan;?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Catatan</td>
+                                            <td colspan="4"><?= !empty($metal->catatan_metal) ? $metal->catatan_metal : 'Tidak ada'; ?></td>
                                         </tr>
                                         <tr>
                                             <td>QC</td>
@@ -154,7 +175,9 @@
             .table th, .table td {
                 padding: 6px 8px;
                 text-align: left;
-                border-bottom: 1px solid #ddd; /
+                border-bottom: 1px solid #ddd;
+                word-wrap: break-word;
+                white-space: normal !important;
             }
             .table td {
                 white-space: nowrap;

@@ -35,17 +35,14 @@ class Auth_model extends CI_Model
 			return FALSE;
 		}
 
-		// if ($user->hak_akses === NULL) {
-	 //        return FALSE;
-	 //    }
-		
-		// $hakAkses = json_decode($user->hak_akses);
-
-	 //    if (!in_array('pga', $hakAkses)) {
-	 //        return FALSE;
-	 //    }
-
-		$this->session->set_userdata([self::SESSION_KEY => $user->uuid, 'username' => $user->username, 'type' => $user->type ]);
+		$this->session->set_userdata([
+			self::SESSION_KEY => $user->uuid,
+			'username' => $user->username,
+			'nama' => $user->nama,
+			'tipe_user' => $user->tipe_user,
+			'plant' => $user->plant,
+			'foto' => $user->foto ?? 'profil.png'
+		]);
 
 		return $this->session->has_userdata(self::SESSION_KEY);
 	}
@@ -57,10 +54,15 @@ class Auth_model extends CI_Model
 		}
 
 		$user_uuid = $this->session->userdata(self::SESSION_KEY);
-		$query = $this->db->get_where($this->_table, ['uuid ' => $user_uuid]);
-		return $query->row();
-	}
 
+		$this->db->select('pegawai.*, plant.plant as nama_plant, departemen.departemen as nama_departemen');
+		$this->db->from('pegawai');
+		$this->db->join('plant', 'plant.uuid = pegawai.plant', 'left');
+		$this->db->join('departemen', 'departemen.uuid = pegawai.departemen', 'left');
+		$this->db->where('pegawai.uuid', $user_uuid);
+
+		return $this->db->get()->row();
+	}
 
 	public function logout()
 	{

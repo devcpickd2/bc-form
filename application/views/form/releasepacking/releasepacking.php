@@ -73,6 +73,9 @@
                                     <a href="<?= base_url('releasepacking/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
                                         <span class="text">Detail</span>
                                     </a>
+                                    <a href="<?= base_url('releasepacking/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <span class="text">Delete</span>
+                                    </a>
                                 </td>
                             </tr>
                             <?php 

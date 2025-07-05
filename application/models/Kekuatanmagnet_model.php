@@ -40,6 +40,7 @@ class Kekuatanmagnet_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$nama_alat = $this->input->post('nama_alat');
 		$nilai = $this->input->post('nilai');
@@ -51,6 +52,7 @@ class Kekuatanmagnet_model extends CI_Model {
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
+			'plant' => $plant,
 			'date' => $date,
 			'nama_alat' => $nama_alat,
 			'nilai' => $nilai,
@@ -64,32 +66,6 @@ class Kekuatanmagnet_model extends CI_Model {
 		return($this->db->affected_rows() > 0) ? true :false;
 
 	}
-
-	// public function rules_update()
-	// {
-	// 	return[
-	// 		[
-	// 			'field' => 'date',
-	// 			'label' => 'Date',
-	// 			'rules' => 'required'
-	// 		],
-	// 		[
-	// 			'field' => 'nama_alat',
-	// 			'label' => 'Things',
-	// 			'rules' => 'required'
-	// 		], 
-	// 		[
-	// 			'field' => 'nilai',
-	// 			'label' => 'Measurement Value',
-	// 			'rules' => 'required'
-	// 		], 
-	// 		[
-	// 			'field' => 'keterangan',
-	// 			'label' => 'Notes'
-	// 			// 'rules' => 'required'
-	// 		]
-	// 	];
-	// }
 
 	public function update($uuid)
 	{
@@ -220,7 +196,7 @@ class Kekuatanmagnet_model extends CI_Model {
 
 	public function get_by_uuid_kekuatanmagnet_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, status_produksi, tgl_update_produksi');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv', 'DESC');   
 		$this->db->limit(1);  
@@ -230,5 +206,16 @@ class Kekuatanmagnet_model extends CI_Model {
 		return $data_kekuatanmagnet; 
 	}
 
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('kekuatan_mt', ['plant' => $plant])->result();
+	}
 
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('kekuatan_mt');
+	}
 }

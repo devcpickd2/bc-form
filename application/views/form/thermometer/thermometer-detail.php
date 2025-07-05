@@ -36,72 +36,85 @@
                                     <td>Area</td>
                                     <td colspan="6"><?= $thermometer->area;?></td>
                                 </tr>
+                                <?php
+                                $result = json_decode($thermometer->peneraan_hasil, true);
+                                if (!is_array($result)) $result = [];
+                                ?>
                                 <tr>
-                                    <td><b>Standar</b></td>
-                                    <td colspan="6"><b><?= $thermometer->standar;?></b></td>
+                                    <th colspan="7" style="text-align:center;">Daftar Hasil Pemeriksaan</th>
                                 </tr>
                                 <tr>
-                                    <td>Waktu Peneraan</td>
-                                    <td colspan="6"><?= $thermometer->peneraan_waktu;?></td>
+                                    <th>No</th>
+                                    <th colspan="2">Waktu</th>
+                                    <th colspan="2">Standar Suhu (°C)</th>
+                                    <th colspan="2">Hasil</th>
                                 </tr>
+                                <?php $no = 1; foreach ($result as $row): ?>
                                 <tr>
-                                    <td>Hasil Peneraan</td>
-                                    <td colspan="6"><?= $thermometer->peneraan_hasil;?></td>
+                                    <td><?= $no++ ?></td>
+                                    <td colspan="2"><?= htmlspecialchars($row['pukul']) ?></td>
+                                    <td colspan="2"><?= htmlspecialchars($row['standar']) ?></td>
+                                    <td colspan="2"><?= htmlspecialchars($row['hasil']) ?></td>
                                 </tr>
-                                <tr>
-                                    <td>Tindakan Perbaikan</td>
-                                    <td colspan="6"> <?= !empty($thermometer->tindakan_perbaikan) ? $thermometer->tindakan_perbaikan : 'Tidak ada'; ?></td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align:center;" colspan="5">VERIFIKASI</th>
-                                </tr>
-                                <tr>
-                                    <td>QC</td>
-                                    <td colspan="6"><?= $thermometer->username;?></td>
-                                </tr>
-                                <!-- <tr>
-                                    <td>Produksi</td>
-                                    <td colspan="5"><?= $thermometer->nama_produksi;?></td>
-                                </tr>
-                                <tr>
-                                    <td>Diketahui Produksi</td>
-                                    <td colspan="4">
-                                        <?php
-                                        if ($thermometer->status_produksi == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($thermometer->status_produksi == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                        } elseif ($thermometer->status_produksi == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                        }
-                                    ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan Produksi</td>
-                                    <td colspan="4"><?= !empty($thermometer->catatan_produksi) ? $thermometer->catatan_produksi : 'Tidak ada'; ?></td>
-                                </tr> -->
-                                <tr>
-                                    <td>Disetujui Supervisor</td>
-                                    <td colspan="4"><?php
-                                    if ($thermometer->status_spv == 0) {
+                            <?php endforeach; ?>
+                            <tr>
+                                <td>Tindakan Perbaikan</td>
+                                <td colspan="6"> <?= !empty($thermometer->tindakan_perbaikan) ? $thermometer->tindakan_perbaikan : 'Tidak ada'; ?></td>
+                            </tr>
+                            <tr>
+                                <td>Keterangan</td>
+                                <td colspan="6"> <?= !empty($thermometer->keterangan) ? $thermometer->keterangan : 'Tidak ada'; ?></td>
+                            </tr>
+                            <tr>
+                                <th style="text-align:center;" colspan="5">VERIFIKASI</th>
+                            </tr>
+                            <tr>
+                                <td>QC</td>
+                                <td colspan="6"><?= $thermometer->username;?></td>
+                            </tr>
+                            <tr>
+                                <td>Produksi</td>
+                                <td colspan="5"><?= $thermometer->nama_produksi;?></td>
+                            </tr>
+                            <tr>
+                                <td>Diketahui Produksi</td>
+                                <td colspan="4">
+                                    <?php
+                                    if ($thermometer->status_produksi == 0) {
                                         echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($thermometer->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($thermometer->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                    } elseif ($thermometer->status_produksi == 1) {
+                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
+                                    } elseif ($thermometer->status_produksi == 2) {
+                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
                                     }
                                 ?></td>
                             </tr>
                             <tr>
-                                <td>Catatan Supervisor</td>
-                                <td colspan="4"><?= !empty($thermometer->catatan_spv) ? $thermometer->catatan_spv : 'Tidak ada'; ?></td>
+                                <td>Catatan Produksi</td>
+                                <td colspan="4"><?= !empty($thermometer->catatan_produksi) ? $thermometer->catatan_produksi : 'Tidak ada'; ?></td>
                             </tr>
-                        </tbody>
-                    </table>    
-                </div>
+                            <tr>
+                                <td>Disetujui Supervisor</td>
+                                <td colspan="4"><?php
+                                if ($thermometer->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($thermometer->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($thermometer->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                            ?></td>
+                        </tr>
+                        <tr>
+                            <td>Catatan Supervisor</td>
+                            <td colspan="4"><?= !empty($thermometer->catatan_spv) ? $thermometer->catatan_spv : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>    
             </div>
         </div>
     </div>
+</div>
 </div>
 </div>
 <style type="text/css">
@@ -123,9 +136,10 @@
     .table th, .table td {
         padding: 6px 8px;
         text-align: left;
-        border-bottom: 1px solid #ddd; /
-    }
-    .table td {
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
+    }table td {
         white-space: nowrap;
     }
 </style>

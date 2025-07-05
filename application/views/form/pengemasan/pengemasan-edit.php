@@ -13,6 +13,36 @@
         </nav> 
         <div class="card shadow mb-4">
             <div class="card-body">
+                <div style="font-size: 16px;">
+                    <strong>Keterangan:</strong><br>
+                    <table>
+                        <tr>
+                            <td style="width: 250px;">Range per Pack (100 gr)</td>
+                            <td>: 99-109 gr</td>
+                        </tr>
+                        <tr>
+                            <td>Range per Carton (100 gr)</td>
+                            <td>: 2738-2978 gr</td>
+                        </tr>
+                        <tr>
+                            <td>Range per Pack (200 gr)</td>
+                            <td>: 211-201 gr</td>
+                        </tr>
+                        <tr>
+                            <td>Range per Carton (200 gr)</td>
+                            <td>: 5669-5429 gr</td>
+                        </tr>
+                        <tr>
+                            <td>Range per Pack (10000 gr)</td>
+                            <td>: 9950-10110 gr</td>
+                        </tr>
+                        <tr>
+                            <td>Range per Pack (5000 gr)</td>
+                            <td>: 5068-5118 gr</td>
+                        </tr>
+                    </table>
+                </div>
+                <hr>
                 <form class="user" method="post" action="<?= base_url('pengemasan/edit/'.$pengemasan->uuid);?>" enctype="multipart/form-data">
                     <div class="form-group row">
                         <div class="col-sm-6">

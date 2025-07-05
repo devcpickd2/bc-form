@@ -15,18 +15,18 @@
         <div class="card-body">
             <form class="user" method="post" action="<?= base_url('produksi/stalling/'.$produksi->uuid);?>">
                 <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
-                <label class="form-label font-weight-bold">Tanggal : <?= $produksi->date;?></label>
+                <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label>
                 <hr>
 
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Tanggal</label>
                         <input type="date" name="date_stall" class="form-control <?= form_error('date_stall') ? 'invalid' : '' ?>" value="<?= $produksi->date_stall; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('date_stall')) ? 'd-block' : '' ; ?>">
                             <?= form_error('date_stall') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Shift</label>
                         <select class="form-control <?= form_error('shift_pack') ? 'invalid' : '' ?>" name="shift_pack">
                             <option value="1" <?= set_select('shift_pack', '1'); ?> <?= $produksi->shift_pack == 1?'selected':'';?>>1</option>
@@ -43,21 +43,28 @@
                 <hr>
                 <label class="form-label font-weight-bold">STALLING</label>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Jam Mulai</label>
                         <input type="time" name="stall_jam_mulai" class="form-control <?= form_error('stall_jam_mulai') ? 'invalid' : '' ?>" value="<?= $produksi->stall_jam_mulai; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('stall_jam_mulai')) ? 'd-block' : '' ; ?>">
                             <?= form_error('stall_jam_mulai') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Jam Berhenti</label>
                         <input type="time" name="stall_jam_berhenti" class="form-control <?= form_error('stall_jam_berhenti') ? 'invalid' : '' ?>" value="<?= $produksi->stall_jam_berhenti; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('stall_jam_berhenti')) ? 'd-block' : '' ; ?>">
                             <?= form_error('stall_jam_berhenti') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Lama Aging (9 - 12 jam)</label>
+                        <input type="text" name="stall_aging" class="form-control <?= form_error('stall_aging') ? 'invalid' : '' ?>" value="<?= $produksi->stall_aging; ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('stall_aging')) ? 'd-block' : '' ; ?>">
+                            <?= form_error('stall_aging') ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Kadar Air 32-34 (%)</label>
                         <input type="text" name="stall_kadar_air" class="form-control <?= form_error('stall_kadar_air') ? 'invalid' : '' ?>" value="<?= $produksi->stall_kadar_air; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('stall_kadar_air')) ? 'd-block' : '' ; ?>">

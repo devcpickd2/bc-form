@@ -74,7 +74,7 @@
                                     </tr>
                                     <tr>
                                         <td>Produksi</td>
-                                        <td><?= $falserejection->nama_produksi_false;?></td>
+                                        <td colspan="6"> <?= !empty($falserejection->nama_produksi_false) ? $falserejection->nama_produksi_false : 'Belum di koreksi'; ?></td>
                                     </tr>
                                     <td>Diketahui Produksi</td>
                                     <td colspan="4">
@@ -133,9 +133,11 @@
         border: none; 
     }
     .table th, .table td {
-        padding: 6px 8px; 
-        text-align: left; 
+        padding: 6px 8px;
+        text-align: left;
         border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap; 

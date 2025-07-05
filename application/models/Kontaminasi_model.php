@@ -45,11 +45,23 @@ class Kontaminasi_model extends CI_Model {
 				'label' => 'Step'
 			],
 			[
+				'field' => 'analisis',
+				'label' => 'Analysis'
+			],
+			[
+				'field' => 'tindakan',
+				'label' => 'Corrective Action'
+			],
+			[
 				'field' => 'jumlah_temuan',
 				'label' => 'Amount of Contamination'
 			],
 			[
 				'field' => 'keterangan',
+				'label' => 'Notes'
+			],
+			[
+				'field' => 'catatan',
 				'label' => 'Notes'
 			]
 		];
@@ -59,6 +71,7 @@ class Kontaminasi_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
 		$time = $this->input->post('time');
@@ -67,13 +80,17 @@ class Kontaminasi_model extends CI_Model {
 		$kode_produksi = $this->input->post('kode_produksi');
 		$jumlah_temuan = $this->input->post('jumlah_temuan');
 		$tahapan = $this->input->post('tahapan');
+		$analisis = $this->input->post('analisis');
+		$tindakan = $this->input->post('tindakan');
 		$keterangan = $this->input->post('keterangan');
+		$catatan = $this->input->post('catatan');
 		$status_produksi = "0";
 		$status_spv = "0";
 
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
+			'plant' => $plant,
 			'date' => $date,
 			'shift' => $shift,
 			'time' => $time,
@@ -82,7 +99,10 @@ class Kontaminasi_model extends CI_Model {
 			'kode_produksi' => $kode_produksi,
 			'jumlah_temuan' => $jumlah_temuan,
 			'tahapan' => $tahapan,
+			'analisis' => $analisis,
+			'tindakan' => $tindakan,
 			'keterangan' => $keterangan,
+			'catatan' => $catatan,
 			'bukti' => $file_name,
 			'status_produksi' => $status_produksi,
 			'status_spv' => $status_spv,
@@ -102,7 +122,10 @@ class Kontaminasi_model extends CI_Model {
 		$kode_produksi = $this->input->post('kode_produksi');
 		$jumlah_temuan = $this->input->post('jumlah_temuan');
 		$tahapan = $this->input->post('tahapan');
+		$analisis = $this->input->post('analisis');
+		$tindakan = $this->input->post('tindakan');
 		$keterangan = $this->input->post('keterangan');
+		$catatan = $this->input->post('catatan');
 
 		$data = array(
 			'username' => $username,
@@ -114,7 +137,10 @@ class Kontaminasi_model extends CI_Model {
 			'kode_produksi' => $kode_produksi,
 			'jumlah_temuan' => $jumlah_temuan,
 			'tahapan' => $tahapan,
+			'analisis' => $analisis,
+			'tindakan' => $tindakan,
 			'keterangan' => $keterangan,
+			'catatan' => $catatan, 
 			'bukti' => $file_name,
 			'modified_at' => date("Y-m-d H:i:s")
 		);
@@ -228,7 +254,7 @@ class Kontaminasi_model extends CI_Model {
 
 	public function get_by_uuid_kontaminasi_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, date, username, shift');
+		$this->db->select('nama_spv, tgl_update_spv, date, username, shift, nama_produksi, tgl_update_produksi');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv', 'DESC');   
 		$this->db->limit(1);  
@@ -236,6 +262,53 @@ class Kontaminasi_model extends CI_Model {
 
 		$data_kontaminasi = $query->row();  
 		return $data_kontaminasi; 
+	}
+
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('kontaminasi', ['plant' => $plant])->result();
+	}
+
+	public function get_temuan_per_hari() {
+		$user_plant = $this->session->userdata('plant'); 
+
+		$this->db->select("
+			DATE(date) as tanggal,
+			SUM(jumlah_temuan) as jumlah_temuan,
+			GROUP_CONCAT(DISTINCT nama_produk SEPARATOR ', ') as nama_produk,
+			GROUP_CONCAT(DISTINCT jenis_kontaminasi SEPARATOR ', ') as jenis_kontaminasi
+			");
+		$this->db->from("kontaminasi");
+		$this->db->where('plant', $user_plant);
+		$this->db->where('date >=', date('Y-m-01'));
+		$this->db->where('date <=', date('Y-m-t'));
+		$this->db->group_by("DATE(date)");
+		$this->db->order_by("DATE(date)", "ASC");
+
+		return $this->db->get()->result_array();
+	}
+
+
+	public function get_latest_temuan_bulan_ini() {
+		$user_plant = $this->session->userdata('plant');
+
+		$this->db->select('jenis_kontaminasi, nama_produk, kode_produksi, jumlah_temuan');
+		$this->db->from('kontaminasi');
+		$this->db->where('plant', $user_plant);
+		$this->db->where('date >=', date('Y-m-01'));
+		$this->db->where('date <=', date('Y-m-t'));
+		$this->db->order_by('date', 'DESC');
+		$this->db->limit(10);
+
+		return $this->db->get()->result_array();
+	}
+
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('kontaminasi');
 	}
 
 

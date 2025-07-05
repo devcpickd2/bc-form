@@ -34,23 +34,13 @@ class Timbangan_model extends CI_Model {
 				'rules' => 'required'
 			],
 			[
-				'field' => 'lokasi',
+				'field' => 'lokasi', 
 				'label' => 'Location',
 				'rules' => 'required'
 			],
 			[
-				'field' => 'peneraan_waktu',
-				'label' => 'Time of Calibration',
-				'rules' => 'required'
-			], 
-			[
 				'field' => 'peneraan_standar',
 				'label' => 'Standart of Calibration',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'peneraan_hasil',
-				'label' => 'Result of Calibration',
 				'rules' => 'required'
 			], 
 			[
@@ -68,41 +58,50 @@ class Timbangan_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
 		$kode_timbangan = $this->input->post('kode_timbangan');
 		$kapasitas = $this->input->post('kapasitas');
 		$model = $this->input->post('model');
 		$lokasi = $this->input->post('lokasi');
-		$peneraan_waktu = $this->input->post('peneraan_waktu');
 		$peneraan_standar = $this->input->post('peneraan_standar');
-		$peneraan_hasil = $this->input->post('peneraan_hasil');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
-		// $status_produksi = "0";
+		$status_produksi = "0";
 		$status_spv = "0";
+
+		$pukul = $this->input->post('pukul');
+		$hasil = $this->input->post('hasil');
+
+		$peneraan_hasil = [];
+		for ($i = 0; $i < count($pukul); $i++) {
+			$peneraan_hasil[] = [
+				'pukul' => $pukul[$i],
+				'hasil' => isset($hasil[$i]) ? $hasil[$i] : '',
+			];
+		}
 
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
+			'plant' => $plant,
 			'date' => $date,
 			'shift' => $shift,
 			'kode_timbangan' => $kode_timbangan,
 			'kapasitas' => $kapasitas,
 			'model' => $model,
 			'lokasi' => $lokasi,
-			'peneraan_waktu' => $peneraan_waktu,
 			'peneraan_standar' => $peneraan_standar,
-			'peneraan_hasil' => $peneraan_hasil,
+			'peneraan_hasil' => json_encode($peneraan_hasil),
 			'keterangan' => $keterangan,
 			'catatan' => $catatan,
-			// 'status_produksi' => $status_produksi,
+			'status_produksi' => $status_produksi,
 			'status_spv' => $status_spv
 		);
 
 		$this->db->insert('timbangan', $data);
 		return($this->db->affected_rows() > 0) ? true :false;
-
 	}
 
 	public function update($uuid)
@@ -114,11 +113,20 @@ class Timbangan_model extends CI_Model {
 		$kapasitas = $this->input->post('kapasitas');
 		$model = $this->input->post('model');
 		$lokasi = $this->input->post('lokasi');
-		$peneraan_waktu = $this->input->post('peneraan_waktu');
 		$peneraan_standar = $this->input->post('peneraan_standar');
-		$peneraan_hasil = $this->input->post('peneraan_hasil');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
+
+		$pukul = $this->input->post('pukul');
+		$hasil = $this->input->post('hasil');
+
+		$peneraan_hasil = [];
+		foreach ($pukul as $i => $b) {
+			$peneraan_hasil[] = [
+				'pukul'   => $b,
+				'hasil'  => $hasil[$i],
+			];
+		}
 
 		$data = array(
 			'username' => $username,
@@ -128,9 +136,8 @@ class Timbangan_model extends CI_Model {
 			'kapasitas' => $kapasitas,
 			'model' => $model,
 			'lokasi' => $lokasi,
-			'peneraan_waktu' => $peneraan_waktu,
 			'peneraan_standar' => $peneraan_standar,
-			'peneraan_hasil' => $peneraan_hasil,
+			'peneraan_hasil' => json_encode($peneraan_hasil),
 			'keterangan' => $keterangan,
 			'catatan' => $catatan,
 
@@ -246,7 +253,7 @@ class Timbangan_model extends CI_Model {
 
 	public function get_by_uuid_timbangan_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date, shift');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, tgl_update_produksi, status_produksi');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv', 'DESC');   
 		$this->db->limit(1);  
@@ -256,5 +263,16 @@ class Timbangan_model extends CI_Model {
 		return $data_timbangan; 
 	}
 
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('timbangan', ['plant' => $plant])->result();
+	}
 
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('timbangan');
+	}
 }

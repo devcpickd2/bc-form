@@ -16,7 +16,7 @@
             <div class="card-body">
              <form class="user" method="post" action="<?= base_url('produksi/bahan/'.$produksi->uuid);?>">
                 <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
-                <label class="form-label font-weight-bold">Tanggal : <?= $produksi->date;?></label>
+                <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label>
                 <hr>
                 <div class="form-group row">
                     <div class="col-sm-4">
@@ -165,110 +165,90 @@
                 </div>
 
                 <hr>
-                <label class="form-label font-weight-bold">PREMIX</label>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Kode</label>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Berat</label>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Sensori</label>
-                    </div>
+                <div class="form-area" id="form-produksi-wrapper">
+                    <label class="form-label font-weight-bold">Premix</label>
+
+                    <?php
+                    $produksi_data = json_decode($produksi->premix, true);
+                    if (!is_array($produksi_data)) {
+                        echo "<div class='alert alert-danger'>Data Premix tidak valid.</div>";
+                        $produksi_data = [];
+                    }
+
+                    if (empty($produksi_data)) {
+                        echo "<div class='text-muted mb-3'>Belum ada data premix. Klik tombol <strong>+ Tambah Premix</strong> untuk menambahkan.</div>";
+                    }
+
+                    $produksi_data = json_decode($produksi->premix, true);
+                    if (!is_array($produksi_data) || empty($produksi_data)) {
+                        $produksi_data = []; 
+                    }
+                    foreach ($produksi_data as $i => $detail): 
+                        $kode = isset($detail['kode']) ? $detail['kode'] : '';
+                        $berat = isset($detail['berat']) ? $detail['berat'] : '';
+                        $sens = isset($detail['sens']) ? $detail['sens'] : '';
+                        ?>
+                        <div class="produksi-group border p-3 mb-3 rounded bg-light" data-index="<?= $i ?>">
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Kode Produksi</label>
+                                    <input type="text" name="kode[<?= $i ?>]" class="form-control" value="<?= $kode ?>">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label>Berat</label>
+                                    <input type="text" name="berat[<?= $i ?>]" class="form-control" value="<?= $berat ?>">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label>Sensori</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" name="sens[<?= $i ?>]" value="oke" class="form-check-input" <?= ($sens === 'oke') ? 'checked' : '' ?>>
+                                        <label class="form-check-label">Oke</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" name="sens[<?= $i ?>]" value="tidak" class="form-check-input" <?= ($sens === 'tidak') ? 'checked' : '' ?>>
+                                        <label class="form-check-label">Tidak</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger btn-remove">Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 1</label>
-                        <input type="text" name="premix_kode_1" class="form-control <?= form_error('premix_kode_1') ? 'is-invalid' : '' ?>" value="<?= $produksi->premix_kode_1; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('premix_kode_1')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_kode_1') ?>
+
+                <button type="button" class="btn btn-primary mt-2" id="add-produksi">+ Tambah Premix</button>
+                <div class="produksi-group border p-3 mb-3 rounded bg-light d-none" id="produksi-template">
+                    <div class="form-group row">
+                        <div class="col-sm-3">
+                            <label>Kode Produksi</label>
+                            <input type="text" name="kode[]" class="form-control">
                         </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 1</label>
-                        <input type="text" name="premix_berat_1" class="form-control <?= form_error('premix_berat_1') ? 'is-invalid' : '' ?>" value="<?= $produksi->premix_berat_1; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('premix_berat_1')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_berat_1') ?>
+                        <div class="col-sm-3">
+                            <label>Berat</label>
+                            <input type="text" name="berat[]" class="form-control">
                         </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 1</label>
-                        <div class="form-check col-sm-2">
-                            <input type="radio" name="premix_sens_1" value="oke" class="form-check-input <?= form_error('premix_sens_1') ? 'is-invalid' : '' ?>" <?= ($produksi->premix_sens_1 == 'oke') ? 'checked' : ''; ?>>
-                            <label class="form-check-label">Oke</label>
+                        <div class="col-sm-3">
+                            <label>Sensori</label><br>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" name="sens[]" value="oke" class="form-check-input">
+                                <label class="form-check-label">Oke</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" name="sens[]" value="tidak" class="form-check-input">
+                                <label class="form-check-label">Tidak</label>
+                            </div>
                         </div>
-                        <div class="form-check col-sm-2">
-                            <input type="radio" name="premix_sens_1" value="tidak" class="form-check-input <?= form_error('premix_sens_1') ? 'is-invalid' : '' ?>" <?= ($produksi->premix_sens_1 == 'tidak') ? 'checked' : ''; ?>>
-                            <label class="form-check-label">Tidak</label>
-                        </div>
-                        <div class="invalid-feedback <?= !empty(form_error('premix_sens_1')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_sens_1') ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 2</label>
-                        <input type="text" name="premix_kode_2" class="form-control <?= form_error('premix_kode_2') ? 'is-invalid' : '' ?>" value="<?= $produksi->premix_kode_2; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('premix_kode_2')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_kode_2') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 2</label>
-                        <input type="text" name="premix_berat_2" class="form-control <?= form_error('premix_berat_2') ? 'is-invalid' : '' ?>" value="<?= $produksi->premix_berat_2; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('premix_berat_2')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_berat_2') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 2</label>
-                        <div class="form-check col-sm-2">
-                            <input type="radio" name="premix_sens_2" value="oke" class="form-check-input <?= form_error('premix_sens_2') ? 'is-invalid' : '' ?>" <?= ($produksi->premix_sens_2 == 'oke') ? 'checked' : ''; ?>>
-                            <label class="form-check-label">Oke</label>
-                        </div>
-                        <div class="form-check col-sm-2">
-                            <input type="radio" name="premix_sens_2" value="tidak" class="form-check-input <?= form_error('premix_sens_2') ? 'is-invalid' : '' ?>" <?= ($produksi->premix_sens_2 == 'tidak') ? 'checked' : ''; ?>>
-                            <label class="form-check-label">Tidak</label>
-                        </div>
-                        <div class="invalid-feedback <?= !empty(form_error('premix_sens_2')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_sens_2') ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 3</label>
-                        <input type="text" name="premix_kode_3" class="form-control <?= form_error('premix_kode_3') ? 'is-invalid' : '' ?>" value="<?= $produksi->premix_kode_3; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('premix_kode_3')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_kode_3') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 3</label>
-                        <input type="text" name="premix_berat_3" class="form-control <?= form_error('premix_berat_3') ? 'is-invalid' : '' ?>" value="<?= $produksi->premix_berat_3; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('premix_berat_3')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_berat_3') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold mb-2">Premix 3</label>
-                        <div class="form-check col-sm-2">
-                            <input type="radio" name="premix_sens_3" value="oke" class="form-check-input <?= form_error('premix_sens_3') ? 'is-invalid' : '' ?>" <?= ($produksi->premix_sens_3 == 'oke') ? 'checked' : ''; ?>>
-                            <label class="form-check-label">Oke</label>
-                        </div>
-                        <div class="form-check col-sm-2">
-                            <input type="radio" name="premix_sens_3" value="tidak" class="form-check-input <?= form_error('premix_sens_3') ? 'is-invalid' : '' ?>" <?= ($produksi->premix_sens_3 == 'tidak') ? 'checked' : ''; ?>>
-                            <label class="form-check-label">Tidak</label>
-                        </div>
-                        <div class="invalid-feedback <?= !empty(form_error('premix_sens_3')) ? 'd-block' : ''; ?>">
-                            <?= form_error('premix_sens_3') ?>
+                        <div class="col-sm-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-remove">Hapus</button>
                         </div>
                     </div>
                 </div>
-                
+
                 <hr>
+
+
                 <label class="form-label font-weight-bold">SHORTENING</label>
                 <div class="form-group row">
                     <div class="col-sm-4">
@@ -353,3 +333,30 @@
     }
 </style>
 
+<script>
+$(document).ready(function () {
+    let index = $('#form-produksi-wrapper .produksi-group').length;
+
+    $('#add-produksi').on('click', function () {
+        const template = $('#produksi-template').clone();
+        template.removeClass('d-none').removeAttr('id');
+
+        // Set name atribut agar sesuai array
+        template.find('.kode-input').attr('name', 'kode[]').val('');
+        template.find('.berat-input').attr('name', 'berat[]').val('');
+
+        // Radio buttons name jadi sens[index]
+        template.find('.sens-input').each(function () {
+            $(this).attr('name', 'sens[' + index + ']').prop('checked', false);
+        });
+
+        $('#form-produksi-wrapper').append(template);
+        index++;
+    });
+
+    // Tombol hapus
+    $(document).on('click', '.btn-remove', function () {
+        $(this).closest('.produksi-group').remove();
+    });
+});
+</script>

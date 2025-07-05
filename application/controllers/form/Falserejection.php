@@ -18,7 +18,7 @@ class Falserejection extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'falserejection' => $this->falserejection_model->get_all(),
+			'falserejection' => $this->falserejection_model->get_data_by_plant(),
 			'active_nav' => 'falserejection', 
 		);
 
@@ -67,7 +67,7 @@ class Falserejection extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'falserejection' => $this->falserejection_model->get_all(),
+			'falserejection' => $this->falserejection_model->get_data_by_plant(),
 			'active_nav' => 'verifikasi-falserejection', 
 		);
 
@@ -106,7 +106,7 @@ class Falserejection extends CI_Controller {
 	public function diketahui()
 	{
 		$data = array(
-			'falserejection' => $this->falserejection_model->get_all(),
+			'falserejection' => $this->falserejection_model->get_data_by_plant(),
 			'active_nav' => 'diketahui-falserejection', 
 		);
 
@@ -224,59 +224,84 @@ class Falserejection extends CI_Controller {
 			$pdf->Cell(25, 6, $falserejection->username_2, 1, 0, 'C');
 			$pdf->Ln();
 		}
+// Ambil nama lengkap dari model
+		$this->load->model('Pegawai_model');
+		$nama_lengkap_qc = $this->Pegawai_model->get_nama_lengkap($data['falserejection']->username_2);
+		$nama_lengkap_prod = $this->Pegawai_model->get_nama_lengkap($data['falserejection']->nama_produksi_false);
+		$nama_lengkap_spv = $this->Pegawai_model->get_nama_lengkap($data['falserejection']->nama_spv_false);
 
-		$pdf->SetFont('times', 'I', 8);
-		$pdf->SetXY(330, 150); 
-		$pdf->Cell(5, 3, 'QB 13/00', 0, 1, 'R'); 
-		$pdf->SetFont('times', '', 9);
-		$pdf->SetXY(12, 150); 
-		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L'); 
-		foreach ($falserejection_data as $item) {
-			if (!empty($item->catatan)) {
-				$pdf->Cell(12, 0, '', 0, 0, 'L'); 
-				$pdf->Cell(12, 0, ' - ' . $item->catatan, 0, 1, 'L');
-			}
-		}
-
-
-		$pdf->SetFont('times', '', 10);
-		$pdf->SetXY(13, 167); 
-		$pdf->Cell(60, 5, 'Diperiksa Oleh : '. $data['falserejection']->username_2, 0, 0, 'C');
-		$pdf->SetXY(130, 167); 
-		$pdf->Cell(60, 5, 'Diketahui Oleh : '. $data['falserejection']->nama_produksi_false, 0, 0, 'C');
-
-		$nama_spv = $data['falserejection']->nama_spv_false;
+// Waktu update
 		$tanggal_update = $data['falserejection']->tgl_update_spv_false;
-		$update = new DateTime($tanggal_update); 
-		$update_tanggal = $update->format('d-m-Y | H:i');
+		$update_tanggal = (new DateTime($tanggal_update))->format('d-m-Y | H:i');
 
+// Cek status verifikasi
 		$status_verifikasi = true;
-
 		foreach ($falserejection_data as $item) {
 			if ($item->status_spv_false != '1') {
 				$status_verifikasi = false;
-				break; 
-			} 
+				break;
+			}
 		}
 
-		if ($status_verifikasi) {
-			$url = 'Diverifikasi secara digital oleh,' . "\n" . $nama_spv . "\n" . 'SPV QC Bread Crumb' . "\n" . $update_tanggal;
+// Dapatkan posisi terakhir Y dari tabel
+		$y_setelah_tabel = $pdf->GetY() + 5;
 
-			$pdf->SetFont('times', '', 10);
-			$pdf->SetXY(265, 167); 
-			$pdf->Cell(60, 4, 'Disetujui oleh,', 0, 0, 'C');
-			$pdf->write2DBarcode($url, 'QRCODE,L', 286, 172, 18, 18, null, 'N'); 
-			$pdf->SetXY(265, 190); 
-			$pdf->Cell(60, 5, 'Supervisor QC', 0, 0, 'C');
+// ----------------- CATATAN -------------------
+		$pdf->SetFont('times', '', 9);
+		$pdf->SetXY(12, $y_setelah_tabel);
+		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
+		foreach ($falserejection_data as $item) {
+			if (!empty($item->catatan)) {
+				$pdf->Cell(12, 0, '', 0, 0, 'L'); 
+				$pdf->Cell(180, 0, ' - ' . $item->catatan, 0, 1, 'L');
+			}
+		}
+
+		$y_after_keterangan = $pdf->GetY() + 8;
+
+// ----------------- VERIFIKASI & QR -------------------
+		if ($status_verifikasi) {
+			$pdf->SetFont('times', '', 9);
+			$pdf->SetTextColor(0, 0, 0);
+
+	// Dibuat oleh
+			$pdf->SetXY(20, $y_after_keterangan);
+			$pdf->Cell(60, 5, 'Diperiksa Oleh,', 0, 0, 'C');
+			$pdf->SetXY(20, $y_after_keterangan + 12);
+			$pdf->SetFont('times', 'U', 9);
+			$pdf->Cell(60, 5, $nama_lengkap_qc, 0, 1, 'C');
+			$pdf->SetFont('times', '', 9);
+			$pdf->SetXY(20, $y_after_keterangan + 17);
+			$pdf->Cell(60, 5, 'QC Inspector', 0, 0, 'C');
+
+	// Produksi
+			$pdf->SetXY(110, $y_after_keterangan);
+			$pdf->Cell(80, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			if (!empty($data['falserejection']->nama_produksi_false)) {
+				$qr_text_prod = "Diketahui secara digital oleh,\n" . $nama_lengkap_prod . "\nForeman/Forelady Produksi\n" . $data['falserejection']->tgl_update_produksi_false;
+				$pdf->write2DBarcode($qr_text_prod, 'QRCODE,L', 141, $y_after_keterangan + 5, 17, 17, null, 'N');
+				$pdf->SetXY(120, $y_after_keterangan + 22);
+				$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			}
+
+	// SPV
+			$pdf->SetXY(195, $y_after_keterangan);
+			$pdf->Cell(90, 5, 'Disetujui Oleh,', 0, 0, 'C');
+			$qr_text = "Diverifikasi secara digital oleh,\n" . $nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
+			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 232, $y_after_keterangan + 5, 17, 17, null, 'N');
+			$pdf->SetXY(215, $y_after_keterangan + 22);
+			$pdf->Cell(50, 5, 'Supervisor QC', 0, 0, 'C');
+
 		} else {
+	// Belum diverifikasi
 			$pdf->SetTextColor(255, 0, 0);
 			$pdf->SetFont('times', '', 10);
-			$pdf->SetXY(270, 167); 
-			$pdf->Cell(60, 4, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetXY(140, $y_after_keterangan);
+			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
+
 		$pdf->setPrintFooter(false);
-		// $pdf->Output("falserejection.pdf", 'I');
 
 		$currentDate = date('d-m-Y');
 		$filename = "False Rejection_{$currentDate}.pdf";

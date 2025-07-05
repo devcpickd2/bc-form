@@ -44,6 +44,7 @@ class Releasepacking_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$nama_produk = $this->input->post('nama_produk');
 		$kode_produksi = $this->input->post('kode_produksi');
@@ -55,6 +56,7 @@ class Releasepacking_model extends CI_Model {
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
+			'plant' => $plant,
 			'date' => $date,
 			'nama_produk' => $nama_produk,
 			'kode_produksi' => $kode_produksi,
@@ -209,5 +211,16 @@ class Releasepacking_model extends CI_Model {
 		return $data_release_packing; 
 	}
 
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('release_packing', ['plant' => $plant])->result();
+	}
 
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('release_packing');
+	}
 }

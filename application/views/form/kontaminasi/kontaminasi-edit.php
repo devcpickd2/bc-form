@@ -79,9 +79,6 @@
                                 <?= form_error('bukti') ?>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row form-group">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Jumlah Temuan</label>
                             <input type="number" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?> " value="<?= $kontaminasi->jumlah_temuan; ?>">
@@ -89,21 +86,47 @@
                                 <?= form_error('jumlah_temuan') ?>
                             </div>
                         </div>
+                    </div>
+                    <hr>
+                    <div class="row form-group">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Tahapan</label>
-                            <input type="text" name="tahapan" class="form-control <?= form_error('tahapan') ? 'invalid' : '' ?> " value="<?= $kontaminasi->tahapan; ?>">
+                            <textarea class="form-control" name="tahapan"><?= $kontaminasi->tahapan; ?></textarea>
                             <div class="invalid-feedback <?= !empty(form_error('tahapan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('tahapan') ?>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Analisis Temuan</label>
+                            <textarea class="form-control" name="analisis"><?= $kontaminasi->analisis; ?></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('analisis')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('analisis') ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Tindakan Koreksi</label>
+                            <textarea class="form-control" name="tindakan"><?= $kontaminasi->tindakan; ?></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('tindakan')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('tindakan') ?>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Keterangan</label>
+                            <textarea class="form-control" name="keterangan"><?= $kontaminasi->keterangan; ?></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('keterangan') ?>
                             </div>
                         </div>
                     </div>
                     <hr>
                     <div class="row form-group">
                         <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Keterangan</label>
-                            <textarea class="form-control" name="keterangan"><?= $kontaminasi->keterangan; ?></textarea>
-                            <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('keterangan') ?>
+                            <label class="form-label font-weight-bold">Catatan</label>
+                            <textarea class="form-control" name="catatan"><?= $kontaminasi->catatan; ?></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('catatan') ?>
                             </div>
                         </div>
                     </div>

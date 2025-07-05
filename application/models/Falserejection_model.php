@@ -82,7 +82,6 @@ class Falserejection_model extends CI_Model {
 
 	}
 
-
 	public function rules_verifikasi()
 	{
 		return[
@@ -189,7 +188,7 @@ class Falserejection_model extends CI_Model {
 
 	public function get_by_uuid_falserejection_verif($uuid_array)
 	{
-		$this->db->select('nama_spv_false, tgl_update_spv_false, no_mesin, username_2, nama_produksi_false',);
+		$this->db->select('nama_spv_false, tgl_update_spv_false, no_mesin, username_2, nama_produksi_false, tgl_update_produksi_false',);
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv_false', 'DESC');   
 		$this->db->limit(1);  
@@ -197,6 +196,13 @@ class Falserejection_model extends CI_Model {
 
 		$data_falserejection = $query->row();  
 		return $data_falserejection; 
+	}
+
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('metal', ['plant' => $plant])->result();
 	}
 
 }

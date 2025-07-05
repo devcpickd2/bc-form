@@ -53,6 +53,9 @@
                                     <a href="<?= base_url('plant/edit/'.$val->uuid);?>" class="btn btn-primary btn-icon-split">
                                         <span class="text">Edit</span>
                                     </a>
+                                    <a href="<?= base_url('plant/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <span class="text">Delete</span>
+                                    </a>
                                 </td>
                             </tr>
                             <?php 

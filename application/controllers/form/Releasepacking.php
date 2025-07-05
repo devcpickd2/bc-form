@@ -22,7 +22,7 @@ class Releasepacking extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'releasepacking' => $this->releasepacking_model->get_all(),
+			'releasepacking' => $this->releasepacking_model->get_data_by_plant(),
 			'active_nav' => 'releasepacking', 
 		);
 
@@ -93,11 +93,29 @@ class Releasepacking extends CI_Controller {
 		$this->load->view('form/releasepacking/releasepacking-edit', $data);
 		$this->load->view('partials/footer');
 	}
+
+	public function delete($uuid)
+	{
+		if (!$uuid) {
+			$this->session->set_flashdata('error_msg', 'ID tidak ditemukan.');
+			redirect('releasepacking');
+		}
+
+		$deleted = $this->releasepacking_model->delete_by_uuid($uuid);
+
+		if ($deleted) {
+			$this->session->set_flashdata('success_msg', 'Data berhasil dihapus.');
+		} else {
+			$this->session->set_flashdata('error_msg', 'Gagal menghapus data.');
+		}
+
+		redirect('releasepacking');
+	}
 	
 	public function verifikasi()
 	{
 		$data = array(
-			'releasepacking' => $this->releasepacking_model->get_all(),
+			'releasepacking' => $this->releasepacking_model->get_data_by_plant(),
 			'active_nav' => 'verifikasi-releasepacking', 
 		);
 
@@ -136,7 +154,7 @@ class Releasepacking extends CI_Controller {
 	public function diketahui()
 	{
 		$data = array(
-			'releasepacking' => $this->releasepacking_model->get_all(),
+			'releasepacking' => $this->releasepacking_model->get_data_by_plant(),
 			'active_nav' => 'diketahui-releasepacking', 
 		);
 
@@ -199,16 +217,16 @@ class Releasepacking extends CI_Controller {
 		$pdf->setPrintHeader(false); 
 		$pdf->SetMargins(17, 16, 15); 
 		$pdf->AddPage('L', 'LEGAL');
-		$pdf->SetFont('times', 'B', 13);
+		$pdf->SetFont('times', 'B', 14);
 
 		$logo_path = FCPATH . 'assets/img/logo.jpg';
 		if (file_exists($logo_path)) {
-			$pdf->Image($logo_path, 17, 14, 38);
+			$pdf->Image($logo_path, 17, 14, 45);
 		} else {
 			$pdf->Write(7, "Logo tidak ditemukan\n");
 		}
 
-		$pdf->Write(9, "\n");
+		$pdf->Write(10, "\n");
 		$pdf->MultiCell(0, 5, 'DATA RELEASE PACKING', 0, 'C');
 		$pdf->Ln(5);
 
@@ -220,7 +238,7 @@ class Releasepacking extends CI_Controller {
 		$formatted_date2 = strftime('%d %B %Y', $date->getTimestamp());
 
 		$pdf->SetFont('times', '', 10);
-		$pdf->SetX(15);
+		$pdf->SetX(17);
 		$pdf->Write(0, 'Hari / Tanggal : ' . $formatted_date);
 		$pdf->Ln(5);
 
@@ -234,7 +252,7 @@ class Releasepacking extends CI_Controller {
 		$pdf->Cell(60, 12, 'Keterangan', 1, 0, 'C');
 		$pdf->Cell(30, 12, 'QC', 1, 1, 'C');
 
-		foreach ($releasepacking_data as $releasepacking) {
+		foreach ($releasepacking_data as $releasepacking) { 
 			$bb = $releasepacking->best_before;
 			$best_before = new DateTime($bb);
 			$formatted_bb = strftime('%d %B %Y', $best_before->getTimestamp());
@@ -251,39 +269,49 @@ class Releasepacking extends CI_Controller {
 			$no++;
 		}
 
-		$nama_spv = $data['releasepacking']->nama_spv;
-		$tanggal_update = $data['releasepacking']->tgl_update_spv;
-		$update = new DateTime($tanggal_update); 
-		$update_tanggal = $update->format('d-m-Y | H:i');
+		$this->load->model('pegawai_model');
+		$data['releasepacking']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['releasepacking']->username);
+		$data['releasepacking']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['releasepacking']->nama_spv);
 
+		$y_after_keterangan = $pdf->GetY() + 2;
 		$status_verifikasi = true;
-
 		foreach ($releasepacking_data as $item) {
 			if ($item->status_spv != '1') {
 				$status_verifikasi = false;
-				break; 
+				break;
 			}
 		}
 
-		$pdf->SetFont('times', 'I', 8);
-		$pdf->SetXY(328, 158); 
-		$pdf->Cell(5, 3, 'QB 22/00', 0, 1, 'R'); 
 		$pdf->SetFont('times', '', 9);
+		$pdf->SetTextColor(0, 0, 0);
 
 		if ($status_verifikasi) {
-			$url = 'Diverifikasi secara digital oleh,' . "\n" . $nama_spv . "\n" . 'SPV QC Bread Crumb' . "\n" . $update_tanggal;
+			$y_verifikasi = $y_after_keterangan;
 
-			$pdf->SetFont('times', '', 9);
-			$pdf->SetXY(260, 165); 
-			$pdf->Cell(60, 4, 'Disetujui oleh,', 0, 0, 'C');
-			$pdf->write2DBarcode($url, 'QRCODE,L', 281, 169, 18, 18, null, 'N'); 
-			$pdf->SetXY(260, 187); 
-			$pdf->Cell(60, 4, 'Supervisor QC', 0, 0, 'C');
+	// Dibuat oleh (QC)
+			$pdf->SetXY(60, $y_verifikasi + 5);
+			$pdf->Cell(50, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetXY(60, $y_verifikasi + 10);
+			$pdf->SetFont('times', 'U', 9);
+			$pdf->Cell(50, 5, $data['releasepacking']->nama_lengkap_qc, 0, 1, 'C');
+			$pdf->SetFont('times', '', 9); 
+			$pdf->SetXY(60, $y_verifikasi + 15);
+			$pdf->Cell(50, 5, 'QC Inspector', 0, 0, 'C');
+
+	// Disetujui oleh (SPV)
+			$update_tanggal = (new DateTime($data['releasepacking']->tgl_update_spv))->format('d-m-Y | H:i');
+			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['releasepacking']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
+			$pdf->SetXY(160, $y_verifikasi + 5);
+			$pdf->Cell(150, 5, 'Disetujui Oleh,', 0, 0, 'C');
+			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 227, $y_verifikasi + 10, 16, 16, null, 'N');
+			$pdf->SetXY(160, $y_verifikasi + 26);
+			$pdf->Cell(150, 5, 'Supervisor QC', 0, 0, 'C');
+
 		} else {
-			$pdf->SetTextColor(255, 0, 0);
+			$pdf->SetTextColor(255, 0, 0); 
 			$pdf->SetFont('times', '', 9);
-			$pdf->SetXY(265, 175); 
-			$pdf->Cell(60, 4, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetXY(200, $y_after_keterangan);
+			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
 		$pdf->setPrintFooter(false);

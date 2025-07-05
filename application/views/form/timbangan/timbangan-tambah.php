@@ -15,14 +15,14 @@
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('timbangan/tambah');?>" enctype="multipart/form-data">
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Tanggal</label>
                             <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?php echo date("Y-m-d") ?>">
                             <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('date') ?>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Shift</label>
                             <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
                                 <option disabled selected>Pilih Shift</option>
@@ -34,14 +34,14 @@
                         </div> 
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Kode Timbangan</label>
                             <input type="text" name="kode_timbangan" class="form-control <?= form_error('kode_timbangan') ? 'invalid' : '' ?> " value="<?= set_value('kode_timbangan'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('kode_timbangan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('kode_timbangan') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Kapasitas</label>
                             <input type="text" name="kapasitas" class="form-control <?= form_error('kapasitas') ? 'invalid' : '' ?> " value="<?= set_value('kapasitas'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('kapasitas')) ? 'd-block' : '' ; ?> ">
@@ -50,46 +50,49 @@
                         </div> 
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Model</label>
                             <input type="text" name="model" class="form-control <?= form_error('model') ? 'invalid' : '' ?> " value="<?= set_value('model'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('model')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('model') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Lokasi</label>
                             <input type="text" name="lokasi" class="form-control <?= form_error('lokasi') ? 'invalid' : '' ?> " value="<?= set_value('lokasi'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('lokasi')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('lokasi') ?>
                             </div>
                         </div> 
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Waktu Peneraan</label>
-                            <input type="text" name="peneraan_waktu" class="form-control <?= form_error('peneraan_waktu') ? 'invalid' : '' ?> " value="<?= set_value('peneraan_waktu'); ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('peneraan_waktu')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('peneraan_waktu') ?>
-                            </div>
-                        </div> 
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Standar</label>
+                        <div class="col-sm-4">
+                            <label class="form-label font-weight-bold">Standar Berat (g)</label>
                             <input type="text" name="peneraan_standar" class="form-control <?= form_error('peneraan_standar') ? 'invalid' : '' ?> " value="<?= set_value('peneraan_standar'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('peneraan_standar')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('peneraan_standar') ?>
                             </div>
                         </div> 
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Hasil Peneraan</label>
-                            <input type="text" name="peneraan_hasil" class="form-control <?= form_error('peneraan_hasil') ? 'invalid' : '' ?> " value="<?= set_value('peneraan_hasil'); ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('peneraan_hasil')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('peneraan_hasil') ?>
+                    <hr>
+                    <div class="form-area" id="form-timbangan-wrapper">
+                        <label class="form-label font-weight-bold">Hasil Pemeriksaan</label>
+                        <div class="timbangan-group border p-3 mb-3 rounded bg-light" data-index="0">
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Pukul</label>
+                                    <input type="time" name="pukul[]" class="form-control">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label>Hasil</label>
+                                    <input type="text" name="hasil[]" class="form-control">
+                                </div>
+                                <div class="col-sm-3 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger btn-remove">Hapus</button>
+                                </div>
                             </div>
-                        </div> 
+                        </div>
                     </div>
+                    <button type="button" class="btn btn-primary mt-2" id="add-timbangan">+ Tambah Pemeriksaan</button>
+                    <hr>
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Keterangan</label>
@@ -126,3 +129,38 @@
         background-color: #2E86C1;
     }
 </style>
+
+<script>
+    $(document).ready(function () {
+        let index = 1;
+
+        $('#add-timbangan').click(function () {
+            const newGroup = $('.timbangan-group').first().clone();
+            newGroup.attr('data-index', index);
+
+        // Reset input
+            newGroup.find('input[type="text"], input[type="number"]').val('');
+            newGroup.find('input[type="radio"]').prop('checked', false);
+
+        // Reset select native (tanpa Select2)
+            newGroup.find('select').val('');
+
+        // Update name radio button berdasarkan index
+            newGroup.find('input[type="radio"]').each(function () {
+                const baseName = $(this).attr('name').split('[')[0];
+                $(this).attr('name', baseName + '[' + index + ']');
+            });
+
+            $('#form-timbangan-wrapper').append(newGroup);
+            index++;
+        });
+
+        $(document).on('click', '.btn-remove', function () {
+            if ($('.timbangan-group').length > 1) {
+                $(this).closest('.timbangan-group').remove();
+            } else {
+                alert("Minimal satu baris harus ada.");
+            }
+        });
+    });
+</script>

@@ -32,7 +32,7 @@
                                 <th>Kode Produksi</th>
                                 <th>Expired Date</th>
                                 <th>Last Updated</th>
-                                <th>Last Checked</th>x
+                                <th>Last Checked</th>
                                 <th>Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
