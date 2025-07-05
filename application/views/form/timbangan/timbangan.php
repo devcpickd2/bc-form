@@ -32,13 +32,13 @@
                     <thead>
                         <tr>
                             <th width="20px" class="text-center">No</th>
-                            <th>Tanggal</th>
-                            <th>Shift</th>
+                            <th>Tanggal / Shift</th>
                             <th>Kode Timbangan</th>
                             <th>Kapasitas / Model / Lokasi</th>
-                            <th>Waktu</th>
                             <th>Standar</th>
+                            <th>Waktu</th>
                             <th>Hasil</th>
+                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -49,16 +49,48 @@
                         foreach($timbangan as $val) {
                             $datetime = new datetime($val->date);
                             $datetime = $datetime->format('d-m-Y');
+
+                            $result = json_decode($val->peneraan_hasil, true);
                             ?>
                             <tr>
                                 <td class="text-center"><?= $no; ?></td>
-                                <td><?= $datetime; ?></td>
-                                <td><?= $val->shift; ?></td>
+                                <td><?= $datetime . " / " . $val->shift; ?></td>
                                 <td><?= $val->kode_timbangan; ?></td>
                                 <td><?= $val->kapasitas . " / ". $val->model . " / ". $val->lokasi ; ?></td>
-                                <td><?= $val->peneraan_waktu; ?></td>
                                 <td><?= $val->peneraan_standar; ?></td>
-                                <td><?= $val->peneraan_hasil; ?></td>
+                                <td>
+                                    <ul>
+                                        <?php 
+                                        if (!empty($result)) {
+                                            foreach ($result as $theresult) {
+                                                echo '<li>' . htmlspecialchars($theresult['pukul']) . '</li>';
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <?php 
+                                        if (!empty($result)) {
+                                            foreach ($result as $theresult) {
+                                                echo '<li>' . htmlspecialchars($theresult['hasil']) . '</li>';
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </td>
+                                <td class="text-center">
+                                    <?php
+                                    if ($val->status_produksi == 0) {
+                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                    } elseif ($val->status_produksi == 1) {
+                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
+                                    } elseif ($val->status_produksi == 2) {
+                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
+                                    }
+                                    ?>
+                                </td>
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {
@@ -76,6 +108,9 @@
                                     </a>
                                     <a href="<?= base_url('timbangan/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
                                         <span class="text">Detail</span>
+                                    </a>
+                                    <a href="<?= base_url('timbangan/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <span class="text">Delete</span>
                                     </a>
                                 </td>
                             </tr>

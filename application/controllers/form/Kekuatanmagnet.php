@@ -22,7 +22,7 @@ class Kekuatanmagnet extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'kekuatanmagnet' => $this->kekuatanmagnet_model->get_all(),
+			'kekuatanmagnet' => $this->kekuatanmagnet_model->get_data_by_plant(),
 			'active_nav' => 'kekuatanmagnet', 
 		);
 
@@ -94,10 +94,28 @@ class Kekuatanmagnet extends CI_Controller {
 		$this->load->view('partials/footer');
 	}
 	
+	public function delete($uuid)
+	{
+		if (!$uuid) {
+			$this->session->set_flashdata('error_msg', 'ID tidak ditemukan.');
+			redirect('kekuatanmagnet');
+		}
+
+		$deleted = $this->kekuatanmagnet_model->delete_by_uuid($uuid);
+
+		if ($deleted) {
+			$this->session->set_flashdata('success_msg', 'Data berhasil dihapus.');
+		} else {
+			$this->session->set_flashdata('error_msg', 'Gagal menghapus data.');
+		}
+
+		redirect('kekuatanmagnet');
+	}
+
 	public function verifikasi()
 	{
 		$data = array(
-			'kekuatanmagnet' => $this->kekuatanmagnet_model->get_all(),
+			'kekuatanmagnet' => $this->kekuatanmagnet_model->get_data_by_plant(),
 			'active_nav' => 'verifikasi-kekuatanmagnet', 
 		);
 
@@ -136,7 +154,7 @@ class Kekuatanmagnet extends CI_Controller {
 	public function diketahui()
 	{
 		$data = array(
-			'kekuatanmagnet' => $this->kekuatanmagnet_model->get_all(),
+			'kekuatanmagnet' => $this->kekuatanmagnet_model->get_data_by_plant(),
 			'active_nav' => 'diketahui-kekuatanmagnet', 
 		);
 
@@ -197,22 +215,22 @@ class Kekuatanmagnet extends CI_Controller {
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
 		$pdf->setPrintHeader(false); 
-		$pdf->SetMargins(10, 9.5, 10);
+		$pdf->SetMargins(10, 10, 10);
 		$pdf->AddPage();
-		$pdf->SetFont('times', 'B', 10);
+		$pdf->SetFont('times', 'B', 11);
 
 		$logo_path = FCPATH . 'assets/img/logo.jpg';
 		if (file_exists($logo_path)) {
-			$pdf->Image($logo_path, 10, 10, 30);
+			$pdf->Image($logo_path, 10, 10, 35);
 		} else {
 			$pdf->Write(7, "Logo tidak ditemukan\n");
 		}
 
-		$pdf->Write(7, "\n");
+		$pdf->Write(8, "\n");
 		$pdf->MultiCell(0, 5, 'PEMERIKSAAN KEKUATAN MAGNET TRAP', 0, 'C');
 		$pdf->Ln(4);
 
-		$pdf->SetFont('times', '', 8);
+		$pdf->SetFont('times', '', 9);
 
 		$pdf->Cell(30, 12, 'Hari/Tanggal', 1, 0, 'C');
 		$pdf->Cell(51, 12, 'Nama Alat', 1, 0, 'C');
@@ -229,7 +247,7 @@ class Kekuatanmagnet extends CI_Controller {
 			$tanggal = $kekuatanmagnet->date;
 			$date = new DateTime($tanggal);
 			$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
-			$pdf->SetFont('times', '', 7);
+			$pdf->SetFont('times', '', 8);
 			$pdf->Cell(30, 6, $formatted_date, 1, 0, 'C');
 			$pdf->Cell(51, 6, $kekuatanmagnet->nama_alat, 1, 0, 'C');
 			$pdf->Cell(35, 6, $kekuatanmagnet->nilai, 1, 0, 'C');
@@ -239,51 +257,75 @@ class Kekuatanmagnet extends CI_Controller {
 			$pdf->Ln();
 		}
 
-		$nama_spv = $data['kekuatanmagnet']->nama_spv;
-		$tanggal_update = $data['kekuatanmagnet']->tgl_update_spv;
-		$update = new DateTime($tanggal_update); 
-		$update_tanggal = $update->format('d-m-Y | H:i');
+		$this->load->model('pegawai_model');
+		$data['kekuatanmagnet']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['kekuatanmagnet']->username);
+		$data['kekuatanmagnet']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['kekuatanmagnet']->nama_spv);
+		$data['kekuatanmagnet']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['kekuatanmagnet']->nama_produksi);
 
+		$pdf->SetY($pdf->GetY() + 2); 
+		$pdf->SetFont('times', '', 8);
+		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
+		foreach ($kekuatanmagnet_data as $item) {
+			if (!empty($item->catatan)) {
+				$pdf->Cell(10, 0, '', 0, 0, 'L'); 
+				$pdf->Cell(200, 0, ' - ' . $item->catatan, 0, 1, 'L');
+			}
+		}
+
+		$y_after_keterangan = $pdf->GetY() + 2;
 		$status_verifikasi = true;
-
 		foreach ($kekuatanmagnet_data as $item) {
 			if ($item->status_spv != '1') {
 				$status_verifikasi = false;
-				break; 
+				break;
 			}
 		}
 
-		$pdf->SetFont('times', 'I', 7);
-		$pdf->SetXY(190, 258); 
-		$pdf->Cell(5, 3, 'QB 20/00', 0, 1, 'R'); 
 		$pdf->SetFont('times', '', 8);
-		$pdf->SetXY(15, 260); 
-		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L'); 
-		foreach ($kekuatanmagnet_data as $item) {
-			if (!empty($item->catatan)) {
-				$pdf->Cell(12, 0, '', 0, 0, 'L'); 
-				$pdf->Cell(12, 0, ' - ' . $item->catatan, 0, 1, 'L');
-			}
-		}
+		$pdf->SetTextColor(0, 0, 0);
 
 		if ($status_verifikasi) {
-			$url = 'Diverifikasi secara digital oleh,' . "\n" . $nama_spv . "\n" . 'SPV QC Bread Crumb' . "\n" . $update_tanggal;
+			$y_verifikasi = $y_after_keterangan;
 
-			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(150, 280); 
-			$pdf->Cell(60, 4, 'Disetujui oleh,', 0, 0, 'C');
-			$pdf->write2DBarcode($url, 'QRCODE,L', 171, 285, 18, 18, null, 'N'); 
-			$pdf->SetXY(150, 304); 
-			$pdf->Cell(60, 4, 'Supervisor QC', 0, 0, 'C');
+		// Dibuat oleh (QC)
+			$pdf->SetXY(25, $y_verifikasi + 5);
+			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetXY(25, $y_verifikasi + 10);
+			$pdf->SetFont('times', 'U', 8); // underline
+			$pdf->Cell(35, 5, $data['kekuatanmagnet']->nama_lengkap_qc, 0, 1, 'C');
+			$pdf->SetFont('times', '', 8); 
+			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+
+		// Diketahui oleh (Produksi)
+			$pdf->SetXY(90, $y_verifikasi + 5);
+			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			if ($data['kekuatanmagnet']->status_produksi == 1 && !empty($data['kekuatanmagnet']->nama_produksi)) {
+				$update_tanggal_produksi = (new DateTime($data['kekuatanmagnet']->tgl_update_produksi))->format('d-m-Y | H:i');
+				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['kekuatanmagnet']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(90, $y_verifikasi + 24);
+				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			} else {
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+			}
+
+		// Disetujui oleh (SPV)
+			$pdf->SetXY(150, $y_verifikasi + 5);
+			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
+			$update_tanggal = (new DateTime($data['kekuatanmagnet']->tgl_update_spv))->format('d-m-Y | H:i');
+			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['kekuatanmagnet']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
+			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
+			$pdf->SetXY(150, $y_verifikasi + 24);
+			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
 		} else {
-			$pdf->SetTextColor(255, 0, 0);
+			$pdf->SetTextColor(255, 0, 0); 
 			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(150, 280); 
-			$pdf->Cell(60, 4, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetXY(100, $y_after_keterangan);
+			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
 		$pdf->setPrintFooter(false);
-		// $pdf->Output("Pemeriksaan Magnet Trap.pdf", 'I');
 
 		$currentDate = date('d-m-Y');
 		$filename = "Pemeriksaan Magnet Trap_{$currentDate}.pdf";

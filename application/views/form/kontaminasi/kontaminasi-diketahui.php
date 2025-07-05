@@ -96,30 +96,6 @@
     </div>
 </div>
 </div>
-
-<!-- <script>
-    document.getElementById('select_all').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('.select_row');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.checked = this.checked;
-        });
-    });
-
-    document.getElementById('form_cetak_pdf').addEventListener('submit', function(event) {
-        var selectedCheckboxes = document.querySelectorAll('.select_row:checked');
-        var selectedItems = [];
-
-        selectedCheckboxes.forEach(function(checkbox) {
-            selectedItems.push(checkbox.value); 
-        });
-        if (selectedItems.length === 0) {
-            event.preventDefault(); 
-            alert("Silakan pilih data yang ingin dicetak.");
-            return;
-        }
-        document.getElementById('selected_items').value = selectedItems.join(',');
-    });
-</script> -->
 <style> 
     th {
         background-color: #f8f9fc;

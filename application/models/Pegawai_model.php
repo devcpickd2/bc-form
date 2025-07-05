@@ -4,7 +4,9 @@ use Ramsey\Uuid\Uuid;
 
 
 class Pegawai_model extends CI_Model {
-	
+
+	private $_table = 'pegawai';
+
 	public function rules()
 	{
 		return[
@@ -79,7 +81,7 @@ class Pegawai_model extends CI_Model {
 
 	public function update($uuid)
 	{
-
+		$updater = $this->session->userdata('username');
 		$nama = $this->input->post('nama');
 		$email = $this->input->post('email');
 		$departemen = $this->input->post('departemen');
@@ -87,6 +89,7 @@ class Pegawai_model extends CI_Model {
 		$tipe_user = $this->input->post('tipe_user');
 
 		$data = array(
+			'updater' => $updater,
 			'nama' => $nama,
 			'email' => $email,
 			'departemen' => $departemen,
@@ -155,12 +158,35 @@ class Pegawai_model extends CI_Model {
 		$data = $this->db->get_where('pegawai', array('tipe_user' => 3))->result();
 		return $data;
 	}
- 
+
 	public function get_manager()
 	{
 		$data = $this->db->get_where('pegawai', array('tipe_user' => 1))->result();
 		// $this->db->get_where('pegawai', array('tipe_user' => 2))->result();
 		// $data = $this->db->get()->result();
 		return $data;
+	}
+
+	public function get_nama_lengkap($username) {
+		$this->db->select('nama');
+		$this->db->from('pegawai'); 
+		$this->db->where('username', $username);
+		$query = $this->db->get();
+		$result = $query->row();
+		return $result ? $result->nama : $username;
+	}
+
+	public function getByUUID($uuid) {
+		return $this->db->get_where($this->_table, ['uuid' => $uuid])->row();
+	}
+
+	public function updateprofil($uuid, $data) {
+		return $this->db->update($this->_table, $data, ['uuid' => $uuid]);
+	}
+
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('pegawai');
 	}
 }

@@ -36,30 +36,43 @@
                                 <td>Area</td>
                                 <td colspan="6"><?= $thermometer->area;?></td>
                             </tr>
+                            <?php
+                            $result = json_decode($thermometer->peneraan_hasil, true);
+                            if (!is_array($result)) $result = [];
+                            ?>
                             <tr>
-                                <td><b>Standar</b></td>
-                                <td colspan="6"><b><?= $thermometer->standar;?></b></td>
+                                <th colspan="7" style="text-align:center;">Daftar Hasil Pemeriksaan</th>
                             </tr>
                             <tr>
-                                <td>Waktu Peneraan</td>
-                                <td colspan="6"><?= $thermometer->peneraan_waktu;?></td>
+                                <th>No</th>
+                                <th colspan="2">Waktu</th>
+                                <th colspan="2">Standar Suhu (°C)</th>
+                                <th colspan="2">Hasil</th>
                             </tr>
+                            <?php $no = 1; foreach ($result as $row): ?>
                             <tr>
-                                <td>Hasil Peneraan</td>
-                                <td colspan="6"><?= $thermometer->peneraan_hasil;?></td>
+                                <td><?= $no++ ?></td>
+                                <td colspan="2"><?= htmlspecialchars($row['pukul']) ?></td>
+                                <td colspan="2"><?= htmlspecialchars($row['standar']) ?></td>
+                                <td colspan="2"><?= htmlspecialchars($row['hasil']) ?></td>
                             </tr>
-                            <tr>
-                                <td>Tindakan Perbaikan</td>
-                                <td colspan="6"><?= $thermometer->tindakan_perbaikan;?></td>
-                            </tr>
-                            <tr>
-                                <td>QC</td>
-                                <td colspan="6"><?= $thermometer->username;?></td>
-                            </tr>
-                            <!-- <tr>
-                                <td>Produksi</td>
-                                <td colspan="5"><?= $thermometer->nama_produksi;?></td>
-                            </tr> -->
+                        <?php endforeach; ?>
+                        <tr>
+                            <td>Tindakan Perbaikan</td>
+                            <td colspan="6"> <?= !empty($thermometer->tindakan_perbaikan) ? $thermometer->tindakan_perbaikan : 'Tidak ada'; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Keterangan</td>
+                            <td colspan="6"> <?= !empty($thermometer->keterangan) ? $thermometer->keterangan : 'Tidak ada'; ?></td>
+                        </tr>
+                        <tr>
+                            <td>QC</td>
+                            <td colspan="6"><?= $thermometer->username;?></td>
+                        </tr>
+                        <tr>
+                            <td>Produksi</td>
+                            <td colspan="5"><?= $thermometer->nama_produksi;?></td>
+                        </tr>
                         </tbody>
                     </table>    
                 </div>
@@ -126,7 +139,9 @@
     .table th, .table td {
         padding: 6px 8px;
         text-align: left;
-        border-bottom: 1px solid #ddd; /
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap;

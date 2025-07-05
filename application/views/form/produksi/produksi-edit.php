@@ -15,14 +15,14 @@
             <div class="card-body">
                <form class="user" method="post" action="<?= base_url('produksi/edit/'.$produksi->uuid);?>">
                  <div class="form-group row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Tanggal</label>
                         <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?= $produksi->date; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('date') ?>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Shift</label>
                         <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
                             <option value="1" <?= set_select('shift', '1'); ?> <?= $produksi->shift == 1?'selected':'';?>>1</option>
@@ -35,14 +35,21 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
+                        <label class="form-label font-weight-bold">Jenis Produk</label>
+                        <input type="text" name="jenis_produk" class="form-control <?= form_error('jenis_produk') ? 'invalid' : '' ?> " value="<?= $produksi->jenis_produk; ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('jenis_produk')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('jenis_produk') ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Nama Produk</label>
                         <input type="text" name="nama_produk" class="form-control <?= form_error('nama_produk') ? 'invalid' : '' ?> " value="<?= $produksi->nama_produk; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('nama_produk')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('nama_produk') ?>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Kode Produksi</label>
                         <input type="text" name="kode_produksi" class="form-control <?= form_error('kode_produksi') ? 'invalid' : '' ?> " value="<?= $produksi->kode_produksi; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('kode_produksi')) ? 'd-block' : '' ; ?> ">

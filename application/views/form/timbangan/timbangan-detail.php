@@ -49,46 +49,57 @@
                                     <td colspan="6"><?= $timbangan->lokasi;?></td>
                                 </tr>
                                 <tr>
-                                    <td>Waktu Peneraan</td>
-                                    <td colspan="6"><?= $timbangan->peneraan_waktu;?></td>
-                                </tr>
-                                <tr>
                                     <td>Standar</td>
                                     <td colspan="6"><?= $timbangan->peneraan_standar;?></td>
                                 </tr>
+                                <?php
+                                $result = json_decode($timbangan->peneraan_hasil, true);
+                                if (!is_array($result)) $result = [];
+                                ?>
                                 <tr>
-                                    <td>Hasil Peneraan</td>
-                                    <td colspan="6"><?= $timbangan->peneraan_hasil;?></td>
+                                    <th colspan="7" style="text-align:center;">Daftar Hasil Pemeriksaan</th>
                                 </tr>
                                 <tr>
-                                    <th style="text-align:center;" colspan="5">VERIFIKASI</th>
+                                    <th>No</th>
+                                    <th colspan="3">Waktu</th>
+                                    <th colspan="3">Hasil</th>
                                 </tr>
+                                <?php $no = 1; foreach ($result as $row): ?>
                                 <tr>
-                                    <td>QC</td>
-                                    <td colspan="6"><?= $timbangan->username;?></td>
+                                    <td><?= $no++ ?></td>
+                                    <td colspan="3"><?= htmlspecialchars($row['pukul']) ?></td>
+                                    <td colspan="3"><?= htmlspecialchars($row['hasil']) ?></td>
                                 </tr>
-                                <tr>
-                                    <td>Disetujui Supervisor</td>
-                                    <td colspan="4"><?php
-                                    if ($timbangan->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($timbangan->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($timbangan->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                ?></td>
+                            <?php endforeach; ?>
+                            <tr>
+                                <th style="text-align:center;" colspan="7">VERIFIKASI</th>
                             </tr>
                             <tr>
-                                <td>Catatan Supervisor</td>
-                                <td colspan="4"><?= !empty($timbangan->catatan_spv) ? $timbangan->catatan_spv : 'Tidak ada'; ?></td>
+                                <td>QC</td>
+                                <td colspan="6"><?= $timbangan->username;?></td>
                             </tr>
-                        </tbody>
-                    </table>    
-                </div>
+                            <tr>
+                                <td>Disetujui Supervisor</td>
+                                <td colspan="6"><?php
+                                if ($timbangan->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($timbangan->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($timbangan->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                            ?></td>
+                        </tr>
+                        <tr>
+                            <td>Catatan Supervisor</td>
+                            <td colspan="6"><?= !empty($timbangan->catatan_spv) ? $timbangan->catatan_spv : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>    
             </div>
         </div>
     </div>
+</div>
 </div>
 </div>
 <style type="text/css">
@@ -110,7 +121,9 @@
     .table th, .table td {
         padding: 6px 8px;
         text-align: left;
-        border-bottom: 1px solid #ddd; /
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap;

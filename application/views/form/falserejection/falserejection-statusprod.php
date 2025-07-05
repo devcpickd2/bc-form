@@ -130,9 +130,11 @@
         border: none; 
     }
     .table th, .table td {
-        padding: 6px 8px; 
-        text-align: left; 
+        padding: 6px 8px;
+        text-align: left;
         border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap; 

@@ -64,13 +64,13 @@
                                 <option disabled selected>Pilih Plant</option>
                                 <?php 
                                 foreach($plant as $val){ ?>
-                                   <option value="<?= $val->uuid; ?>" <?= set_select('plant', $val->uuid) ;?>><?= $val->plant; ?></option>
-                               <?php } ?>
-                           </select>
-                           <div class="invalid-feedback <?= !empty(form_error('plant')) ? 'd-block' : '' ; ?> "><?= form_error('plant') ?></div>
-                       </div>
-                   </div>
-                   <div class="form-group row">
+                                 <option value="<?= $val->uuid; ?>" <?= set_select('plant', $val->uuid) ;?>><?= $val->plant; ?></option>
+                             <?php } ?>
+                         </select>
+                         <div class="invalid-feedback <?= !empty(form_error('plant')) ? 'd-block' : '' ; ?> "><?= form_error('plant') ?></div>
+                     </div>
+                 </div>
+                 <div class="form-group row">
                     <div class="col-sm-6">
                         <label class="form-label font-weight-bold">Tipe User</label>
                         <select class="form-control <?= form_error('tipe_user') ? 'invalid' : '' ?>" name="tipe_user">
@@ -80,6 +80,9 @@
                             <option value="2" <?= set_select('tipe_user', 2); ?>>Supervisor</option>
                             <option value="3" <?= set_select('tipe_user', 3); ?>>Foreman/Forelady</option>
                             <option value="4" <?= set_select('tipe_user', 4); ?>>Staff</option>
+                            <option value="5" <?= set_select('tipe_user', 5); ?>>Enginer</option>
+                            <option value="6" <?= set_select('tipe_user', 6); ?>>Warehouse</option>
+                            <option value="7" <?= set_select('tipe_user', 7); ?>>Lab</option>
                         </select>
                         <div class="invalid-feedback <?= !empty(form_error('tipe_user')) ? 'd-block' : '' ; ?> "><?= form_error('tipe_user') ?></div>
                     </div>

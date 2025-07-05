@@ -62,4 +62,10 @@ class Departemen_model extends CI_Model {
 		$data = $this->db->get_where('departemen', array('uuid' => $uuid))->row();
 		return $data;
 	}
+
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('departemen');
+	}
 }

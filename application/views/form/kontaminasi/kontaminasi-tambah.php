@@ -43,7 +43,7 @@
                         </div>
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Jenis Kontaminasi</label>
-                            <input type="text" name="jenis_kontaminasi" class="form-control <?= form_error('jenis_kontaminasi') ? 'invalid' : '' ?> " value="<?= set_value('jenis_kontaminasi'); ?>">
+                            <input type="text" name="jenis_kontaminasi" class="form-control <?= form_error('jenis_kontaminasi') ? 'invalid' : '' ?> " placeholder="Masukkan Jenis Kontaminasi" value="<?= set_value('jenis_kontaminasi'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('jenis_kontaminasi')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('jenis_kontaminasi') ?>
                             </div>
@@ -72,31 +72,54 @@
                             <input type="file" name="bukti" class="form-control <?= form_error('bukti') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf">
                             <div class="invalid-feedback"><?= form_error('bukti') ?></div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row form-group">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Jumlah Temuan</label>
-                            <input type="number" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?> " value="<?= set_value('jumlah_temuan'); ?>">
+                            <input type="number" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?> " placeholder="Masukkan Jumlah Temuan" value="<?= set_value('jumlah_temuan'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('jumlah_temuan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('jumlah_temuan') ?>
                             </div>
                         </div>
+                    </div>
+                    <hr>
+                    <div class="row form-group">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Tahapan</label>
-                            <input type="text" name="tahapan" class="form-control <?= form_error('tahapan') ? 'invalid' : '' ?> " placeholder="Masukkan Tahapan" value="<?= set_value('tahapan'); ?>">
+                            <textarea class="form-control" name="tahapan"></textarea>
                             <div class="invalid-feedback <?= !empty(form_error('tahapan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('tahapan') ?>
                             </div>
                         </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Analisis Temuan</label>
+                            <textarea class="form-control" name="analisis"></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('analisis')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('analisis') ?>
+                            </div>
+                        </div>
                     </div>
-                    <hr>
                     <div class="row form-group">
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Tindakan Koreksi</label>
+                            <textarea class="form-control" name="tindakan"></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('tindakan')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('tindakan') ?>
+                            </div>
+                        </div>
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Keterangan</label>
                             <textarea class="form-control" name="keterangan"></textarea>
                             <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('keterangan') ?>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row form-group">
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Catatan</label>
+                            <textarea class="form-control" name="catatan"></textarea>
+                            <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('catatan') ?>
                             </div>
                         </div>
                     </div>

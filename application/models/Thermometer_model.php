@@ -14,6 +14,11 @@ class Thermometer_model extends CI_Model {
 				'rules' => 'required'
 			],
 			[
+				'field' => 'shift',
+				'label' => 'Shift',
+				'rules' => 'required'
+			],
+			[
 				'field' => 'kode_thermo',
 				'label' => 'Thermometer Code',
 				'rules' => 'required'
@@ -24,25 +29,18 @@ class Thermometer_model extends CI_Model {
 				'rules' => 'required'
 			],
 			[
-				'field' => 'standar',
-				'label' => 'Standart'
-				// 'rules' => 'required'
-			], 
-			[
-				'field' => 'peneraan_waktu',
-				'label' => 'Time of Calibration',
+				'field' => 'model',
+				'label' => 'Type of Thermometer',
 				'rules' => 'required'
-			], 
-			[
-				'field' => 'peneraan_hasil',
-				'label' => 'Result of Calibration',
-				'rules' => 'required'
-			], 
+			],
 			[
 				'field' => 'tindakan_perbaikan',
-				'label' => 'Corrective Action',
-				'rules' => 'required'
-			]
+				'label' => 'Corrective Action'
+			],
+			[
+				'field' => 'keterangan',
+				'label' => 'Notes'
+			],
 		];
 	}
 
@@ -50,27 +48,43 @@ class Thermometer_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
+		$shift = $this->input->post('shift');
 		$kode_thermo = $this->input->post('kode_thermo');
 		$area = $this->input->post('area');
-		$standar = "0.0";
-		$peneraan_waktu = $this->input->post('peneraan_waktu');
-		$peneraan_hasil = $this->input->post('peneraan_hasil');
+		$model = $this->input->post('model');
 		$tindakan_perbaikan = $this->input->post('tindakan_perbaikan');
-		// $status_produksi = "0";
+		$keterangan = $this->input->post('keterangan');
+		$status_produksi = "0";
 		$status_spv = "0";
+
+		$pukul = $this->input->post('pukul');
+		$standar = $this->input->post('standar');
+		$hasil = $this->input->post('hasil');
+
+		$peneraan_hasil = [];
+		for ($i = 0; $i < count($pukul); $i++) {
+			$peneraan_hasil[] = [
+				'pukul' => $pukul[$i],
+				'standar' => isset($standar[$i]) ? $standar[$i] : '',
+				'hasil' => isset($hasil[$i]) ? $hasil[$i] : '',
+			];
+		}
 
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
+			'plant' => $plant,
 			'date' => $date,
+			'shift' => $shift,
 			'kode_thermo' => $kode_thermo,
 			'area' => $area,
-			'standar' => $standar,
-			'peneraan_waktu' => $peneraan_waktu,
-			'peneraan_hasil' => $peneraan_hasil,
+			'model' => $model,
+			'peneraan_hasil' => json_encode($peneraan_hasil),
 			'tindakan_perbaikan' => $tindakan_perbaikan,
-			// 'status_produksi' => $status_produksi,
+			'keterangan' => $keterangan,
+			'status_produksi' => $status_produksi,
 			'status_spv' => $status_spv
 		);
 
@@ -83,22 +97,36 @@ class Thermometer_model extends CI_Model {
 	{
 		$username = $this->session->userdata('username');
 		$date = $this->input->post('date');
+		$shift = $this->input->post('shift');
 		$kode_thermo = $this->input->post('kode_thermo');
 		$area = $this->input->post('area');
-		$standar = "0.0";
-		$peneraan_waktu = $this->input->post('peneraan_waktu');
-		$peneraan_hasil = $this->input->post('peneraan_hasil');
+		$model = $this->input->post('model');
 		$tindakan_perbaikan = $this->input->post('tindakan_perbaikan');
+		$keterangan = $this->input->post('keterangan');
+
+		$pukul = $this->input->post('pukul');
+		$standar = $this->input->post('standar');
+		$hasil = $this->input->post('hasil');
+
+		$peneraan_hasil = [];
+		foreach ($pukul as $i => $b) {
+			$peneraan_hasil[] = [
+				'pukul'   => $b,
+				'standar'  => $standar[$i],
+				'hasil'  => $hasil[$i],
+			];
+		}
 
 		$data = array(
 			'username' => $username,
 			'date' => $date,
+			'shift' => $shift,
 			'kode_thermo' => $kode_thermo,
 			'area' => $area,
-			'standar' => $standar,
-			'peneraan_waktu' => $peneraan_waktu,
-			'peneraan_hasil' => $peneraan_hasil,
+			'model' => $model,
+			'peneraan_hasil' => json_encode($peneraan_hasil),
 			'tindakan_perbaikan' => $tindakan_perbaikan,
+			'keterangan' => $keterangan,
 
 			'modified_at' => date("Y-m-d H:i:s")
 		);
@@ -212,7 +240,7 @@ class Thermometer_model extends CI_Model {
 
 	public function get_by_uuid_thermometer_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, tgl_update_produksi, status_produksi');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv', 'DESC');   
 		$this->db->limit(1);  
@@ -222,5 +250,16 @@ class Thermometer_model extends CI_Model {
 		return $data_thermometer; 
 	}
 
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('thermometer', ['plant' => $plant])->result();
+	}
 
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('thermometer');
+	}
 }

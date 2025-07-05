@@ -70,6 +70,8 @@ class Pengayakan_model extends CI_Model {
 		$uuid = Uuid::uuid4()->toString();
 
 		$username = $this->session->userdata('username');
+
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
 		$nama_barang = $this->input->post('nama_barang');
@@ -87,6 +89,7 @@ class Pengayakan_model extends CI_Model {
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
+			'plant' => $plant,
 			'date' => $date,
 			'shift' => $shift,
 			'nama_barang' => $nama_barang,
@@ -233,7 +236,7 @@ class Pengayakan_model extends CI_Model {
 
 	public function get_by_uuid_pengayakan($uuid_array)
 	{
-		if (empty($uuid_array)) {
+		if (empty($uuid_array)) { 
 			return false; 
 		}
 		log_message('debug', 'Array UUID yang diterima: ' . print_r($uuid_array, true));
@@ -247,11 +250,11 @@ class Pengayakan_model extends CI_Model {
 			return $query->result(); 
 		}	
 		return false;  
-	}
+	} 
 
 	public function get_by_uuid_pengayakan_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update',);
+		$this->db->select('nama_spv, tgl_update, username, nama_produksi, tgl_update_prod, status_produksi');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update', 'DESC');   
 		$this->db->limit(1);  
@@ -261,5 +264,16 @@ class Pengayakan_model extends CI_Model {
 		return $data_pengayakan; 
 	}
 
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('pengayakan', ['plant' => $plant])->result();
+	}
 
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('pengayakan');
+	}
 }

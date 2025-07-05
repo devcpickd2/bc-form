@@ -64,6 +64,14 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td>Analisis Temuan</td>
+                                            <td colspan="6"><?= $kontaminasi->analisis;?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tindakan Koreksi</td>
+                                            <td colspan="6"><?= $kontaminasi->tindakan;?></td>
+                                        </tr>
+                                        <tr>
                                             <td>Keterangan</td>
                                             <td colspan="6"> <?= !empty($kontaminasi->keterangan) ? $kontaminasi->keterangan : 'Tidak ada'; ?></td>
                                         </tr>
@@ -141,7 +149,9 @@
             .table th, .table td {
                 padding: 6px 8px;
                 text-align: left;
-                border-bottom: 1px solid #ddd; /
+                border-bottom: 1px solid #ddd;
+                word-wrap: break-word;
+                white-space: normal !important;
             }
             .table td {
                 white-space: nowrap;

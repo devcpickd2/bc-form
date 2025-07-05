@@ -36,76 +36,85 @@
                                     <td>Area</td>
                                     <td colspan="6"><?= $thermometer->area;?></td>
                                 </tr>
+                                <?php
+                                $result = json_decode($thermometer->peneraan_hasil, true);
+                                if (!is_array($result)) $result = [];
+                                ?>
                                 <tr>
-                                    <td><b>Standar</b></td>
-                                    <td colspan="6"><b><?= $thermometer->standar;?></b></td>
+                                    <th colspan="7" style="text-align:center;">Daftar Hasil Pemeriksaan</th>
                                 </tr>
                                 <tr>
-                                    <td>Waktu Peneraan</td>
-                                    <td colspan="6"><?= $thermometer->peneraan_waktu;?></td>
+                                    <th>No</th>
+                                    <th colspan="2">Waktu</th>
+                                    <th colspan="2">Standar Suhu (°C)</th>
+                                    <th colspan="2">Hasil</th>
                                 </tr>
+                                <?php $no = 1; foreach ($result as $row): ?>
                                 <tr>
-                                    <td>Hasil Peneraan</td>
-                                    <td colspan="6"><?= $thermometer->peneraan_hasil;?></td>
+                                    <td><?= $no++ ?></td>
+                                    <td colspan="2"><?= htmlspecialchars($row['pukul']) ?></td>
+                                    <td colspan="2"><?= htmlspecialchars($row['standar']) ?></td>
+                                    <td colspan="2"><?= htmlspecialchars($row['hasil']) ?></td>
                                 </tr>
-                                <tr>
-                                    <td>Tindakan Perbaikan</td>
-                                    <td colspan="6"><?= $thermometer->tindakan_perbaikan;?></td>
-                                </tr>
-                                <tr>
-                                    <td>QC</td>
-                                    <td colspan="6"><?= $thermometer->username;?></td>
-                                </tr>
-                                <tr>
-                                    <td>Produksi</td>
-                                    <td colspan="5"><?= $thermometer->nama_produksi;?></td>
-                                </tr>
-                            </tbody>
-                        </table>    
-                    </div>
+                            <?php endforeach; ?>
+                            <tr>
+                                <td>Tindakan Perbaikan</td>
+                                <td colspan="6"> <?= !empty($thermometer->tindakan_perbaikan) ? $thermometer->tindakan_perbaikan : 'Tidak ada'; ?></td>
+                            </tr>
+                            <tr>
+                                <td>Keterangan</td>
+                                <td colspan="6"> <?= !empty($thermometer->keterangan) ? $thermometer->keterangan : 'Tidak ada'; ?></td>
+                            </tr>
+                            <tr>
+                                <td>QC</td>
+                                <td colspan="6"><?= $thermometer->username;?></td>
+                            </tr>
+                        </tbody>
+                    </table>    
                 </div>
             </div>
         </div>
-
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <form class="user" method="post" action="<?= base_url('thermometer/statusprod/'.$thermometer->uuid);?>">
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Status</label>
-                            <select class="form-control <?= form_error('status_produksi') ? 'invalid' : '' ?>" name="status_produksi">
-                                <option value="1" <?= set_select('status_produksi', '1'); ?> <?= $thermometer->status_produksi == 1?'selected':'';?>>Checked</option>
-                                <option value="2" <?= set_select('status_produksi', '2'); ?> <?= $thermometer->status_produksi == 2?'selected':'';?>>Re-Check</option>
-                            </select>
-                            <div class="invalid-feedback <?= !empty(form_error('status_produksi')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('status_produksi') ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Catatan Revisi</label>
-                            <textarea class="form-control" name="catatan_produksi" ><?= $thermometer->catatan_produksi; ?></textarea>
-                            <div class="invalid-feedback <?= !empty(form_error('catatan_produksi')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('catatan_produksi') ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <button type="submit" class="btn btn-md btn-success mr-2">
-                                <i class="fa fa-save"></i> Simpan
-                            </button>
-                            <a href="<?= base_url('thermometer/diketahui')?>" class="btn btn-md btn-danger">
-                                <i class="fa fa-times"></i> Batal
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
     </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form class="user" method="post" action="<?= base_url('thermometer/statusprod/'.$thermometer->uuid);?>">
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">Status</label>
+                        <select class="form-control <?= form_error('status_produksi') ? 'invalid' : '' ?>" name="status_produksi">
+                            <option value="1" <?= set_select('status_produksi', '1'); ?> <?= $thermometer->status_produksi == 1?'selected':'';?>>Checked</option>
+                            <option value="2" <?= set_select('status_produksi', '2'); ?> <?= $thermometer->status_produksi == 2?'selected':'';?>>Re-Check</option>
+                        </select>
+                        <div class="invalid-feedback <?= !empty(form_error('status_produksi')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('status_produksi') ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">Catatan Revisi</label>
+                        <textarea class="form-control" name="catatan_produksi" ><?= $thermometer->catatan_produksi; ?></textarea>
+                        <div class="invalid-feedback <?= !empty(form_error('catatan_produksi')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('catatan_produksi') ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn btn-md btn-success mr-2">
+                            <i class="fa fa-save"></i> Simpan
+                        </button>
+                        <a href="<?= base_url('thermometer/diketahui')?>" class="btn btn-md btn-danger">
+                            <i class="fa fa-times"></i> Batal
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
 </div>
 <style type="text/css">
     .breadcrumb {
@@ -126,7 +135,9 @@
     .table th, .table td {
         padding: 6px 8px;
         text-align: left;
-        border-bottom: 1px solid #ddd; /
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+        white-space: normal !important;
     }
     .table td {
         white-space: nowrap;
