@@ -298,4 +298,15 @@ class Sanitasi_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('sanitasi');
 	}
+
+	public function get_by_date($date, $plant = null)
+	{
+		$this->db->where('DATE(waktu)', $date);
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant);
+		}
+		return $this->db->get('sanitasi')->result();
+	}
+
+
 }

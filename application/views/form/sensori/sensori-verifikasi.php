@@ -26,120 +26,66 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th width="30px" class="text-center" rowspan="2">
+                                <th width="30px" class="text-center">
                                     <i class="fas fa-print fa-lg"></i>
                                 </th>
-                                <th width="20px" class="text-center" rowspan="2">No</th>
-                                <th rowspan="2">Tanggal</th>
-                                <th rowspan="2">Nama Produk</th>
-                                <th rowspan="2">Kode Produksi</th>
-                                <th rowspan="2">Best Before</th>
-                                <th colspan="5" style="text-align: center;">Sensori Produk</th>
-                                <th rowspan="2">Tindakan Koreksi</th>
-                                <th rowspan="2">Last Updated</th>
-                                <th rowspan="2">Last Verified</th>
-                                <th rowspan="2">Warehouse</th>
-                                <th rowspan="2">SPV</th>
-                                <th class="text-center" rowspan="2">Action</th>
-                            </tr>
-                            <tr>
-                                <th>Warna</th>
-                                <th>Tekstur</th>
-                                <th>Rasa</th>
-                                <th>Aroma</th>
-                                <th>Kenampakan</th>
+                                <th width="20px" class="text-center">No</th>
+                                <th>Tanggal</th>
+                                <th>Nama Produk</th>
+                                <th style="text-align: center;">Sensori Produk</th>
+                                <th>Tindakan Koreksi</th>
+                                <th>Last Updated</th>
+                                <th>Last Verified</th>
+                                <th>Warehouse</th>
+                                <th>SPV</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php 
                             $no = 1;
                             foreach($sensori as $val) {
-                               $datetime = new DateTime($val->date);
-                               $tanggalFormatted = $datetime->format('d-m-Y');
+                             $datetime = new DateTime($val->date);
+                             $tanggalFormatted = $datetime->format('d-m-Y');
 
-                               $products = json_decode($val->produk, true);
-                               ?>
-                               <tr>
+                             $products = json_decode($val->produk, true);
+                             ?>
+                             <tr>
                                 <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
                                 <td class="text-center"><?= $no; ?></td>
                                 <td><?= $tanggalFormatted;?></td>
                                 <td><?= $val->nama_produk; ?></td>
                                 <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['kode_produksi']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['best_before']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['warna']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['tekstur']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['rasa']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['aroma']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($products)) {
-                                            foreach ($products as $load) {
-                                                echo '<li>' . htmlspecialchars($load['kenampakan']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead style="background-color: #2E86C1; color: black; text-align: center;">
+                                            <tr>
+                                                <th>Kode Produksi</th>
+                                                <th>Best Before</th>
+                                                <th>Warna</th>
+                                                <th>Tekstur</th>
+                                                <th>Rasa</th>
+                                                <th>Aroma</th>
+                                                <th>Kenampakan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($products)): ?>
+                                                <?php foreach ($products as $p): ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($p['kode_produksi'] ?? '-'); ?></td>
+                                                        <td><?= htmlspecialchars($p['best_before'] ?? '-'); ?></td>
+                                                        <td><?= htmlspecialchars($p['warna'] ?? '-'); ?></td>
+                                                        <td><?= htmlspecialchars($p['tekstur'] ?? '-'); ?></td>
+                                                        <td><?= htmlspecialchars($p['rasa'] ?? '-'); ?></td>
+                                                        <td><?= htmlspecialchars($p['aroma'] ?? '-'); ?></td>
+                                                        <td><?= htmlspecialchars($p['kenampakan'] ?? '-'); ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <tr><td colspan="7" class="text-center">Tidak ada data sensori</td></tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
                                 </td>
                                 <td><?= $val->tindakan; ?></td>
                                 <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>

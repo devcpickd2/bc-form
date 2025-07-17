@@ -189,4 +189,18 @@ class Pegawai_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('pegawai');
 	}
+
+	public function get_plant_uuid_by_user($uuid)
+	{
+		$this->db->select('plant');
+		$this->db->from('pegawai');
+		$this->db->where('uuid', $uuid);
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			return $query->row()->plant;
+		}
+		return null;
+	}
+
 }

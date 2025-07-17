@@ -63,52 +63,34 @@
                         <div class="invalid-feedback <?= !empty(form_error('shift')) ? 'd-block' : '' ; ?> "><?= form_error('shift') ?></div>
                     </div> 
                 </div>
-<!--                 <div class="form-group row">
-                 <div class="col-sm-6">
-                    <label class="form-label font-weight-bold">Lokasi</label>
-                    <select name="lokasi"  id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
-                        <option value="">-- Pilih Lokasi --</option>
-                        <option value="Area Pengayakan" <?= set_select('lokasi', 'Area Pengayakan') ?>>Area Pengayakan</option>
-                        <option value="Area Premix" <?= set_select('lokasi', 'Area Premix') ?>>Area Premix</option>
-                        <option value="Area Mixing" <?= set_select('lokasi', 'Area Mixing') ?>>Area Mixing</option>
-                        <option value="Area Proofing" <?= set_select('lokasi', 'Area Proofing') ?>>Area Proofing</option>
-                        <option value="Area Electric Baking" <?= set_select('lokasi', 'Area Electric Baking') ?>>Area Electric Baking</option>
-                        <option value="Area Aging" <?= set_select('lokasi', 'Area Aging') ?>>Area Aging</option>
-                        <option value="Area Grinder" <?= set_select('lokasi', 'Area Grinder') ?>>Area Grinder</option>
-                        <option value="Area Packing" <?= set_select('lokasi', 'Area Packing') ?>>Area Packing</option>
-                        <option value="Area Pencucian" <?= set_select('lokasi', 'Area Pencucian') ?>>Area Pencucian</option>
-                    </select>
-                    <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
-                        <?= form_error('lokasi') ?>
-                    </div>
-                </div>
-            </div> -->
-            <div class="form-group row">
-                <div class="col-sm-6">
-                    <label class="form-label font-weight-bold">Plant</label>
-                    <select name="plant" id="plantDropdown" class="form-control <?= form_error('plant') ? 'is-invalid' : '' ?>">
-                        <option value="">-- Pilih Plant --</option>
-                        <option value="Cikande" <?= set_select('plant', 'Cikande') ?>>Cikande</option>
-                        <option value="Salatiga" <?= set_select('plant', 'Salatiga') ?>>Salatiga</option>
-                    </select>
-                    <div class="invalid-feedback <?= form_error('plant') ? 'd-block' : '' ?>">
-                        <?= form_error('plant') ?>
-                    </div>
-                </div>
-            </div>
+                <?php
+                $plant_uuid = $this->session->userdata('plant');
+                $plant_map = [
+                    '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
+                    '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
+                ];
+                $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+                ?>
 
-            <div class="form-group row">
-                <div class="col-sm-6">
-                    <label class="form-label font-weight-bold">Lokasi</label>
-                    <select name="lokasi" id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
-                        <option value="">-- Pilih Lokasi --</option>
-                    </select>
-                    <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
-                        <?= form_error('lokasi') ?>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Plant</label>
+                        <input type="text" class="form-control" value="<?= $plant_name ?>" readonly>
+                        <input type="hidden" name="plant" id="plantHidden" value="<?= $plant_name ?>">
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Lokasi</label>
+                        <select name="lokasi" id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
+                            <option value="">-- Pilih Lokasi --</option>
+                        </select>
+                        <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
+                            <?= form_error('lokasi') ?>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <hr>
+
+                <hr>
 
 <!-- area pengayakan -->
 <div id="form-pengayakan" class="form-area d-none">
@@ -1401,23 +1383,19 @@
         ]
     };
 
-    const plantDropdown = document.getElementById('plantDropdown');
+    const plantHiddenInput = document.getElementById('plantHidden'); // input hidden
     const lokasiDropdown = document.getElementById('lokasiDropdown');
 
-    // Fungsi untuk mengisi ulang opsi lokasi
     function updateLokasiOptions() {
-        const selectedPlant = plantDropdown.value;
+        const selectedPlant = plantHiddenInput.value.trim();
         const lokasiList = lokasiOptions[selectedPlant] || [];
 
-        // Kosongkan opsi sebelumnya
         lokasiDropdown.innerHTML = '<option value="">-- Pilih Lokasi --</option>';
 
-        // Tambahkan opsi baru
         lokasiList.forEach(lokasi => {
             const option = document.createElement('option');
             option.value = lokasi;
             option.textContent = lokasi;
-            // Simpan nilai sebelumnya jika form gagal validasi
             if ("<?= set_value('lokasi') ?>" === lokasi) {
                 option.selected = true;
             }
@@ -1425,11 +1403,7 @@
         });
     }
 
-    // Jalankan saat pertama kali halaman dimuat
     window.addEventListener('DOMContentLoaded', updateLokasiOptions);
-
-    // Jalankan saat dropdown Plant berubah
-    plantDropdown.addEventListener('change', updateLokasiOptions);
 </script>
 
 <script>

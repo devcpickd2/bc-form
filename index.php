@@ -312,4 +312,6 @@ switch (ENVIRONMENT)
  *
  * And away we go...
  */
+// Load Composer Autoloader
+require_once APPPATH . '../vendor/autoload.php';
 require_once BASEPATH.'core/CodeIgniter.php';

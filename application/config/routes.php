@@ -485,3 +485,15 @@ $route['pecahbelah/diketahui'] = 'form/pecahbelah/diketahui';
 $route['pecahbelah/statusprod/(:any)'] = 'form/pecahbelah/statusprod/$1';
 $route['pecahbelah/check/(:any)'] = 'form/pecahbelah/check/$1';
 $route['pecahbelah/delete/(:any)'] = 'form/pecahbelah/delete/$1';
+
+$route['suhu'] = 'form/suhu';
+$route['suhu/tambah'] = 'form/suhu/tambah';
+$route['suhu/detail/(:any)'] = 'form/suhu/detail/$1';
+$route['suhu/edit/(:any)'] = 'form/suhu/edit/$1';
+$route['suhu/verifikasi'] = 'form/suhu/verifikasi';
+$route['suhu/status/(:any)'] = 'form/suhu/status/$1';
+$route['suhu/cetak'] = 'form/suhu/cetak';
+$route['suhu/diketahui'] = 'form/suhu/diketahui';
+$route['suhu/statusprod/(:any)'] = 'form/suhu/statusprod/$1';
+$route['suhu/delete/(:any)'] = 'form/suhu/delete/$1';
+$route['suhu/export-excel'] = 'form/suhu/export_excel';

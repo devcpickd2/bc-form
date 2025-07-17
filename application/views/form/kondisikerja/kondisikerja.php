@@ -48,7 +48,7 @@
                             <td>7. Higiene karyawan tidak sesuai GMP</td>
                         </tr>
                         <tr>
-                            <td>4. Kosmetik</td>
+                            <td>4. Noda (karat, cat, tinta)</td>
                             <td></td>
                         </tr>
                     </tbody>

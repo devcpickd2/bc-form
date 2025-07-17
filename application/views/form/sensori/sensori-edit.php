@@ -99,7 +99,7 @@
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-primary mt-2" id="add-sensori">+ Tambah Produk</button>
+                    <button type="button" class="btn btn-primary mt-2" id="add-sensori">+ Tambah Kode</button>
                     <br>
 
                     <hr>

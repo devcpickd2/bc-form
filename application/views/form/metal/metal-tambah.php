@@ -77,42 +77,65 @@
                         </div>
                     </div>
                     <hr>
+                    <?php
+                    $plant_uuid = $this->session->userdata('plant');
+                    $plant_map = [
+                        '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande 2 Bread Crumb',
+                        '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga Bread Crumb'
+                    ];
+
+                    $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : 'unknown';
+                    ?>
+
                     <label class="form-label font-weight-bold">STD Spesimen</label>
                     <div class="form-group row">
+                        <!-- Standar Fe -->
                         <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Standar Fe</label>
                             <select name="std_fe" class="form-control <?= form_error('std_fe') ? 'is-invalid' : '' ?>">
-                                <option value="">-- Standar Fe --</option>
-                                <option value="1.5 mm" <?= set_value('std_fe') == '1.5 mm' ? 'selected' : '' ?>>1.5 mm</option>
-                                <option value="2.5 mm" <?= set_value('std_fe') == '2.5 mm' ? 'selected' : '' ?>>2.5 mm</option>
+                                <?php if ($plant_name == 'Cikande 2 Bread Crumb'): ?>
+                                    <option value="2.5 mm" <?= set_value('std_fe') == '2.5 mm' ? 'selected' : '' ?>>2.5 mm</option>
+                                <?php elseif ($plant_name == 'Salatiga Bread Crumb'): ?>
+                                    <option value="1.5 mm" <?= set_value('std_fe') == '1.5 mm' ? 'selected' : '' ?>>1.5 mm</option>
+                                <?php endif; ?>
                             </select>
                             <div class="invalid-feedback <?= form_error('std_fe') ? 'd-block' : '' ?>">
                                 <?= form_error('std_fe') ?>
                             </div>
                         </div>
+
+                        <!-- Standar Non Fe -->
                         <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Standar Non Fe</label>
                             <select name="std_nonfe" class="form-control <?= form_error('std_nonfe') ? 'is-invalid' : '' ?>">
-                                <option value="">-- Standar Non Fe --</option>
-                                <option value="2.0 mm" <?= set_value('std_nonfe') == '2.0 mm' ? 'selected' : '' ?>>2.0 mm</option>
-                                <option value="3.0 mm" <?= set_value('std_nonfe') == '3.0 mm' ? 'selected' : '' ?>>3.0 mm</option>
+                                <?php if ($plant_name == 'Cikande 2 Bread Crumb'): ?>
+                                    <option value="3.0 mm" <?= set_value('std_nonfe') == '3.0 mm' ? 'selected' : '' ?>>3.0 mm</option>
+                                <?php elseif ($plant_name == 'Salatiga Bread Crumb'): ?>
+                                    <option value="2.0 mm" <?= set_value('std_nonfe') == '2.0 mm' ? 'selected' : '' ?>>2.0 mm</option>
+                                <?php endif; ?>
                             </select>
                             <div class="invalid-feedback <?= form_error('std_nonfe') ? 'd-block' : '' ?>">
                                 <?= form_error('std_nonfe') ?>
                             </div>
                         </div>
+
+                        <!-- Standar SUS 304 -->
                         <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Standar SUS 304</label>
                             <select name="std_sus304" class="form-control <?= form_error('std_sus304') ? 'is-invalid' : '' ?>">
-                                <option value="">-- Standar SUS 304 --</option>
-                                <option value="2.5 mm" <?= set_value('std_sus304') == '2.5 mm' ? 'selected' : '' ?>>2.5 mm</option>
-                                <option value="3.0 mm" <?= set_value('std_sus304') == '3.0 mm' ? 'selected' : '' ?>>3.0 mm</option>
+                                <?php if ($plant_name == 'Cikande 2 Bread Crumb'): ?>
+                                    <option value="3.0 mm" <?= set_value('std_sus304') == '3.0 mm' ? 'selected' : '' ?>>3.0 mm</option>
+                                <?php elseif ($plant_name == 'Salatiga Bread Crumb'): ?>
+                                    <option value="2.5 mm" <?= set_value('std_sus304') == '2.5 mm' ? 'selected' : '' ?>>2.5 mm</option>
+                                <?php endif; ?>
                             </select>
                             <div class="invalid-feedback <?= form_error('std_sus304') ? 'd-block' : '' ?>">
                                 <?= form_error('std_sus304') ?>
                             </div>
                         </div>
                     </div>
+
+
                     <div class="form-group row">
                         <div class="col-sm-3">
                             <div>
