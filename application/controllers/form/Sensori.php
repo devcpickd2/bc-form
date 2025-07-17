@@ -270,23 +270,13 @@ class Sensori extends CI_Controller {
 		function formatStatus($status) {
 			return $status == "Ok" ? "✓" : "✗";
 		}
-
 		foreach ($sensori_data as $sensori) {
 			$produk = json_decode($sensori->produk);
 
 			if ($produk && is_array($produk)) {
 				$rowCount = count($produk);
 				$rowHeight = 7;
-				$totalHeight = $rowCount * $rowHeight;
 
-				$x = $pdf->GetX();
-				$y = $pdf->GetY(); 
-
-				$pdf->SetFont('times', '', 8);
-				$pdf->MultiCell(25, $totalHeight, $sensori->nama_produk, 1, 'C');
-				$pdf->SetXY($x + 25, $y); 
-
-				$first = true;
 				foreach ($produk as $index => $item) {
 					$kode_produksi = $item->kode_produksi ?? '-';
 					$best_before = $item->best_before ?? '-';
@@ -297,8 +287,19 @@ class Sensori extends CI_Controller {
 					$kenampakan = $item->kenampakan ?? '-';
 
 					$pdf->SetFont('times', '', 8);
+
+            // Kolom: Nama Produk (hanya di baris pertama)
+					if ($index == 0) {
+						$pdf->Cell(25, $rowHeight, $sensori->nama_produk, 1, 0, 'C');
+					} else {
+						$pdf->Cell(25, $rowHeight, '', 1, 0);
+					}
+
+            // Kolom: Kode Produksi & Best Before
 					$pdf->Cell(25, $rowHeight, $kode_produksi, 1, 0, 'C');
 					$pdf->Cell(25, $rowHeight, $best_before, 1, 0, 'C');
+
+            // Kolom: Sensori
 					$pdf->SetFont('dejavusans', '', 8);
 					$pdf->Cell(15, $rowHeight, formatStatus($warna), 1, 0, 'C');    
 					$pdf->Cell(15, $rowHeight, formatStatus($tekstur), 1, 0, 'C');
@@ -306,24 +307,21 @@ class Sensori extends CI_Controller {
 					$pdf->Cell(15, $rowHeight, formatStatus($aroma), 1, 0, 'C');
 					$pdf->Cell(15, $rowHeight, formatStatus($kenampakan), 1, 0, 'C');
 
-					if ($first) {
-						$x2 = $pdf->GetX();
-						$y2 = $pdf->GetY();
-						$pdf->SetFont('times', '', 8);
-						$pdf->MultiCell(26, $totalHeight, $sensori->tindakan, 1, 'C');
-						$pdf->SetXY($x2 + 26, $y2);
-						$pdf->MultiCell(15, $totalHeight, $sensori->username, 1, 'C');
-						$pdf->SetXY($x, $y + $rowHeight); 
-						$pdf->SetX($x + 25); 
-						$first = false;
+            // Kolom: Tindakan Koreksi dan QC (hanya di baris pertama)
+					$pdf->SetFont('times', '', 8);
+					if ($index == 0) {
+						$pdf->Cell(26, $rowHeight, $sensori->tindakan, 1, 0, 'C');
+						$pdf->Cell(15, $rowHeight, $sensori->username, 1, 0, 'C');
 					} else {
-						$pdf->Ln($rowHeight);
-						$pdf->SetX($x + 25); 
+						$pdf->Cell(26, $rowHeight, '', 1, 0); 
+						$pdf->Cell(15, $rowHeight, '', 1, 0); 
 					}
+
+					$pdf->Ln($rowHeight);
 				}
 			}
 		}
-
+		
 		$pdf->SetY($pdf->GetY() + 3); 
 		$pdf->SetFont('dejavusans', '', 6);
 		$pdf->MultiCell(0, 10, "✓ : Ok, tidak ditemukan ketidaksesuaian atau penyimpanan sensori produk\n✗ : Tidak Ok, ditemukan ketidaksesuaian atau penyimpanan sensori produk", 0, 'L');

@@ -6,7 +6,6 @@ use Ramsey\Uuid\Uuid;
 class Larutan_model extends CI_Model {
 
 	// protected $table = 'larutan';
-	
 	public function rules()
 	{
 		return [
@@ -19,133 +18,96 @@ class Larutan_model extends CI_Model {
 				'field' => 'shift',
 				'label' => 'Shift',
 				'rules' => 'required'
-			],
-			[
-				'field' => 'nama_bahan',
-				'label' => 'Material Name',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'kadar',
-				'label' => 'Desired Level',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'bahan_kimia',
-				'label' => 'Chemicals Material'
-			],
-			[
-				'field' => 'air_bersih',
-				'label' => 'Clean Water'
-			],
-			[
-				'field' => 'volume_akhir',
-				'label' => 'Last Volume'
-			],
-			[
-				'field' => 'kebutuhan',
-				'label' => 'Requirement'
-			],
-			[
-				'field' => 'keterangan',
-				'label' => 'Notes'
-			],
-			[
-				'field' => 'tindakan',
-				'label' => 'Corrective Action'
-			],
-			[
-				'field' => 'verifikasi',
-				'label' => 'Verification'
-			],
-			[
-				'field' => 'catatan',
-				'label' => 'Notes'
 			]
 		];
 	}
 
 	public function insert()
 	{
-		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$nama_bahan = $this->input->post('nama_bahan');
-		$kadar = $this->input->post('kadar');
-		$bahan_kimia = $this->input->post('bahan_kimia');
-		$air_bersih = $this->input->post('air_bersih');
-		$volume_akhir = $this->input->post('volume_akhir');
-		$kebutuhan = $this->input->post('kebutuhan');
-		$keterangan = $this->input->post('keterangan');
-		$tindakan = $this->input->post('tindakan');
-		$verifikasi = $this->input->post('verifikasi');
 		$catatan = $this->input->post('catatan');
 		$status_spv = "0";
 		$status_produksi = "0";
 
-		$data = array(
-			'uuid' => $uuid,
-			'username' => $username,
-			'plant' => $plant,
-			'date' => $date,
-			'shift' => $shift,
-			'nama_bahan' => $nama_bahan,
-			'kadar' => $kadar,
-			'bahan_kimia' => $bahan_kimia,
-			'air_bersih' => $air_bersih,
-			'volume_akhir' => $volume_akhir,
-			'kebutuhan' => $kebutuhan,
-			'keterangan' => $keterangan,
-			'tindakan' => $tindakan,
-			'verifikasi' => $verifikasi,
-			'catatan' => $catatan,
-			'status_spv' => $status_spv,
-			'status_produksi' => $status_produksi
-		);
-
-		$this->db->insert('larutan', $data);
-		return ($this->db->affected_rows() > 0) ? true : false;
-	}
-
-	public function update($uuid)
-	{
-		$username = $this->session->userdata('username');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
 		$nama_bahan = $this->input->post('nama_bahan');
 		$kadar = $this->input->post('kadar');
 		$bahan_kimia = $this->input->post('bahan_kimia');
 		$air_bersih = $this->input->post('air_bersih');
 		$volume_akhir = $this->input->post('volume_akhir');
 		$kebutuhan = $this->input->post('kebutuhan');
-		$keterangan = $this->input->post('keterangan');
+		$keterangan = $this->input->post('keterangan'); 
 		$tindakan = $this->input->post('tindakan');
 		$verifikasi = $this->input->post('verifikasi');
-		$catatan = $this->input->post('catatan');
 
+		$data = [];
+
+		for ($i = 0; $i < count($nama_bahan); $i++) {
+			$data[] = [
+				'uuid' => Uuid::uuid4()->toString(),
+				'username' => $username,
+				'plant' => $plant,
+				'date' => $date,
+				'shift' => $shift,
+				'nama_bahan' => $nama_bahan[$i],
+				'kadar' => $kadar[$i],
+				'bahan_kimia' => $bahan_kimia[$i],
+				'air_bersih' => $air_bersih[$i],
+				'volume_akhir' => $volume_akhir[$i],
+				'kebutuhan' => $kebutuhan[$i],
+				'keterangan' => isset($keterangan[$i]) ? 'Sesuai' : '',
+				'tindakan' => $tindakan[$i],
+				'verifikasi' => $verifikasi[$i],
+				'catatan' => $catatan,
+				'status_spv' => $status_spv,
+				'status_produksi' => $status_produksi,
+				'created_at' => date('Y-m-d H:i:s') 
+			];
+		}
+
+		$this->db->insert_batch('larutan', $data);
+		return ($this->db->affected_rows() > 0);
+	}
+
+	public function update($uuid)
+	{
+		$username     = $this->session->userdata('username');
+		$plant        = $this->session->userdata('plant');
+		$date         = $this->input->post('date');
+		$shift        = $this->input->post('shift');
+		$nama_bahan   = $this->input->post('nama_bahan');
+		$kadar        = $this->input->post('kadar');
+		$bahan_kimia  = $this->input->post('bahan_kimia');
+		$air_bersih   = $this->input->post('air_bersih');
+		$volume_akhir = $this->input->post('volume_akhir');
+		$kebutuhan    = $this->input->post('kebutuhan');
+		$keterangan   = $this->input->post('keterangan') ? 'Sesuai' : 'Tidak Sesuai';
+		$tindakan     = $this->input->post('tindakan');
+		$verifikasi   = $this->input->post('verifikasi');
+		$catatan      = $this->input->post('catatan');
 
 		$data = array(
-			'username' => $username,
-			'date' => $date,
-			'shift' => $shift,
-			'nama_bahan' => $nama_bahan,
-			'kadar' => $kadar,
-			'bahan_kimia' => $bahan_kimia,
-			'air_bersih' => $air_bersih,
+			'username'     => $username,
+			'plant'        => $plant,
+			'date'         => $date,
+			'shift'        => $shift,
+			'nama_bahan'   => $nama_bahan,
+			'kadar'        => $kadar,
+			'bahan_kimia'  => $bahan_kimia,
+			'air_bersih'   => $air_bersih,
 			'volume_akhir' => $volume_akhir,
-			'kebutuhan' => $kebutuhan,
-			'keterangan' => $keterangan,
-			'tindakan' => $tindakan,
-			'verifikasi' => $verifikasi,
-			'catatan' => $catatan,
-			
-			'modified_at' => date("Y-m-d H:i:s")
+			'kebutuhan'    => $kebutuhan,
+			'keterangan'   => $keterangan,
+			'tindakan'     => $tindakan,
+			'verifikasi'   => $verifikasi,
+			'catatan'      => $catatan,
+			'modified_at'  => date("Y-m-d H:i:s")
 		);
 
 		$this->db->update('larutan', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		return ($this->db->affected_rows() > 0) ? true : false;
 	}
 
 	public function rules_verifikasi()
@@ -284,4 +246,29 @@ class Larutan_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('larutan');
 	}
+
+	public function get_by_date($tanggal)
+	{
+		$plant = $this->session->userdata('plant');
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('plant', $plant); 
+		$this->db->order_by('created_at', 'ASC');
+		return $this->db->get('larutan')->result();
+	}
+
+	public function get_by_date_verif($tanggal)
+	{
+		$plant = $this->session->userdata('plant');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, shift, status_produksi, tgl_update_produksi');
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('plant', $plant);
+		// $this->db->where('status_spv', 1);
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('larutan');
+
+		return $query->row(); 
+	}
+
+
 }

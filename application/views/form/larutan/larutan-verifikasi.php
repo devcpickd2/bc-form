@@ -101,16 +101,33 @@
                     <input type="hidden" name="checkbox[]" id="selected_items">
                 </form>
             </div>
-
             <br>
             <hr>
-            <div class="form-group">
-                <label>Pilih Data yang akan dicetak:</label>
-                <br>
-                <button type="submit" form="form_cetak_pdf" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
-            </div>
+            <form action="<?= base_url('larutan/cetak') ?>" method="post" class="mb-4" id="form_cetak_pdf">
+                <div class="form-group row">
+                    <label class="col-form-label font-weight-bold">Pilih Tanggal :</label>
+                    <div class="col-sm-3">
+                        <select name="tanggal" class="form-control" required>
+                            <option value="">-- Pilih Tanggal --</option>
+                            <?php
+                            $tanggalList = [];
+                            foreach ($larutan as $item) {
+                                $dateFormatted = date('Y-m-d', strtotime($item->date));
+                                if (!in_array($dateFormatted, $tanggalList)) {
+                                    $tanggalList[] = $dateFormatted;
+                                    echo '<option value="' . $dateFormatted . '">' . date('d-m-Y', strtotime($dateFormatted)) . '</option>';
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

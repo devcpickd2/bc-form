@@ -41,7 +41,7 @@
                                                 <td><b>Kondisi</b></td>
                                                 <td><b>Problem</b></td>
                                                 <td colspan="2"><b>Tindakan Koreksi</b></td>
-                                                <td colspan="2"><b>Tindakan Koreksi</b></td>
+                                                <td colspan="2"><b>Verifikasi</b></td>
                                             </tr>
                                             <?php
                                             $nilai_keterangan = [
@@ -70,17 +70,17 @@
                                             </tr>
                                             <tr>
                                                 <td>Kebersihan Peralatan</td>
-                                                <td><?= tampilkan_kondisi($kondisikerja->kondisi_kebersihan, $nilai_keterangan); ?></td>
-                                                <td><?= $kondisikerja->problem_kebersihan; ?></td>
-                                                <td colspan="2"><?= $kondisikerja->tindakan_kebersihan; ?></td>
-                                                <td colspan="2"><?= $kondisikerja->verifikasi_kebersihan; ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Kebersihan Area/Ruang</td>
                                                 <td><?= tampilkan_kondisi($kondisikerja->kondisi_peralatan, $nilai_keterangan); ?></td>
                                                 <td><?= $kondisikerja->problem_peralatan; ?></td>
                                                 <td colspan="2"><?= $kondisikerja->tindakan_peralatan; ?></td>
                                                 <td colspan="2"><?= $kondisikerja->verifikasi_peralatan; ?></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Kebersihan Area/Ruang</td>
+                                                <td><?= tampilkan_kondisi($kondisikerja->kondisi_kebersihan, $nilai_keterangan); ?></td>
+                                                <td><?= $kondisikerja->problem_kebersihan; ?></td>
+                                                <td colspan="2"><?= $kondisikerja->tindakan_kebersihan; ?></td>
+                                                <td colspan="2"><?= $kondisikerja->verifikasi_kebersihan; ?></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align:center;" colspan="7">VERIFIKASI</th>

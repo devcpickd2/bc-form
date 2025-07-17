@@ -45,7 +45,7 @@
                 <div class="form-group row">
                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Jam Mulai</label>
-                        <input type="time" name="stall_jam_mulai" class="form-control <?= form_error('stall_jam_mulai') ? 'invalid' : '' ?>" value="<?= $produksi->stall_jam_mulai; ?>">
+                        <input type="time" name="stall_jam_mulai" class="form-control <?= form_error('stall_jam_mulai') ? 'invalid' : '' ?>" value="<?= $produksi->fermen_jam_selesai; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('stall_jam_mulai')) ? 'd-block' : '' ; ?>">
                             <?= form_error('stall_jam_mulai') ?>
                         </div>

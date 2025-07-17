@@ -189,7 +189,7 @@ class Pengayakan extends CI_Controller {
 
 	public function cetak()
 	{
-		$this->load->model('Pegawai_model');
+		$this->load->model('pegawai_model');
 
 		$selected_items = $this->input->post('checkbox'); 
 		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));

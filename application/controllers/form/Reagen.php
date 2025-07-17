@@ -83,6 +83,7 @@ class Reagen extends CI_Controller {
 
 		$data = array(
 			'reagen' => $this->reagen_model->get_by_uuid($uuid),
+			'no_lot_list' => $this->reagen_model->get_all_no_lot(),
 			'active_nav' => 'reagen');
 
 		$this->load->view('partials/head', $data);

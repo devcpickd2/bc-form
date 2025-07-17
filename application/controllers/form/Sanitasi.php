@@ -195,65 +195,70 @@ class Sanitasi extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
-
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
-
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+    // Ambil tanggal dari form POST
+		$date = $this->input->post('date');
+		if (empty($date)) {
+			show_error('Tanggal belum dipilih', 404);
 		}
 
-		$sanitasi_data = $this->sanitasi_model->get_by_uuid_sanitasi($selected_items);
-		$sanitasi_data_verif = $this->sanitasi_model->get_by_uuid_sanitasi_verif($selected_items);
-		$data['sanitasi'] = $sanitasi_data_verif;
-
-		if (!$data['sanitasi']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
+    // Ambil plant dari session user login
+		$plant = $this->session->userdata('plant');
+		if (empty($plant)) {
+			show_error('Plant tidak ditemukan di session.', 403);
 		}
 
+    // Load model dan ambil data sanitasi hanya untuk plant ini
+		$this->load->model('sanitasi_model');
+		$sanitasi_data = $this->sanitasi_model->get_by_date($date, $plant);
+
+		if (empty($sanitasi_data)) {
+			show_error('Data tidak ditemukan untuk tanggal ini atau bukan milik plant Anda.', 404);
+		}
+
+    // Ambil nama lengkap user yang terlibat
 		$this->load->model('pegawai_model');
-		$nama_qc = $this->pegawai_model->get_nama_lengkap($data['sanitasi']->username);
-		$nama_prod = $this->pegawai_model->get_nama_lengkap($data['sanitasi']->nama_produksi);
-		$nama_spv = $this->pegawai_model->get_nama_lengkap($data['sanitasi']->nama_spv);
+		$nama_qc   = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->username);
+		$nama_prod = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->nama_produksi);
+		$nama_spv  = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->nama_spv);
 
+    // Inisialisasi TCPDF
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
-
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
-		$pdf->setPrintHeader(false); 
+		$pdf->setPrintHeader(false);
 		$pdf->SetMargins(10, 14, 10);
 		$pdf->AddPage();
 		$pdf->SetFont('times', 'B', 12);
 
+    // Tambahkan logo jika ada
 		$logo_path = FCPATH . 'assets/img/logo.jpg';
 		if (file_exists($logo_path)) {
 			$pdf->Image($logo_path, 10, 10, 38);
-		} else {
-			$pdf->Write(7, "Logo tidak ditemukan\n");
 		}
 
-		$pdf->Write(7, "\n");
+    // Judul
+		$pdf->Ln(10);
 		$pdf->MultiCell(0, 5, 'PEMERIKSAAN SANITASI', 0, 'C');
 		$pdf->Ln(4);
 
-		$tanggal = $data['sanitasi']->date;
-		$datetime = new DateTime($tanggal);
-		$formatted_date = strftime('%A, %d %B %Y', $datetime->getTimestamp());
-		$formatted_date2 = strftime('%d %B %Y', $datetime->getTimestamp());
+		$datetime         = new DateTime($date);
+		$formatted_date   = $datetime->format('l, d F Y');
+		$formatted_date2  = $datetime->format('d F Y');
 
 		$pdf->SetFont('times', '', 9);
 		$pdf->SetX(10);
 		$pdf->Write(0, 'Hari / Tanggal: ' . $formatted_date);
 		$pdf->SetX($pdf->GetX() + 20);
-		$pdf->Write(0, 'Shift: ' . $data['sanitasi']->shift);
-		$pdf->Ln(4);
+		$pdf->Write(0, 'Shift: ' . $sanitasi_data[0]->shift);
+		$pdf->Ln(5);
 
+    // Header Tabel
 		$pdf->SetFont('times', '', 9);
 		$pdf->Cell(15, 10, 'Pukul', 1, 0, 'C');
 		$pdf->Cell(30, 10, 'Area', 1, 0, 'C');
 		$pdf->Cell(50, 5, 'Kadar Klorin (ppm)', 1, 0, 'C');
 		$pdf->Cell(20, 10, 'Suhu Air', 1, 0, 'C');
-		$pdf->Cell(37 ,10, 'Keterangan', 1, 0, 'C');
-		$pdf->Cell(40,10, 'Tindakan Koreksi', 1, 0, 'C');
+		$pdf->Cell(37, 10, 'Keterangan', 1, 0, 'C');
+		$pdf->Cell(40, 10, 'Tindakan Koreksi', 1, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 		$pdf->Cell(45, 5, '', 0, 0, 'L');
 		$pdf->Cell(25, 5, 'Standar', 1, 0, 'C');
@@ -261,103 +266,92 @@ class Sanitasi extends CI_Controller {
 		$pdf->Cell(77, 0, '', 0, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
+    // Isi Tabel
 		foreach ($sanitasi_data as $sanitasi_entry) {
-			$time = $sanitasi_entry->waktu;
-			$created_time = (new DateTime($time))->format('H:i');
+			$time = (new DateTime($sanitasi_entry->waktu))->format('H:i');
 			$sanitasi_areas = json_decode($sanitasi_entry->area);
 
 			if ($sanitasi_areas && is_array($sanitasi_areas)) {
-				$first_row = true; 
+				$first_row = true;
 				foreach ($sanitasi_areas as $sanitasi) {
-					$sub_area   = $sanitasi->sub_area ?? '-';
-					$standar    = $sanitasi->standar ?? '-';
-					$aktual     = $sanitasi->aktual ?? '-';
-					$suhu_air   = $sanitasi->suhu_air ?? '-';
-					$keterangan = $sanitasi->keterangan ?? '-';
-					$tindakan   = $sanitasi->tindakan ?? '-';
-
 					$pdf->SetFont('times', '', 8);
-					$pdf->Cell(15, 5, $first_row ? $created_time : '', 1, 0, 'C');
+					$pdf->Cell(15, 5, $first_row ? $time : '', 1, 0, 'C');
 					$first_row = false;
-					$pdf->Cell(30, 5, "$sub_area", 1, 0, 'L');
-					$pdf->Cell(25, 5, "$standar", 1, 0, 'C');
-					$pdf->Cell(25, 5, "$aktual", 1, 0, 'C');
-					$pdf->Cell(20, 5, "$suhu_air", 1, 0, 'C');
-					$pdf->Cell(37, 5, "$keterangan", 1, 0, 'C');
-					$pdf->Cell(40, 5, "$tindakan", 1, 1, 'C');
+					$pdf->Cell(30, 5, $sanitasi->sub_area ?? '-', 1, 0, 'L');
+					$pdf->Cell(25, 5, $sanitasi->standar ?? '-', 1, 0, 'C');
+					$pdf->Cell(25, 5, $sanitasi->aktual ?? '-', 1, 0, 'C');
+					$pdf->Cell(20, 5, $sanitasi->suhu_air ?? '-', 1, 0, 'C');
+					$pdf->Cell(37, 5, $sanitasi->keterangan ?? '-', 1, 0, 'C');
+					$pdf->Cell(40, 5, $sanitasi->tindakan ?? '-', 1, 1, 'C');
 				}
 			}
 		}
 
-		$pdf->SetY($pdf->GetY() + 2); 
-		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L'); 
+    // Catatan
+		$pdf->Ln(2);
+		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
 		foreach ($sanitasi_data as $item) {
 			if (!empty($item->catatan)) {
-				$pdf->Cell(13, 0, '', 0, 0, 'L'); 
 				$pdf->Cell(13, 0, ' - ' . $item->catatan, 0, 1, 'L');
 			}
 		}
 
-		$y_after_keterangan = $pdf->GetY() + 2;
-		$status_verifikasi = true;
+    // Tanda Tangan + QR Code
+		$y_now = $pdf->GetY() + 5;
+		$status_spv_oke = true;
 		foreach ($sanitasi_data as $item) {
 			if ($item->status_spv != '1') {
-				$status_verifikasi = false;
-				break; 
+				$status_spv_oke = false;
+				break;
 			}
 		}
 
-		if ($status_verifikasi) {
+		if ($status_spv_oke) {
 			$pdf->SetFont('times', '', 8);
-			$pdf->SetTextColor(0, 0, 0);
-			$y_verifikasi = $y_after_keterangan;
 
-			$pdf->SetXY(25, $y_verifikasi + 5);
+        // Dibuat oleh
+			$pdf->SetXY(25, $y_now);
 			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_verifikasi + 10);
+			$pdf->SetXY(25, $y_now + 10);
 			$pdf->SetFont('times', 'U', 8);
 			$pdf->Cell(35, 5, $nama_qc, 0, 1, 'C');
 			$pdf->SetFont('times', '', 8);
 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
 
-			$pdf->SetXY(90, $y_verifikasi + 5);
+        // Diketahui oleh
+			$pdf->SetXY(90, $y_now);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-			$pdf->SetXY(90, $y_verifikasi + 10);
-
-			if ($data['sanitasi']->status_produksi == 1 && !empty($data['sanitasi']->nama_produksi)) {
-				$tanggal_update_prod = $data['sanitasi']->tgl_update_produksi;
-				$update_tanggal_prod = (new DateTime($tanggal_update_prod))->format('d-m-Y | H:i');
-
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $nama_prod . "\nForeman/Forelady Produksi\n" . $update_tanggal_prod;
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			if (!empty($sanitasi_data[0]->tgl_update_produksi) && $sanitasi_data[0]->status_produksi == 1) {
+				$qr_text_prod = "Diketahui secara digital oleh,\n" . $nama_prod . "\nForeman Produksi\n" . (new DateTime($sanitasi_data[0]->tgl_update_produksi))->format('d-m-Y | H:i');
+				$pdf->write2DBarcode($qr_text_prod, 'QRCODE,L', 100, $y_now + 5, 15, 15, null, 'N');
+				$pdf->SetXY(90, $y_now + 20);
+				$pdf->Cell(35, 5, 'Foreman Produksi', 0, 0, 'C');
 			} else {
-				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->SetXY(90, $y_now + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
 
-			$pdf->SetXY(150, $y_verifikasi + 5);
+        // Disetujui oleh
+			$pdf->SetXY(150, $y_now);
 			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-
-			$tanggal_update = $data['sanitasi']->tgl_update_spv;
-			$update_tanggal = (new DateTime($tanggal_update))->format('d-m-Y | H:i');
-
-			$qr_text = "Diverifikasi secara digital oleh,\n" . $nama_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
-			$pdf->SetXY(150, $y_verifikasi + 24);
+			$qr_text_spv = "Diverifikasi secara digital oleh,\n" . $nama_spv . "\nSPV QC\n" . (new DateTime($sanitasi_data[0]->tgl_update_spv))->format('d-m-Y | H:i');
+			$pdf->write2DBarcode($qr_text_spv, 'QRCODE,L', 167, $y_now + 5, 15, 15, null, 'N');
+			$pdf->SetXY(150, $y_now + 20);
 			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
 		} else {
-			$pdf->SetTextColor(255, 0, 0); 
 			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(100, $y_after_keterangan);
+			$pdf->SetTextColor(255, 0, 0);
+			$pdf->SetXY(100, $y_now);
 			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
-		$pdf->setPrintFooter(false);
+    // Output PDF
 		$filename = "Sanitasi_{$formatted_date2}.pdf";
 		$pdf->Output($filename, 'I');
 	}
+
+
+
 
 }
 

@@ -228,4 +228,13 @@ class Reagen_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('reagen');
 	}
+
+	public function get_all_no_lot()
+	{
+		$this->db->select('no_lot');
+		$this->db->distinct();
+		$query = $this->db->get('reagen');
+		return $query->result_array(); 
+	}
+
 }

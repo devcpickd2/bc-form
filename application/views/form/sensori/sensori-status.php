@@ -39,7 +39,8 @@
                                     <th colspan="7" style="text-align:center;">Sensori Produk</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="2" style="text-align:center;">Warna</th>
+                                    <th colspan="2" style="text-align:center;">Kode Produksi / BB</th>
+                                    <th style="text-align:center;">Warna</th>
                                     <th style="text-align:center;">Tekstur</th>
                                     <th style="text-align:center;">Rasa</th>
                                     <th style="text-align:center;">Aroma</th>
@@ -48,7 +49,8 @@
                                 <?php 
                                 foreach ($sensori_produk as $row): ?>
                                     <tr>
-                                        <td colspan="2" style="text-align:center;">
+                                        <td colspan="2"><?= htmlspecialchars($row['kode_produksi']); ?> / <?= htmlspecialchars($row['best_before']); ?></td>
+                                        <td style="text-align:center;">
                                             <?= ($row['warna'] == 'Ok') ? '✔' : (($row['warna'] == 'Tidak Ok') ? '✘' : htmlspecialchars($row['warna'])) ?>
                                         </td>
                                         <td style="text-align:center;">

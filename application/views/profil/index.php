@@ -100,7 +100,7 @@
     </div>
 </div>
 </div>
-
+</div>
 <script>
     document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function () {
