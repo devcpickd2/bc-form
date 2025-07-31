@@ -290,25 +290,25 @@ class Analisis extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$analisis_data = $this->analisis_model->get_by_uuid_analisis($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$analisis_data_verif = $this->analisis_model->get_by_uuid_analisis_verif($selected_items);
+		$analisis_data = $this->analisis_model->get_by_date($tanggal, $plant); 
+		$analisis_data_verif = $this->analisis_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$analisis_data || !$analisis_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['analisis'] = $analisis_data_verif;
-
-
-		if (!$data['analisis']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
+		
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -426,7 +426,7 @@ class Analisis extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['analisis']->nama_lengkap_lab = $this->pegawai_model->get_nama_lengkap($data['analisis']->nama_lab);
 		$data['analisis']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['analisis']->nama_spv);
-		$data['analisis']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['analisis']->nama_produksi);
+		$data['analisis']->nama_lengkap_produksi = $data['analisis']->nama_produksi;
 
 		$pdf->SetY($pdf->GetY()); 
 		$pdf->SetFont('times', '', 7);
@@ -458,7 +458,7 @@ class Analisis extends CI_Controller {
 			$pdf->Cell(45, 5, 'Diketahui Oleh,', 0, 0, 'C');
 			if ($data['analisis']->status_produksi == 1 && !empty($data['analisis']->nama_produksi)) {
 				$update_tanggal_produksi = (new DateTime($data['analisis']->tgl_update_produksi))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['analisis']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['analisis']->nama_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
 				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 45, $y_verifikasi + 10, 15, 15, null, 'N');
 				$pdf->SetXY(30, $y_verifikasi + 25);
 				$pdf->Cell(45, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');

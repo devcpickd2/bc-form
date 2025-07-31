@@ -67,10 +67,11 @@ class Pengayakan_model extends CI_Model {
 
 	public function insert()
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
 		$uuid = Uuid::uuid4()->toString();
-
 		$username = $this->session->userdata('username');
-
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
@@ -83,7 +84,7 @@ class Pengayakan_model extends CI_Model {
 		$kba_benang = $this->input->post('kba_benang');
 		$kondisi = $this->input->post('kondisi');
 		$catatan = $this->input->post('catatan');
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_spv = "0";
 
 		$data = array(
@@ -103,6 +104,7 @@ class Pengayakan_model extends CI_Model {
 			'catatan' => $catatan,
 			'status_spv' => $status_spv,
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 		);
 
 		$this->db->insert('pengayakan', $data);
@@ -276,4 +278,45 @@ class Pengayakan_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('pengayakan');
 	}
+
+	public function get_by_date($tanggal, $plant = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('pengayakan');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+
+	public function get_last_verif_by_date($tanggal, $plant = null)
+	{
+		$this->db->select('nama_spv, tgl_update, username, nama_produksi, tgl_update_prod, status_produksi');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('pengayakan');
+
+		return $query->row();
+	}
+
 }

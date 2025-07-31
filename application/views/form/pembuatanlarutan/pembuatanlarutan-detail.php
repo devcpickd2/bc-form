@@ -1,129 +1,151 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Detail Pemeriksaan Pembuatan Larutan</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb"> 
-            <li class="breadcrumb-item">
-                <a href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('pembuatanlarutan'); ?>">
-                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Pembuatan Larutan</a>
-                </li>
-            </ol>
-        </nav>
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="form-group row">
-                    <div class="table-responsive">
-                        <div style="display: flex; gap: 20px; align-items: flex-start;">
-                            <div style="flex: 2;">
-                                <table class="table table-bordered" width="100%" cellspacing="0">
-                                    <thead>
-                                        <?php 
-                                        $datetime = new DateTime($pembuatanlarutan->date);
-                                        $datetime = $datetime->format('d-m-Y');
-                                        $datetime2 = new DateTime($pembuatanlarutan->expired);
-                                        $datetime2 = $datetime2->format('d-m-Y');
-                                        $timing = new DateTime($pembuatanlarutan->pukul);
-                                        $timing = $timing->format('H:i');
-                                        ?>
-                                        <tr>
-                                            <th style="text-align:center;" colspan="7">PEMERIKSAAN PEMBUATAN LARUTAN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="text-align:left;"><b>Tanggal: <?= $datetime; ?></b></td>
-                                            <td style="text-align:left;" colspan="6"><b>Jam: <?= $timing; ?></b></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Area</b></td>
-                                            <td colspan="6"><?= $pembuatanlarutan->area; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Nama Chemical</b></td>
-                                            <td colspan="6"><?= $pembuatanlarutan->nama_chemical; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Expired</b></td>
-                                            <td colspan="6"><?= $datetime2; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Konsentrasi Larutan (ppm)</b></td>
-                                            <td colspan="6"><?= $pembuatanlarutan->konsentrasi; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b></b></td>
-                                            <td><b>Larutan Beku</b></td>
-                                            <td colspan="5"><b>Air</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Pengenceran</b></td>
-                                            <td><?= $pembuatanlarutan->larutan_beku; ?></td>
-                                            <td colspan="5"><?= $pembuatanlarutan->air; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Catatan</td>
-                                            <td colspan="6"> <?= !empty($pembuatanlarutan->catatan) ? $pembuatanlarutan->catatan : 'Tidak ada'; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th style="text-align:center;" colspan="7">VERIFIKASI</th>
-                                        </tr>
-                                        <tr>
-                                            <td>QC</td>
-                                            <td colspan="6"><?= $pembuatanlarutan->username;?></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Disetujui Supervisor</td>
-                                            <td colspan="6"><?php
-                                            if ($pembuatanlarutan->status_spv == 0) {
-                                                echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                            } elseif ($pembuatanlarutan->status_spv == 1) {
-                                                echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                            } elseif ($pembuatanlarutan->status_spv == 2) {
-                                                echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                            }
-                                        ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Catatan Supervisor</td>
-                                        <td colspan="6"><?= !empty($pembuatanlarutan->catatan_spv) ? $pembuatanlarutan->catatan_spv : 'Tidak ada'; ?></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+    <h1 class="h3 mb-4 text-gray-800 font-weight-bold text-center">
+        Detail Pemeriksaan Pembuatan Larutan
+    </h1>
 
-                    </div>
-                </div>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a class="text-white" href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('pembuatanlarutan'); ?>">
+                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Larutan
+                </a>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Main Card -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <?php 
+                    $tanggal = (new DateTime($pembuatanlarutan->date))->format('d-m-Y');
+                    $expired = (new DateTime($pembuatanlarutan->expired))->format('d-m-Y');
+                    $jam = (new DateTime($pembuatanlarutan->pukul))->format('H:i');
+                ?>
+                <table class="table table-bordered table-style">
+                    <thead class="text-center font-weight-bold">
+                        <tr>
+                            <th colspan="7">PEMERIKSAAN PEMBUATAN LARUTAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tanggal</strong></td>
+                            <td colspan="2"><?= $tanggal; ?></td>
+                            <td><strong>Jam</strong></td>
+                            <td colspan="3"><?= $jam; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Area</strong></td>
+                            <td colspan="6"><?= htmlspecialchars($pembuatanlarutan->area); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nama Chemical</strong></td>
+                            <td colspan="6"><?= htmlspecialchars($pembuatanlarutan->nama_chemical); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Expired</strong></td>
+                            <td colspan="6"><?= $expired; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Konsentrasi Larutan (ppm)</strong></td>
+                            <td colspan="6"><?= htmlspecialchars($pembuatanlarutan->konsentrasi); ?></td>
+                        </tr>
+                        <tr class="text-center bg-light font-weight-bold">
+                            <td></td>
+                            <td>Larutan Beku</td>
+                            <td colspan="5">Air</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td><strong>Pengenceran</strong></td>
+                            <td><?= htmlspecialchars($pembuatanlarutan->larutan_beku); ?></td>
+                            <td colspan="5"><?= htmlspecialchars($pembuatanlarutan->air); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Catatan</strong></td>
+                            <td colspan="6"><?= !empty($pembuatanlarutan->catatan) ? htmlspecialchars($pembuatanlarutan->catatan) : 'Tidak ada'; ?></td>
+                        </tr>
+                        <tr class="table-primary text-center font-weight-bold">
+                            <td colspan="7">VERIFIKASI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>QC</strong></td>
+                            <td colspan="6"><?= htmlspecialchars($pembuatanlarutan->username); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disetujui Supervisor</strong></td>
+                            <td colspan="6">
+                                <?php
+                                    switch ($pembuatanlarutan->status_spv) {
+                                        case 1:
+                                            echo '<span class="text-success font-weight-bold">Verified</span>';
+                                            break;
+                                        case 2:
+                                            echo '<span class="text-danger font-weight-bold">Revision</span>';
+                                            break;
+                                        default:
+                                            echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                            break;
+                                    }
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Catatan Supervisor</strong></td>
+                            <td colspan="6"><?= !empty($pembuatanlarutan->catatan_spv) ? htmlspecialchars($pembuatanlarutan->catatan_spv) : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 </div>
-<style type="text/css">
+
+<!-- Custom CSS -->
+<style>
     .breadcrumb {
         background-color: #2E86C1;
+        padding: 10px 16px;
+        border-radius: 0.25rem;
     }
-    .no-border {
-        border: none;
-        box-shadow: none;
+
+    .breadcrumb a {
+        color: #fff;
+        font-weight: 500;
     }
-    .table {
-        width: 50%; 
-        font-size: 16px; 
-        margin: 0 auto; 
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
     }
-    .table, .table th, .table td {
-        border: none;
+
+    .table-style {
+        font-size: 15px;
+        width: 100%;
+        border-collapse: collapse;
     }
-    .table th, .table td {
-        padding: 6px 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        word-wrap: break-word;
-        white-space: normal !important;
+
+    .table-style th,
+    .table-style td {
+        padding: 10px 12px;
+        border: 1px solid #dee2e6;
+        vertical-align: middle;
+        word-break: break-word;
     }
-    .table td {
-        white-space: nowrap;
+
+    .table-style thead th {
+        background-color: #f8f9fa;
+    }
+
+    @media (max-width: 768px) {
+        .table-style th, .table-style td {
+            font-size: 13px;
+        }
+
+        h1.h3 {
+            font-size: 20px;
+        }
     }
 </style>
-
-

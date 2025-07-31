@@ -32,12 +32,8 @@
                     <thead>
                         <tr>
                             <th width="20px" class="text-center">No</th>
-                            <th>Tanggal / Shift</th>
-                            <th>Peralatan</th>
-                            <th>Kondisi</th>
-                            <th>Problem</th>
-                            <th>Tindakan Koreksi</th>
-                            <th>Produksi</th>
+                            <th>Tanggal</th>
+                            <th>Shift</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -51,22 +47,9 @@
                             ?>
                             <tr>
                                 <td class="text-center"><?= $no; ?></td>
-                                <td><?= $datetime . " / " . $val->shift; ?></td>
-                                <td><?= $val->peralatan; ?></td>
-                                <td><?= $val->kondisi; ?></td>
-                                <td><?= $val->problem; ?></td>
-                                <td><?= $val->tindakan; ?></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
+                                <td><?= $datetime; ?></td>
+                                <td><?= $val->shift; ?></td>
+
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {

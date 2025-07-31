@@ -1,141 +1,144 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Detail Pemeriksaan Kebersihan dan Sanitasi Setelah Perbaikan Mesin</h1>
+    <h1 class="h3 mb-3 text-gray-800 font-weight-bold text-center">Detail Pemeriksaan Kebersihan dan Sanitasi Setelah Perbaikan Mesin</h1>
+
+    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb"> 
+        <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('kebersihanmesin'); ?>">
-                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Kebersihan dan Sanitasi Setelah Perbaikan Mesin</a>
-                </li>
-            </ol>
-        </nav>
+                <a class="text-white" href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('kebersihanmesin'); ?>">
+                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan
+                </a>
+            </li>
+        </ol>
+    </nav>
 
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="form-group row">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <?php 
-                                $datetime = new datetime($kebersihanmesin->date);
-                                $datetime = $datetime->format('d-m-Y');
+    <!-- Card -->
+    <div class="card shadow mb-5">
+        <div class="card-body">
+            <div class="table-responsive">
+                <?php 
+                $tanggal = (new DateTime($kebersihanmesin->date))->format('d-m-Y');
+                $tanggal_perbaikan = (new DateTime($kebersihanmesin->tgl_perbaikan))->format('d-m-Y');
+                ?>
+                <table class="table table-bordered" cellspacing="0">
+                    <thead class="text-center">
+                        <tr>
+                            <th colspan="7" class="text-center font-weight-bold">PEMERIKSAAN KEBERSIHAN DAN SANITASI SETELAH PERBAIKAN MESIN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Tanggal</b></td>
+                            <td colspan="6"><?= $tanggal; ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Shift</b></td>
+                            <td colspan="6"><?= $kebersihanmesin->shift; ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Mesin / Peralatan</b></td>
+                            <td colspan="6"><?= htmlspecialchars($kebersihanmesin->mesin); ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Jenis Perbaikan</b></td>
+                            <td colspan="6"><?= htmlspecialchars($kebersihanmesin->perbaikan); ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Area</b></td>
+                            <td colspan="6"><?= htmlspecialchars($kebersihanmesin->area); ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Tanggal Perbaikan</b></td>
+                            <td colspan="6"><?= $tanggal_perbaikan; ?></td>
+                        </tr>
 
-                                $date_repaired = new datetime($kebersihanmesin->tgl_perbaikan);
-                                $date_repaired = $date_repaired->format('d-m-Y');
+                        <tr class="bg-light text-center font-weight-bold">
+                            <td colspan="3">Kondisi</td>
+                            <td colspan="4">Spare Part yang Tertinggal</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td colspan="3"><?= htmlspecialchars($kebersihanmesin->kondisi); ?></td>
+                            <td colspan="4"><?= htmlspecialchars($kebersihanmesin->spare_part); ?></td>
+                        </tr>
+
+                        <tr>
+                            <td><b>Keterangan</b></td>
+                            <td colspan="6"><?= !empty($kebersihanmesin->keterangan) ? htmlspecialchars($kebersihanmesin->keterangan) : 'Tidak ada'; ?></td>
+                        </tr>
+
+                        <tr class="table-primary text-center font-weight-bold">
+                            <td colspan="7">VERIFIKASI</td>
+                        </tr>
+                        <tr>
+                            <td><b>QC</b></td>
+                            <td colspan="6"><?= htmlspecialchars($kebersihanmesin->username); ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Produksi</b></td>
+                            <td colspan="6"><?= htmlspecialchars($kebersihanmesin->nama_produksi); ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>Disetujui Supervisor</b></td>
+                            <td colspan="6">
+                                <?php
+                                $status_spv = [
+                                    0 => '<span class="text-secondary font-weight-bold">Created</span>',
+                                    1 => '<span class="text-success font-weight-bold">Verified</span>',
+                                    2 => '<span class="text-danger font-weight-bold">Revision</span>'
+                                ];
+                                echo $status_spv[$kebersihanmesin->status_spv] ?? '-';
                                 ?>
-                                <tr>
-                                    <th style="text-align:center;" colspan="7">PEMERIKSAAN KEBERSIHAN DAN SANITASI SETELAH PERBAIKAN MESIN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="text-align:left;"><b>Tanggal : <?= $datetime;?></b></td>
-                                    <td colspan="6"><b>Shift : <?= $kebersihanmesin->shift;?><b></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Mesin / Peralatan</td>
-                                        <td colspan="6"><?= $kebersihanmesin->mesin;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jenis Perbaikan</td>
-                                        <td colspan="6"><?= $kebersihanmesin->perbaikan;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Area</td>
-                                        <td colspan="6"><?= $kebersihanmesin->area;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tanggal Perbaikan</td>
-                                        <td colspan="6"><?= $date_repaired;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" style="text-align: center;">Kondisi</td>
-                                        <td colspan="4" style="text-align: center;">Spare Part yang Tertinggal</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" style="text-align: center;"><?= $kebersihanmesin->kondisi;?></td>
-                                        <td colspan="4" style="text-align: center;"><?= $kebersihanmesin->spare_part;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Keterangan</td>
-                                        <td colspan="6"> <?= !empty($kebersihanmesin->keterangan) ? $kebersihanmesin->keterangan : 'Tidak ada'; ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th style="text-align:center;" colspan="5">VERIFIKASI</th>
-                                    </tr>
-                                    <tr>
-                                        <td>QC</td>
-                                        <td colspan="6"><?= $kebersihanmesin->username;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Produksi</td>
-                                        <td colspan="5"><?= $kebersihanmesin->nama_produksi;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diketahui Produksi</td>
-                                        <td colspan="4">
-                                            <?php
-                                            if ($kebersihanmesin->status_produksi == 0) {
-                                                echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                            } elseif ($kebersihanmesin->status_produksi == 1) {
-                                                echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                            } elseif ($kebersihanmesin->status_produksi == 2) {
-                                                echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                            }
-                                        ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Catatan Produksi</td>
-                                        <td colspan="4"><?= !empty($kebersihanmesin->catatan_produksi) ? $kebersihanmesin->catatan_produksi : 'Tidak ada'; ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Disetujui Supervisor</td>
-                                        <td colspan="4"><?php
-                                        if ($kebersihanmesin->status_spv == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($kebersihanmesin->status_spv == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                        } elseif ($kebersihanmesin->status_spv == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                        }
-                                    ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan Supervisor</td>
-                                    <td colspan="4"><?= !empty($kebersihanmesin->catatan_spv) ? $kebersihanmesin->catatan_spv : 'Tidak ada'; ?></td>
-                                </tr>
-                            </tbody>
-                        </table>    
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Catatan Supervisor</b></td>
+                            <td colspan="6"><?= !empty($kebersihanmesin->catatan_spv) ? htmlspecialchars($kebersihanmesin->catatan_spv) : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-<style type="text/css">
+</div>
+
+<!-- Custom CSS -->
+<style>
     .breadcrumb {
         background-color: #2E86C1;
+        padding: 8px 16px;
+        border-radius: 0.25rem;
     }
-    .no-border {
-        border: none;
-        box-shadow: none;
+
+    .breadcrumb .breadcrumb-item a {
+        color: #fff;
+        font-weight: 500;
     }
+
+    .breadcrumb .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
     .table {
-        width: 50%; 
-        font-size: 16px; 
-        margin: 0 auto; 
+        width: 100%;
+        font-size: 15px;
     }
-    .table, .table th, .table td {
-        border: none;
+
+    .table td, .table th {
+        padding: 10px 12px;
+        vertical-align: middle;
+        word-break: break-word;
     }
-    .table th, .table td {
-        padding: 6px 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        word-wrap: break-word;
-        white-space: normal !important;
-    }
-    .table td {
-        white-space: nowrap;
+
+    @media (max-width: 768px) {
+        .table td, .table th {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        h1.h3 {
+            font-size: 20px;
+        }
     }
 </style>

@@ -36,7 +36,6 @@
                             <th>Tahapan</th>
                             <th>Jenis Kontaminasi</th>
                             <th>Bukti</th>
-                            <th>Enginer</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -59,17 +58,6 @@
                                     <?php else: ?>
                                         <p>No image available</p>
                                     <?php endif; ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_enginer == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_enginer == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_enginer == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
                                 </td>
                                 <td class="text-center">
                                     <?php

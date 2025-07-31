@@ -35,7 +35,6 @@
                             <th>Tanggal / Shift</th>
                             <th>Lokasi</th>
                             <th class="text-center">Hasil Pemeriksaan</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -92,16 +91,6 @@
                             </td>
                             <td class="text-center">
                                 <?php
-                                echo match($val->status_produksi) {
-                                    0 => '<span style="color:#99a3a4;font-weight:bold;">Created</span>',
-                                    1 => '<span style="color:#28b463;font-weight:bold;">Checked</span>',
-                                    2 => '<span style="color:red;font-weight:bold;">Re-Check</span>',
-                                    default => '-'
-                                };
-                                ?>
-                            </td>
-                            <td class="text-center">
-                                <?php
                                 echo match($val->status_spv) {
                                     0 => '<span style="color:#99a3a4;font-weight:bold;">Created</span>',
                                     1 => '<span style="color:#28b463;font-weight:bold;">Verified</span>',
@@ -111,9 +100,15 @@
                                 ?>
                             </td>
                             <td class="text-center">
-                                <a href="<?= base_url('kebersihanruang/edit/' . $val->uuid); ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
-                                <a href="<?= base_url('kebersihanruang/detail/' . $val->uuid); ?>" class="btn btn-success btn-sm"><i class="fas fa-eye"></i> Detail</a>
-                                <a href="<?= base_url('kebersihanruang/delete/' . $val->uuid); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus data ini?')"><i class="fas fa-trash"></i> Delete</a>
+                                <a href="<?= base_url('kebersihanruang/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
+                                    <span class="text">Edit</span>
+                                </a>
+                                <a href="<?= base_url('kebersihanruang/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                                    <span class="text">Detail</span>
+                                </a>
+                                <a href="<?= base_url('kebersihanruang/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    <span class="text">Delete</span>
+                                </a>
                             </td>
                         </tr>
                     <?php } ?>

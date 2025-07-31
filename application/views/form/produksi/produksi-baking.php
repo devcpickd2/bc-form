@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                <hr>
+                <!-- <hr>
                 <label class="form-label font-weight-bold">BAKING TIME</label>
                 <div class="form-group row">
                     <div class="col-sm-4">
@@ -58,7 +58,7 @@
                             <?= form_error('electric_baking_time_low') ?>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <hr>
                 <label class="form-label font-weight-bold">SENSORI</label>
                 <div class="form-group row">

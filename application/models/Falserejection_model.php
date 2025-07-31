@@ -51,6 +51,8 @@ class Falserejection_model extends CI_Model {
 
 	public function update($uuid)
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$username = $this->session->userdata('username');
 		$date_false_rejection = $this->input->post('date_false_rejection');
 		$shift_monitoring = $this->input->post('shift_monitoring');
@@ -72,6 +74,7 @@ class Falserejection_model extends CI_Model {
 			'jenis_kontaminasi' => $jenis_kontaminasi,
 			'posisi_kontaminasi' => $posisi_kontaminasi,
 			'false_rejection' => $false_rejection,
+			'nama_produksi_false' => $nama_produksi,
 			'catatan' => $catatan,
 
 			'modified_at_false' => date("Y-m-d H:i:s")
@@ -188,7 +191,7 @@ class Falserejection_model extends CI_Model {
 
 	public function get_by_uuid_falserejection_verif($uuid_array)
 	{
-		$this->db->select('nama_spv_false, tgl_update_spv_false, no_mesin, username_2, nama_produksi_false, tgl_update_produksi_false',);
+		$this->db->select('nama_spv_false, tgl_update_spv_false, no_mesin, username_2, nama_produksi_false, tgl_update_produksi_false');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv_false', 'DESC');   
 		$this->db->limit(1);  
@@ -204,5 +207,46 @@ class Falserejection_model extends CI_Model {
 		$plant = $this->session->userdata('plant');
 		return $this->db->get_where('metal', ['plant' => $plant])->result();
 	}
+
+	public function get_by_date($tanggal, $plant = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date_false_rejection)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date_false_rejection', 'ASC');
+		$query = $this->db->get('metal');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+
+	public function get_last_verif_by_date($tanggal, $plant = null)
+	{
+		$this->db->select('nama_spv_false, tgl_update_spv_false, no_mesin, username_2, nama_produksi_false, tgl_update_produksi_false');
+		$this->db->where('DATE(date_false_rejection)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv_false', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('metal');
+
+		return $query->row();
+	}
+
 
 }

@@ -1,147 +1,154 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Detail Monitoring False Rejection</h1>
+    <!-- <h1 class="h3 mb-3 text-center text-gray-800 font-weight-bold border-bottom pb-2">Detail Monitoring False Rejection</h1> -->
+
+    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb"> 
+        <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('falserejection'); ?>">
-                    <i class="fas fa-arrow-left"></i> Monitoring False Rejection</a>
-                </li>
-            </ol>
-        </nav>
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="form-group row">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" cellspacing="0">
-                         <thead>
-                            <?php 
-                            $datetime = new datetime($falserejection->date_false_rejection);
-                            $datetime = $datetime->format('d-m-Y');
-                            ?>
-                            <tr>
-                                <th style="text-align:center;" colspan="2" >MONITORING FALSE REJECTION</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <tr>
-                                    <td>Mesin</td>
-                                    <td><?= $falserejection->no_mesin;?></td>
-                                </tr>
-                                <td ><b>Tanggal : <?= $datetime;?></b></td>
-                                <td><b>Shift : <?= $falserejection->shift_monitoring;?><b></td>
-                                </tr>
-                                <tr>
-                                    <td>Nama Produk</td>
-                                    <td><?= $falserejection->nama_produk;?></td>
-                                </tr>
-                                <tr>
-                                    <td>Kode Produksi</td>
-                                    <td><?= $falserejection->kode_produksi;?></td>
-                                </tr>
-                                <tr>
-                                    <td>Jumlah Pack/Bag yang Tidak Lolos</td>
-                                    <td colspan="4"><?= !empty($falserejection->jumlah_tidak_lolos) ? $falserejection->jumlah_tidak_lolos : '0'; ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Jumlah Pack/Bag yang Terdapat Kontaminasi</td>
-                                    <td colspan="4"><?= !empty($falserejection->jumlah_kontaminasi) ? $falserejection->jumlah_kontaminasi : '0'; ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Jenis Kontaminasi</td>
-                                    <td><?= $falserejection->jenis_kontaminasi;?></td>
-                                </tr>
-                                <tr>
-                                    <td>Posisi Kontaminasi</td>
-                                    <td><?= $falserejection->posisi_kontaminasi;?></td>
-                                </tr>
-                                <tr>
-                                    <td>False Rejection</td>
-                                    <td colspan="4"><?= !empty($falserejection->falserejection) ? $falserejection->falserejection : '0'; ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan Monitoring</td>
-                                    <td colspan="4"><?= !empty($falserejection->catatan) ? $falserejection->catatan : 'Tidak ada'; ?></td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align:center;" colspan="5">VERIFIKASI</th>
-                                </tr>
-                                <tr>
-                                    <tr>
-                                        <td>QC</td>
-                                        <td colspan="6"><?= $falserejection->username_2;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Produksi</td>
-                                        <td colspan="6"> <?= !empty($falserejection->nama_produksi_false) ? $falserejection->nama_produksi_false : 'Belum di koreksi'; ?></td>
-                                    </tr>
-                                    <td>Diketahui Produksi</td>
-                                    <td colspan="4">
-                                        <?php
-                                        if ($falserejection->status_produksi_false == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($falserejection->status_produksi_false == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                        } elseif ($falserejection->status_produksi_false == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                        }
-                                    ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan Produksi</td>
-                                    <td colspan="4"><?= !empty($falserejection->catatan_produksi) ? $falserejection->catatan_produksi : 'Tidak ada'; ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Disetujui Supervisor</td>
-                                    <td colspan="4"><?php
-                                    if ($falserejection->status_spv_false == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($falserejection->status_spv_false == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($falserejection->status_spv_false == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                ?></td>
-                            </tr>
-                            <tr>
-                                <td>Catatan SPV</td>
-                                <td colspan="4"><?= !empty($falserejection->catatan_spv) ? $falserejection->catatan_spv : 'Tidak ada'; ?></td>
-                            </tr>
-                        </tbody>
-                    </table>    
-                </div>
+                <a class="text-white" href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('falserejection'); ?>">
+                    <i class="fas fa-arrow-left"></i> Monitoring False Rejection
+                </a>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Detail Card -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <?php 
+                    $datetime = new DateTime($falserejection->date_false_rejection);
+                    $formatted_date = $datetime->format('d-m-Y');
+                ?>
+                <table class="table table-bordered">
+                    <thead class="text-center">
+                        <tr>
+                            <th colspan="2" class="font-weight-bold text-center">MONITORING FALSE REJECTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Tanggal</td>
+                            <td><b><?= $formatted_date; ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Shift</td>
+                            <td><b><?= $falserejection->shift_monitoring; ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Mesin</td>
+                            <td><?= $falserejection->no_mesin; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Nama Produk</td>
+                            <td><?= $falserejection->nama_produk; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Kode Produksi</td>
+                            <td><?= $falserejection->kode_produksi; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Pack/Bag Tidak Lolos</td>
+                            <td><?= !empty($falserejection->jumlah_tidak_lolos) ? $falserejection->jumlah_tidak_lolos : '0'; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah dengan Kontaminasi</td>
+                            <td><?= !empty($falserejection->jumlah_kontaminasi) ? $falserejection->jumlah_kontaminasi : '0'; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Jenis Kontaminasi</td>
+                            <td><?= $falserejection->jenis_kontaminasi; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Posisi Kontaminasi</td>
+                            <td><?= $falserejection->posisi_kontaminasi; ?></td>
+                        </tr>
+                        <tr>
+                            <td>False Rejection</td>
+                            <td><?= !empty($falserejection->falserejection) ? $falserejection->falserejection : '0'; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Catatan Monitoring</td>
+                            <td><?= !empty($falserejection->catatan) ? $falserejection->catatan : 'Tidak ada'; ?></td>
+                        </tr>
+                        <tr class="table-primary text-center text-uppercase">
+                            <td colspan="2"><b>Verifikasi</b></td>
+                        </tr>
+                        <tr>
+                            <td>QC</td>
+                            <td><?= $falserejection->username_2; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Produksi</td>
+                            <td><?= !empty($falserejection->nama_produksi_false) ? $falserejection->nama_produksi_false : 'Belum dikoreksi'; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Disetujui Supervisor</td>
+                            <td>
+                                <?php
+                                switch ($falserejection->status_spv_false) {
+                                    case 1: echo '<span class="text-success font-weight-bold">Verified</span>'; break;
+                                    case 2: echo '<span class="text-danger font-weight-bold">Revision</span>'; break;
+                                    default: echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                }
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Catatan Supervisor</td>
+                            <td><?= !empty($falserejection->catatan_spv) ? $falserejection->catatan_spv : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-</div>
-<style type="text/css">
+
+<!-- CSS -->
+<style>
     .breadcrumb {
         background-color: #2E86C1;
+        padding: 8px 16px;
+        border-radius: 0.25rem;
     }
-    .no-border {
-        border: none;
-        box-shadow: none;
+
+    .breadcrumb .breadcrumb-item a {
+        color: #fff;
+        font-weight: 500;
     }
+
+    .breadcrumb .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
     .table {
-        width: 50%;
-        font-size: 16px; 
-        margin: 0 auto; 
+        width: 100%;
+        font-size: 15px;
     }
-    .table, .table th, .table td {
-        border: none; 
-    }
-    .table th, .table td {
-        padding: 6px 8px;
+
+    .table th,
+    .table td {
+        padding: 10px;
         text-align: left;
-        border-bottom: 1px solid #ddd;
-        word-wrap: break-word;
+        border: 1px solid #dee2e6;
         white-space: normal !important;
     }
-    .table td {
-        white-space: nowrap; 
+
+    .table td:first-child {
+        font-weight: bold;
+        width: 220px;
+    }
+
+    @media (max-width: 768px) {
+        .table th,
+        .table td {
+            font-size: 14px;
+        }
+
+        h1.h3 {
+            font-size: 20px;
+        }
     }
 </style>
-
-

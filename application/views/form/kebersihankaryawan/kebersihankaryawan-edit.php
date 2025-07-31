@@ -15,14 +15,14 @@
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('kebersihankaryawan/edit/'.$kebersihankaryawan->uuid);?>">
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Tanggal</label>
                             <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?= $kebersihankaryawan->date; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('date') ?>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Shift</label>
                             <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
                                 <option value="1" <?= set_select('shift', '1'); ?> <?= $kebersihankaryawan->shift == 1?'selected':'';?>>1</option>
@@ -33,14 +33,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Nama</label>
                             <input type="text" name="nama" class="form-control <?= form_error('nama') ? 'invalid' : '' ?> " value="<?= $kebersihankaryawan->nama; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('nama')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('nama') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Bagian</label>
                             <input type="text" name="bagian" class="form-control <?= form_error('bagian') ? 'invalid' : '' ?> " value="<?= $kebersihankaryawan->bagian; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('bagian')) ? 'd-block' : '' ; ?> ">

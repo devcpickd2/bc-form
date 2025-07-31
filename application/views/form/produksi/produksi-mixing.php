@@ -14,25 +14,25 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('produksi/mixing/'.$produksi->uuid);?>">
-                 <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
-                 <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label>
-                 <hr>
-                 <label class="form-label font-weight-bold">MIXING DOUGH</label>
-                 <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label class="form-label font-weight-bold">Waktu Mixing Speed 1</label>
+                   <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
+                   <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label>
+                   <hr>
+                   <label class="form-label font-weight-bold">MIXING DOUGH</label>
+                   <div class="form-group row">
+                    <div class="col-sm-4">
+                        <label class="form-label font-weight-bold">Waktu Mixing (11 Menit)</label>
                         <input type="text" name="mix_dough_waktu_1" class="form-control <?= form_error('mix_dough_waktu_1') ? 'invalid' : '' ?> " value="<?= $produksi->mix_dough_waktu_1; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('mix_dough_waktu_1')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('mix_dough_waktu_1') ?>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <!-- <div class="col-sm-2">
                         <label class="form-label font-weight-bold">Waktu Mixing Speed 2</label>
                         <input type="text" name="mix_dough_waktu_2" class="form-control <?= form_error('mix_dough_waktu_2') ? 'invalid' : '' ?> " value="<?= $produksi->mix_dough_waktu_2; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('mix_dough_waktu_2')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('mix_dough_waktu_2') ?>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Hasil Mixing</label>
                         <select class="form-control <?= form_error('mix_dough_hasil') ? 'invalid' : '' ?>" name="mix_dough_hasil">
@@ -60,6 +60,13 @@
                         </div>
                     </div>
                     <div class="col-sm-4">
+                        <label class="form-label font-weight-bold">Suhu Adonan (29 - 31°C)</label>
+                        <input type="text" name="mix_dough_suhu_adonan" class="form-control <?= form_error('mix_dough_suhu_adonan') ? 'invalid' : '' ?> " value="<?= $produksi->mix_dough_suhu_adonan; ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('mix_dough_suhu_adonan')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('mix_dough_suhu_adonan') ?>
+                        </div>
+                    </div>
+                    <!-- <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Sensori</label><br>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input <?= form_error('mix_dough_sens') ? 'is-invalid' : '' ?>" 
@@ -86,7 +93,7 @@
                                 <?= form_error('mix_dough_sens') ?>
                             </div>
                         <?php endif; ?>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-4">
@@ -103,13 +110,7 @@
                             <?= form_error('mix_dough_rh_ruang') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Suhu Adonan (29 - 31°C)</label>
-                        <input type="text" name="mix_dough_suhu_adonan" class="form-control <?= form_error('mix_dough_suhu_adonan') ? 'invalid' : '' ?> " value="<?= $produksi->mix_dough_suhu_adonan; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('mix_dough_suhu_adonan')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('mix_dough_suhu_adonan') ?>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="row">
                     <div class="col">

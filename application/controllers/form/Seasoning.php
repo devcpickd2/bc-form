@@ -214,24 +214,24 @@ class Seasoning extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$seasoning_data = $this->seasoning_model->get_by_uuid_seasoning($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$seasoning_data_verif = $this->seasoning_model->get_by_uuid_seasoning_verif($selected_items);
+		$seasoning_data = $this->seasoning_model->get_by_date($tanggal, $plant); 
+		$seasoning_data_verif = $this->seasoning_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$seasoning_data || !$seasoning_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['seasoning'] = $seasoning_data_verif;
-
-
-		if (!$data['seasoning']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
@@ -329,7 +329,9 @@ class Seasoning extends CI_Controller {
 			$pdf->Cell(25, 8, $seasoning->jenis_seasoning, 1, 0, 'C');
 			$pdf->Cell(20, 8, $seasoning->spesifikasi, 1, 0, 'C');
 			$pdf->Cell(23, 8, $seasoning->pemasok, 1, 0, 'C');
+			$pdf->SetFont('times', '', 8);
 			$pdf->Cell(20, 8, $seasoning->kode_produksi, 1, 0, 'C');
+			$pdf->SetFont('times', '', 9);
 			$pdf->Cell(20, 8, $exp, 1, 0, 'C');
 			$pdf->Cell(15, 8, $seasoning->jumlah_barang, 1, 0, 'C');
 			$pdf->Cell(15, 8, $seasoning->sampel, 1, 0, 'C');

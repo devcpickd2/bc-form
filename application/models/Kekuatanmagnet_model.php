@@ -38,6 +38,8 @@ class Kekuatanmagnet_model extends CI_Model {
 
 	public function insert()
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -46,7 +48,7 @@ class Kekuatanmagnet_model extends CI_Model {
 		$nilai = $this->input->post('nilai');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_spv = "0";
 
 		$data = array(
@@ -59,6 +61,7 @@ class Kekuatanmagnet_model extends CI_Model {
 			'keterangan' => $keterangan,
 			'catatan' => $catatan,
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 			'status_spv' => $status_spv
 		);
 
@@ -218,4 +221,45 @@ class Kekuatanmagnet_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('kekuatan_mt');
 	}
+
+	public function get_by_date($tanggal, $plant = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('kekuatan_mt');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+
+	public function get_last_verif_by_date($tanggal, $plant = null)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, status_produksi, tgl_update_produksi');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('kekuatan_mt');
+
+		return $query->row();
+	}
+
 }

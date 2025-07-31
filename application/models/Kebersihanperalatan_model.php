@@ -7,10 +7,10 @@ class Kebersihanperalatan_model extends CI_Model {
 	
 	public function rules()
 	{
-		return[
+		return [
 			[
 				'field' => 'date',
-				'label' => 'Date',
+				'label' => 'Tanggal',
 				'rules' => 'required'
 			],
 			[
@@ -19,92 +19,95 @@ class Kebersihanperalatan_model extends CI_Model {
 				'rules' => 'required'
 			],
 			[
-				'field' => 'peralatan',
-				'label' => 'Things',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'kondisi',
-				'label' => 'Condition',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'problem',
-				'label' => 'Problem'
-			],
-			[
-				'field' => 'tindakan',
-				'label' => 'Corrective Action'
-			],
-			[
 				'field' => 'catatan',
-				'label' => 'Notes'
-			]
+				'label' => 'Catatan'
+			],
 		];
 	}
 
 	public function insert()
 	{
+
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$peralatan = $this->input->post('peralatan');
+		$catatan = $this->input->post('catatan');
+		$status_spv = "0";
+		$status_produksi = "1";
+
+		$nama_alat = $this->input->post('peralatan'); 
 		$kondisi = $this->input->post('kondisi');
 		$problem = $this->input->post('problem');
 		$tindakan = $this->input->post('tindakan');
-		$catatan = $this->input->post('catatan');
-		$status_spv = "0";
-		$status_produksi = "0";
 
-		$data = array(
+		$daftar_peralatan = [];
+
+		if (is_array($nama_alat)) {
+			foreach ($nama_alat as $i => $nama) {
+				$daftar_peralatan[] = [
+					'nama' => $nama,
+					'kondisi' => $kondisi[$i] ?? '',
+					'problem' => $problem[$i] ?? '',
+					'tindakan' => $tindakan[$i] ?? ''
+				];
+			}
+		}
+
+		$data = [
 			'uuid' => $uuid,
 			'username' => $username,
 			'plant' => $plant,
 			'date' => $date,
 			'shift' => $shift,
-			'peralatan' => $peralatan,
-			'kondisi' => $kondisi,
-			'problem' => $problem,
-			'tindakan' => $tindakan,
 			'catatan' => $catatan,
+			'peralatan' => json_encode($daftar_peralatan),
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 			'status_spv' => $status_spv
-		);
+		];
 
 		$this->db->insert('kebersihan_peralatan', $data);
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		return $this->db->affected_rows() > 0;
 	}
+
 
 	public function update($uuid)
 	{
 		$username = $this->session->userdata('username');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
-		$peralatan = $this->input->post('peralatan');
+
+		$nama_alat = $this->input->post('peralatan');
 		$kondisi = $this->input->post('kondisi');
 		$problem = $this->input->post('problem');
 		$tindakan = $this->input->post('tindakan');
-		$catatan = $this->input->post('catatan');
 
-		$data = array(
+		$daftar_peralatan = [];
+
+		if (is_array($nama_alat)) {
+			foreach ($nama_alat as $i => $nama) {
+				$daftar_peralatan[] = [
+					'nama' => $nama,
+					'kondisi' => $kondisi[$i] ?? '',
+					'problem' => $problem[$i] ?? '',
+					'tindakan' => $tindakan[$i] ?? ''
+				];
+			}
+		}
+
+		$data = [
 			'username' => $username,
-			'date' => $date,
-			'shift' => $shift,
-			'peralatan' => $peralatan,
-			'kondisi' => $kondisi,
-			'problem' => $problem,
-			'tindakan' => $tindakan,
-			'catatan' => $catatan,
+			'date' => $this->input->post('date'),
+			'shift' => $this->input->post('shift'),
+			'catatan' => $this->input->post('catatan'),
+			'peralatan' => json_encode($daftar_peralatan),
+			'modified_at' => date("Y-m-d H:i:s")
+		];
 
-			'modified_at' => date("Y-m-d H:i:s") 
-		);
-
-		$this->db->update('kebersihan_peralatan', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		$this->db->update('kebersihan_peralatan', $data, ['uuid' => $uuid]);
+		return $this->db->affected_rows() > 0;
 	}
 
 	public function rules_verifikasi()
@@ -119,7 +122,7 @@ class Kebersihanperalatan_model extends CI_Model {
 				'field' => 'catatan_spv',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 
@@ -154,7 +157,7 @@ class Kebersihanperalatan_model extends CI_Model {
 				'field' => 'catatan_produksi',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 
@@ -231,5 +234,53 @@ class Kebersihanperalatan_model extends CI_Model {
 	{
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('kebersihan_peralatan');
+	}
+
+	public function get_by_date($tanggal, $plant = null, $shift = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('kebersihan_peralatan');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+	
+	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, tgl_update_produksi, status_produksi');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('kebersihan_peralatan');
+
+		return $query->row();
 	}
 }

@@ -35,13 +35,13 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                   <!--  <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Jenis Produk</label>
                         <input type="text" name="jenis_produk" class="form-control <?= form_error('jenis_produk') ? 'invalid' : '' ?> " value="<?= $produksi->jenis_produk; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('jenis_produk')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('jenis_produk') ?>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Nama Produk</label>
                         <input type="text" name="nama_produk" class="form-control <?= form_error('nama_produk') ? 'invalid' : '' ?> " value="<?= $produksi->nama_produk; ?>">

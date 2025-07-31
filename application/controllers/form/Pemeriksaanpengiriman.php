@@ -51,10 +51,10 @@ class Pemeriksaanpengiriman extends CI_Controller {
 		if ($this->form_validation->run() == TRUE) {
 			$insert = $this->pemeriksaanpengiriman_model->insert();
 			if ($insert) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Pengiriman RM, Seasoning, Kemasan dan Chemical berhasil di simpan');
+				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Pengiriman RM, pemeriksaanpengiriman, Kemasan dan Chemical berhasil di simpan');
 				redirect('pemeriksaanpengiriman');
 			}else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Pengiriman RM, Seasoning, Kemasan dan Chemical gagal di simpan');
+				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Pengiriman RM, pemeriksaanpengiriman, Kemasan dan Chemical gagal di simpan');
 				redirect('pemeriksaanpengiriman');
 			}
 		}
@@ -77,10 +77,10 @@ class Pemeriksaanpengiriman extends CI_Controller {
 			
 			$update = $this->pemeriksaanpengiriman_model->update($uuid);
 			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Pengiriman RM, Seasoning, Kemasan dan Chemical berhasil di Update');
+				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Pengiriman RM, pemeriksaanpengiriman, Kemasan dan Chemical berhasil di Update');
 				redirect('pemeriksaanpengiriman');
 			}else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Pengiriman RM, Seasoning, Kemasan dan Chemical gagal di Update');
+				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Pengiriman RM, pemeriksaanpengiriman, Kemasan dan Chemical gagal di Update');
 				redirect('pemeriksaanpengiriman');
 			}
 		}
@@ -134,10 +134,10 @@ class Pemeriksaanpengiriman extends CI_Controller {
 
 			$update = $this->pemeriksaanpengiriman_model->verifikasi_update($uuid);
 			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Pengiriman RM, Seasoning, Kemasan dan Chemical berhasil di Update');
+				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Pengiriman RM, pemeriksaanpengiriman, Kemasan dan Chemical berhasil di Update');
 				redirect('pemeriksaanpengiriman/verifikasi');
 			}else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Pengiriman RM, Seasoning, Kemasan dan Chemical gagal di Update');
+				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Pengiriman RM, pemeriksaanpengiriman, Kemasan dan Chemical gagal di Update');
 				redirect('pemeriksaanpengiriman/verifikasi');
 			}
 		}
@@ -153,25 +153,25 @@ class Pemeriksaanpengiriman extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$pemeriksaanpengiriman_data = $this->pemeriksaanpengiriman_model->get_by_uuid_pemeriksaanpengiriman($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$pemeriksaanpengiriman_data_verif = $this->pemeriksaanpengiriman_model->get_by_uuid_pemeriksaanpengiriman_verif($selected_items);
+		$pemeriksaanpengiriman_data = $this->pemeriksaanpengiriman_model->get_by_date($tanggal, $plant); 
+		$pemeriksaanpengiriman_data_verif = $this->pemeriksaanpengiriman_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$pemeriksaanpengiriman_data || !$pemeriksaanpengiriman_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['pemeriksaanpengiriman'] = $pemeriksaanpengiriman_data_verif;
-
-
-		if (!$data['pemeriksaanpengiriman']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
+		
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);

@@ -7,15 +7,15 @@ class Suhu_model extends CI_Model {
 	
 	public function rules()
 	{
-		return[
+		return [
 			[
 				'field' => 'date',
-				'label' => 'Date',
+				'label' => 'Tanggal',
 				'rules' => 'required'
 			],
 			[
 				'field' => 'pukul',
-				'label' => 'Time',
+				'label' => 'Pukul',
 				'rules' => 'required'
 			],
 			[
@@ -24,91 +24,71 @@ class Suhu_model extends CI_Model {
 				'rules' => 'required'
 			],
 			[
-				'field' => 'lokasi',
-				'label' => 'Location',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'suhu',
-				'label' => 'Temperature',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'rh',
-				'label' => 'RH'
-			],
-			[
 				'field' => 'catatan',
-				'label' => 'Notes'
+				'label' => 'Catatan',
+				'rules' => 'trim'
 			]
 		];
 	}
 
+
 	public function insert()
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$pukul = $this->input->post('pukul');
 		$shift = $this->input->post('shift');
-		$lokasi = $this->input->post('lokasi');
-		$suhu = $this->input->post('suhu');
-		$rh = $this->input->post('rh');
+		$lokasi = $this->input->post('lokasi'); 
 		$catatan = $this->input->post('catatan');
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_spv = "0";
 
-		$data = array(
+		$data = [
 			'uuid' => $uuid,
 			'plant' => $plant,
 			'username' => $username,
 			'date' => $date,
 			'pukul' => $pukul,
 			'shift' => $shift,
-			'lokasi' => $lokasi,
-			'suhu' => $suhu,
-			'rh' => $rh,
+			'lokasi' => json_encode($lokasi),
 			'catatan' => $catatan,
+			'nama_produksi' => $nama_produksi,
 			'status_produksi' => $status_produksi,
 			'status_spv' => $status_spv
-		);
+		];
 
 		$this->db->insert('suhu', $data);
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		return $this->db->affected_rows() > 0;
 	}
 
 	public function update($uuid)
 	{
 		$username = $this->session->userdata('username');
-		// $plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$pukul = $this->input->post('pukul');
 		$shift = $this->input->post('shift');
-		$lokasi = $this->input->post('lokasi');
-		$suhu = $this->input->post('suhu');
-		$rh = $this->input->post('rh');
+		$lokasi = $this->input->post('lokasi'); 
 		$catatan = $this->input->post('catatan');
 
-		$data = array(
-			// 'plant' => $plant,
+		$data = [
 			'username' => $username,
 			'date' => $date,
 			'pukul' => $pukul,
 			'shift' => $shift,
-			'lokasi' => $lokasi,
-			'suhu' => $suhu,
-			'rh' => $rh,
+			'lokasi' => json_encode($lokasi),
 			'catatan' => $catatan,
+			'modified_at' => date("Y-m-d H:i:s")
+		];
 
-			'modified_at' => date("Y-m-d H:i:s") 
-		);
-
-		$this->db->update('suhu', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		$this->db->update('suhu', $data, ['uuid' => $uuid]);
+		return $this->db->affected_rows() > 0;
 	}
+
 
 	public function rules_verifikasi()
 	{
@@ -122,7 +102,7 @@ class Suhu_model extends CI_Model {
 				'field' => 'catatan_spv',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 
@@ -157,7 +137,7 @@ class Suhu_model extends CI_Model {
 				'field' => 'catatan_produksi',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 
@@ -283,6 +263,27 @@ class Suhu_model extends CI_Model {
 		$this->db->where('DATE(date)', $tanggal);
 		$this->db->where('plant', $plant_uuid);
 		return $this->db->get('suhu')->row();
+	}
+
+	public function get_suhu_today_by_plant($plant_uuid, $tanggal = null)
+	{
+		$this->db->where('plant', $plant_uuid);
+
+		if ($tanggal) {
+			$this->db->where('DATE(date)', $tanggal);
+		} else {
+			$this->db->where('DATE(date)', date('Y-m-d'));
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('suhu');
+		$results = $query->result();
+
+		foreach ($results as $row) {
+			$row->lokasi = json_decode($row->lokasi, true); 
+		}
+
+		return $results;
 	}
 
 

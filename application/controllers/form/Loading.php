@@ -413,7 +413,9 @@ class Loading extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['loading']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['loading']->username);
 		$data['loading']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['loading']->nama_spv);
-		$data['loading']->nama_lengkap_wh = $this->pegawai_model->get_nama_lengkap($data['loading']->nama_wh);
+		// $data['loading']->nama_lengkap_wh = $this->pegawai_model->get_nama_lengkap($data['loading']->nama_wh);
+		$data['loading']->nama_lengkap_wh = $data['loading']->nama_wh;
+
 
 		$pdf->SetY($pdf->GetY() +2); 
 		$pdf->SetFont('times', '', 7);
@@ -450,15 +452,35 @@ class Loading extends CI_Controller {
 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
 
 		// Diketahui oleh (Produksi)
-			$pdf->SetXY(90, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			// $pdf->SetXY(90, $y_verifikasi + 5);
+			// $pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			// if ($data['loading']->status_wh == 1 && !empty($data['loading']->nama_wh)) {
+			// 	$update_tanggal_wh = (new DateTime($data['loading']->tgl_update_wh))->format('d-m-Y | H:i');
+			// 	$qr_text_wh = "Diketahui secara digital oleh,\n" . $data['loading']->nama_lengkap_wh . "\nForeman/Forelady Produksi\n" . $update_tanggal_wh;
+			// 	$pdf->write2DBarcode($qr_text_wh, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+			// 	$pdf->SetXY(90, $y_verifikasi + 24);
+			// 	$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
+			// } else {
+			// 	$pdf->SetXY(90, $y_verifikasi + 10);
+			// 	$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+			// }
 			if ($data['loading']->status_wh == 1 && !empty($data['loading']->nama_wh)) {
 				$update_tanggal_wh = (new DateTime($data['loading']->tgl_update_wh))->format('d-m-Y | H:i');
-				$qr_text_wh = "Diketahui secara digital oleh,\n" . $data['loading']->nama_lengkap_wh . "\nForeman/Forelady Produksi\n" . $update_tanggal_wh;
-				$pdf->write2DBarcode($qr_text_wh, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
+
+				$pdf->SetXY(90, $y_verifikasi + 5);
+				$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, $data['loading']->nama_wh, 0, 0, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 14);
 				$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 18);
+				// $pdf->Cell(35, 5, $update_tanggal_wh, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}

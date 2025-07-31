@@ -37,7 +37,6 @@
                                 <th>Dasar Disposisi</th>
                                 <th>Last Updated</th>
                                 <th>Last Verified</th>
-                                <th>Produksi</th>
                                 <th>SPV</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -59,17 +58,6 @@
                                     <td><?= $val->dasar_disposisi; ?></td>
                                     <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
                                     <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
-                                    <td class="text-center">
-                                        <?php
-                                        if ($val->status_produksi == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($val->status_produksi == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                        } elseif ($val->status_produksi == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                        }
-                                        ?>
-                                    </td>
                                     <td class="text-center">
                                         <?php
                                         if ($val->status_spv == 0) {

@@ -26,10 +26,10 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th width="30px" class="text-center" rowspan="2">
+                                <th width="30px" class="text-center">
                                     <i class="fas fa-print fa-lg"></i>
                                 </th>
-                                <th width="20px" class="text-center" rowspan="2">No</th>
+                                <!-- <th width="20px" class="text-center" rowspan="2">No</th>
                                 <th rowspan="2">Tanggal / Shift</th>
                                 <th rowspan="2">Nama Alat</th>
                                 <th rowspan="2">Jumlah</th>
@@ -38,12 +38,18 @@
                                 <th rowspan="2">Last Updated</th>
                                 <th rowspan="2">Last Verified</th>
                                 <th rowspan="2">SPV</th>
-                                <th class="text-center" rowspan="2">Action</th>
+                                <th class="text-center" rowspan="2">Action</th> -->
+                                <th>No</th>
+                                <th>Tanggal / Shift</th>
+                                <th>Supervisor</th>
+                                <th>Last Updated</th>
+                                <th>Last Verified</th>
+                                <th>Action</th>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <th>Kondisi Awal</th>
                                 <th>Kondisi Akhir</th>
-                            </tr>
+                            </tr> -->
                         </thead>
                         <tbody>
                             <?php 
@@ -58,7 +64,7 @@
                                     <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
                                     <td class="text-center"><?= $no; ?></td>
                                     <td><?= $tanggalFormatted . " / " . $val->shift;?></td>
-                                    <td>
+                                   <!--  <td>
                                         <ul>
                                             <?php 
                                             if (!empty($equipment)) {
@@ -112,7 +118,7 @@
                                             }
                                             ?>
                                         </ul>
-                                    </td>
+                                    </td> -->
                                     <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
                                     <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
                                     <td class="text-center">

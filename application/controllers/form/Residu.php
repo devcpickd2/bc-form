@@ -145,28 +145,34 @@ class Residu extends CI_Controller {
 		$this->load->view('partials/head', $data);
 		$this->load->view('form/residu/residu-status', $data);
 		$this->load->view('partials/footer');
-	}
+	} 
 
 	public function cetak()
 	{
 		$bulan = $this->input->get('bulan');
 
-		if (!$bulan) {
-			show_error('Parameter bulan tidak ditemukan', 404);
+		if (empty($bulan)) {
+			show_error('Tidak ada bulan yang dipilih', 404);
 		}
 
 		[$tahun, $bln] = explode('-', $bulan);
 		$start_date = "$tahun-$bln-01";
-		$end_date = date("Y-m-t", strtotime($start_date));
+		$end_date = date("Y-m-t", strtotime($start_date)); 
 
-		$residu_data = $this->residu_model->get_residu_by_month($start_date, $end_date);
+		$plant = $this->session->userdata('plant');
 
-		if (empty($residu_data)) {
-			show_error('Tidak ada data untuk bulan ini', 404);
+		$residu_data = $this->residu_model->get_by_month($start_date, $end_date, $plant); 
+		$residu_data_verif = $this->residu_model-> get_last_verif_by_month($start_date, $end_date, $plant); 
+
+		if (!$residu_data || !$residu_data_verif) {
+			show_error('Data tidak ditemukan, Pilih bulan yang ingin dicetak', 404);
 		}
 
-		$residu_data_verif = $this->residu_model->get_one_verified_by_month($start_date, $end_date);
 		$data['residu'] = $residu_data_verif;
+
+		$this->load->model('pegawai_model');
+		$data['residu']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['residu']->username);
+		$data['residu']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['residu']->nama_spv);
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -178,28 +184,24 @@ class Residu extends CI_Controller {
 		$logo_path = FCPATH . 'assets/img/logo.jpg';
 		if (file_exists($logo_path)) {
 			$pdf->Image($logo_path, 10, 10, 35);
-		} else {
-			$pdf->Write(7, "Logo tidak ditemukan\n");
 		}
 
-		$pdf->Write(9, "\n");
+		$pdf->Ln(10);
 		$pdf->SetFont('times', 'B', 10);
 		$pdf->MultiCell(0, 5, 'VERIFIKASI RESIDU KLORIN', 0, 'C');
 		$pdf->Ln(5);
 
 		$pdf->SetFont('times', '', 9);
-
 		$y = $pdf->GetY();
-
 		$pdf->SetY($y);
 		$pdf->MultiCell(40, 3, 'Area : '. $data['residu']->area, 0, 'L');
-
 		$pdf->SetY($y); 
 		$pdf->SetX(70); 
-		$pdf->MultiCell(60, 3, 'Bulan : ' . date('F', strtotime($start_date)), 0, 'L');
+		$pdf->MultiCell(60, 3, 'Bulan : ' . date('F Y', strtotime($start_date)), 0, 'L');
 		$pdf->MultiCell(0, 3, 'Titik Sampling : '. $data['residu']->titik_sampling, 0, 'L');
-
 		$pdf->Ln(1);
+
+    // Header Tabel
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(15, 10, 'Tanggal', 1, 0, 'C');
 		$pdf->Cell(25, 10, 'Standar', 1, 0, 'C');
@@ -216,9 +218,9 @@ class Residu extends CI_Controller {
 		$pdf->Cell(85, 5, '', 0, 0, 'C');   
 		$pdf->Cell(20, 5, 'Nama', 1, 0, 'C'); 
 		$pdf->Cell(20, 5, 'Paraf', 1, 0, 'C');
-		$pdf->Cell(0, 0, '', 0, 0, 'C');
 		$pdf->Cell(25, 5, '', 0, 1, 'C');
 
+    // Isi tabel
 		$pdf->SetFont('times', '', 7);
 		foreach ($residu_data as $residu) {
 			$created_date = (new DateTime($residu->date))->format('d');
@@ -232,10 +234,8 @@ class Residu extends CI_Controller {
 			$pdf->Cell(20, 5, "", 1, 0, 'C');
 			$pdf->Ln();
 		}
-		$this->load->model('pegawai_model');
-		$data['residu']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['residu']->username);
-		$data['residu']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['residu']->nama_spv);
 
+    // Catatan
 		$pdf->SetY($pdf->GetY() + 2); 
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
@@ -246,22 +246,12 @@ class Residu extends CI_Controller {
 			}
 		}
 
-		$y_after_keterangan = $pdf->GetY() + 2;
-		$status_verifikasi = true;
-		foreach ($residu_data as $item) {
-			if ($item->status_spv != '1') {
-				$status_verifikasi = false;
-				break;
-			}
-		}
-
+    // Tanda tangan
+		$y_verifikasi = $pdf->GetY() + 5;
 		$pdf->SetFont('times', '', 8);
-		$pdf->SetTextColor(0, 0, 0);
 
-		if ($status_verifikasi) {
-			$y_verifikasi = $y_after_keterangan;
-
-			$pdf->SetXY(25, $y_verifikasi + 5);
+		if ($data['residu']->nama_lengkap_qc && $data['residu']->nama_lengkap_spv) {
+			$pdf->SetXY(25, $y_verifikasi);
 			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
 			$pdf->SetXY(25, $y_verifikasi + 10);
 			$pdf->SetFont('times', 'U', 8); 
@@ -269,7 +259,7 @@ class Residu extends CI_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
 
-			$pdf->SetXY(150, $y_verifikasi + 5);
+			$pdf->SetXY(150, $y_verifikasi);
 			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
 			$update_tanggal = (new DateTime($data['residu']->tgl_update_spv))->format('d-m-Y | H:i');
 			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['residu']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
@@ -278,15 +268,14 @@ class Residu extends CI_Controller {
 			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
 		} else {
 			$pdf->SetTextColor(255, 0, 0); 
-			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(100, $y_after_keterangan);
 			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
 		$pdf->setPrintFooter(false);
-		$filename = "Verifikasi Penggunaan residu Klorin_{$bulan}.pdf";
+		$filename = "Verifikasi_Penggunaan_Residu_Klorin_{$bulan}.pdf";
 		$pdf->Output($filename, 'I');
 	}
+
 
 
 }

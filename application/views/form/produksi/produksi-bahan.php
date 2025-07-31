@@ -16,7 +16,7 @@
             <div class="card-body">
              <form class="user" method="post" action="<?= base_url('produksi/bahan/'.$produksi->uuid);?>">
                 <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
-                <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label>
+                <!-- <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label> -->
                 <hr>
                 <div class="form-group row">
                     <div class="col-sm-4">
@@ -33,7 +33,7 @@
                 <label class="form-label font-weight-bold">TEPUNG TERIGU</label>
                 <div class="form-group row">
                     <!-- Kode Input -->
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Kode</label>
                         <input type="text" name="tegu_kode" class="form-control <?= form_error('tegu_kode') ? 'is-invalid' : '' ?>" value="<?= $produksi->tegu_kode; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('tegu_kode')) ? 'd-block' : ''; ?>">
@@ -42,7 +42,7 @@
                     </div>
                     <br>
                     <!-- Berat Input -->
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Berat</label>
                         <input type="text" name="tegu_berat" class="form-control <?= form_error('tegu_berat') ? 'is-invalid' : '' ?>" value="<?= $produksi->tegu_berat; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('tegu_berat')) ? 'd-block' : ''; ?>">
@@ -51,7 +51,7 @@
                     </div>
 
                     <!-- Sensori Radio Buttons -->
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Sensori</label>
                         <div class="form-check">
                             <input type="radio" name="tegu_sens" value="oke" class="form-check-input <?= form_error('tegu_sens') ? 'is-invalid' : '' ?>" <?= ($produksi->tegu_sens == 'oke') ? 'checked' : ''; ?>>
@@ -69,21 +69,21 @@
                 <hr>
                 <label class="form-label font-weight-bold">TAPIOKA STRACTH</label>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Kode</label>
                         <input type="text" name="tapioka_kode" class="form-control <?= form_error('tapioka_kode') ? 'is-invalid' : '' ?>" value="<?= $produksi->tapioka_kode; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('tapioka_kode')) ? 'd-block' : ''; ?>">
                             <?= form_error('tapioka_kode') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Berat</label>
                         <input type="text" name="tapioka_berat" class="form-control <?= form_error('tapioka_berat') ? 'is-invalid' : '' ?>" value="<?= $produksi->tapioka_berat; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('tapioka_berat')) ? 'd-block' : ''; ?>">
                             <?= form_error('tapioka_berat') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Sensori</label>
                         <div class="form-check">
                             <input type="radio" name="tapioka_sens" value="oke" class="form-check-input <?= form_error('tapioka_sens') ? 'is-invalid' : '' ?>" <?= ($produksi->tapioka_sens == 'oke') ? 'checked' : ''; ?>>
@@ -101,7 +101,7 @@
                 <hr>
                 <label class="form-label font-weight-bold">RAGI</label>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Kode</label>
                         <input type="text" name="ragi_kode" class="form-control <?= form_error('ragi_kode') ? 'is-invalid' : '' ?>" value="<?= $produksi->ragi_kode; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('ragi_kode')) ? 'd-block' : ''; ?>">
@@ -109,14 +109,14 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Berat</label>
                         <input type="text" name="ragi_berat" class="form-control <?= form_error('ragi_berat') ? 'is-invalid' : '' ?>" value="<?= $produksi->ragi_berat; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('ragi_berat')) ? 'd-block' : ''; ?>">
                             <?= form_error('ragi_berat') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Sensori</label>
                         <div class="form-check">
                             <input type="radio" name="ragi_sens" value="oke" class="form-check-input <?= form_error('ragi_sens') ? 'is-invalid' : '' ?>" <?= ($produksi->ragi_sens == 'oke') ? 'checked' : ''; ?>>
@@ -134,21 +134,21 @@
                 <hr> 
                 <label class="form-label font-weight-bold">BREAD IMPROVER</label>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Kode</label>
                         <input type="text" name="bread_kode" class="form-control <?= form_error('bread_kode') ? 'is-invalid' : '' ?>" value="<?= $produksi->bread_kode; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('bread_kode')) ? 'd-block' : ''; ?>">
                             <?= form_error('bread_kode') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Berat</label>
                         <input type="text" name="bread_berat" class="form-control <?= form_error('bread_berat') ? 'is-invalid' : '' ?>" value="<?= $produksi->bread_berat; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('bread_berat')) ? 'd-block' : ''; ?>">
                             <?= form_error('bread_berat') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Sensori</label>
                         <div class="form-check">
                             <input type="radio" name="bread_sens" value="oke" class="form-check-input <?= form_error('bread_sens') ? 'is-invalid' : '' ?>" <?= ($produksi->bread_sens == 'oke') ? 'checked' : ''; ?>>
@@ -251,21 +251,21 @@
 
                 <label class="form-label font-weight-bold">SHORTENING</label>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Kode</label>
                         <input type="text" name="shortening_kode" class="form-control <?= form_error('shortening_kode') ? 'is-invalid' : '' ?>" value="<?= $produksi->shortening_kode; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('shortening_kode')) ? 'd-block' : ''; ?>">
                             <?= form_error('shortening_kode') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Berat</label>
                         <input type="text" name="shortening_berat" class="form-control <?= form_error('shortening_berat') ? 'is-invalid' : '' ?>" value="<?= $produksi->shortening_berat; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('shortening_berat')) ? 'd-block' : ''; ?>">
                             <?= form_error('shortening_berat') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Sensori</label>
                         <div class="form-check">
                             <input type="radio" name="shortening_sens" value="oke" class="form-check-input <?= form_error('shortening_sens') ? 'is-invalid' : '' ?>" <?= ($produksi->shortening_sens == 'oke') ? 'checked' : ''; ?>>
@@ -283,21 +283,21 @@
                 <hr>
                 <label class="form-label font-weight-bold">CHILL WATER (15 ± 1°C)</label>
                 <div class="form-group row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Kode</label>
                         <input type="text" name="chill_water_kode" class="form-control <?= form_error('chill_water_kode') ? 'is-invalid' : '' ?>" value="<?= $produksi->chill_water_kode; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('chill_water_kode')) ? 'd-block' : ''; ?>">
                             <?= form_error('chill_water_kode') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Berat</label>
                         <input type="text" name="chill_water_berat" class="form-control <?= form_error('chill_water_berat') ? 'is-invalid' : '' ?>" value="<?= $produksi->chill_water_berat; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('chill_water_berat')) ? 'd-block' : ''; ?>">
                             <?= form_error('chill_water_berat') ?>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label font-weight-bold mb-2">Sensori</label>
                         <div class="form-check">
                             <input type="radio" name="chill_water_sens" value="oke" class="form-check-input <?= form_error('chill_water_sens') ? 'is-invalid' : '' ?>" <?= ($produksi->chill_water_sens == 'oke') ? 'checked' : ''; ?>>

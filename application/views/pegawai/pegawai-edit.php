@@ -48,21 +48,22 @@
                                 <option disabled selected>Pilih Plant</option>
                                 <?php 
                                 foreach($plant as $val){ ?>
-                                 <option value="<?= $val->uuid; ?>" <?= set_select('plant', $val->uuid) ;?> <?= $pegawai->plant==$val->uuid?'selected':'';?>><?= $val->plant; ?></option>
-                             <?php } ?>
-                         </select>
-                         <div class="invalid-feedback <?= !empty(form_error('plant')) ? 'd-block' : '' ; ?> "><?= form_error('plant') ?></div>
-                     </div>
-                 </div>
-                 <div class="form-group row">
+                                   <option value="<?= $val->uuid; ?>" <?= set_select('plant', $val->uuid) ;?> <?= $pegawai->plant==$val->uuid?'selected':'';?>><?= $val->plant; ?></option>
+                               <?php } ?>
+                           </select>
+                           <div class="invalid-feedback <?= !empty(form_error('plant')) ? 'd-block' : '' ; ?> "><?= form_error('plant') ?></div>
+                       </div>
+                   </div>
+                   <div class="form-group row">
                     <div class="col-sm-6">
                         <label class="form-label font-weight-bold">Tipe User</label>
                         <select class="form-control <?= form_error('tipe_user') ? 'invalid' : '' ?>" name="tipe_user">
                             <option value="0" <?= set_select('tipe_user', '0'); ?> <?= $pegawai->tipe_user == 0?'selected':'';?>>Admin</option>
                             <option value="1" <?= set_select('tipe_user', '1'); ?> <?= $pegawai->tipe_user == 1?'selected':'';?>>Manager</option>
                             <option value="2" <?= set_select('tipe_user', '2'); ?> <?= $pegawai->tipe_user == 2?'selected':'';?>>Supervisor</option>
-                            <option value="3" <?= set_select('tipe_user', '3'); ?> <?= $pegawai->tipe_user == 3?'selected':'';?>>Foreman</option>
-                            <option value="4" <?= set_select('tipe_user', '4'); ?> <?= $pegawai->tipe_user == 4?'selected':'';?>>Staff</option>
+                            <option value="3" <?= set_select('tipe_user', '3'); ?> <?= $pegawai->tipe_user == 3?'selected':'';?>>Foreman / Forelady Produksi</option>
+                            <option value="8" <?= set_select('tipe_user', '8'); ?> <?= $pegawai->tipe_user == 8?'selected':'';?>>Foreman / Forelady QC</option>
+                            <option value="4" <?= set_select('tipe_user', '4'); ?> <?= $pegawai->tipe_user == 4?'selected':'';?>>Inspector</option>
                             <option value="5" <?= set_select('tipe_user', '5'); ?> <?= $pegawai->tipe_user == 5?'selected':'';?>>Enginer</option>
                             <option value="6" <?= set_select('tipe_user', '6'); ?> <?= $pegawai->tipe_user == 6?'selected':'';?>>Warehouse</option>
                             <option value="7" <?= set_select('tipe_user', '7'); ?> <?= $pegawai->tipe_user == 7?'selected':'';?>>Lab</option>

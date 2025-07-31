@@ -31,7 +31,6 @@
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
                             <th>Jenis kontaminan</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th>Action</th>
                         </tr>
@@ -54,17 +53,6 @@
                                 <td><?= $val->jenis_kontaminasi; ?></td>
                                 <td class="text-center">
                                     <?php
-                                    if ($val->status_produksi_false == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi_false == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi_false == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
                                     if ($val->status_spv_false == 0) {
                                         echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
                                     } elseif ($val->status_spv_false == 1) {
@@ -75,23 +63,23 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('falserejection/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Update">
-                                        <i class="fas fa-check fa-lg"></i>
-                                    </a>
-                                    <a href="<?= base_url('falserejection/detail/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail">
-                                        <i class="fas fa-info-circle fa-lg"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </form>
-        </div>
+                                    <a href="<?= base_url('falserejection/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
+                                    <span class="text">Edit</span>
+                                </a>
+                                <a href="<?= base_url('falserejection/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                                    <span class="text">Detail</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php 
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </form>
     </div>
+</div>
 </div>
 </div>
 </div>

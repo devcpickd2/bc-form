@@ -35,6 +35,7 @@
                             <th>Tanggal</th>
                             <th>Area</th>
                             <th>Titik Sampling</th>
+                            <th>Hasil Pemeriksaan</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -51,6 +52,7 @@
                                 <td><?= $datetime; ?></td>
                                 <td><?= $val->area; ?></td>
                                 <td><?= $val->titik_sampling; ?></td>
+                                <td><?= $val->hasil_pemeriksaan; ?></td>
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {

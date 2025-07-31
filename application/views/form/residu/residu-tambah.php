@@ -15,46 +15,46 @@
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('residu/tambah');?>">
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Tanggal</label>
                             <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?php echo date("Y-m-d") ?>">
                             <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('date') ?>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
+                        </div>  
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Area</label>
                             <input type="text" name="area" class="form-control <?= form_error('area') ? 'invalid' : '' ?> " value="<?= set_value('area'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('area')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('area') ?>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Titik Sampling</label>
                             <input type="text" name="titik_sampling" class="form-control <?= form_error('titik_sampling') ? 'invalid' : '' ?> " value="<?= set_value('titik_sampling'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('titik_sampling')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('titik_sampling') ?>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
                             <label class="form-label font-weight-bold">Standar (PPM)</label>
-                            <input type="text" name="standar" class="form-control <?= form_error('standar') ? 'invalid' : '' ?> " value="<?= set_value('standar'); ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('standar')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('standar') ?>
-                            </div>
+                            <p class="form-control-plaintext font-weight-bold">0.1 - 5</p>
+                            <input type="hidden" name="standar" value="0.1 - 5">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Hasil Pemeriksaan (PPM)</label>
                             <input type="text" name="hasil_pemeriksaan" class="form-control <?= form_error('hasil_pemeriksaan') ? 'invalid' : '' ?> " value="<?= set_value('hasil_pemeriksaan'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('hasil_pemeriksaan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('hasil_pemeriksaan') ?>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Keterangan</label>
                             <div class="form-check">
                                 <input class="form-check-input <?= form_error('keterangan') ? 'is-invalid' : '' ?>" 
@@ -84,14 +84,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Tindakan Koreksi</label>
                             <input type="text" name="tindakan" class="form-control <?= form_error('tindakan') ? 'invalid' : '' ?> " value="<?= set_value('tindakan'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('tindakan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('tindakan') ?>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Verifikasi</label>
                             <input type="text" name="verifikasi" class="form-control <?= form_error('verifikasi') ? 'invalid' : '' ?> " value="<?= set_value('verifikasi'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('verifikasi')) ? 'd-block' : '' ; ?> ">

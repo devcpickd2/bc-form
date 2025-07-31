@@ -214,26 +214,26 @@ class Pemeriksaanchemical extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$pemeriksaanchemical_data = $this->pemeriksaanchemical_model->get_by_uuid_pemeriksaanchemical($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$pemeriksaanchemical_data_verif = $this->pemeriksaanchemical_model->get_by_uuid_pemeriksaanchemical_verif($selected_items);
+		$pemeriksaanchemical_data = $this->pemeriksaanchemical_model->get_by_date($tanggal, $plant); 
+		$pemeriksaanchemical_data_verif = $this->pemeriksaanchemical_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$pemeriksaanchemical_data || !$pemeriksaanchemical_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['pemeriksaanchemical'] = $pemeriksaanchemical_data_verif;
 
-
-		if (!$data['pemeriksaanchemical']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
-		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
+		require_once APPPATH . 'third_party/tcpdf/tcpdf.php'; 
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
 		$pdf->setPrintHeader(false); 

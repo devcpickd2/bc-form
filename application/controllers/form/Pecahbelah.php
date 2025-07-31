@@ -15,6 +15,7 @@ class Pecahbelah extends CI_Controller {
 		$this->load->library('session');
 		$this->load->model('auth_model'); 
 		$this->load->model('pecahbelah_model');
+		$this->load->model('bendapecah_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
 		}
@@ -45,7 +46,6 @@ class Pecahbelah extends CI_Controller {
 
 	public function tambah()
 	{
-
 		$rules = $this->pecahbelah_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -54,19 +54,22 @@ class Pecahbelah extends CI_Controller {
 			if ($insert) {
 				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Benda Mudah Pecah berhasil di simpan');
 				redirect('pecahbelah');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Benda Mudah Pecah gagal di simpan');
 				redirect('pecahbelah');
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'pecahbelah');
+		$data = [
+			'active_nav' => 'pecahbelah',
+			'benda_list' => $this->bendapecah_model->get_all_benda()
+		];
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-tambah');
+		$this->load->view('form/pecahbelah/pecahbelah-tambah', $data);
 		$this->load->view('partials/footer');
 	}
+
 
 
 	public function edit($uuid)
@@ -281,7 +284,7 @@ class Pecahbelah extends CI_Controller {
 		$pdf->SetFont('times', '', 10);
 
 		$pdf->Cell(10, 10, 'No.', 1, 0, 'C');
-		$pdf->Cell(40, 10, 'Nama Alat', 1, 0, 'C');
+		$pdf->Cell(40, 10, 'Nama Barang', 1, 0, 'C');
 		$pdf->Cell(40, 10, 'Area / Pemilik', 1, 0, 'C');
 		$pdf->Cell(20, 10, 'Jumlah', 1, 0, 'C');
 		$pdf->Cell(40, 5, 'Kondisi', 1, 0, 'C');
@@ -296,29 +299,36 @@ class Pecahbelah extends CI_Controller {
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
 		$no = 1;
-		foreach ($pecahbelah_data as $pecahbelah) {
+		foreach ($pecahbelah_data as $pecahbelah_item) {
 			$pdf->SetFont('times', '', 9);
 
-			$pecahbelah = json_decode($pecahbelah->benda_pecah);
+			$pecahbelah = json_decode($pecahbelah_item->benda_pecah);
 
 			if ($pecahbelah && is_array($pecahbelah)) {
-				foreach ($pecahbelah as $pecahbelah) {
-					$nama_barang = isset($pecahbelah->nama_barang) ? $pecahbelah->nama_barang : '-';
-					$area = isset($pecahbelah->area) ? $pecahbelah->area : '-';
-					$pemilik = isset($pecahbelah->pemilik) ? $pecahbelah->pemilik : '-';
-					$jumlah = isset($pecahbelah->jumlah) ? $pecahbelah->jumlah : '-';
-					$kondisi_awal = isset($pecahbelah->kondisi_awal) ? $pecahbelah->kondisi_awal : '-';
-					$kondisi_akhir = isset($pecahbelah->kondisi_akhir) ? $pecahbelah->kondisi_akhir : '-';
-					$keterangan = isset($pecahbelah->keterangan) ? $pecahbelah->keterangan : '-';
+				foreach ($pecahbelah as $item) {
+					$nama_barang = isset($item->nama_barang) ? $item->nama_barang : '-';
+					$area = isset($item->area) ? $item->area : '-';
+					$pemilik = isset($item->pemilik) ? $item->pemilik : '-';
+					$jumlah = isset($item->jumlah) ? $item->jumlah : '-';
+					$kondisi_awal = isset($item->kondisi_awal) ? $item->kondisi_awal : '-';
+					$kondisi_akhir = isset($item->kondisi_akhir) ? $item->kondisi_akhir : '-';
+					$keterangan = isset($item->keterangan) ? $item->keterangan : '-';
 
 					$pdf->SetFont('times', '', 8);
-					$pdf->Cell(10, 5, $no, 1, 0, 'C');
-					$pdf->Cell(40, 5, "$nama_barang", 1, 0, 'L');
-					$pdf->Cell(40, 5, "$area" . " / " . "$pemilik", 1, 0, 'L');
-					$pdf->Cell(20, 5, "$jumlah", 1, 0, 'C');
-					$pdf->Cell(20, 5, "$kondisi_awal", 1, 0, 'C');
-					$pdf->Cell(20, 5, "$kondisi_akhir", 1, 0, 'C');
-					$pdf->Cell(40, 5, "$keterangan", 1, 1, 'C');
+					$x = $pdf->GetX();
+					$y = $pdf->GetY();
+					$height_nama_barang = $pdf->getStringHeight(40, $nama_barang);
+					$height_area_pemilik = $pdf->getStringHeight(40, "$area / $pemilik");
+					$height_keterangan = $pdf->getStringHeight(40, $keterangan);
+					$row_height = max($height_nama_barang, $height_area_pemilik, $height_keterangan, 5);
+					$pdf->MultiCell(10, $row_height, $no, 1, 'C', false, 0);
+					$pdf->MultiCell(40, $row_height, $nama_barang, 1, 'L', false, 0);
+					$pdf->MultiCell(40, $row_height, "$area / $pemilik", 1, 'L', false, 0);
+					$pdf->MultiCell(20, $row_height, $jumlah, 1, 'C', false, 0);
+					$pdf->MultiCell(20, $row_height, $kondisi_awal, 1, 'C', false, 0);
+					$pdf->MultiCell(20, $row_height, $kondisi_akhir, 1, 'C', false, 0);
+					$pdf->MultiCell(40, $row_height, $keterangan, 1, 'L', false, 1);
+
 					$no++;
 				}
 			}
@@ -357,16 +367,39 @@ class Pecahbelah extends CI_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
 
-		// Diketahui oleh (Produksi)
+		// // Diketahui oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['pecahbelah']->status_produksi == 1 && !empty($data['pecahbelah']->nama_produksi)) {
+		// 		$update_tanggal_produksi = (new DateTime($data['pecahbelah']->tgl_update_produksi))->format('d-m-Y | H:i');
+		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['pecahbelah']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if ($data['pecahbelah']->status_produksi == 1 && !empty($data['pecahbelah']->nama_produksi)) {
 				$update_tanggal_produksi = (new DateTime($data['pecahbelah']->tgl_update_produksi))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['pecahbelah']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, $data['pecahbelah']->nama_lengkap_produksi, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				$pdf->SetXY(90, $y_verifikasi + 20);
+				$pdf->Cell(35, 5, $update_tanggal_produksi, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}

@@ -49,6 +49,10 @@ class Analisis_model extends CI_Model {
 
 	public function insert()
 	{
+
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -60,7 +64,7 @@ class Analisis_model extends CI_Model {
 		$best_before = $this->input->post('best_before');
 		$jumlah_sampel = $this->input->post('jumlah_sampel');
 		$status_spv = "0";
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_lab = "0";
 
 		$data = array(
@@ -76,6 +80,7 @@ class Analisis_model extends CI_Model {
 			'jumlah_sampel' => $jumlah_sampel,
 			'status_spv' => $status_spv,
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 			'status_lab' => $status_lab
 		);
 
@@ -306,10 +311,52 @@ class Analisis_model extends CI_Model {
 		$plant = $this->session->userdata('plant');
 		return $this->db->get_where('analisis_lab', ['plant' => $plant])->result();
 	}
+	
 	public function delete_by_uuid($uuid)
 	{
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('analisis_lab');
 	}
+
+	public function get_by_date($tanggal, $plant = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('analisis_lab');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+
+	public function get_last_verif_by_date($tanggal, $plant = null)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, tipe_sampel, penyimpanan, nama_lab, tgl_update_lab, status_lab, catatan_lab, status_produksi, tgl_update_produksi');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('analisis_lab');
+
+		return $query->row();
+	}
+
 
 }

@@ -19,11 +19,6 @@ class Produksi_model extends CI_Model {
 				'rules' => 'required'
 			], 
 			[
-				'field' => 'jenis_produk',
-				'label' => 'Kind of Product',
-				'rules' => 'required'
-			],
-			[
 				'field' => 'nama_produk',
 				'label' => 'Produk Name',
 				'rules' => 'required'
@@ -39,15 +34,16 @@ class Produksi_model extends CI_Model {
 	public function insert()
 	{
 		$uuid = Uuid::uuid4()->toString();
-
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$jenis_produk = $this->input->post('jenis_produk');
+		$jenis_produk = $this->input->post('nama_produk');
 		$nama_produk = $this->input->post('nama_produk');
 		$kode_produksi = $this->input->post('kode_produksi');
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_spv = "0";
 
 		$kode = isset($kode) ? $kode : [];
@@ -73,6 +69,7 @@ class Produksi_model extends CI_Model {
 			'premix' => json_encode($premix),
 			'status_spv' => $status_spv,
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 		);
 
 		$this->db->insert('mixing', $data);
@@ -85,7 +82,7 @@ class Produksi_model extends CI_Model {
 
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$jenis_produk = $this->input->post('jenis_produk');
+		$jenis_produk = $this->input->post('nama_produk');
 		$nama_produk = $this->input->post('nama_produk');
 		$kode_produksi = $this->input->post('kode_produksi');
 
@@ -284,10 +281,10 @@ class Produksi_model extends CI_Model {
 				'label' => 'Dough Time',
 				'rules' => 'required'
 			],
-			[
-				'field' => 'mix_dough_waktu_2',
-				'label' => 'Dough Time'
-			],
+			// [
+			// 	'field' => 'mix_dough_waktu_2',
+			// 	'label' => 'Dough Time'
+			// ],
 			[
 				'field' => 'mix_dough_mesin',
 				'label' => 'Machine Number',
@@ -303,10 +300,10 @@ class Produksi_model extends CI_Model {
 				'label' => 'Cutting Dough',
 				'rules' => 'required'
 			],
-			[
-				'field' => 'mix_dough_sens',
-				'label' => 'Sensory'
-			],	
+			// [
+			// 	'field' => 'mix_dough_sens',
+			// 	'label' => 'Sensory'
+			// ],	
 			[
 				'field' => 'mix_dough_suhu_ruang',
 				'label' => 'Room Temperature',
@@ -329,22 +326,22 @@ class Produksi_model extends CI_Model {
 	{
 
 		$mix_dough_waktu_1 = $this->input->post('mix_dough_waktu_1');
-		$mix_dough_waktu_2 = $this->input->post('mix_dough_waktu_2');
+		// $mix_dough_waktu_2 = $this->input->post('mix_dough_waktu_2');
 		$mix_dough_hasil = $this->input->post('mix_dough_hasil');
 		$mix_dough_mesin = $this->input->post('mix_dough_mesin');
 		$mix_dough_cutting = $this->input->post('mix_dough_cutting');
-		$mix_dough_sens = $this->input->post('mix_dough_sens');
+		// $mix_dough_sens = $this->input->post('mix_dough_sens');
 		$mix_dough_suhu_ruang = $this->input->post('mix_dough_suhu_ruang');
 		$mix_dough_rh_ruang = $this->input->post('mix_dough_rh_ruang');
 		$mix_dough_suhu_adonan = $this->input->post('mix_dough_suhu_adonan');
 
 		$data = array(
 			'mix_dough_waktu_1' => $mix_dough_waktu_1,
-			'mix_dough_waktu_2' => $mix_dough_waktu_2,
+			// 'mix_dough_waktu_2' => $mix_dough_waktu_2,
 			'mix_dough_hasil' => $mix_dough_hasil,
 			'mix_dough_mesin' => $mix_dough_mesin,
 			'mix_dough_cutting' => $mix_dough_cutting,
-			'mix_dough_sens' => $mix_dough_sens,
+			// 'mix_dough_sens' => $mix_dough_sens,
 			'mix_dough_suhu_ruang' => $mix_dough_suhu_ruang,
 			'mix_dough_rh_ruang' => $mix_dough_rh_ruang,
 			'mix_dough_suhu_adonan' => $mix_dough_suhu_adonan,
@@ -385,10 +382,10 @@ class Produksi_model extends CI_Model {
 				'label' => 'Fermentation Time',
 				'rules' => 'required'
 			],
-			[
-				'field' => 'fermen_hasil_proof',
-				'label' => 'Fermentation Result'
-			]
+			// [
+			// 	'field' => 'fermen_hasil_proof',
+			// 	'label' => 'Fermentation Result'
+			// ]
 
 		];
 	}
@@ -400,7 +397,7 @@ class Produksi_model extends CI_Model {
 		$fermen_jam_mulai = $this->input->post('fermen_jam_mulai');
 		$fermen_jam_selesai = $this->input->post('fermen_jam_selesai');
 		$fermen_lama_proses = $this->input->post('fermen_lama_proses');
-		$fermen_hasil_proof = $this->input->post('fermen_hasil_proof');
+		// $fermen_hasil_proof = $this->input->post('fermen_hasil_proof');
 
 		$data = array(
 			'fermen_suhu' => $fermen_suhu,
@@ -408,7 +405,7 @@ class Produksi_model extends CI_Model {
 			'fermen_jam_mulai' => $fermen_jam_mulai,
 			'fermen_jam_selesai' => $fermen_jam_selesai,
 			'fermen_lama_proses' => $fermen_lama_proses,
-			'fermen_hasil_proof' => $fermen_hasil_proof,
+			// 'fermen_hasil_proof' => $fermen_hasil_proof,
 
 			'modified_at' => date("Y-m-d H:i:s")
 		);
@@ -434,14 +431,14 @@ class Produksi_model extends CI_Model {
 				'field' => 'electric_baking_expand',
 				'label' => 'Electric Baking Expand'
 			],	
-			[
-				'field' => 'electric_baking_time_high',
-				'label' => 'Electric Baking Time'
-			],	
-			[
-				'field' => 'electric_baking_time_low',
-				'label' => 'Electric Baking Time'
-			],	
+			// [
+			// 	'field' => 'electric_baking_time_high',
+			// 	'label' => 'Electric Baking Time'
+			// ],	
+			// [
+			// 	'field' => 'electric_baking_time_low',
+			// 	'label' => 'Electric Baking Time'
+			// ],	
 			[
 				'field' => 'sens_kematangan',
 				'label' => 'Boiled Sensory'
@@ -471,8 +468,8 @@ class Produksi_model extends CI_Model {
 		$electric_baking_suhu = $this->input->post('electric_baking_suhu');
 		$electric_baking_mesin = $this->input->post('electric_baking_mesin');
 		$electric_baking_expand = $this->input->post('electric_baking_expand');
-		$electric_baking_time_high = $this->input->post('electric_baking_time_high');
-		$electric_baking_time_low = $this->input->post('electric_baking_time_low');
+		// $electric_baking_time_high = $this->input->post('electric_baking_time_high');
+		// $electric_baking_time_low = $this->input->post('electric_baking_time_low');
 		$sens_kematangan = $this->input->post('sens_kematangan');
 		$sens_rasa = $this->input->post('sens_rasa');
 		$sens_aroma = $this->input->post('sens_aroma');
@@ -483,8 +480,8 @@ class Produksi_model extends CI_Model {
 			'electric_baking_suhu' => $electric_baking_suhu,
 			'electric_baking_mesin' => $electric_baking_mesin,
 			'electric_baking_expand' => $electric_baking_expand,
-			'electric_baking_time_high' => $electric_baking_time_high,
-			'electric_baking_time_low' => $electric_baking_time_low,
+			// 'electric_baking_time_high' => $electric_baking_time_high,
+			// 'electric_baking_time_low' => $electric_baking_time_low,
 			'sens_kematangan' => $sens_kematangan,
 			'sens_rasa' => $sens_rasa,
 			'sens_aroma' => $sens_aroma,
@@ -520,10 +517,10 @@ class Produksi_model extends CI_Model {
 				'label' => 'Jam Berhenti Stall',
 				'rules' => 'required',
 			],
-			[
-				'field' => 'stall_aging', 
-				'label' => 'Aging Time'
-			],
+			// [
+			// 	'field' => 'stall_aging', 
+			// 	'label' => 'Aging Time'
+			// ],
 			[
 				'field' => 'stall_kadar_air', 
 				'label' => 'Kadar Air'
@@ -538,7 +535,7 @@ class Produksi_model extends CI_Model {
 		$shift_pack = $this->input->post('shift_pack');
 		$stall_jam_mulai = $this->input->post('stall_jam_mulai');
 		$stall_jam_berhenti = $this->input->post('stall_jam_berhenti');
-		$stall_aging = $this->input->post('stall_aging'); 
+		// $stall_aging = $this->input->post('stall_aging'); 
 		$stall_kadar_air = $this->input->post('stall_kadar_air'); 
 
 		$data = array(
@@ -547,7 +544,7 @@ class Produksi_model extends CI_Model {
 			'shift_pack' => $shift_pack,
 			'stall_jam_mulai' => $stall_jam_mulai,
 			'stall_jam_berhenti' => $stall_jam_berhenti,
-			'stall_aging' => $stall_aging,
+			// 'stall_aging' => $stall_aging,
 			'stall_kadar_air' => $stall_kadar_air,
 			'modified_at' => date("Y-m-d H:i:s")
 		);
@@ -556,31 +553,37 @@ class Produksi_model extends CI_Model {
 		return($this->db->affected_rows() > 0) ? true :false;
 	}
 
-	public function rules_grinding()
-	{
-		return [
-			[
-				'field' => 'hasil_grinding',
-				'label' => 'Result of Grinding',
-				'rules' => 'required'
-			]
-		];
-	}
+	// public function rules_grinding()
+	// {
+	// 	return [
+	// 		[
+	// 			'field' => 'hasil_grinding',
+	// 			'label' => 'Result of Grinding',
+	// 			'rules' => 'required'
+	// 		],
+	// 		[
+	// 			'field' => 'keterangan_grinding',
+	// 			'label' => 'Notes'
+	// 		]
+	// 	];
+	// }
 
-	public function grind($uuid)
-	{
-		$username = $this->session->userdata('username');
-		$hasil_grinding = $this->input->post('hasil_grinding'); 
+	// public function grind($uuid)
+	// {
+	// 	$username = $this->session->userdata('username');
+	// 	$hasil_grinding = $this->input->post('hasil_grinding'); 
+	// 	$keterangan_grinding = $this->input->post('keterangan_grinding'); 
 
-		$data = array(
-			'username' => $username,
-			'hasil_grinding' => $hasil_grinding,
-			'modified_at' => date("Y-m-d H:i:s")
-		);
+	// 	$data = array(
+	// 		'username' => $username,
+	// 		'hasil_grinding' => $hasil_grinding,
+	// 		'keterangan_grinding' => $keterangan_grinding,
+	// 		'modified_at' => date("Y-m-d H:i:s")
+	// 	);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
-	}
+	// 	$this->db->update('mixing', $data, array('uuid' => $uuid));
+	// 	return($this->db->affected_rows() > 0) ? true :false;
+	// }
 
 	public function rules_drying()
 	{
@@ -624,21 +627,21 @@ class Produksi_model extends CI_Model {
 	public function rules_packing()
 	{
 		return [
-			[
-				'field' => 'packing_nama_produk',
-				'label' => 'Product Name',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'packing_kode_kemasan',
-				'label' => 'packaging code',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'packing_bb',
-				'label' => 'Best before',
-				'rules' => 'required'
-			],
+			// [
+			// 	'field' => 'packing_nama_produk',
+			// 	'label' => 'Product Name',
+			// 	'rules' => 'required'
+			// ],
+			// [
+			// 	'field' => 'packing_kode_kemasan',
+			// 	'label' => 'packaging code',
+			// 	'rules' => 'required'
+			// ],
+			// [
+			// 	'field' => 'packing_bb',
+			// 	'label' => 'Best before',
+			// 	'rules' => 'required'
+			// ],
 			[
 				'field' => 'produk_hasil', 
 				'label' => 'Product result',
@@ -670,29 +673,40 @@ class Produksi_model extends CI_Model {
 				'rules' => 'required',
 			],
 			[
-				'field' => 'packing_ketepatan', 
-				'label' => 'Packaging condition'
+				'field' => 'gambar_kode_kemasan',
+				'label' => 'Evidence Kode Kemasan',
+				'rules' => 'callback_file_check_kode'
 			],
-			[
-				'field' => 'packing_suhu_before', 
-				'label' => 'Packaging Temperature'
-			],
-			[
-				'field' => 'packing_kadar_air', 
-				'label' => 'Packaging Water Content'
-			],
-			[
-				'field' => 'packing_bulk_density', 
-				'label' => 'Bulk Density'
-			],
-			[
-				'field' => 'packing_kode_supplier', 
-				'label' => 'Supplier Code'
-			],
-			[
-				'field' => 'packing_net_weight', 
-				'label' => 'Net Weight'
-			],
+			// [
+			// 	'field' => 'gambar_kondisi_kemasan',
+			// 	'label' => 'Evidence Kondisi Kemasan',
+			// 	'rules' => 'callback_file_check_kondisi'
+			// ],
+
+			// [
+			// 	'field' => 'packing_ketepatan', 
+			// 	'label' => 'Packaging condition'
+			// ],
+			// [
+			// 	'field' => 'packing_suhu_before', 
+			// 	'label' => 'Packaging Temperature'
+			// ],
+			// [
+			// 	'field' => 'packing_kadar_air', 
+			// 	'label' => 'Packaging Water Content'
+			// ],
+			// [
+			// 	'field' => 'packing_bulk_density', 
+			// 	'label' => 'Bulk Density'
+			// ],
+			// [
+			// 	'field' => 'packing_kode_supplier', 
+			// 	'label' => 'Supplier Code'
+			// ],
+			// [
+			// 	'field' => 'packing_net_weight', 
+			// 	'label' => 'Net Weight'
+			// ],
 			[
 				'field' => 'catatan', 
 				'label' => 'Notes'
@@ -703,46 +717,65 @@ class Produksi_model extends CI_Model {
 	public function pack($uuid)
 	{
 		$username = $this->session->userdata('username');
-		$packing_nama_produk = $this->input->post('packing_nama_produk'); 
-		$packing_kode_kemasan = $this->input->post('packing_kode_kemasan');
-		$packing_bb = $this->input->post('packing_bb');
-		$produk_hasil = $this->input->post('produk_hasil');
-		$produk_rasa = $this->input->post('produk_rasa');
-		$produk_aroma = $this->input->post('produk_aroma');
-		$produk_tekstur = $this->input->post('produk_tekstur');
-		$produk_warna = $this->input->post('produk_warna'); 
-		$packing_kondisi_kemasan = $this->input->post('packing_kondisi_kemasan');
-		$packing_ketepatan = $this->input->post('packing_ketepatan');
-		$packing_suhu_before = $this->input->post('packing_suhu_before');
-		$packing_kadar_air = $this->input->post('packing_kadar_air');
-		$packing_bulk_density = $this->input->post('packing_bulk_density');
-		$packing_kode_supplier = $this->input->post('packing_kode_supplier');
-		$packing_net_weight = $this->input->post('packing_net_weight');
-		$catatan = $this->input->post('catatan');
+		$old_data = $this->db->get_where('mixing', ['uuid' => $uuid])->row();
+
+// === Proses Upload Gambar Kode Kemasan ===
+		$gambar_kode_kemasan = $old_data->gambar_kode_kemasan; 
+		if (!empty($_FILES['gambar_kode_kemasan']['name'])) {
+			$config['upload_path']   = './uploads/';
+			$config['allowed_types'] = 'jpg|jpeg|png|gif|pdf';
+			$config['file_name']     = 'gambar_kode_kemasan' . time();
+			$config['overwrite']     = true;
+			$config['max_size']      = 2048;
+
+			$this->load->library('upload', $config); 
+			if ($this->upload->do_upload('gambar_kode_kemasan')) {
+				$upload_data = $this->upload->data();
+				$gambar_kode_kemasan = $upload_data['file_name'];
+			} else {
+				log_message('error', $this->upload->display_errors());
+			}
+		}
+
+// === Proses Upload Gambar Kondisi Kemasan ===
+		$gambar_kondisi_kemasan = $old_data->gambar_kondisi_kemasan; 
+		if (!empty($_FILES['gambar_kondisi_kemasan']['name'])) {
+			$config['file_name'] = 'gambar_kondisi_kemasan' . time();
+			$this->upload->initialize($config);
+			if ($this->upload->do_upload('gambar_kondisi_kemasan')) {
+				$upload_data = $this->upload->data();
+				$gambar_kondisi_kemasan = $upload_data['file_name'];
+			} else {
+				log_message('error', $this->upload->display_errors());
+			}
+		}
+
 
 		$data = array(
 			'username' => $username,
-			'packing_nama_produk' => $packing_nama_produk,
-			'packing_kode_kemasan' => $packing_kode_kemasan,
-			'packing_bb' => $packing_bb,
-			'produk_hasil' => $produk_hasil,
-			'produk_rasa' => $produk_rasa,
-			'produk_aroma' => $produk_aroma,
-			'produk_tekstur' => $produk_tekstur,
-			'produk_warna' => $produk_warna,
-			'packing_kondisi_kemasan' => $packing_kondisi_kemasan,
-			'packing_ketepatan' => $packing_ketepatan,
-			'packing_suhu_before' => $packing_suhu_before,
-			'packing_kadar_air' => $packing_kadar_air,
-			'packing_bulk_density' => $packing_bulk_density,
-			'packing_kode_supplier' => $packing_kode_supplier,
-			'packing_net_weight' => $packing_net_weight,
-			'catatan' => $catatan,
+			// 'packing_nama_produk' => $this->input->post('packing_nama_produk'),
+			// 'packing_kode_kemasan' => $this->input->post('packing_kode_kemasan'),
+			// 'packing_bb' => $this->input->post('packing_bb'),
+			'produk_hasil' => $this->input->post('produk_hasil'),
+			'produk_rasa' => $this->input->post('produk_rasa'),
+			'produk_aroma' => $this->input->post('produk_aroma'),
+			'produk_tekstur' => $this->input->post('produk_tekstur'),
+			'produk_warna' => $this->input->post('produk_warna'),
+			'packing_kondisi_kemasan' => $this->input->post('packing_kondisi_kemasan'),
+			// 'packing_ketepatan' => $this->input->post('packing_ketepatan'),
+			// 'packing_suhu_before' => $this->input->post('packing_suhu_before'),
+			// 'packing_kadar_air' => $this->input->post('packing_kadar_air'),
+			// 'packing_bulk_density' => $this->input->post('packing_bulk_density'),
+			// 'packing_kode_supplier' => $this->input->post('packing_kode_supplier'),
+			// 'packing_net_weight' => $this->input->post('packing_net_weight'),
+			'catatan' => $this->input->post('catatan'),
+			'gambar_kode_kemasan' => $gambar_kode_kemasan,
+			// 'gambar_kondisi_kemasan' => $gambar_kondisi_kemasan,
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
 		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		return ($this->db->affected_rows() > 0) ? true : false;
 	}
 
 
@@ -758,7 +791,7 @@ class Produksi_model extends CI_Model {
 				'field' => 'catatan_spv',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 
@@ -911,4 +944,69 @@ class Produksi_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('mixing');
 	}
+
+	public function getLastKodeProduksiHariIni($plant = null)
+	{
+		$today = date('Y-m-d');
+		$this->db->select('kode_produksi');
+		$this->db->from('mixing');
+		$this->db->where('DATE(created_at)', $today);
+
+    // Tambahkan filter plant jika tersedia
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('created_at', 'DESC');
+		$this->db->limit(1);
+
+		$query = $this->db->get();
+		if ($query->num_rows() > 0) {
+			return $query->row()->kode_produksi;
+		}
+		return null;
+	}
+
+	public function get_mixing_salatiga_by_date($plant_uuid, $tanggal)
+	{
+		$this->db->where('plant', $plant_uuid);
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->order_by('id', 'DESC');
+		$query = $this->db->get('mixing');
+		return $query->row(); 
+	}
+	public function get_latest_by_plant($plant_uuid)
+	{
+		return $this->db
+		->where('plant', $plant_uuid)
+		->order_by('id', 'DESC')
+		->get('mixing')
+		->row();
+	}
+
+	public function get_produksi_by_plant_and_date($plant_uuid, $tanggal)
+	{
+		$this->db->where('plant', $plant_uuid);
+		$this->db->where('date', $tanggal);
+		$query = $this->db->get('mixing'); 
+		return $query->row();
+	}
+	public function get_produk_by_tanggal($tanggal)
+	{
+		$this->db->select('nama_produk');
+		$this->db->from('mixing');
+		$this->db->where('date', $tanggal); 
+		$this->db->group_by('nama_produk');
+		return $this->db->get()->result();
+	}
+
+
+	public function get_data_by_tanggal_produk($tanggal, $produk)
+	{
+		return $this->db->get_where('mixing', [
+			'date' => $tanggal,
+			'nama_produk' => $produk
+		])->result();
+	}
+
 }

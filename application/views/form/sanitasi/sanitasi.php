@@ -36,7 +36,6 @@
                             <th>Shift</th>
                             <th>Waktu</th>
                             <th class="text-center">Hasil Pemeriksaan</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -86,20 +85,6 @@
                                     </tbody>
                                 </table>
                             </td>
-
-                            <!-- Status Produksi -->
-                            <td class="text-center">
-                                <?php
-                                if ($val->status_produksi == 0) {
-                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                } elseif ($val->status_produksi == 1) {
-                                    echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                } elseif ($val->status_produksi == 2) {
-                                    echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                }
-                                ?>
-                            </td>
-
                             <!-- Status SPV -->
                             <td class="text-center">
                                 <?php
@@ -115,15 +100,15 @@
 
                             <!-- Aksi -->
                             <td class="text-center">
-                                <a href="<?= base_url('sanitasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm mb-1">
-                                    <i class="fas fa-edit"></i> Edit
+                                <a href="<?= base_url('sanitasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
+                                    <span class="text">Edit</span>
                                 </a>
-                                <a href="<?= base_url('sanitasi/detail/'.$val->uuid);?>" class="btn btn-success btn-sm mb-1">
-                                    <i class="fas fa-eye"></i> Detail
+                                <a href="<?= base_url('sanitasi/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                                    <span class="text">Detail</span>
                                 </a>
-                                <a href="<?= base_url('sanitasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
+                                <a href="<?= base_url('sanitasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    <span class="text">Delete</span>
+                                </a>                            
                             </td>
                         </tr>
                     <?php } ?>

@@ -37,7 +37,6 @@
                             <th>Bukti</th>
                             <th>Produk</th>
                             <th>Kode Produksi</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -64,17 +63,6 @@
                                 <td><?= $val->kode_produksi; ?></td>
                                 <td class="text-center">
                                     <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
                                     if ($val->status_spv == 0) {
                                         echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
                                     } elseif ($val->status_spv == 1) {
@@ -85,26 +73,27 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('kontaminasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                        <i class="fas fa-edit fa-lg"></i>
+                                    <a href="<?= base_url('kontaminasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
+                                        <span class="text">Edit</span>
                                     </a>
-                                    <a href="<?= base_url('kontaminasi/detail/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail">
-                                        <i class="fas fa-info-circle fa-lg"></i>
+                                    <a href="<?= base_url('kontaminasi/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                                        <span class="text">Detail</span>
                                     </a>
-                                    <a href="<?= base_url('kontaminasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                       <i class="fas fa-trash fa-lg"></i>
-                                   </td>
-                               </tr>
-                               <?php 
-                               $no++;
-                           }
-                           ?>
-                       </tbody>
-                   </table>
-               </div>
-           </div>
-       </div>
-   </div>
+                                    <a href="<?= base_url('kontaminasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <span class="text">Delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php 
+                            $no++;
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <script>

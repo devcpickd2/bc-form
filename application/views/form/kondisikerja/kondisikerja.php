@@ -88,7 +88,6 @@
                             <th>Problem</th>
                             <th>Tindakan Koreksi</th>
                             <th>Verifikasi</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -98,7 +97,6 @@
                         if (empty($kondisikerja)) {
                             echo ' <tr>
                             <td class="text-center">-</td>
-                            <td>-</td>
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
@@ -129,16 +127,6 @@
                                     <td><?= $val->problem_higiene; ?></td>
                                     <td><?= $val->tindakan_higiene; ?></td>
                                     <td><?= $val->verifikasi_higiene; ?></td>
-
-                                    <td class="text-center" rowspan="3">
-                                        <?php
-                                        switch ($val->status_produksi) {
-                                            case 0: echo '<span class="text-muted font-weight-bold">Created</span>'; break;
-                                            case 1: echo '<span class="text-success font-weight-bold">Checked</span>'; break;
-                                            case 2: echo '<span class="text-danger font-weight-bold">Re-Check</span>'; break;
-                                        }
-                                        ?>
-                                    </td>
                                     <td class="text-center" rowspan="3">
                                         <?php
                                         switch ($val->status_spv) {
@@ -149,15 +137,15 @@
                                         ?>
                                     </td>
                                     <td class="text-center" rowspan="3">
-                                        <a href="<?= base_url('kondisikerja/edit/'.$val->uuid); ?>" class="btn btn-warning btn-sm">
-                                            Edit
+                                        <a href="<?= base_url('kondisikerja/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
+                                            <span class="text">Edit</span>
                                         </a>
-                                        <a href="<?= base_url('kondisikerja/detail/'.$val->uuid); ?>" class="btn btn-success btn-sm">
-                                            Detail
+                                        <a href="<?= base_url('kondisikerja/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                                            <span class="text">Detail</span>
                                         </a>
-                                        <a href="<?= base_url('kondisikerja/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <a href="<?= base_url('kondisikerja/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
                                             <span class="text">Delete</span>
-                                        </a>
+                                        </a> 
                                     </td>
                                 </tr>
                                 <tr>

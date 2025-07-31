@@ -24,34 +24,32 @@ class Larutan_model extends CI_Model {
 
 	public function insert()
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
 		$catatan = $this->input->post('catatan');
 		$status_spv = "0";
-		$status_produksi = "0";
+		$status_produksi = "1";
 
-		$nama_bahan = $this->input->post('nama_bahan');
+	// Ambil data array dari form
+		$bahan = $this->input->post('bahan');
 		$kadar = $this->input->post('kadar');
 		$bahan_kimia = $this->input->post('bahan_kimia');
 		$air_bersih = $this->input->post('air_bersih');
 		$volume_akhir = $this->input->post('volume_akhir');
 		$kebutuhan = $this->input->post('kebutuhan');
-		$keterangan = $this->input->post('keterangan'); 
+		$keterangan = $this->input->post('keterangan');
 		$tindakan = $this->input->post('tindakan');
 		$verifikasi = $this->input->post('verifikasi');
 
-		$data = [];
+		$nama_bahan = [];
 
-		for ($i = 0; $i < count($nama_bahan); $i++) {
-			$data[] = [
-				'uuid' => Uuid::uuid4()->toString(),
-				'username' => $username,
-				'plant' => $plant,
-				'date' => $date,
-				'shift' => $shift,
-				'nama_bahan' => $nama_bahan[$i],
+		for ($i = 0; $i < count($bahan); $i++) {
+			$nama_bahan[] = [
+				'bahan' => $bahan[$i],
 				'kadar' => $kadar[$i],
 				'bahan_kimia' => $bahan_kimia[$i],
 				'air_bersih' => $air_bersih[$i],
@@ -59,15 +57,26 @@ class Larutan_model extends CI_Model {
 				'kebutuhan' => $kebutuhan[$i],
 				'keterangan' => isset($keterangan[$i]) ? 'Sesuai' : '',
 				'tindakan' => $tindakan[$i],
-				'verifikasi' => $verifikasi[$i],
-				'catatan' => $catatan,
-				'status_spv' => $status_spv,
-				'status_produksi' => $status_produksi,
-				'created_at' => date('Y-m-d H:i:s') 
+				'verifikasi' => $verifikasi[$i]
 			];
 		}
 
-		$this->db->insert_batch('larutan', $data);
+	// Simpan satu baris data ke DB, nama_bahan disimpan dalam bentuk JSON
+		$data = [
+			'uuid' => Uuid::uuid4()->toString(),
+			'username' => $username,
+			'plant' => $plant,
+			'date' => $date,
+			'shift' => $shift,
+			'nama_bahan' => json_encode($nama_bahan),
+			'catatan' => $catatan,
+			'status_spv' => $status_spv,
+			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
+			'created_at' => date('Y-m-d H:i:s')
+		];
+
+		$this->db->insert('larutan', $data);
 		return ($this->db->affected_rows() > 0);
 	}
 
@@ -77,38 +86,50 @@ class Larutan_model extends CI_Model {
 		$plant        = $this->session->userdata('plant');
 		$date         = $this->input->post('date');
 		$shift        = $this->input->post('shift');
-		$nama_bahan   = $this->input->post('nama_bahan');
-		$kadar        = $this->input->post('kadar');
-		$bahan_kimia  = $this->input->post('bahan_kimia');
-		$air_bersih   = $this->input->post('air_bersih');
-		$volume_akhir = $this->input->post('volume_akhir');
-		$kebutuhan    = $this->input->post('kebutuhan');
-		$keterangan   = $this->input->post('keterangan') ? 'Sesuai' : 'Tidak Sesuai';
-		$tindakan     = $this->input->post('tindakan');
-		$verifikasi   = $this->input->post('verifikasi');
 		$catatan      = $this->input->post('catatan');
 
-		$data = array(
+		$bahan         = $this->input->post('bahan');
+		$kadar         = $this->input->post('kadar');
+		$bahan_kimia   = $this->input->post('bahan_kimia');
+		$air_bersih    = $this->input->post('air_bersih');
+		$volume_akhir  = $this->input->post('volume_akhir');
+		$kebutuhan     = $this->input->post('kebutuhan');
+		$keterangan    = $this->input->post('keterangan');
+		$tindakan      = $this->input->post('tindakan');
+		$verifikasi    = $this->input->post('verifikasi');
+
+		$nama_bahan = [];
+
+		for ($i = 0; $i < count($bahan); $i++) {
+			$nama_bahan[] = [
+				'bahan'       => $bahan[$i],
+				'kadar'       => $kadar[$i],
+				'bahan_kimia' => $bahan_kimia[$i],
+				'air_bersih'  => $air_bersih[$i],
+				'volume_akhir'=> $volume_akhir[$i],
+				'kebutuhan'   => $kebutuhan[$i],
+				'keterangan'  => isset($keterangan[$i]) ? 'Sesuai' : '',
+				'tindakan'    => $tindakan[$i],
+				'verifikasi'  => $verifikasi[$i],
+			];
+		}
+
+		$data = [
 			'username'     => $username,
 			'plant'        => $plant,
 			'date'         => $date,
 			'shift'        => $shift,
-			'nama_bahan'   => $nama_bahan,
-			'kadar'        => $kadar,
-			'bahan_kimia'  => $bahan_kimia,
-			'air_bersih'   => $air_bersih,
-			'volume_akhir' => $volume_akhir,
-			'kebutuhan'    => $kebutuhan,
-			'keterangan'   => $keterangan,
-			'tindakan'     => $tindakan,
-			'verifikasi'   => $verifikasi,
+			'nama_bahan'   => json_encode($nama_bahan),
 			'catatan'      => $catatan,
-			'modified_at'  => date("Y-m-d H:i:s")
-		);
+			'modified_at'  => date('Y-m-d H:i:s')
+		];
 
-		$this->db->update('larutan', $data, array('uuid' => $uuid));
-		return ($this->db->affected_rows() > 0) ? true : false;
+		$this->db->where('uuid', $uuid);
+		$this->db->update('larutan', $data);
+
+		return ($this->db->affected_rows() > 0);
 	}
+
 
 	public function rules_verifikasi()
 	{
@@ -247,27 +268,52 @@ class Larutan_model extends CI_Model {
 		return $this->db->delete('larutan');
 	}
 
-	public function get_by_date($tanggal)
+	public function get_by_date($tanggal, $plant = null, $shift = null)
 	{
-		$plant = $this->session->userdata('plant');
-		$this->db->where('DATE(date)', $tanggal);
-		$this->db->where('plant', $plant); 
-		$this->db->order_by('created_at', 'ASC');
-		return $this->db->get('larutan')->result();
-	}
+		if (empty($tanggal)) {
+			return false;
+		}
 
-	public function get_by_date_verif($tanggal)
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('larutan');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+	
+	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
 	{
-		$plant = $this->session->userdata('plant');
 		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, shift, status_produksi, tgl_update_produksi');
 		$this->db->where('DATE(date)', $tanggal);
-		$this->db->where('plant', $plant);
-		// $this->db->where('status_spv', 1);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
 		$this->db->order_by('tgl_update_spv', 'DESC');
 		$this->db->limit(1);
 		$query = $this->db->get('larutan');
 
-		return $query->row(); 
+		return $query->row();
 	}
 
 

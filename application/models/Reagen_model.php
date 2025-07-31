@@ -189,7 +189,7 @@ class Reagen_model extends CI_Model {
 
 	public function get_by_uuid_reagen_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update, date');
+		$this->db->select('nama_spv, tgl_update_spv, date');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv', 'DESC');   
 		$this->db->limit(1);  
@@ -197,23 +197,63 @@ class Reagen_model extends CI_Model {
 
 		$data_reagen = $query->row();  
 		return $data_reagen; 
+	} 
+
+	// public function get_Reagen_by_month($start, $end)
+	// {
+	// 	$this->db->where('date >=', $start);
+	// 	$this->db->where('date <=', $end);
+	// 	$this->db->order_by('date', 'ASC'); 
+	// 	return $this->db->get('reagen')->result();
+	// }
+
+	// public function get_one_verified_by_month($start, $end)
+	// {
+	// 	$this->db->where('date >=', $start);
+	// 	$this->db->where('date <=', $end);
+	// 	$this->db->where('status_spv', 1);
+	// 	$this->db->limit(1);
+	// 	return $this->db->get('reagen')->row();
+	// }
+
+	public function get_by_month($start_date, $end_date, $plant = null)
+	{
+		// $this->db->select('date, standar, hasil_pemeriksaan, keterangan, tindakan, verifikasi, username, catatan'); 
+
+		$this->db->where('date >=', $start_date);
+		$this->db->where('date <=', $end_date);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('reagen');
+
+		log_message('debug', 'Query get_by_month: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
 	}
 
-	public function get_Reagen_by_month($start, $end)
+	public function get_last_verif_by_month($start_date, $end_date, $plant = null)
 	{
-		$this->db->where('date >=', $start);
-		$this->db->where('date <=', $end);
-		$this->db->order_by('date', 'ASC'); 
-		return $this->db->get('reagen')->result();
-	}
+		$this->db->select('nama_spv, tgl_update_spv, username, date');
+		$this->db->where('date >=', $start_date);
+		$this->db->where('date <=', $end_date);
 
-	public function get_one_verified_by_month($start, $end)
-	{
-		$this->db->where('date >=', $start);
-		$this->db->where('date <=', $end);
-		$this->db->where('status_spv', 1);
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
 		$this->db->limit(1);
-		return $this->db->get('reagen')->row();
+		$query = $this->db->get('reagen'); 
+
+		return $query->row();
 	}
 
 	public function get_data_by_plant()

@@ -1,154 +1,145 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Pemeriksaan Benda Mudah Pecah</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb"> 
-            <li class="breadcrumb-item">
-                <a href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('pecahbelah'); ?>">
-                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Benda Mudah Pecah</a>
-                </li>
-            </ol>
-        </nav>
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="form-group row">
-                    <div class="table-responsive">
-                        <?php 
-                        $datetime = new DateTime($pecahbelah->date);
-                        $datetime = $datetime->format('d-m-Y');
-                        ?>
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:center;" colspan="8">PEMERIKSAAN BENDA MUDAH PECAH</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="2" style="text-align:left;"><b>Tanggal: <?= $datetime; ?></b></td>
-                                    <td colspan="6" style="text-align:left;"><b>Shift: <?= $pecahbelah->shift; ?></b></td>
-                                </tr>
-                                <?php
-                                $breakable = json_decode($pecahbelah->benda_pecah, true);
-                                if (!is_array($breakable)) $breakable = [];
-                                ?>
-                                <tr>
-                                    <th colspan="8" style="text-align:center;">Daftar Alat</th>
-                                </tr>
-                                <tr>
-                                    <th style="text-align:center;">No</th>
-                                    <th style="text-align:center;">Nama Alat</th>
-                                    <th style="text-align:center;">Area</th>
-                                    <th style="text-align:center;">Pemilik</th>
-                                    <th style="text-align:center;">Jumlah</th>
-                                    <th style="text-align:center;">Awal Shift</th>
-                                    <th style="text-align:center;">Akhir Shift</th>
-                                    <th style="text-align:center;">Keterangan</th>
-                                </tr>
-                                <?php $no = 1; foreach ($breakable as $row): ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><?= htmlspecialchars($row['nama_barang']) ?></td>
-                                    <td><?= htmlspecialchars($row['area']) ?></td>
-                                    <td><?= htmlspecialchars($row['pemilik']) ?></td>
-                                    <td><?= htmlspecialchars($row['jumlah']) ?></td>
-                                    <td><?= htmlspecialchars($row['kondisi_awal']) ?></td>
-                                    <td><?= htmlspecialchars($row['kondisi_akhir']) ?></td>
-                                    <td><?= htmlspecialchars($row['keterangan']) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
+    <!-- <h1 class="h3 mb-3 text-gray-800 font-weight-bold text-center">Pemeriksaan Benda Mudah Pecah</h1> -->
 
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a class="text-white" href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('pecahbelah'); ?>">
+                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Benda Mudah Pecah
+                </a>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <?php 
+                $datetime = new DateTime($pecahbelah->date);
+                $formattedDate = $datetime->format('d-m-Y');
+                $breakable = json_decode($pecahbelah->benda_pecah, true);
+                if (!is_array($breakable)) $breakable = [];
+                ?>
+                <table class="table table-bordered" cellspacing="0">
+                    <thead class="text-center">
+                        <tr>
+                            <th colspan="8" class="text-center font-weight-bold">PEMERIKSAAN BENDA MUDAH PECAH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2"><b>Tanggal:</b> <?= $formattedDate; ?></td>
+                            <td><b>Shift:</b> <?= $pecahbelah->shift; ?></td>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr class="bg-light text-center">
+                            <td colspan="8" class="font-weight-bold">Daftar Alat</td>
+                        </tr>
+
+                        <tr class="table-primary text-center">
+                            <th>No</th>
+                            <th>Nama Alat</th>
+                            <th>Area</th>
+                            <th>Pemilik</th>
+                            <th>Jumlah</th>
+                            <th>Awal Shift</th>
+                            <th>Akhir Shift</th>
+                            <th>Keterangan</th>
+                        </tr>
+
+                        <?php $no = 1; foreach ($breakable as $row): ?>
                             <tr>
-                                <th style="text-align:center;" colspan="8">VERIFIKASI</th>
+                                <td class="text-center"><?= $no++ ?></td>
+                                <td><?= htmlspecialchars($row['nama_barang']) ?></td>
+                                <td><?= htmlspecialchars($row['area']) ?></td>
+                                <td><?= htmlspecialchars($row['pemilik']) ?></td>
+                                <td><?= htmlspecialchars($row['jumlah']) ?></td>
+                                <td><?= htmlspecialchars($row['kondisi_awal']) ?></td>
+                                <td><?= htmlspecialchars($row['kondisi_akhir']) ?></td>
+                                <td><?= htmlspecialchars($row['keterangan']) ?></td>
                             </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">QC Awal Shift</td>
-                                <td colspan="6"><?= htmlspecialchars($pecahbelah->username); ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">QC Akhir Shift</td>
-                                <td colspan="6"><?= htmlspecialchars($pecahbelah->qc_update); ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">Produksi</td>
-                                <td colspan="6"><?= $pecahbelah->nama_produksi;?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">Diketahui Produksi</td>
-                                <td colspan="6">
-                                    <?php
-                                    if ($pecahbelah->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($pecahbelah->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($pecahbelah->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">Catatan Produksi</td>
-                                <td colspan="6"><?= !empty($pecahbelah->catatan_produksi) ? $pecahbelah->catatan_produksi : 'Tidak ada'; ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">Disetujui Supervisor</td>
-                                <td colspan="6">
-                                    <?php
-                                    if ($pecahbelah->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($pecahbelah->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($pecahbelah->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align:left">Catatan Supervisor</td>
-                                <td colspan="6"><?= !empty($pecahbelah->catatan_spv) ? htmlspecialchars($pecahbelah->catatan_spv) : 'Tidak ada'; ?></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach; ?>
+
+                        <tr class="table-primary text-center">
+                            <th colspan="8">VERIFIKASI</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>QC Awal Shift</b></td>
+                            <td colspan="6"><?= htmlspecialchars($pecahbelah->username); ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>QC Akhir Shift</b></td>
+                            <td colspan="6"><?= htmlspecialchars($pecahbelah->qc_update); ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>Produksi</b></td>
+                            <td colspan="6"><?= htmlspecialchars($pecahbelah->nama_produksi); ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>Disetujui Supervisor</b></td>
+                            <td colspan="6">
+                                <?php
+                                switch ($pecahbelah->status_spv) {
+                                    case 1:
+                                        echo '<span class="text-success font-weight-bold">Verified</span>';
+                                        break;
+                                    case 2:
+                                        echo '<span class="text-danger font-weight-bold">Revision</span>';
+                                        break;
+                                    default:
+                                        echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                        break;
+                                }
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>Catatan Supervisor</b></td>
+                            <td colspan="6"><?= !empty($pecahbelah->catatan_spv) ? htmlspecialchars($pecahbelah->catatan_spv) : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-</div>
-
-<style type="text/css">
+<style>
     .breadcrumb {
         background-color: #2E86C1;
-    }
-    .no-border {
-        border: none;
-        box-shadow: none;
-    }
-    .table {
-        width: 80%; 
-        font-size: 16px; 
-        margin: 0 auto; 
-        border-collapse: collapse;
-    }
-    .table, .table th, .table td {
-        border: 1px solid #ddd;
-    }
-    .table th, .table td {
-        padding: 6px 8px;
-        text-align: left;
-        word-wrap: break-word;
-        white-space: normal !important;
-    }
-    .table td {
-        white-space: nowrap;
+        padding: 8px 16px;
+        border-radius: 0.25rem;
     }
 
-    .table th:first-child,
-    .table td:first-child {
-        width: 50px;
-        max-width: 50px;
-        text-align: center;
-        white-space: nowrap;
+    .breadcrumb .breadcrumb-item a {
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .breadcrumb .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
+    .table {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .table td, .table th {
+        padding: 10px 12px;
+        vertical-align: middle;
+        word-break: break-word;
+    }
+
+    @media (max-width: 768px) {
+        .table td, .table th {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        h1.h3 {
+            font-size: 20px;
+        }
     }
 </style>

@@ -73,23 +73,6 @@
                                     <td colspan="5"><?= $analisis->nama_produksi;?></td>
                                 </tr>
                                 <tr>
-                                    <td>Diketahui Produksi</td>
-                                    <td colspan="5">
-                                        <?php
-                                        if ($analisis->status_produksi == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($analisis->status_produksi == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                        } elseif ($analisis->status_produksi == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                        }
-                                    ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan Produksi</td>
-                                    <td colspan="5"><?= !empty($analisis->catatan_produksi) ? $analisis->catatan_produksi : 'Tidak ada'; ?></td>
-                                </tr>
-                                <tr>
                                     <td>LAB</td>
                                     <td colspan="5"><?= $analisis->nama_lab;?></td>
                                 </tr>

@@ -40,7 +40,7 @@
                             <th>Username</th>
                             <th>Plant</th>
                             <th>Departemen</th>
-                            <!-- <th>Tipe User</th> -->
+                            <th>Tipe User</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -54,9 +54,9 @@
                                 <td><?= $val->nama; ?></td>
                                 <td><?= $val->email; ?></td>
                                 <td><?= $val->username; ?></td>
-                                <td><?= $val->plant; ?></td>
+                                <td><?= $val->nama_plant; ?></td>
                                 <td><?= $val->departemen; ?></td>
-                                <!-- <td>
+                                <td>
                                     <?php
                                     if ($val->tipe_user == 0) {
                                         echo "Admin";
@@ -64,13 +64,13 @@
                                         echo "Manager";
                                     } elseif ($val->tipe_user == 2) {
                                         echo "Supervisor";
-                                    } elseif ($val->tipe_user == 3) {
+                                    } elseif ($val->tipe_user == 8) {
                                         echo "Foreman/Forelady";
                                     } elseif ($val->tipe_user == 4) {
-                                        echo "Staff";
+                                        echo "QC Inspector";
                                     }
                                     ?>
-                                </td> -->
+                                </td>
                                 <td class="text-center">
                                     <!-- <a href="<?= base_url('pegawai/edit/'.$val->uuid);?>" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit">Edit</i>

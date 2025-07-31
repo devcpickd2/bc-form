@@ -78,8 +78,9 @@
                             <option value="0" <?= set_select('tipe_user', 0); ?>>Admin</option>
                             <option value="1" <?= set_select('tipe_user', 1); ?>>Manager</option>
                             <option value="2" <?= set_select('tipe_user', 2); ?>>Supervisor</option>
-                            <option value="3" <?= set_select('tipe_user', 3); ?>>Foreman/Forelady</option>
-                            <option value="4" <?= set_select('tipe_user', 4); ?>>Staff</option>
+                            <option value="3" <?= set_select('tipe_user', 3); ?>>Foreman/Forelady Produksi</option>
+                            <option value="8" <?= set_select('tipe_user', 8); ?>>Foreman/Forelady QC</option>
+                            <option value="4" <?= set_select('tipe_user', 4); ?>>Inspector</option>
                             <option value="5" <?= set_select('tipe_user', 5); ?>>Enginer</option>
                             <option value="6" <?= set_select('tipe_user', 6); ?>>Warehouse</option>
                             <option value="7" <?= set_select('tipe_user', 7); ?>>Lab</option>

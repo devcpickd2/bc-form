@@ -253,36 +253,67 @@ class Pemeriksaanchemical_model extends CI_Model {
 		return $data;
 	}
 
-	public function get_by_uuid_pemeriksaanchemical($uuid_array)
+	public function get_by_date($tanggal, $plant = null)
 	{
-		if (empty($uuid_array)) {
-			return false; 
+		if (empty($tanggal)) {
+			return false;
 		}
-		log_message('debug', 'Array UUID yang diterima: ' . print_r($uuid_array, true));
 
-		$this->db->where_in('uuid', $uuid_array);
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
 		$query = $this->db->get('pemeriksaan_chemical');
 
-		log_message('debug', 'Query yang dijalankan: ' . $this->db->last_query());
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
 
 		if ($query->num_rows() > 0) {
-			return $query->result(); 
-		}	
-		return false;  
+			return $query->result();
+		}
+
+		return false;
 	}
 
-	public function get_by_uuid_pemeriksaanchemical_verif($uuid_array)
+	public function get_last_verif_by_date($tanggal, $plant = null)
 	{
 		$this->db->select('nama_spv, tgl_update_spv, username, date, shift');
-		$this->db->where_in('uuid', $uuid_array);
-		$this->db->order_by('tgl_update_spv', 'DESC');   
-		$this->db->limit(1);  
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
 		$query = $this->db->get('pemeriksaan_chemical');
 
-		$data_pemeriksaan_chemical = $query->row();  
-		return $data_pemeriksaan_chemical; 
+		return $query->row();
 	}
 
+
+	public function get_by_tanggal($tanggal)
+	{
+		return $this->db->where('DATE(date)', $tanggal)
+		->order_by('date', 'ASC')
+		->get('pemeriksaan_chemical')
+		->result();
+	}
+
+// Ambil info verifikasi (nama_spv, username, dsb) hanya satu baris terakhir dari tanggal tsb
+	public function get_by_tanggal_verif($tanggal)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift');
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('pemeriksaan_chemical');
+
+		return $query->row();
+	}
+	
 	public function get_data_by_plant()
 	{
 		$this->db->order_by('created_at', 'DESC');

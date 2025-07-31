@@ -242,25 +242,25 @@ class Kontaminasi extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$kontaminasi_data = $this->kontaminasi_model->get_by_uuid_kontaminasi($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$kontaminasi_data_verif = $this->kontaminasi_model->get_by_uuid_kontaminasi_verif($selected_items);
+		$kontaminasi_data = $this->kontaminasi_model->get_by_date($tanggal, $plant); 
+		$kontaminasi_data_verif = $this->kontaminasi_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$kontaminasi_data || !$kontaminasi_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['kontaminasi'] = $kontaminasi_data_verif;
-
-
-		if (!$data['kontaminasi']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
+		
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -355,7 +355,7 @@ class Kontaminasi extends CI_Controller {
 
 		$this->load->model('Pegawai_model');
 		$nama_lengkap_qc   = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->username);
-		$nama_lengkap_prod = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->nama_produksi);
+		$nama_lengkap_prod = $data['kontaminasi']->nama_produksi;
 		$nama_lengkap_spv  = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->nama_spv);
 
 		$tanggal_update = $data['kontaminasi']->tgl_update_spv;
@@ -387,6 +387,8 @@ class Kontaminasi extends CI_Controller {
 		if ($status_verifikasi) {
 			$pdf->SetFont('times', '', 9);
 			$pdf->SetTextColor(0, 0, 0);
+
+	// QC
 			$pdf->SetXY(50, $y_after_keterangan);
 			$pdf->Cell(60, 5, 'Diperiksa Oleh,', 0, 0, 'C');
 			$pdf->SetXY(50, $y_after_keterangan + 8);
@@ -395,15 +397,31 @@ class Kontaminasi extends CI_Controller {
 			$pdf->SetXY(50, $y_after_keterangan + 13);
 			$pdf->SetFont('times', '', 9);
 			$pdf->Cell(60, 5, 'QC Inspector', 0, 0, 'C');
+
+	// Produksi (tanpa QR)
 			$pdf->SetXY(140, $y_after_keterangan);
 			$pdf->Cell(60, 5, 'Diketahui Oleh,', 0, 0, 'C');
-
 			if (!empty($data['kontaminasi']->nama_produksi)) {
-				$qr_text_prod = "Diketahui secara digital oleh,\n" . $nama_lengkap_prod . "\nForeman/Forelady Produksi\n" . $update_tanggal_prod;
-				$pdf->write2DBarcode($qr_text_prod, 'QRCODE,L', 162, $y_after_keterangan + 5, 16, 16, null, 'N');
-				$pdf->SetXY(140, $y_after_keterangan + 20);
-				$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$nama_lengkap_prod = $data['kontaminasi']->nama_produksi;
+				$update_tanggal_prod = (new DateTime($data['kontaminasi']->tgl_update_produksi))->format('d-m-Y | H:i');
+
+				$pdf->SetFont('times', 'U', 9);
+				$pdf->SetXY(140, $y_after_keterangan + 8);
+				$pdf->Cell(60, 5, $nama_lengkap_prod, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 9);
+				$pdf->SetXY(140, $y_after_keterangan + 13);
+				$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(140, $y_after_keterangan + 18);
+				// $pdf->Cell(60, 5, $update_tanggal_prod, 0, 0, 'C');
+			} else {
+				$pdf->SetFont('times', '', 9);
+				$pdf->SetXY(140, $y_after_keterangan + 8);
+				$pdf->Cell(60, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
+	// Supervisor QC (tetap pakai QR)
 			$pdf->SetXY(230, $y_after_keterangan);
 			$pdf->Cell(60, 5, 'Disetujui Oleh,', 0, 0, 'C');
 			$qr_text_spv = "Diverifikasi secara digital oleh,\n" . $nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;

@@ -35,8 +35,8 @@
                             <th>Tanggal</th>
                             <th>Plant</th>
                             <th>Sample Type</th>
-                            <th>Nama Produk</th>
-                            <th>Kode Produksi / Best Before</th>
+                            <!-- <th>Nama Produk</th>
+                            <th>Kode Produksi / Best Before</th> -->
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -55,8 +55,8 @@
                                 <td><?= $datetime; ?></td>
                                 <td><?= $val->nama_plant; ?></td>
                                 <td><?= $val->sample_type; ?></td>
-                                <td><?= $val->deskripsi ; ?></td>
-                                <td><?= $val->kode_produksi . " / " . $bb; ?></td>
+                                <!-- <td><?= $val->deskripsi ; ?></td>
+                                <td><?= $val->kode_produksi . " / " . $bb; ?></td> -->
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {

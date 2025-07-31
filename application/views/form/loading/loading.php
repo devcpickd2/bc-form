@@ -31,21 +31,20 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th width="20px" class="text-center" rowspan="2">No</th>
-                            <th rowspan="2">Tanggal / Shift</th>
-                            <th rowspan="2">Start - Finish Loading</th>
-                            <th rowspan="2">Tujuan</th>
-                            <th colspan="4" style="text-align: center;">LOADING</th>
-                            <th rowspan="2">Warehouse</th>
-                            <th rowspan="2">Supervisor</th>
-                            <th rowspan="2" class="text-center">Action</th>
+                            <th width="20px" class="text-center">No</th>
+                            <th>Tanggal / Shift</th>
+                            <th>Start - Finish Loading</th>
+                            <th>Tujuan</th>
+                            <th style="text-align: center;">LOADING</th>
+                            <th>Supervisor</th>
+                            <th class="text-center">Action</th>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
                             <th>Kode Expired</th>
                             <th>Keterangan</th>
-                        </tr>
+                        </tr> -->
                     </thead>
                     <tbody>
                         <?php 
@@ -59,7 +58,7 @@
                             $finish = new DateTime($val->finish_loading);
                             $finishFormatted = $finish->format('H:i');
 
-                            $loadings = json_decode($val->loading, true);
+                            $result = json_decode($val->loading, true);
                             ?>
                             <tr>
                                 <td class="text-center"><?= $no; ?></td>
@@ -67,92 +66,63 @@
                                 <td><?= $startFormatted . " / ". $finishFormatted; ?></td>
                                 <td><?= htmlspecialchars($val->tujuan) ?></td>
                                 <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['nama_produk']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['kode_produksi']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['expired']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['keterangan']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_wh == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_wh == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_wh == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('loading/edit/' . $val->uuid); ?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Edit</span>
-                                    </a>
-                                    <a href="<?= base_url('loading/detail/' . $val->uuid); ?>" class="btn btn-success btn-icon-split">
-                                        <span class="text">Detail</span>
-                                    </a>
-                                    <a href="<?= base_url('loading/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <span class="text">Delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead style="background-color:#2E86C1; color:gray; text-align:center;">
+                                            <tr>
+                                                <th width="30%">Nama Produk</th>
+                                                <th width="20%">Kode Produksi</th>
+                                                <th width="20%">Kode Expired</th>
+                                                <th width="20%">Keterangan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($result) && is_array($result)): ?>
+                                            <?php foreach ($result as $row): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($row['nama_produk'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['kode_produksi'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['expired'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        <?php else: ?>
+                                            <tr><td colspan="3" class="text-center">Tidak ada data</td></tr>
+                                        <?php endif ?>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td class="text-center">
+                                <?php
+                                if ($val->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($val->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($val->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                                ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('loading/edit/' . $val->uuid); ?>" class="btn btn-warning btn-icon-split">
+                                    <span class="text">Edit</span>
+                                </a>
+                                <a href="<?= base_url('loading/detail/' . $val->uuid); ?>" class="btn btn-success btn-icon-split">
+                                    <span class="text">Detail</span>
+                                </a>
+                                <a href="<?= base_url('loading/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    <span class="text">Delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php 
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 </div>
 </div>
 <style> 

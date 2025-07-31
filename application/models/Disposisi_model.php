@@ -49,6 +49,8 @@ class Disposisi_model extends CI_Model {
 
 	public function insert()
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -60,7 +62,7 @@ class Disposisi_model extends CI_Model {
 		$uraian_disposisi = $this->input->post('uraian_disposisi');
 		$catatan = $this->input->post('catatan');
 		$cc = $this->input->post('cc');
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_spv = "0";
 
 		$data = array(
@@ -76,6 +78,7 @@ class Disposisi_model extends CI_Model {
 			'catatan' => $catatan,
 			'cc' => $cc,
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 			'status_spv' => $status_spv
 		);
 

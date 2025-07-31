@@ -195,30 +195,23 @@ class Sanitasi extends CI_Controller {
 
 	public function cetak()
 	{
-    // Ambil tanggal dari form POST
 		$date = $this->input->post('date');
+		$date = date('Y-m-d', strtotime($date));
 		if (empty($date)) {
 			show_error('Tanggal belum dipilih', 404);
 		}
 
-    // Ambil plant dari session user login
 		$plant = $this->session->userdata('plant');
 		if (empty($plant)) {
 			show_error('Plant tidak ditemukan di session.', 403);
 		}
-
-    // Load model dan ambil data sanitasi hanya untuk plant ini
-		$this->load->model('sanitasi_model');
 		$sanitasi_data = $this->sanitasi_model->get_by_date($date, $plant);
-
 		if (empty($sanitasi_data)) {
 			show_error('Data tidak ditemukan untuk tanggal ini atau bukan milik plant Anda.', 404);
 		}
-
-    // Ambil nama lengkap user yang terlibat
 		$this->load->model('pegawai_model');
 		$nama_qc   = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->username);
-		$nama_prod = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->nama_produksi);
+		$nama_prod = $sanitasi_data[0]->nama_produksi;
 		$nama_spv  = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->nama_spv);
 
     // Inisialisasi TCPDF
@@ -322,14 +315,17 @@ class Sanitasi extends CI_Controller {
 			$pdf->SetXY(90, $y_now);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 			if (!empty($sanitasi_data[0]->tgl_update_produksi) && $sanitasi_data[0]->status_produksi == 1) {
-				$qr_text_prod = "Diketahui secara digital oleh,\n" . $nama_prod . "\nForeman Produksi\n" . (new DateTime($sanitasi_data[0]->tgl_update_produksi))->format('d-m-Y | H:i');
-				$pdf->write2DBarcode($qr_text_prod, 'QRCODE,L', 100, $y_now + 5, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_now + 20);
+				$pdf->SetXY(90, $y_now + 10);
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->Cell(35, 5, $nama_prod, 0, 1, 'C');
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_now + 15);
 				$pdf->Cell(35, 5, 'Foreman Produksi', 0, 0, 'C');
 			} else {
 				$pdf->SetXY(90, $y_now + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
 
         // Disetujui oleh
 			$pdf->SetXY(150, $y_now);

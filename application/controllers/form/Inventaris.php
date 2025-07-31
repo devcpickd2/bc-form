@@ -15,6 +15,7 @@ class Inventaris extends CI_Controller {
 		$this->load->library('session');
 		$this->load->model('auth_model'); 
 		$this->load->model('inventaris_model');
+		$this->load->model('alatqc_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
 		}
@@ -45,29 +46,29 @@ class Inventaris extends CI_Controller {
 
 	public function tambah()
 	{
-
 		$rules = $this->inventaris_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
 			$insert = $this->inventaris_model->insert();
 			if ($insert) {
-				$this->session->set_flashdata('success_msg', 'Data Checklist Inventaris Peralatan QC Bread Crumb berhasil di simpan');
+				$this->session->set_flashdata('success_msg', 'Data Checklist Inventaris Peralatan QC Bread Crumb berhasil disimpan');
 				redirect('inventaris');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Checklist Inventaris Peralatan QC Bread Crumb gagal di simpan');
+			} else {
+				$this->session->set_flashdata('error_msg', 'Data Checklist Inventaris Peralatan QC Bread Crumb gagal disimpan');
 				redirect('inventaris');
 			}
 		}
 
 		$data = array(
-			'active_nav' => 'inventaris');
+			'active_nav' => 'inventaris',
+			'alat_list' => $this->alatqc_model->get_all()
+		);
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-tambah');
+		$this->load->view('form/inventaris/inventaris-tambah', $data);
 		$this->load->view('partials/footer');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -260,24 +261,31 @@ class Inventaris extends CI_Controller {
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
 		$no = 1;
-		foreach ($inventaris_data as $inventaris) {
+		foreach ($inventaris_data as $row) {
 			$pdf->SetFont('times', '', 9);
-			$inventaris = json_decode($inventaris->peralatan);
-			if ($inventaris && is_array($inventaris)) {
-				foreach ($inventaris as $inventaris) {
-					$nama_alat = isset($inventaris->nama_alat) ? $inventaris->nama_alat : '-';
-					$jumlah = isset($inventaris->jumlah) ? $inventaris->jumlah : '-';
-					$kondisi_awal = isset($inventaris->kondisi_awal) ? $inventaris->kondisi_awal : '-';
-					$kondisi_akhir = isset($inventaris->kondisi_akhir) ? $inventaris->kondisi_akhir : '-';
-					$keterangan = isset($inventaris->keterangan) ? $inventaris->keterangan : '-';
+			$inventaris_list = json_decode($row->peralatan);
+
+			if ($inventaris_list && is_array($inventaris_list)) {
+				foreach ($inventaris_list as $item) {
+					$nama_alat = isset($item->nama_alat) ? $item->nama_alat : '-';
+					$jumlah = isset($item->jumlah) ? $item->jumlah : '-';
+					$kondisi_awal = isset($item->kondisi_awal) ? $item->kondisi_awal : '-';
+					$kondisi_akhir = isset($item->kondisi_akhir) ? $item->kondisi_akhir : '-';
+					$keterangan = isset($item->keterangan) ? $item->keterangan : '-';
 
 					$pdf->SetFont('times', '', 8);
-					$pdf->Cell(10, 5, $no, 1, 0, 'C');
-					$pdf->Cell(70, 5, "$nama_alat", 1, 0, 'L');
-					$pdf->Cell(20, 5, "$jumlah", 1, 0, 'C');
-					$pdf->Cell(26, 5, "$kondisi_awal", 1, 0, 'C');
-					$pdf->Cell(26, 5, "$kondisi_akhir", 1, 0, 'C');
-					$pdf->Cell(40, 5, "$keterangan", 1, 1, 'C');
+
+					$height_nama_alat = $pdf->getStringHeight(70, $nama_alat);
+					$height_keterangan = $pdf->getStringHeight(40, $keterangan);
+					$row_height = max($height_nama_alat, $height_keterangan, 5);
+
+					$pdf->MultiCell(10, $row_height, $no, 1, 'C', false, 0); 
+					$pdf->MultiCell(70, $row_height, $nama_alat, 1, 'L', false, 0);
+					$pdf->MultiCell(20, $row_height, $jumlah, 1, 'C', false, 0); 
+					$pdf->MultiCell(26, $row_height, $kondisi_awal, 1, 'C', false, 0); 
+					$pdf->MultiCell(26, $row_height, $kondisi_akhir, 1, 'C', false, 0); 
+					$pdf->MultiCell(40, $row_height, $keterangan, 1, 'L', false, 1); 
+
 					$no++;
 				}
 			}
