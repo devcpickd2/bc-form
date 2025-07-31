@@ -22,124 +22,76 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
-                <form action="<?= base_url('kontaminasi/cetak') ?>" method="post" id="form_cetak_pdf">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th width="30px" class="text-center">
-                                    <i class="fas fa-print fa-lg"></i> <!-- Menambahkan ikon print -->
-                                </th>
-                                <th width="20px" class="text-center">No</th>
-                                <th>Tanggal</th>
-                                <th>Jenis Kontaminasi</th>
-                                <!-- <th>Bukti</th> -->
-                                <th>Produk</th>
-                                <th>Kode Produksi</th>
-                                <th>Last Updated</th>
-                                <th>Last Verified</th>
-                                <th>Produksi</th>
-                                <th>SPV</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $no = 1;
-                            foreach($kontaminasi as $val) {
-                                $datetime = new datetime($val->date);
-                                $datetime = $datetime->format('d-m-Y');
-                                ?>
-                                <tr>
-                                    <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
-                                    <td class="text-center"><?= $no; ?></td>
-                                    <td><?= $datetime; ?></td>
-                                    <td><?= $val->jenis_kontaminasi; ?></td>
-                                    <!-- <td>
-                                        <?php if (!empty($val->bukti)): ?>
-                                            <img src="<?= base_url('uploads/' . $val->bukti); ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
-                                        <?php else: ?>
-                                            <p>No image available</p>
-                                        <?php endif; ?>
-                                    </td> -->
-                                    <td><?= $val->nama_produk; ?></td>
-                                    <td><?= $val->kode_produksi; ?></td>
-                                    <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
-                                    <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
-                                    <td class="text-center">
-                                        <?php
-                                        if ($val->status_produksi == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($val->status_produksi == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                        } elseif ($val->status_produksi == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                        }
-                                        ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <?php
-                                        if ($val->status_spv == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($val->status_spv == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                        } elseif ($val->status_spv == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                        }
-                                        ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= base_url('kontaminasi/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                            <span class="text">Verifikasi</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <?php 
-                                $no++;
-                            }
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="20px" class="text-center">No</th>
+                            <th>Tanggal</th>
+                            <th>Jenis Kontaminasi</th>
+                            <th>Produk</th>
+                            <th>Kode Produksi</th>
+                            <th>Last Updated</th>
+                            <th>Last Verified</th>
+                            <th>SPV</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $no = 1;
+                        foreach($kontaminasi as $val) {
+                            $datetime = new datetime($val->date);
+                            $datetime = $datetime->format('d-m-Y');
                             ?>
-                        </tbody> 
-                    </table>
-                    <input type="hidden" name="checkbox[]" id="selected_items">
-                </form>
+                            <tr>
+                                <td class="text-center"><?= $no; ?></td>
+                                <td><?= $datetime; ?></td>
+                                <td><?= $val->jenis_kontaminasi; ?></td>
+                                <td><?= $val->nama_produk; ?></td>
+                                <td><?= $val->kode_produksi; ?></td>
+                                <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
+                                <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
+                                <td class="text-center">
+                                    <?php
+                                    if ($val->status_spv == 0) {
+                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                    } elseif ($val->status_spv == 1) {
+                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                    } elseif ($val->status_spv == 2) {
+                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                    }
+                                    ?>
+                                </td>
+                                <td class="text-center">
+                                    <a href="<?= base_url('kontaminasi/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                                        <span class="text">Verifikasi</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php 
+                            $no++;
+                        }
+                        ?>
+                    </tbody> 
+                </table>
             </div>
 
             <br>
             <hr>
             <div class="form-group">
-                <label>Pilih Data yang akan dicetak:</label>
-                <br>
-                <button type="submit" form="form_cetak_pdf" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
+                <form action="<?= base_url('kontaminasi/cetak') ?>" method="post" class="form-inline">
+                    <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
+                    <input type="date" name="tanggal" class="form-control mr-2" required>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 </div>
 
-<script>
-    document.getElementById('select_all').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('.select_row');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.checked = this.checked;
-        });
-    });
-
-    document.getElementById('form_cetak_pdf').addEventListener('submit', function(event) {
-        var selectedCheckboxes = document.querySelectorAll('.select_row:checked');
-        var selectedItems = [];
-
-        selectedCheckboxes.forEach(function(checkbox) {
-            selectedItems.push(checkbox.value); 
-        });
-        if (selectedItems.length === 0) {
-            event.preventDefault(); 
-            alert("Silakan pilih data yang ingin dicetak.");
-            return;
-        }
-        document.getElementById('selected_items').value = selectedItems.join(',');
-    });
-</script>
 <style> 
     th {
         background-color: #f8f9fc;

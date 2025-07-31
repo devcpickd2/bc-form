@@ -153,24 +153,24 @@ class Pembuatanlarutan extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$pembuatanlarutan_data = $this->pembuatanlarutan_model->get_by_uuid_pembuatanlarutan($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$pembuatanlarutan_data_verif = $this->pembuatanlarutan_model->get_by_uuid_pembuatanlarutan_verif($selected_items);
+		$pembuatanlarutan_data = $this->pembuatanlarutan_model->get_by_date($tanggal, $plant); 
+		$pembuatanlarutan_data_verif = $this->pembuatanlarutan_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$pembuatanlarutan_data || !$pembuatanlarutan_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['pembuatanlarutan'] = $pembuatanlarutan_data_verif;
-
-
-		if (!$data['pembuatanlarutan']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 

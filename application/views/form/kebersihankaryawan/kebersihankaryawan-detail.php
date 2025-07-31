@@ -1,214 +1,222 @@
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Detail Kebersihan Karyawan</h1>
+    <!-- Heading -->
+    <h1 class="h3 mb-3 text-gray-800 font-weight-bold text-center">Detail Kebersihan Karyawan</h1>
+
+    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb"> 
+        <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('kebersihankaryawan'); ?>">
-                    <i class="fas fa-arrow-left"></i> Daftar Kebersihan Karyawan</a>
-                </li>
-            </ol>
-        </nav>
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="form-group row">
-                    <div class="table-responsive">
-                        <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <a class="text-white" href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('kebersihankaryawan'); ?>">
+                    <i class="fas fa-arrow-left"></i> Daftar Kebersihan Karyawan
+                </a>
+            </li>
+        </ol>
+    </nav>
 
-                            <!-- KETERANGAN DI KIRI -->
-                            <div style="flex: 1;">
-                                <!-- Tabel Keterangan Pemeriksaan -->
-                                <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;">
-                                    <thead style="background-color: #f2f2f2;">
-                                        <tr>
-                                            <th colspan="2" style="padding: 10px; background-color: #ADD8E6; color: gray;">Keterangan Pemeriksaan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1. Seragam</td>
-                                            <td>5. Perhiasan</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2. Apron</td>
-                                            <td>6. Masker</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3. Tangan dan Kuku</td>
-                                            <td>7. Topi / Hairnet</td>
-                                        </tr>
-                                        <tr>
-                                            <td>4. Kosmetik</td>
-                                            <td>8. Sepatu Kerja</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <br>
-
-                                <!-- Tabel Simbol Keterangan -->
-                                <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px; text-align: center;">
-                                    <thead style="background-color: #f2f2f2;">
-                                        <tr>
-                                            <th colspan="2" style="padding: 10px; background-color: #ADD8E6; color: gray;">Simbol Keterangan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>✔️</td>
-                                            <td>Ok</td>
-                                        </tr>
-                                        <tr>
-                                            <td>❌</td>
-                                            <td>Tidak Ok</td>
-                                        </tr>
-                                        <tr>
-                                            <td>−</td>
-                                            <td>Tidak Ada / Tidak Digunakan</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- DETAIL PEMERIKSAAN DI KANAN -->
-                            <div style="flex: 2;">
-                                <table class="table table-bordered" width="100%" cellspacing="0">
-                                    <thead>
-                                        <?php 
-                                        $datetime = new DateTime($kebersihankaryawan->date);
-                                        $datetime = $datetime->format('d-m-Y');
-                                        ?>
-                                        <tr>
-                                            <th style="text-align:center;" colspan="9">KEBERSIHAN KARYAWAN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="text-align:left;" colspan="4"><b>Tanggal: <?= $datetime; ?></b></td>
-                                            <td colspan="5"><b>Shift: <?= $kebersihankaryawan->shift; ?></b></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3"><b>Nama Karyawan</b></td>
-                                            <td colspan="6"><?= $kebersihankaryawan->nama; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3"><b>Bagian</b></td>
-                                            <td colspan="6"><?= $kebersihankaryawan->bagian; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th style="text-align:center;" colspan="9">KEBERSIHAN</th>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Keterangan</b></td>
-                                            <td><b>1</b></td>
-                                            <td><b>2</b></td>
-                                            <td><b>3</b></td>
-                                            <td><b>4</b></td>
-                                            <td><b>5</b></td>
-                                            <td><b>6</b></td>
-                                            <td><b>7</b></td>
-                                            <td><b>8</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Hasil</b></td>
-                                            <td><?= ($kebersihankaryawan->seragam == 'ok') ? '✔️' : (($kebersihankaryawan->seragam == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->apron == 'ok') ? '✔️' : (($kebersihankaryawan->apron == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->tangan_kuku == 'ok') ? '✔️' : (($kebersihankaryawan->tangan_kuku == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->kosmetik == 'ok') ? '✔️' : (($kebersihankaryawan->kosmetik == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->perhiasan == 'ok') ? '✔️' : (($kebersihankaryawan->perhiasan == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->masker == 'ok') ? '✔️' : (($kebersihankaryawan->masker == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->topi_hairnet == 'ok') ? '✔️' : (($kebersihankaryawan->topi_hairnet == 'tidak oke') ? '❌' : '−'); ?></td>
-                                            <td><?= ($kebersihankaryawan->sepatu == 'ok') ? '✔️' : (($kebersihankaryawan->sepatu == 'tidak oke') ? '❌' : '−'); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">Tindakan Koreksi</td>
-                                            <td colspan="6"><?= $kebersihankaryawan->tindakan;?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">Catatan</td>
-                                            <td colspan="6"> <?= !empty($kebersihankaryawan->catatan) ? $kebersihankaryawan->catatan : 'Tidak ada'; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th style="text-align:center;" colspan="9">VERIFIKASI</th>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">QC</td>
-                                            <td colspan="6"><?= $kebersihankaryawan->username;?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" style="text-align:left">Produksi</td>
-                                            <td colspan="6"><?= $kebersihankaryawan->nama_produksi;?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" style="text-align:left">Diketahui Produksi</td>
-                                            <td colspan="6">
-                                                <?php
-                                                if ($kebersihankaryawan->status_produksi == 0) {
-                                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                                } elseif ($kebersihankaryawan->status_produksi == 1) {
-                                                    echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                                } elseif ($kebersihankaryawan->status_produksi == 2) {
-                                                    echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                                }
-                                            ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" style="text-align:left">Catatan Produksi</td>
-                                            <td colspan="6"><?= !empty($kebersihankaryawan->catatan_produksi) ? $kebersihankaryawan->catatan_produksi : 'Tidak ada'; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">Disetujui Supervisor</td>
-                                            <td colspan="6"><?php
-                                            if ($kebersihankaryawan->status_spv == 0) {
-                                                echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                            } elseif ($kebersihankaryawan->status_spv == 1) {
-                                                echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                            } elseif ($kebersihankaryawan->status_spv == 2) {
-                                                echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                            }
-                                        ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3">Catatan Supervisor</td>
-                                        <td colspan="6"><?= !empty($kebersihankaryawan->catatan_spv) ? $kebersihankaryawan->catatan_spv : 'Tidak ada'; ?></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
+    <!-- Card Detail -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <!-- Wrapper agar tabel tidak menyebabkan scroll horizontal -->
+            <div class="table-scroll">
+                <!-- Keterangan dan Simbol -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <table class="table table-bordered table-sm">
+                            <thead class="thead-light text-center">
+                                <tr><th colspan="2">Keterangan Pemeriksaan</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1. Seragam</td><td>5. Perhiasan</td></tr>
+                                <tr><td>2. Apron</td><td>6. Masker</td></tr>
+                                <tr><td>3. Tangan dan Kuku</td><td>7. Topi / Hairnet</td></tr>
+                                <tr><td>4. Kosmetik</td><td>8. Sepatu Kerja</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-bordered table-sm text-center">
+                            <thead class="thead-light">
+                                <tr><th colspan="2">Simbol Keterangan</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>✔️</td><td>Ok</td></tr>
+                                <tr><td>❌</td><td>Tidak Ok</td></tr>
+                                <tr><td>−</td><td>Tidak Ada / Tidak Digunakan</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+                <!-- Tabel Pemeriksaan -->
+                <?php $formattedDate = (new DateTime($kebersihankaryawan->date))->format('d-m-Y'); ?>
+                <table class="table table-bordered">
+                    <thead class="text-center bg-light font-weight-bold">
+                        <tr><th colspan="9">PEMERIKSAAN KEBERSIHAN KARYAWAN</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tanggal</strong></td>
+                            <td colspan="8"><?= $formattedDate; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shift</strong></td>
+                            <td colspan="8"><?= $kebersihankaryawan->shift; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nama Karyawan</strong></td>
+                            <td colspan="8"><?= $kebersihankaryawan->nama; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bagian</strong></td>
+                            <td colspan="8"><?= $kebersihankaryawan->bagian; ?></td>
+                        </tr>
+
+                        <!-- Hasil Pemeriksaan -->
+                        <tr class="text-center table-primary font-weight-bold">
+                            <td>Keterangan</td>
+                            <?php for ($i = 1; $i <= 8; $i++): ?>
+                                <td><?= $i ?></td>
+                            <?php endfor; ?>
+                        </tr>
+                        <tr class="text-center">
+                            <td><strong>Hasil</strong></td>
+                            <td><?= simbol($kebersihankaryawan->seragam); ?></td>
+                            <td><?= simbol($kebersihankaryawan->apron); ?></td>
+                            <td><?= simbol($kebersihankaryawan->tangan_kuku); ?></td>
+                            <td><?= simbol($kebersihankaryawan->kosmetik); ?></td>
+                            <td><?= simbol($kebersihankaryawan->perhiasan); ?></td>
+                            <td><?= simbol($kebersihankaryawan->masker); ?></td>
+                            <td><?= simbol($kebersihankaryawan->topi_hairnet); ?></td>
+                            <td><?= simbol($kebersihankaryawan->sepatu); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tindakan Koreksi</strong></td>
+                            <td colspan="8"><?= $kebersihankaryawan->tindakan; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Catatan</strong></td>
+                            <td colspan="8"><?= !empty($kebersihankaryawan->catatan) ? $kebersihankaryawan->catatan : 'Tidak ada'; ?></td>
+                        </tr>
+
+                        <!-- Verifikasi -->
+                        <tr class="text-center bg-light font-weight-bold">
+                            <td colspan="9">VERIFIKASI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>QC</strong></td>
+                            <td colspan="8"><?= $kebersihankaryawan->username; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Produksi</strong></td>
+                            <td colspan="8"><?= $kebersihankaryawan->nama_produksi ?? 'Belum dikoreksi'; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status Supervisor</strong></td>
+                            <td colspan="8"><?= status_label($kebersihankaryawan->status_spv); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Catatan Supervisor</strong></td>
+                            <td colspan="8"><?= !empty($kebersihankaryawan->catatan_spv) ? $kebersihankaryawan->catatan_spv : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 </div>
-<style type="text/css">
+
+<!-- CSS tambahan -->
+<style>
+    /* Breadcrumb */
     .breadcrumb {
         background-color: #2E86C1;
+        padding: 8px 16px;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
     }
-    .no-border {
-        border: none;
-        box-shadow: none;
+
+    .breadcrumb a {
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
     }
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    /* Tabel Responsif dan Scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
     .table {
-        width: 100%; 
-        font-size: 16px; 
-        margin: 0 auto; 
+        width: 100% !important;
+        table-layout: auto;
+        border-collapse: collapse;
     }
-    .table, .table th, .table td {
-        border: none;
+
+    .table td,
+    .table th {
+        vertical-align: middle;
+        font-size: 15px;
+        padding: 10px;
+        white-space: nowrap; /* Cegah kolom terlalu lebar */
     }
-    .table th, .table td {
-        padding: 6px 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        word-wrap: break-word;
-        white-space: normal !important;
+
+    .table td[colspan="8"],
+    .table td[colspan="9"] {
+        white-space: normal !important; /* Tapi izinkan cell colspan meluas */
     }
-    .table td {
-        white-space: nowrap;
+
+    /* Fix agar tidak overflow */
+    html, body {
+        overflow-x: hidden !important;
+    }
+
+    .container-fluid {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Tambahan opsional untuk elemen yang mungkin membuat overflow */
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Responsif untuk mobile */
+    @media (max-width: 768px) {
+        .table td, .table th {
+            font-size: 14px;
+        }
+
+        h1.h3 {
+            font-size: 20px;
+        }
+    }
+
+    /* Optional: Hilangkan scrollbar horizontal dari body yang tersisa */
+    ::-webkit-scrollbar {
+        height: 0px;
+        background: transparent;
     }
 </style>
 
 
+<?php
+// Fungsi Helper
+function simbol($val) {
+    return $val == 'ok' ? '✔️' : ($val == 'tidak oke' ? '❌' : '−');
+}
+
+function status_label($status) {
+    if ($status == 1) return '<span class="badge badge-success">Verified</span>';
+    if ($status == 2) return '<span class="badge badge-danger">Revision</span>';
+    return '<span class="badge badge-secondary">Created</span>';
+}
+?>

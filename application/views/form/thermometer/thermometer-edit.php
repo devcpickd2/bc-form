@@ -37,7 +37,7 @@
             <hr>
             <form class="user" method="post" action="<?= base_url('thermometer/edit/'.$thermometer->uuid);?>">
                 <div class="form-group row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Tanggal</label>
                         <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?= $thermometer->date; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">

@@ -21,7 +21,14 @@
                 <div class="form-group row">
                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Tanggal</label>
-                        <input type="date" name="date_stall" class="form-control <?= form_error('date_stall') ? 'invalid' : '' ?>" value="<?= $produksi->date_stall; ?>">
+                        <?php
+                        $tanggal_stall = (!empty($produksi->date_stall) && $produksi->date_stall !== '0000-00-00')
+                        ? $produksi->date_stall
+                        : date('Y-m-d');
+                        ?>
+                        <input type="date" name="date_stall" 
+                        class="form-control <?= form_error('date_stall') ? 'invalid' : '' ?>" 
+                        value="<?= $tanggal_stall ?>">
                         <div class="invalid-feedback <?= !empty(form_error('date_stall')) ? 'd-block' : '' ; ?>">
                             <?= form_error('date_stall') ?>
                         </div>
@@ -57,13 +64,13 @@
                             <?= form_error('stall_jam_berhenti') ?>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                   <!--  <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Lama Aging (9 - 12 jam)</label>
                         <input type="text" name="stall_aging" class="form-control <?= form_error('stall_aging') ? 'invalid' : '' ?>" value="<?= $produksi->stall_aging; ?>">
                         <div class="invalid-feedback <?= !empty(form_error('stall_aging')) ? 'd-block' : '' ; ?>">
                             <?= form_error('stall_aging') ?>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Kadar Air 32-34 (%)</label>
                         <input type="text" name="stall_kadar_air" class="form-control <?= form_error('stall_kadar_air') ? 'invalid' : '' ?>" value="<?= $produksi->stall_kadar_air; ?>">

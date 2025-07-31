@@ -27,6 +27,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">Keterangan</label>
+                        <textarea class="form-control" name="keterangan_grinding"><?= $produksi->keterangan_grinding; ?></textarea>
+                        <div class="invalid-feedback <?= !empty(form_error('keterangan_grinding')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('keterangan_grinding') ?>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col">

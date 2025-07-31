@@ -41,35 +41,30 @@ class Pecahbelah_model extends CI_Model {
 		$benda_pecah = [];
 		for ($i = 0; $i < count($nama_barang); $i++) {
 			$benda_pecah[] = [
-				'nama_barang' => $nama_barang[$i],
-				'area' => isset($area[$i]) ? $area[$i] : '',
-				'pemilik' => isset($pemilik[$i]) ? $pemilik[$i] : '',
-				'jumlah' => isset($jumlah[$i]) ? $jumlah[$i] : '',
-				'kondisi_awal' => isset($kondisi_awal[$i])
-				? (is_array($kondisi_awal[$i])
-					? implode(', ', $kondisi_awal[$i])
-					: $kondisi_awal[$i])
-				: '',
-				'kondisi_akhir' => '-', 
-				'keterangan' => isset($keterangan[$i]) ? $keterangan[$i] : '',
+				'nama_barang'   => $nama_barang[$i],
+				'area'          => $area[$i] ?? '',
+				'pemilik'       => $pemilik[$i] ?? '',
+				'jumlah'        => $jumlah[$i] ?? '',
+				'kondisi_awal'  => isset($kondisi_awal[$i]) ? $kondisi_awal[$i] : 'Tidak Ok',
+				'kondisi_akhir' => '-',
+				'keterangan'    => $keterangan[$i] ?? '',
 			];
 		}
 
 		$data = [
-			'uuid' => $uuid,
-			'username' => $username,
-			'plant' => $plant,
-			'date' => $date,
-			'shift' => $shift,
-			'benda_pecah' => json_encode($benda_pecah),
-			'status_spv' => "0",
-			'status_produksi' => "0"
+			'uuid'              => $uuid,
+			'username'          => $username,
+			'plant'             => $plant,
+			'date'              => $date,
+			'shift'             => $shift,
+			'benda_pecah'       => json_encode($benda_pecah),
+			'status_spv'        => "0",
+			'status_produksi'   => "0"
 		];
 
 		$this->db->insert('benda_pecah', $data);
 		return ($this->db->affected_rows() > 0);
 	}
-
 
 	public function update($uuid)
 	{
@@ -81,28 +76,29 @@ class Pecahbelah_model extends CI_Model {
 		$area = $this->input->post('area');
 		$pemilik = $this->input->post('pemilik');
 		$jumlah = $this->input->post('jumlah');
-		$kondisi_awal = $this->input->post('kondisi_awal');
+		$kondisi_awal = $this->input->post('kondisi_awal'); 
+		$kondisi_akhir = $this->input->post('kondisi_akhir'); 
 		$keterangan = $this->input->post('keterangan');
 
 		$benda_pecah = [];
 		foreach ($nama_barang as $i => $b) {
 			$benda_pecah[] = [
 				'nama_barang'   => $b,
-				'area'  => $area[$i],
-				'pemilik'  => $pemilik[$i],
-				'jumlah'  => $jumlah[$i],
-				'kondisi_awal'  => $kondisi_awal[$i],
-				'kondisi_akhir' => '-', 
-				'keterangan' => $keterangan[$i],
+				'area'          => $area[$i] ?? '',
+				'pemilik'       => $pemilik[$i] ?? '',
+				'jumlah'        => $jumlah[$i] ?? '',
+				'kondisi_awal'  => isset($kondisi_awal[$i]) ? 'Ok' : 'Tidak Ok',
+				'kondisi_akhir' => isset($kondisi_akhir[$i]) ? 'Ok' : 'Tidak Ok',
+				'keterangan'    => $keterangan[$i] ?? '',
 			];
 		}
 
 		$updateData = [
-			'username' => $username,
-			'date' => $date,
-			'shift' => $shift,
-			'benda_pecah' => json_encode($benda_pecah), 
-			'modified_at' => date('Y-m-d H:i:s'),
+			'qc_update'      => $username,
+			'date'          => $date,
+			'shift'         => $shift,
+			'benda_pecah'   => json_encode($benda_pecah),
+			'modified_at'   => date('Y-m-d H:i:s'),
 		];
 
 		$this->db->where('uuid', $uuid);

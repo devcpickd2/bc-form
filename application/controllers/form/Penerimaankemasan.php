@@ -7,7 +7,7 @@ setlocale(LC_TIME, 'id_ID.UTF-8');
 
 class Penerimaankemasan extends CI_Controller {
 
-	public function __construct()
+	public function __construct() 
 	{
 		parent::__construct();
 
@@ -28,7 +28,7 @@ class Penerimaankemasan extends CI_Controller {
 		);
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan', $data);
+		$this->load->view('form/penerimaankemasan/penerimaankemasan', $data); 
 		$this->load->view('partials/footer');
 	} 
 
@@ -253,24 +253,24 @@ class Penerimaankemasan extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$penerimaankemasan_data = $this->penerimaankemasan_model->get_by_uuid_penerimaankemasan($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$penerimaankemasan_data_verif = $this->penerimaankemasan_model->get_by_uuid_penerimaankemasan_verif($selected_items);
+		$penerimaankemasan_data = $this->penerimaankemasan_model->get_by_date($tanggal, $plant); 
+		$penerimaankemasan_data_verif = $this->penerimaankemasan_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$penerimaankemasan_data || !$penerimaankemasan_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['penerimaankemasan'] = $penerimaankemasan_data_verif;
-
-
-		if (!$data['penerimaankemasan']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 

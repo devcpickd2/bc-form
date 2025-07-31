@@ -33,7 +33,7 @@
                     <div class="form-group row">
                         <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Tanggal</label>
-                            <input type="date" name="date_false_rejection" class="form-control <?= form_error('date_false_rejection') ? 'invalid' : '' ?> " value="<?= $falserejection->date_false_rejection; ?>">
+                            <input type="date" name="date_false_rejection" class="form-control <?= form_error('date_false_rejection') ? 'invalid' : '' ?> " value="<?= $falserejection->date_metal; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('date_false_rejection')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('date_false_rejection') ?>
                             </div>
@@ -41,9 +41,9 @@
                         <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Shift</label>
                             <select class="form-control <?= form_error('shift_monitoring') ? 'invalid' : '' ?>" name="shift_monitoring">
-                                <option value="1" <?= set_select('shift_monitoring', '1'); ?> <?= $falserejection->shift_monitoring == 1?'selected':'';?>>1</option>
-                                <option value="2" <?= set_select('shift_monitoring', '2'); ?> <?= $falserejection->shift_monitoring == 2?'selected':'';?>>2</option>
-                                <option value="3" <?= set_select('shift_monitoring', '3'); ?> <?= $falserejection->shift_monitoring == 3?'selected':'';?>>3</option>
+                                <option value="1" <?= set_select('shift_monitoring', '1'); ?> <?= $falserejection->shift == 1?'selected':'';?>>1</option>
+                                <option value="2" <?= set_select('shift_monitoring', '2'); ?> <?= $falserejection->shift == 2?'selected':'';?>>2</option>
+                                <option value="3" <?= set_select('shift_monitoring', '3'); ?> <?= $falserejection->shift == 3?'selected':'';?>>3</option>
                             </select>
                             <div class="invalid-feedback <?= !empty(form_error('shift_monitoring')) ? 'd-block' : '' ; ?> "><?= form_error('shift') ?></div>
                         </div>

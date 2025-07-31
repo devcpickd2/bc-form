@@ -195,18 +195,22 @@ class Larutan extends CI_Controller {
 
 	public function cetak()
 	{
-		$tanggal = $this->input->post('tanggal');
+		$tanggal = $this->input->post('tanggal');  
+		$shift   = $this->input->post('shift'); 
+
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
 		if (empty($tanggal)) {
-			show_error('Tanggal belum dipilih', 404);
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$this->load->model('larutan_model');
-		$larutan_data = $this->larutan_model->get_by_date($tanggal);
-		$larutan_data_verif = $this->larutan_model->get_by_date_verif($tanggal);
+		$plant = $this->session->userdata('plant');
+
+		$larutan_data = $this->larutan_model->get_by_date($tanggal, $plant, $shift); 
+		$larutan_data_verif = $this->larutan_model->get_last_verif_by_date($tanggal, $plant, $shift); 
 
 		if (!$larutan_data || !$larutan_data_verif) {
-			show_error('Data tidak ditemukan untuk tanggal ini atau belum diverifikasi.', 404);
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
 		}
 
 		$data['larutan'] = $larutan_data_verif;
@@ -245,16 +249,16 @@ class Larutan extends CI_Controller {
 
 		$pdf->SetFont('times', '', 9);
 		$pdf->Cell(10, 12, 'No.', 1, 0, 'C');
-		$pdf->Cell(30, 12, 'NAMA BAHAN', 1, 0, 'C');
+		$pdf->Cell(40, 12, 'NAMA BAHAN', 1, 0, 'C');
 		$pdf->Cell(30, 12, 'KADAR YANG', 1, 0, 'C');
 		$pdf->Cell(60, 4, 'VERIFIKASI FORMULASI', 1, 0, 'C');
-		$pdf->Cell(40, 12, 'KEBUTUHAN', 1, 0, 'C');
-		$pdf->Cell(40, 12, 'KETERANGAN', 1, 0, 'C');
+		$pdf->Cell(35, 12, 'KEBUTUHAN', 1, 0, 'C');
+		$pdf->Cell(35, 12, 'KETERANGAN', 1, 0, 'C');
 		$pdf->Cell(40, 12, 'TINDAKAN KOREKSI', 1, 0, 'C');
 		$pdf->Cell(67, 12, 'VERIFIKASI SETELAH TINDAKAN KOREKSI', 1, 0, 'C');
 		$pdf->Cell(0, 4, '', 0, 1, 'C');
 
-		$pdf->Cell(40, 0, '', 0, 0, 'L');
+		$pdf->Cell(50, 0, '', 0, 0, 'L');
 		$pdf->Cell(30, 10, 'DIINGINKAN', 0, 0, 'C');
 		$pdf->SetFont('times', '', 7);
 		$pdf->Cell(20, 8, 'BAHAN KIMIA', 1, 0, 'C');
@@ -262,28 +266,32 @@ class Larutan extends CI_Controller {
 		$pdf->Cell(20, 8, 'VOLUME AKHIR', 1, 0, 'C');
 		$pdf->Cell(0, 0, '', 0, 1, 'C');
 
-		$pdf->Cell(70, 0, '', 0, 0, 'C');
+		$pdf->Cell(80, 0, '', 0, 0, 'C');
 		$pdf->Cell(20, 6, '(ML)', 0, 0, 'C');
 		$pdf->Cell(20, 6, '(ML)', 0, 0, 'C');
 		$pdf->Cell(20, 6, '(ML)', 0, 0, 'C');
 		$pdf->Cell(10, 0, '', 0, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
-
 		$no = 1;
 		$pdf->SetFont('times', '', 9);
+
 		foreach ($larutan_data as $larutan) {
-			$pdf->Cell(10, 8, $no, 1, 0, 'C');
-			$pdf->Cell(30, 8, $larutan->nama_bahan, 1, 0, 'L');
-			$pdf->Cell(30, 8, $larutan->kadar, 1, 0, 'C');
-			$pdf->Cell(20, 8, $larutan->bahan_kimia, 1, 0, 'C');
-			$pdf->Cell(20, 8, $larutan->air_bersih, 1, 0, 'C');
-			$pdf->Cell(20, 8, $larutan->volume_akhir, 1, 0, 'C');
-			$pdf->Cell(40, 8, $larutan->kebutuhan, 1, 0, 'L');
-			$pdf->Cell(40, 8, $larutan->keterangan, 1, 0, 'L');
-			$pdf->Cell(40, 8, $larutan->tindakan, 1, 0, 'L');
-			$pdf->Cell(67, 8, $larutan->verifikasi, 1, 0, 'L');
-			$pdf->Ln();
-			$no++;
+			$bahan_list = json_decode($larutan->nama_bahan, true);
+
+			foreach ($bahan_list as $bahan) {
+				$pdf->Cell(10, 8, $no, 1, 0, 'C');
+				$pdf->Cell(40, 8, $bahan['bahan'] ?? '-', 1, 0, 'L');
+				$pdf->Cell(30, 8, $bahan['kadar'] ?? '-', 1, 0, 'C');
+				$pdf->Cell(20, 8, $bahan['bahan_kimia'] ?? '-', 1, 0, 'C');
+				$pdf->Cell(20, 8, $bahan['air_bersih'] ?? '-', 1, 0, 'C');
+				$pdf->Cell(20, 8, $bahan['volume_akhir'] ?? '-', 1, 0, 'C');
+				$pdf->Cell(35, 8, $bahan['kebutuhan'] ?? '-', 1, 0, 'L');
+				$pdf->Cell(35, 8, $bahan['keterangan'] ?? '-', 1, 0, 'L');
+				$pdf->Cell(40, 8, $bahan['tindakan'] ?? '-', 1, 0, 'L');
+				$pdf->Cell(67, 8, $bahan['verifikasi'] ?? '-', 1, 0, 'L');
+				$pdf->Ln();
+				$no++;
+			}
 		}
 
 		$pdf->SetY($pdf->GetY() + 3);
@@ -306,7 +314,7 @@ class Larutan extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['larutan']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['larutan']->username);
 		$data['larutan']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['larutan']->nama_spv);
-		$data['larutan']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['larutan']->nama_produksi);
+		$data['larutan']->nama_lengkap_produksi = $data['larutan']->nama_produksi;
 
 		$status_verifikasi = true;
 		foreach ($larutan_data as $item) {
@@ -330,15 +338,38 @@ class Larutan extends CI_Controller {
 			$pdf->SetFont('times', '', 8);
 			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// Diketahui Oleh (Produksi)
+		// // Diketahui Oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['larutan']->status_produksi == 1 && !empty($data['larutan']->nama_produksi)) {
+		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['larutan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . date('d-m-Y | H:i', strtotime($data['larutan']->tgl_update_produksi));
+		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+// Diketahui Oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if ($data['larutan']->status_produksi == 1 && !empty($data['larutan']->nama_produksi)) {
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['larutan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . date('d-m-Y | H:i', strtotime($data['larutan']->tgl_update_produksi));
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$update_tanggal_produksi = (new DateTime($data['larutan']->tgl_update_produksi))->format('d-m-Y | H:i');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(135, 5, $data['larutan']->nama_produksi, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 20);
+				// $pdf->Cell(135, 5, $update_tanggal_produksi, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}

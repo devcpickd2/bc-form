@@ -192,24 +192,24 @@ class Pemusnahan extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$pemusnahan_data = $this->pemusnahan_model->get_by_uuid_pemusnahan($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$pemusnahan_data_verif = $this->pemusnahan_model->get_by_uuid_pemusnahan_verif($selected_items);
+		$pemusnahan_data = $this->pemusnahan_model->get_by_date($tanggal, $plant); 
+		$pemusnahan_data_verif = $this->pemusnahan_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$pemusnahan_data || !$pemusnahan_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['pemusnahan'] = $pemusnahan_data_verif;
-
-
-		if (!$data['pemusnahan']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 

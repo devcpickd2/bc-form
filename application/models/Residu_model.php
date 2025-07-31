@@ -205,21 +205,64 @@ class Residu_model extends CI_Model {
 		return $data_residu; 
 	}
 
-	public function get_residu_by_month($start, $end)
+	// public function get_residu_by_month($start, $end)
+	// {
+	// 	$this->db->where('date >=', $start);
+	// 	$this->db->where('date <=', $end);
+	// 	$this->db->order_by('date', 'ASC'); 
+	// 	return $this->db->get('residu')->result();
+	// }
+
+	// public function get_one_verified_by_month($start, $end)
+	// {
+	// 	$this->db->select('r.area, r.titik_sampling, r.username, r.nama_spv, r.tgl_update_spv');
+	// 	$this->db->from('residu r');
+	// 	$this->db->where('r.date >=', $start);
+	// 	$this->db->where('r.date <=', $end);
+	// 	$this->db->where('r.status_spv', 1);
+	// 	$this->db->limit(1);
+	// 	return $this->db->get()->row();
+	// }
+	
+	public function get_by_month($start_date, $end_date, $plant = null)
 	{
-		$this->db->where('date >=', $start);
-		$this->db->where('date <=', $end);
-		$this->db->order_by('date', 'ASC'); 
-		return $this->db->get('residu')->result();
+		$this->db->select('date, standar, hasil_pemeriksaan, keterangan, tindakan, verifikasi, username, catatan'); 
+
+		$this->db->where('date >=', $start_date);
+		$this->db->where('date <=', $end_date);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('residu');
+
+		log_message('debug', 'Query get_by_month: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
 	}
 
-	public function get_one_verified_by_month($start, $end)
+	public function get_last_verif_by_month($start_date, $end_date, $plant = null)
 	{
-		$this->db->where('date >=', $start);
-		$this->db->where('date <=', $end);
-		$this->db->where('status_spv', 1);
+		$this->db->select('area, titik_sampling, nama_spv, tgl_update_spv, username, date,
+			standar, hasil_pemeriksaan, keterangan, tindakan, verifikasi, catatan');
+		$this->db->where('date >=', $start_date);
+		$this->db->where('date <=', $end_date);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
 		$this->db->limit(1);
-		return $this->db->get('residu')->row();
+		$query = $this->db->get('residu'); 
+
+		return $query->row();
 	}
 
 	public function get_data_by_plant()

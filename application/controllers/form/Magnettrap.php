@@ -242,25 +242,26 @@ class Magnettrap extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
+		$shift   = $this->input->post('shift'); 
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$magnettrap_data = $this->magnettrap_model->get_by_uuid_magnettrap($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$magnettrap_data_verif = $this->magnettrap_model->get_by_uuid_magnettrap_verif($selected_items);
+		$magnettrap_data = $this->magnettrap_model->get_by_date($tanggal, $plant, $shift); 
+		$magnettrap_data_verif = $this->magnettrap_model->get_last_verif_by_date($tanggal, $plant, $shift); 
+
+		if (!$magnettrap_data || !$magnettrap_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['magnettrap'] = $magnettrap_data_verif;
-
-
-		if (!$data['magnettrap']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
+		
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -363,7 +364,7 @@ class Magnettrap extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['magnettrap']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['magnettrap']->username);
 		$data['magnettrap']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['magnettrap']->nama_spv);
-		$data['magnettrap']->nama_lengkap_enginer = $this->pegawai_model->get_nama_lengkap($data['magnettrap']->nama_enginer);
+		$data['magnettrap']->nama_lengkap_enginer = $data['magnettrap']->nama_enginer;
 
 		$y_after_keterangan = $pdf->GetY();
 		$status_verifikasi = true;
@@ -389,19 +390,43 @@ class Magnettrap extends CI_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// Diketahui oleh (Produksi)
+		// // Diketahui oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['magnettrap']->status_enginer == 1 && !empty($data['magnettrap']->nama_enginer)) {
+		// 		$update_tanggal_enginer = (new DateTime($data['magnettrap']->tgl_update_enginer))->format('d-m-Y | H:i');
+		// 		$qr_text_enginer = "Diketahui secara digital oleh,\n" . $data['magnettrap']->nama_lengkap_enginer . "\nForeman/Forelady Produksi\n" . $update_tanggal_enginer;
+		// 		$pdf->write2DBarcode($qr_text_enginer, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Engineering', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}\
+			
+			// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if ($data['magnettrap']->status_enginer == 1 && !empty($data['magnettrap']->nama_enginer)) {
 				$update_tanggal_enginer = (new DateTime($data['magnettrap']->tgl_update_enginer))->format('d-m-Y | H:i');
-				$qr_text_enginer = "Diketahui secara digital oleh,\n" . $data['magnettrap']->nama_lengkap_enginer . "\nForeman/Forelady Produksi\n" . $update_tanggal_enginer;
-				$pdf->write2DBarcode($qr_text_enginer, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(135, 5, 'Foreman/Forelady Engineering', 0, 0, 'C');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(135, 5, $data['magnettrap']->nama_enginer, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(135, 5, 'Foreman/Forelady Engineering', 0, 1, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 20);
+				// $pdf->Cell(135, 5, $update_tanggal_enginer, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
 
 		// Disetujui oleh (SPV)
 			$pdf->SetXY(150, $y_verifikasi + 5);

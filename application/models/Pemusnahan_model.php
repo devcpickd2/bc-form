@@ -222,4 +222,45 @@ class Pemusnahan_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('pemusnahan');
 	}
+
+	public function get_by_date($tanggal, $plant = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('pemusnahan');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+
+	public function get_last_verif_by_date($tanggal, $plant = null)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, username, date');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('pemusnahan');
+
+		return $query->row();
+	}
+
 }

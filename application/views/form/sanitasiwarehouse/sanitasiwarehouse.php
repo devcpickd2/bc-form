@@ -34,11 +34,7 @@
                             <th width="20px" class="text-center">No</th>
                             <th>Tanggal</th>
                             <th>Area</th>
-                            <th>Titik Pemeriksaan</th>
-                            <th>Kondisi</th>
-                            <th>Masalah</th>
-                            <th>Tindakan Koreksi</th>
-                            <th>Warehouse</th>
+                            <th>Hasil Pemeriksaan</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -50,7 +46,7 @@
                             $datetime = new DateTime($val->date);
                             $tanggalFormatted = $datetime->format('d-m-Y');
 
-                            $details = json_decode($val->detail, true);
+                            $result = json_decode($val->detail, true);
 
                             $kondisiMap = [
                                 '0' => 'Bersih',
@@ -63,72 +59,87 @@
                                 '7' => 'Sarang laba-laba',
                             ];
 
-                            $bagianList = '';
-                            $kondisiList = '';
-                            $problemList = '';
-                            $tindakanList = '';
+                            // $bagianList = '';
+                            // $kondisiList = '';
+                            // $problemList = '';
+                            // $tindakanList = '';
 
-                            if (is_array($details)) {
-                                foreach ($details as $d) {
-                                    $bagianList .= '<li>' . htmlspecialchars($d['bagian']) . '</li>';
-                                    $kondisiList .= '<li>' . ($kondisiMap[$d['kondisi']] ?? htmlspecialchars($d['kondisi'])) . '</li>';
-                                    $problemList .= '<li>' . (!empty($d['problem']) ? htmlspecialchars($d['problem']) : '-') . '</li>';
-                                    $tindakanList .= '<li>' . (!empty($d['tindakan']) ? htmlspecialchars($d['tindakan']) : '-') . '</li>';
-                                }
-                            }
+                            // if (is_array($details)) {
+                            //     foreach ($details as $d) {
+                            //         $bagianList .= '<li>' . htmlspecialchars($d['bagian']) . '</li>';
+                            //         $kondisiList .= '<li>' . ($kondisiMap[$d['kondisi']] ?? htmlspecialchars($d['kondisi'])) . '</li>';
+                            //         $problemList .= '<li>' . (!empty($d['problem']) ? htmlspecialchars($d['problem']) : '-') . '</li>';
+                            //         $tindakanList .= '<li>' . (!empty($d['tindakan']) ? htmlspecialchars($d['tindakan']) : '-') . '</li>';
+                            //     }
+                            // }
 
                             ?>
                             <tr>
                                 <td class="text-center"><?= $no; ?></td>
                                 <td><?= $tanggalFormatted; ?></td>
                                 <td><?= htmlspecialchars($val->area); ?></td>
-                                <td><ul><?= $bagianList ?></ul></td>
+                                <!-- <td><ul><?= $bagianList ?></ul></td>
                                 <td><ul><?= $kondisiList ?></ul></td>
                                 <td><ul><?= $problemList ?></ul></td>
-                                <td><ul><?= $tindakanList ?></ul></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_wh == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_wh == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_wh == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('sanitasiwarehouse/edit/' . $val->uuid); ?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Edit</span>
-                                    </a>
-                                    <a href="<?= base_url('sanitasiwarehouse/detail/' . $val->uuid); ?>" class="btn btn-success btn-icon-split">
-                                        <span class="text">Detail</span>
-                                    </a>
-                                    <a href="<?= base_url('sanitasiwarehouse/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <span class="text">Delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
+                                <td><ul><?= $tindakanList ?></ul></td> -->
+                                <td>
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead style="background-color:#2E86C1; color:gray; text-align:center;">
+                                            <tr>
+                                                <th width="30%">Titik Pemeriksaan</th>
+                                                <th width="20%">Kondisi</th>
+                                                <th width="20%">Masalah</th>
+                                                <th width="30%">Tindakan Koreksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($result) && is_array($result)): ?>
+                                            <?php foreach ($result as $row): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($row['bagian'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= ($kondisiMap[$row['kondisi']] ?? htmlspecialchars($row['kondisi']) ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['problem'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['tindakan'] ?? '-'); ?></td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        <?php else: ?>
+                                            <tr><td colspan="3" class="text-center">Tidak ada data</td></tr>
+                                        <?php endif ?>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td class="text-center">
+                                <?php
+                                if ($val->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($val->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($val->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                                ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('sanitasiwarehouse/edit/' . $val->uuid); ?>" class="btn btn-warning btn-icon-split">
+                                    <span class="text">Edit</span>
+                                </a>
+                                <a href="<?= base_url('sanitasiwarehouse/detail/' . $val->uuid); ?>" class="btn btn-success btn-icon-split">
+                                    <span class="text">Detail</span>
+                                </a>
+                                <a href="<?= base_url('sanitasiwarehouse/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    <span class="text">Delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php 
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 </div>
 </div>
 <style> 

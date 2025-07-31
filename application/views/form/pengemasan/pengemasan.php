@@ -39,7 +39,6 @@
                             <th>Kadar Air</th>
                             <th>Kondisi Produk</th>
                             <th>Kondisi Seal</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -60,17 +59,6 @@
                                 <td><?= $val->kadar_air ; ?></td>
                                 <td><?= $val->kondisi_produk; ?></td>
                                 <td><?= $val->kondisi_seal; ?></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {

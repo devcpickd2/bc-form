@@ -193,29 +193,30 @@ class Kondisikerja extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
+		$shift   = $this->input->post('shift'); 
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$kondisikerja_data = $this->kondisikerja_model->get_by_uuid_kondisikerja($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$kondisikerja_data_verif = $this->kondisikerja_model->get_by_uuid_kondisikerja_verif($selected_items);
+		$kondisikerja_data = $this->kondisikerja_model->get_by_date($tanggal, $plant, $shift); 
+		$kondisikerja_data_verif = $this->kondisikerja_model->get_last_verif_by_date($tanggal, $plant, $shift); 
+
+		if (!$kondisikerja_data || !$kondisikerja_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['kondisikerja'] = $kondisikerja_data_verif;
-
-
-		if (!$data['kondisikerja']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		$this->load->model('pegawai_model');
 		$data['kondisikerja']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['kondisikerja']->username);
 		$data['kondisikerja']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['kondisikerja']->nama_spv);
-		$data['kondisikerja']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['kondisikerja']->nama_produksi);
+		$data['kondisikerja']->nama_lengkap_produksi = $data['kondisikerja']->nama_produksi;
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
@@ -386,10 +387,11 @@ class Kondisikerja extends CI_Controller {
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 			if ($data['kondisikerja']->status_produksi == 1 && !empty($data['kondisikerja']->nama_produksi)) {
-				$update_tanggal_produksi = (new DateTime($data['kondisikerja']->tgl_update_produksi))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['kondisikerja']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->Cell(35, 5, $data['kondisikerja']->nama_produksi, 0, 1, 'C');
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
 				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
 			} else {
 				$pdf->SetXY(90, $y_verifikasi + 10);

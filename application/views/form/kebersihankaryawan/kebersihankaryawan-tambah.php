@@ -14,34 +14,38 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('kebersihankaryawan/tambah');?>" enctype="multipart/form-data">
+                    <?php
+                    $produksi_data = $this->session->userdata('produksi_data');
+                    $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
+                    $shift_sess = $produksi_data['shift'] ?? '';
+                    ?>
                     <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Tanggal</label>
-                            <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?php echo date("Y-m-d") ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('date') ?>
-                            </div>
+                        <div class="col-md-3">
+                            <label class="font-weight-bold">Tanggal</label>
+                            <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
+                            value="<?= set_value('date', $tanggal_sess) ?>">
+                            <div class="invalid-feedback"><?= form_error('date') ?></div>
                         </div>
-                        <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Shift</label>
-                            <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
-                                <option disabled selected>Pilih Shift</option>
-                                <option value="1" <?= set_select('shift', 1); ?>>Shift 1</option>
-                                <option value="2" <?= set_select('shift', 2); ?>>Shift 2</option>
-                                <option value="3" <?= set_select('shift', 3); ?>>Shift 3</option>
+                        <div class="col-md-3">
+                            <label class="font-weight-bold">Shift</label>
+                            <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
+                                <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
+                                <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
+                                <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
+                                <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
                             </select>
-                            <div class="invalid-feedback <?= !empty(form_error('shift')) ? 'd-block' : '' ; ?> "><?= form_error('shift') ?></div>
-                        </div> 
+                            <div class="invalid-feedback"><?= form_error('shift') ?></div>
+                        </div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Nama</label>
                             <input type="text" name="nama" class="form-control <?= form_error('nama') ? 'invalid' : '' ?> " value="<?= set_value('nama'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('nama')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('nama') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Bagian</label>
                             <input type="text" name="bagian" class="form-control <?= form_error('bagian') ? 'invalid' : '' ?> " value="<?= set_value('bagian'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('bagian')) ? 'd-block' : '' ; ?> ">

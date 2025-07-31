@@ -45,6 +45,10 @@ class Kebersihanruang_model extends CI_Model {
 
 	public function insert()
 	{
+
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -68,7 +72,7 @@ class Kebersihanruang_model extends CI_Model {
 		}
 
 		$status_spv = "0";
-		$status_produksi = "0";
+		$status_produksi = "1";
 
 		$data = array(
 			'uuid' => $uuid,
@@ -79,6 +83,7 @@ class Kebersihanruang_model extends CI_Model {
 			'lokasi' => $lokasi,
 			'detail' => json_encode($detail), 
 			'status_produksi' => $status_produksi,
+			'nama_produksi' => $nama_produksi,
 			'status_spv' => $status_spv,
 			'created_at' => date("Y-m-d H:i:s"),
 			'modified_at' => date("Y-m-d H:i:s")
@@ -258,5 +263,54 @@ class Kebersihanruang_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('kebersihan_ruang');
 	}
+
+	public function get_by_date($tanggal, $plant = null, $shift = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('kebersihan_ruang');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+	
+	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, status_produksi, tgl_update_produksi');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('kebersihan_ruang');
+
+		return $query->row();
+	}
+
 
 }

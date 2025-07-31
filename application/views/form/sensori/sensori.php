@@ -36,7 +36,6 @@
                             <th>Nama Produk</th>
                             <th style="text-align: center;">Sensori Produk</th>
                             <th>Tindakan Koreksi</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -86,17 +85,6 @@
                                 </td>
 
                                 <td><?= $val->tindakan; ?></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
 
                                 <!-- Status Supervisor -->
                                 <td class="text-center">
@@ -113,14 +101,14 @@
 
                                 <!-- Aksi -->
                                 <td class="text-center">
-                                    <a href="<?= base_url('sensori/edit/' . $val->uuid); ?>" class="btn btn-warning btn-sm mb-1">
-                                        <i class="fas fa-edit"></i> Edit
+                                    <a href="<?= base_url('sensori/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
+                                        <span class="text">Update</span>
                                     </a>
-                                    <a href="<?= base_url('sensori/detail/' . $val->uuid); ?>" class="btn btn-success btn-sm mb-1">
-                                        <i class="fas fa-eye"></i> Detail
+                                    <a href="<?= base_url('sensori/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                                        <span class="text">Detail</span>
                                     </a>
-                                    <a href="<?= base_url('sensori/delete/' . $val->uuid); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <i class="fas fa-trash"></i> Delete
+                                    <a href="<?= base_url('sensori/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <span class="text">Delete</span>
                                     </a>
                                 </td>
                             </tr>

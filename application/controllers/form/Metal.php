@@ -69,7 +69,7 @@ class Metal extends CI_Controller {
 
 	public function edit($uuid)
 	{
-		$rules = $this->metal_model->rules();
+		$rules = $this->metal_model->rules_update();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
@@ -244,25 +244,25 @@ class Metal extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$metal_data = $this->metal_model->get_by_uuid_metal($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$metal_data_verif = $this->metal_model->get_by_uuid_metal_verif($selected_items);
+		$metal_data = $this->metal_model->get_by_date($tanggal, $plant); 
+		$metal_data_verif = $this->metal_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$metal_data || !$metal_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['metal'] = $metal_data_verif;
-
-
-		if (!$data['metal']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
+		
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -366,7 +366,7 @@ class Metal extends CI_Controller {
 
 		$nama_lengkap_qc = $this->Pegawai_model->get_nama_lengkap($data['metal']->username_1);
 		$nama_lengkap_spv = $this->Pegawai_model->get_nama_lengkap($data['metal']->nama_spv_metal);
-		$nama_lengkap_produksi = $this->Pegawai_model->get_nama_lengkap($data['metal']->nama_produksi_metal);
+		$nama_lengkap_produksi = $data['metal']->nama_produksi_metal;
 
 		$tanggal_update = $data['metal']->tgl_update_spv_metal;
 		$update = new DateTime($tanggal_update); 
@@ -417,6 +417,7 @@ class Metal extends CI_Controller {
 			$pdf->SetTextColor(0, 0, 0);
 			$y_verifikasi = $y_after_keterangan;
 
+	// Dibuat oleh (QC)
 			$pdf->SetXY(25, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
 
@@ -426,21 +427,32 @@ class Metal extends CI_Controller {
 
 			$pdf->SetFont('times', '', 8);
 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+
+	// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 
 			if (!empty($data['metal']->nama_produksi_metal)) {
-				$qr_text_produksi = "Diketahui secara digital oleh,\n"
-				. $nama_lengkap_produksi . "\n"
-				. "Foreman/Forelady Produksi\n"
-				. $update_tanggal_prod;
+				$update_tanggal_prod = (new DateTime($data['metal']->tgl_update_produksi_metal))->format('d-m-Y | H:i');
+				$nama_lengkap_produksi = $data['metal']->nama_produksi_metal;
 
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, $nama_lengkap_produksi, 0, 1, 'C');
 
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 20);
+				// $pdf->Cell(35, 5, $update_tanggal_prod, 0, 0, 'C');
+			} else {
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
 
+	// Disetujui oleh (Supervisor QC) - tetap pakai QR
 			$pdf->SetXY(150, $y_verifikasi + 5);
 			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
 

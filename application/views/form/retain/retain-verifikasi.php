@@ -33,8 +33,8 @@
                                 <th>Tanggal</th>
                                 <th>Plant</th>
                                 <th>Sample Type</th>
-                                <th>Nama Produk</th>
-                                <th>Kode Produksi / Best Before</th>
+                                <!-- <th>Nama Produk</th>
+                                <th>Kode Produksi / Best Before</th> -->
                                 <th>Last Updated</th>
                                 <th>Last Verified</th>
                                 <th>SPV</th>
@@ -57,8 +57,8 @@
                                     <td><?= $datetime; ?></td>
                                     <td><?= $val->nama_plant; ?></td>
                                     <td><?= $val->sample_type; ?></td>
-                                    <td><?= $val->deskripsi ; ?></td>
-                                    <td><?= $val->kode_produksi . " / " . $bb; ?></td>
+                                    <!-- <td><?= $val->deskripsi ; ?></td>
+                                    <td><?= $val->kode_produksi . " / " . $bb; ?></td> -->
                                     <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
                                     <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
                                     <td class="text-center">

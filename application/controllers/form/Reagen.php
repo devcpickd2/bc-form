@@ -152,21 +152,23 @@ class Reagen extends CI_Controller {
 	{
 		$bulan = $this->input->get('bulan');
 
-		if (!$bulan) {
-			show_error('Parameter bulan tidak ditemukan', 404);
+		if (empty($bulan)) {
+			show_error('Tidak ada bulan yang dipilih', 404);
 		}
 
 		[$tahun, $bln] = explode('-', $bulan);
 		$start_date = "$tahun-$bln-01";
-		$end_date = date("Y-m-t", strtotime($start_date));
+		$end_date = date("Y-m-t", strtotime($start_date)); 
 
-		$reagen_data = $this->reagen_model->get_Reagen_by_month($start_date, $end_date);
+		$plant = $this->session->userdata('plant');
 
-		if (empty($reagen_data)) {
-			show_error('Tidak ada data untuk bulan ini', 404);
+		$reagen_data = $this->reagen_model->get_by_month($start_date, $end_date, $plant); 
+		$reagen_data_verif = $this->reagen_model-> get_last_verif_by_month($start_date, $end_date, $plant); 
+
+		if (!$reagen_data || !$reagen_data_verif) {
+			show_error('Data tidak ditemukan, Pilih bulan yang ingin dicetak', 404);
 		}
 
-		$reagen_data_verif = $this->reagen_model->get_one_verified_by_month($start_date, $end_date);
 		$data['reagen'] = $reagen_data_verif;
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';

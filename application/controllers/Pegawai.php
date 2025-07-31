@@ -20,12 +20,12 @@ class Pegawai extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pegawai' => $this->pegawai_model->get_all(),
+			'pegawai' => $this->pegawai_model->get_data_by_plant(),
 			'active_nav' => 'pegawai', 
 		);
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('pegawai/pegawai');
+		$this->load->view('pegawai/pegawai', $data);
 		$this->load->view('partials/footer');
 	}
 
@@ -117,7 +117,7 @@ class Pegawai extends CI_Controller {
 		$this->load->view('partials/footer');
 	}
 
-	public function delete($uuid)
+	public function delete($uuid) 
 	{
 		if (!$uuid) {
 			$this->session->set_flashdata('error_msg', 'ID tidak ditemukan.');

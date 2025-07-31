@@ -1,146 +1,162 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Detail Pengayakan</h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb"> 
-            <li class="breadcrumb-item">
-                <a href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('pengayakan'); ?>">
-                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Pengayakan</a>
-                </li>
-            </ol>
-        </nav>
+    <h1 class="h3 mb-3 text-gray-800 text-center font-weight-bold">Detail Pemeriksaan Pengayakan</h1>
 
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="form-group row">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <?php 
-                                $datetime = new datetime($pengayakan->date);
-                                $datetime = $datetime->format('d-m-Y');
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a class="text-white" href="<?= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] . '?search=' . urlencode($this->input->get('search')) : base_url('pengayakan'); ?>">
+                    <i class="fas fa-arrow-left"></i> Daftar Pemeriksaan Pengayakan
+                </a>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="card shadow rounded mb-5">
+        <div class="card-body">
+            <div class="table-responsive">
+                <?php $datetime = (new DateTime($pengayakan->date))->format('d-m-Y'); ?>
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead class="text-center">
+                        <tr>
+                            <th colspan="7" class="font-weight-bold table-title">PEMERIKSAAN PENGAYAKAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tanggal</strong></td>
+                            <td colspan="3"><?= $datetime; ?></td>
+                            <td><strong>Shift</strong></td>
+                            <td colspan="2"><?= $pengayakan->shift; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nama Barang</strong></td>
+                            <td colspan="6"><?= $pengayakan->nama_barang; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kode Produksi</strong></td>
+                            <td colspan="6"><?= $pengayakan->kode_produksi; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Expired Date</strong></td>
+                            <td colspan="6"><?= $pengayakan->expired_date; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jumlah Barang</strong></td>
+                            <td colspan="6"><?= $pengayakan->jumlah_barang; ?></td>
+                        </tr>
+
+                        <tr class="bg-light text-center">
+                            <th><strong>Kontaminasi Benda Asing</strong></th>
+                            <th colspan="2">Screen Mess</th>
+                            <th>Kerikil</th>
+                            <th>Benang</th>
+                            <th colspan="2"></th>
+                        </tr>
+                        <tr class="text-center">
+                            <td><strong>Jumlah</strong></td>
+                            <td colspan="2"><?= $pengayakan->kba_screenmess; ?></td>
+                            <td><?= $pengayakan->kba_kerikil; ?></td>
+                            <td><?= $pengayakan->kba_benang; ?></td>
+                            <td colspan="2"></td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Kondisi Screen Ayakan</strong></td>
+                            <td colspan="6"><?= $pengayakan->kondisi; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Catatan</strong></td>
+                            <td colspan="6"><?= !empty($pengayakan->catatan) ? $pengayakan->catatan : 'Tidak ada'; ?></td>
+                        </tr>
+
+                        <tr class="table-primary text-center">
+                            <th colspan="7">VERIFIKASI</th>
+                        </tr>
+                        <tr>
+                            <td><strong>QC</strong></td>
+                            <td colspan="6"><?= $pengayakan->username; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Produksi</strong></td>
+                            <td colspan="6"><?= $pengayakan->nama_produksi; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status Supervisor</strong></td>
+                            <td colspan="6">
+                                <?php
+                                switch ($pengayakan->status_spv) {
+                                    case 1:
+                                        echo '<span class="text-success font-weight-bold">Verified</span>';
+                                        break;
+                                    case 2:
+                                        echo '<span class="text-danger font-weight-bold">Revision</span>';
+                                        break;
+                                    default:
+                                        echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                        break;
+                                }
                                 ?>
-                                <tr>
-                                    <th style="text-align:center;" colspan="7">PEMERIKSAAN PENGAYAKAN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="text-align:left;"><b>Tanggal : <?= $datetime;?></b></td>
-                                    <td colspan="6"><b>Shift : <?= $pengayakan->shift;?><b></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Nama Barang</td>
-                                        <td colspan="6"><?= $pengayakan->nama_barang;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kode Produksi</td>
-                                        <td colspan="6"><?= $pengayakan->kode_produksi;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Expired Date</td>
-                                        <td colspan="6"><?= $pengayakan->expired_date;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jumlah Barang</td>
-                                        <td colspan="6"><?= $pengayakan->jumlah_barang;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Kontaminasi Benda Asing</b></td>
-                                        <td style="text-align:center;"><b>Screen Mess</b></td>
-                                        <td style="text-align:center;"><b>Kerikil</b></td>
-                                        <td style="text-align:center;"><b>Benang</b></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jumlah</td>
-                                        <td style="text-align:center;"><?= $pengayakan->kba_screenmess;?></td>
-                                        <td style="text-align:center;"><?= $pengayakan->kba_kerikil;?></td>
-                                        <td style="text-align:center;"><?= $pengayakan->kba_benang;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kondisi Screen Ayakan</td>
-                                        <td colspan="6"><?= $pengayakan->kondisi;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Catatan</td>
-                                        <td colspan="6"> <?= !empty($pengayakan->catatan) ? $pengayakan->catatan : 'Tidak ada'; ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th style="text-align:center;" colspan="5">VERIFIKASI</th>
-                                    </tr>
-                                    <tr>
-                                        <td>QC</td>
-                                        <td colspan="6"><?= $pengayakan->username;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Produksi</td>
-                                        <td colspan="5"><?= $pengayakan->nama_produksi;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diketahui Produksi</td>
-                                        <td colspan="4">
-                                            <?php
-                                            if ($pengayakan->status_produksi == 0) {
-                                                echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                            } elseif ($pengayakan->status_produksi == 1) {
-                                                echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                            } elseif ($pengayakan->status_produksi == 2) {
-                                                echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                            }
-                                        ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Catatan Produksi</td>
-                                        <td colspan="4"><?= !empty($pengayakan->catatan_produksi) ? $pengayakan->catatan_produksi : 'Tidak ada'; ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Disetujui Supervisor</td>
-                                        <td colspan="4"><?php
-                                        if ($pengayakan->status_spv == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($pengayakan->status_spv == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                        } elseif ($pengayakan->status_spv == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                        }
-                                    ?></td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan Supervisor</td>
-                                    <td colspan="4"><?= !empty($pengayakan->catatan_spv) ? $pengayakan->catatan_spv : 'Tidak ada'; ?></td>
-                                </tr>
-                            </tbody>
-                        </table>    
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Catatan Supervisor</strong></td>
+                            <td colspan="6"><?= !empty($pengayakan->catatan_spv) ? $pengayakan->catatan_spv : 'Tidak ada'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-<style type="text/css">
+</div>
+
+<!-- CSS -->
+<style>
     .breadcrumb {
         background-color: #2E86C1;
+        padding: 10px 16px;
+        border-radius: 0.35rem;
     }
-    .no-border {
-        border: none;
-        box-shadow: none;
+
+    .breadcrumb .breadcrumb-item a {
+        color: #fff;
+        font-weight: 500;
     }
+
+    .breadcrumb .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
     .table {
-        width: 50%; 
-        font-size: 16px; 
-        margin: 0 auto; 
+        font-size: 15px;
+        background-color: #fff;
     }
-    .table, .table th, .table td {
-        border: none;
-    }
-    .table th, .table td {
-        padding: 6px 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        word-wrap: break-word;
-        white-space: normal !important;
-    }
+
+    .table th,
     .table td {
-        white-space: nowrap;
+        padding: 10px 14px;
+        vertical-align: middle;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    .table-title {
+        background-color: #f8f9fa;
+        font-size: 17px;
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .table td,
+        .table th {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        h1.h3 {
+            font-size: 20px;
+        }
     }
 </style>

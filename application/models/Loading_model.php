@@ -57,6 +57,8 @@ class Loading_model extends CI_Model {
 
 	public function insert()
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -101,7 +103,7 @@ class Loading_model extends CI_Model {
 		}
 
 		$status_spv = "0";
-		$status_wh = "0";
+		$status_wh = "1";
 
 		$data = array(
 			'uuid' => $uuid,
@@ -119,6 +121,7 @@ class Loading_model extends CI_Model {
 			'kondisi_mobil' => json_encode($kondisi_mobil),
 			'loading' => json_encode($loading),
 			'status_spv' => $status_spv,
+			'nama_wh' => $nama_produksi,
 			'status_wh' => $status_wh
 		);
 

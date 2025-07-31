@@ -192,25 +192,25 @@ class Pengemasan extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$pengemasan_data = $this->pengemasan_model->get_by_uuid_pengemasan($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$pengemasan_data_verif = $this->pengemasan_model->get_by_uuid_pengemasan_verif($selected_items);
+		$pengemasan_data = $this->pengemasan_model->get_by_date($tanggal, $plant); 
+		$pengemasan_data_verif = $this->pengemasan_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$pengemasan_data || !$pengemasan_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['pengemasan'] = $pengemasan_data_verif;
-
-
-		if (!$data['pengemasan']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
+		
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -320,7 +320,7 @@ class Pengemasan extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['pengemasan']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['pengemasan']->username);
 		$data['pengemasan']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['pengemasan']->nama_spv);
-		$data['pengemasan']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['pengemasan']->nama_produksi);
+		$data['pengemasan']->nama_lengkap_produksi = $data['pengemasan']->nama_produksi;
 
 		$status_verifikasi = true;
 		foreach ($pengemasan_data as $item) {
@@ -341,16 +341,23 @@ class Pengemasan extends CI_Controller {
 			$pdf->SetXY(90, $y_verifikasi + 15);
 			$pdf->Cell(35, 5, 'QC Inspector', 0, 0, 'C');
 
-	// Diketahui oleh (Produksi)
 			if ($data['pengemasan']->status_produksi == 1 && !empty($data['pengemasan']->nama_produksi)) {
 				$update_tanggal_produksi = (new DateTime($data['pengemasan']->tgl_update_produksi))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['pengemasan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+
 				$pdf->SetXY(140, $y_verifikasi + 5);
 				$pdf->Cell(60, 5, 'Diketahui Oleh,', 0, 0, 'C');
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 162, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(140, $y_verifikasi + 24);
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(140, $y_verifikasi + 10);
+				$pdf->Cell(60, 5, $data['pengemasan']->nama_produksi, 0, 0, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(140, $y_verifikasi + 15);
 				$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			} else {
+				$pdf->SetXY(140, $y_verifikasi + 10);
+				$pdf->Cell(60, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
 
 	// Disetujui oleh (SPV)
 			$update_tanggal = (new DateTime($data['pengemasan']->tgl_update_spv))->format('d-m-Y | H:i');

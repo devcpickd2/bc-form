@@ -192,25 +192,24 @@ class Timbangan extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$timbangan_data = $this->timbangan_model->get_by_uuid_timbangan($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$timbangan_data_verif = $this->timbangan_model->get_by_uuid_timbangan_verif($selected_items);
+		$timbangan_data = $this->timbangan_model->get_by_date($tanggal, $plant); 
+		$timbangan_data_verif = $this->timbangan_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$timbangan_data || !$timbangan_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['timbangan'] = $timbangan_data_verif;
-
-
-		if (!$data['timbangan']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -327,7 +326,7 @@ class Timbangan extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['timbangan']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['timbangan']->username);
 		$data['timbangan']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['timbangan']->nama_spv);
-		$data['timbangan']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['timbangan']->nama_produksi);
+		$data['timbangan']->nama_lengkap_produksi = $data['timbangan']->nama_produksi;
 
 		$y_after_keterangan = $pdf->GetY();
 		$status_verifikasi = true;
@@ -353,19 +352,43 @@ class Timbangan extends CI_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// Diketahui oleh (Produksi)
+		// // Diketahui oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['timbangan']->status_produksi == 1 && !empty($data['timbangan']->nama_produksi)) {
+		// 		$update_tanggal_produksi = (new DateTime($data['timbangan']->tgl_update_produksi))->format('d-m-Y | H:i');
+		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['timbangan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+			// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if ($data['timbangan']->status_produksi == 1 && !empty($data['timbangan']->nama_produksi)) {
 				$update_tanggal_produksi = (new DateTime($data['timbangan']->tgl_update_produksi))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['timbangan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(135, 5, $data['timbangan']->nama_produksi, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 20);
+				// $pdf->Cell(135, 5, $update_tanggal_produksi, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
 
 		// Disetujui oleh (SPV)
 			$pdf->SetXY(150, $y_verifikasi + 5);

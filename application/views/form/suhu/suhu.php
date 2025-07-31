@@ -33,10 +33,10 @@
                         <tr>
                             <th width="20px" class="text-center">No</th>
                             <th>Tanggal/ Shift</th>
-                            <th>Pukul</th>
+                            <th>Pukul</th><!-- 
                             <th>Lokasi</th>
-                            <th>Suhu / RH</th>
-                            <th>Produksi</th>
+                            <th>Suhu / RH</th> -->
+                            <!-- <th>Produksi</th> -->
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -51,10 +51,10 @@
                             <tr>
                                 <td class="text-center"><?= $no; ?></td>
                                 <td><?= $datetime . " / " . $val->shift; ?></td>
-                                <td><?= date('H:i', strtotime($val->pukul)); ?></td>
+                                <td><?= date('H:i', strtotime($val->pukul)); ?></td><!-- 
                                 <td><?= $val->lokasi; ?></td>
-                                <td><?= $val->suhu . " / " . $val->rh; ?></td>
-                                <td class="text-center">
+                                <td><?= $val->suhu . " / " . $val->rh; ?></td> -->
+                                <!-- <td class="text-center">
                                     <?php
                                     if ($val->status_produksi == 0) {
                                         echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
@@ -64,7 +64,7 @@
                                         echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
                                     }
                                     ?>
-                                </td>
+                                </td> -->
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {

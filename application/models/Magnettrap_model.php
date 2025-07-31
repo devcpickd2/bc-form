@@ -61,6 +61,8 @@ class Magnettrap_model extends CI_Model {
 
 	public function insert($file_name)
 	{
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -74,7 +76,7 @@ class Magnettrap_model extends CI_Model {
 		$verifikasi = $this->input->post('verifikasi');
 		$catatan = $this->input->post('catatan');
 		$keterangan = $this->input->post('keterangan');
-		$status_enginer = "0";
+		$status_enginer = "1";
 		$status_spv = "0";
 
 		$data = array(
@@ -93,6 +95,7 @@ class Magnettrap_model extends CI_Model {
 			'keterangan' => $keterangan,
 			'bukti' => $file_name,
 			'status_enginer' => $status_enginer,
+			'nama_enginer' => $nama_produksi,
 			'status_spv' => $status_spv,
 		);
 
@@ -260,4 +263,53 @@ class Magnettrap_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('magnet_trap');
 	}
+
+	public function get_by_date($tanggal, $plant = null, $shift = null)
+	{
+		if (empty($tanggal)) {
+			return false;
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('magnet_trap');
+
+		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}
+
+		return false;
+	}
+	
+	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
+	{
+		$this->db->select('nama_spv, tgl_update_spv, date, username, shift, nama_enginer, status_enginer, tgl_update_enginer');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('magnet_trap');
+
+		return $query->row();
+	}
+
 }

@@ -58,13 +58,13 @@
                         <?= form_error('fermen_lama_proses') ?>
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <!-- <div class="col-sm-4">
                     <label class="form-label font-weight-bold">Hasil Proofing</label>
                     <input type="text" name="fermen_hasil_proof" class="form-control <?= form_error('fermen_hasil_proof') ? 'invalid' : '' ?> " value="<?= $produksi->fermen_hasil_proof; ?>">
                     <div class="invalid-feedback <?= !empty(form_error('fermen_hasil_proof')) ? 'd-block' : '' ; ?> ">
                         <?= form_error('fermen_hasil_proof') ?>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="row">
                 <div class="col">

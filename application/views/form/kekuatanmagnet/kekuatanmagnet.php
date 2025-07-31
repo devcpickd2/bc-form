@@ -35,7 +35,6 @@
                             <th>Tanggal</th>
                             <th>Nama Alat</th>
                             <th>Nilai Pengukuran</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -51,18 +50,7 @@
                                 <td class="text-center"><?= $no; ?></td>
                                 <td><?= $datetime; ?></td>
                                 <td><?= $val->nama_alat; ?></td>
-                                <td><?= $val->nilai; ?></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
+                                <td><?= $val->nilai . " Gauss "; ?></td>
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {

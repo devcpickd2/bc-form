@@ -6,7 +6,7 @@ class Auth extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
- 
+
 		$this->load->model('auth_model');
 		$this->load->library('form_validation');
 
@@ -25,7 +25,7 @@ class Auth extends CI_Controller {
 	public function login()
 	{
 
-		if($this->auth_model->current_user()){
+		if($this->auth_model->current_user()){ 
 			redirect('home');
 		}
 		
@@ -39,14 +39,15 @@ class Auth extends CI_Controller {
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
 
-		if($this->auth_model->login($username, $password)){
+		if ($this->auth_model->login($username, $password)) {
+			$this->session->set_userdata('show_produksi_modal', true); 
 			redirect('home');
 		} else {
 			$this->session->set_flashdata('error_msg', 'Login Gagal, pastikan username dan passwrod benar!');
 		}
 
 		$this->load->view('auth/login');
-		
+
 	}
 
 

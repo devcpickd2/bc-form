@@ -7,7 +7,7 @@ class Retain_model extends CI_Model {
 	
 	public function rules()
 	{
-		return[
+		return [
 			[
 				'field' => 'date',
 				'label' => 'Date',
@@ -27,30 +27,6 @@ class Retain_model extends CI_Model {
 				'field' => 'sample_storage',
 				'label' => 'Storage of Sample',
 				'rules' => 'required'
-			],
-			[
-				'field' => 'deskripsi',
-				'label' => 'Description',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'kode_produksi',
-				'label' => 'Product Code',
-				'rules' => 'required'
-			],  
-			[
-				'field' => 'best_before',
-				'label' => 'Best Before',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'quantity',
-				'label' => 'Quantity (Gr)',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'remark',
-				'label' => 'Remark'
 			], 
 			[
 				'field' => 'catatan',
@@ -63,41 +39,28 @@ class Retain_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
-		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$plant = $this->input->post('plant');
 		$sample_type = $this->input->post('sample_type');
 		$sample_storage = $this->input->post('sample_storage');
-		$deskripsi = $this->input->post('deskripsi');
-		$kode_produksi = $this->input->post('kode_produksi');
-		$best_before = $this->input->post('best_before');
-		$quantity = $this->input->post('quantity');
-		$remark = $this->input->post('remark');		
+		$description = $this->input->post('description'); 
 		$catatan = $this->input->post('catatan');
-		// $status_produksi = "0";
 		$status_spv = "0";
 
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
-			'plant' => $plant,
 			'date' => $date,
 			'plant' => $plant,
 			'sample_type' => $sample_type,
 			'sample_storage' => $sample_storage,
-			'deskripsi' => $deskripsi,
-			'kode_produksi' => $kode_produksi,
-			'best_before' => $best_before,
-			'quantity' => $quantity,
-			'remark' => $remark,
+			'description' => json_encode($description), 
 			'catatan' => $catatan,
-			// 'status_produksi' => $status_produksi,
 			'status_spv' => $status_spv
 		);
 
 		$this->db->insert('retain', $data);
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		return ($this->db->affected_rows() > 0);
 	}
 
 	public function update($uuid)
@@ -107,11 +70,7 @@ class Retain_model extends CI_Model {
 		$plant = $this->input->post('plant');
 		$sample_type = $this->input->post('sample_type');
 		$sample_storage = $this->input->post('sample_storage');
-		$deskripsi = $this->input->post('deskripsi');
-		$kode_produksi = $this->input->post('kode_produksi');
-		$best_before = $this->input->post('best_before');
-		$quantity = $this->input->post('quantity');
-		$remark = $this->input->post('remark');		
+		$description = $this->input->post('description'); 
 		$catatan = $this->input->post('catatan');
 
 		$data = array(
@@ -120,19 +79,13 @@ class Retain_model extends CI_Model {
 			'plant' => $plant,
 			'sample_type' => $sample_type,
 			'sample_storage' => $sample_storage,
-			'deskripsi' => $deskripsi,
-			'kode_produksi' => $kode_produksi,
-			'best_before' => $best_before,
-			'quantity' => $quantity,
-			'remark' => $remark,
+			'description' => json_encode($description),
 			'catatan' => $catatan,
-
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('retain', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		$this->db->update('retain', $data, ['uuid' => $uuid]);
+		return ($this->db->affected_rows() > 0);
 	}
 
 	public function rules_verifikasi()
@@ -259,16 +212,16 @@ class Retain_model extends CI_Model {
 
 	public function get_by_uuid_retain_verif($uuid_array)
 	{
-		$this->db->select('retain.nama_spv, retain.tgl_update_spv, retain.username, retain.date, plant.plant AS plant, retain.sample_type, retain.sample_storage');
+		$this->db->select('retain.description, retain.nama_spv, retain.tgl_update_spv, retain.username, retain.date, plant.plant AS plant, retain.sample_type, retain.sample_storage');
 		$this->db->from('retain');
 		$this->db->join('plant', 'plant.uuid = retain.plant', 'left');
 		$this->db->where_in('retain.uuid', $uuid_array);
 		$this->db->order_by('retain.tgl_update_spv', 'DESC');   
-		$this->db->limit(1);  
 		$query = $this->db->get();
 
-		return $query->row(); 
+		return $query->result();
 	}
+
 
 	public function get_data_by_plant()
 	{

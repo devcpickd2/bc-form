@@ -61,15 +61,15 @@ $route['translate_uri_dashes'] = FALSE;
 
 // $route['login'] = 'auth/login';
 $route['logout'] = 'auth/logout';
-$route['departemen'] = 'departemen';
-$route['departemen/tambah'] = 'departemen/tambah';
-$route['departemen/edit/(:any)'] = 'departemen/edit/$1';
-$route['departemen/delete/(:any)'] = 'departemen/delete/$1';
+// $route['departemen'] = 'departemen';
+// $route['departemen/tambah'] = 'departemen/tambah';
+// $route['departemen/edit/(:any)'] = 'departemen/edit/$1';
+// $route['departemen/delete/(:any)'] = 'departemen/delete/$1';
 
-$route['plant'] = 'plant';
-$route['plant/tambah'] = 'plant/tambah';
-$route['plant/edit/(:any)'] = 'plant/edit/$1';
-$route['plant/delete/(:any)'] = 'plant/delete/$1';
+// $route['plant'] = 'plant';
+// $route['plant/tambah'] = 'plant/tambah';
+// $route['plant/edit/(:any)'] = 'plant/edit/$1';
+// $route['plant/delete/(:any)'] = 'plant/delete/$1';
 
 $route['pegawai'] = 'pegawai';
 $route['pegawai/tambah'] = 'pegawai/tambah';
@@ -107,7 +107,18 @@ $route['produksi/status/(:any)'] = 'form/produksi/status/$1';
 $route['produksi/diketahui'] = 'form/produksi/diketahui';
 $route['produksi/statusprod/(:any)'] = 'form/produksi/statusprod/$1';
 $route['produksi/delete/(:any)'] = 'form/produksi/delete/$1';
-// $route['remove-premix'] = 'form/removePremix';
+$route['produksi/get_produk_by_tanggal'] = 'form/produksi/get_produk_by_tanggal';
+$route['produksi/export_excel'] = 'form/produksi/export_excel';
+
+$route['proses'] = 'form/proses';
+$route['proses/tambah'] = 'form/proses/tambah';
+$route['proses/detail/(:any)'] = 'form/proses/detail/$1';
+$route['proses/edit/(:any)'] = 'form/proses/edit/$1';
+$route['proses/packing/(:any)'] = 'form/proses/packing/$1';
+$route['proses/cetak'] = 'form/proses/cetak';
+$route['proses/verifikasi'] = 'form/proses/verifikasi';
+$route['proses/status/(:any)'] = 'form/proses/status/$1';
+$route['proses/delete/(:any)'] = 'form/proses/delete/$1';
 
 $route['metal'] = 'form/metal';
 $route['metal/tambah'] = 'form/metal/tambah';

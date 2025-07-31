@@ -14,7 +14,7 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form method="post" action="<?= base_url('loading/edit/'.$loading->uuid);?>">
-                   <div style="display: flex; gap: 20px;">
+                 <div style="display: flex; gap: 20px;">
                     <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 30%; text-align: left; font-family: Arial, sans-serif; font-size: 14px;">
                         <thead style="background-color: #f2f2f2;">
                             <tr>
@@ -107,8 +107,9 @@
                     </div> 
                 </div>
                 <hr>
+                
                 <h5>Detail Kondisi Mobil</h5>
-                <div id="detail-section">
+                <div class="container-fluid px-0">
                     <?php
                     $max_rows = 100;
 
@@ -127,17 +128,17 @@
                         '3' => 'Pallet rusak/pecah',
                     ];
 
-                    foreach ($kondisi_mobil as $i => $row):
-                        $list_kondisi = isset($row['list_kondisi']) ? htmlspecialchars($row['list_kondisi']) : '';
-                        $keterangan = isset($row['kondisi_mobil_keterangan']) ? $row['kondisi_mobil_keterangan'] : 'Ok';
-                        ?>
-                        <div class="row mb-2 detail-row">
-                            <div class="col-md-3">
-                                <label>Kondisi Mobil</label>
-                                <input type="text" name="list_kondisi[]" class="form-control" value="<?= $list_kondisi ?>" readonly>
-                            </div>
-                            <div class="col-md-3">
-                                <label>Keterangan</label>
+    // Pecah jadi dua baris
+                    $chunks = array_chunk($kondisi_mobil, 5);
+                    foreach ($chunks as $chunk) {
+                        echo '<div class="row">';
+                        foreach ($chunk as $row) {
+                            $list_kondisi = isset($row['list_kondisi']) ? htmlspecialchars($row['list_kondisi']) : '';
+                            $keterangan = isset($row['kondisi_mobil_keterangan']) ? $row['kondisi_mobil_keterangan'] : 'Ok';
+                            ?>
+                            <div class="col-md-2 mb-3">
+                                <label class="font-weight-bold"><?= $list_kondisi ?></label>
+                                <input type="hidden" name="list_kondisi[]" value="<?= $list_kondisi ?>">
                                 <select name="kondisi_mobil_keterangan[]" class="form-control" required>
                                     <option value="Ok" <?= $keterangan === 'Ok' ? 'selected' : '' ?>>Ok</option>
                                     <option value="Tidak" <?= $keterangan === 'Tidak' ? 'selected' : '' ?>>Tidak</option>
@@ -148,11 +149,14 @@
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-
+                            <?php
+                        }
+                        echo '</div>';
+                    }
+                    ?>
                 </div>
 
+                <hr>
                 <div class="form-area" id="form-loading-wrapper">
                     <label class="form-label font-weight-bold">LOADING</label>
 
@@ -174,39 +178,42 @@
                         ?>
 
                         <div class="loading-group border p-3 mb-3 rounded bg-light">
+                            <!-- Baris input -->
                             <div class="form-group row">
-                                <div class="col-sm-3">
+                                <div class="col-md-2">
                                     <label>Nama Produk</label>
-                                    <input type="text" name="nama_produk[]" class="form-control" value="<?= $nama_produk ?>">
+                                    <input type="text" name="nama_produk[]" class="form-control form-control-sm" value="<?= $nama_produk ?>">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-2">
                                     <label>Kondisi Produk</label>
-                                    <input type="text" name="kondisi_produk[]" class="form-control" value="<?= $kondisi_produk ?>">
+                                    <input type="text" name="kondisi_produk[]" class="form-control form-control-sm" value="<?= $kondisi_produk ?>">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-2">
                                     <label>Kondisi Kemasan</label>
-                                    <input type="text" name="kondisi_kemasan[]" class="form-control" value="<?= $kondisi_kemasan ?>">
+                                    <input type="text" name="kondisi_kemasan[]" class="form-control form-control-sm" value="<?= $kondisi_kemasan ?>">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Kode Produksi</label>
+                                    <input type="text" name="kode_produksi[]" class="form-control form-control-sm" value="<?= $kode_produksi ?>">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Expired</label>
+                                    <input type="date" name="expired[]" class="form-control form-control-sm" value="<?= $expired ?>">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Keterangan</label>
+                                    <input type="text" name="keterangan[]" class="form-control form-control-sm" value="<?= $keterangan ?>">
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label>Kode Produksi</label>
-                                    <input type="text" name="kode_produksi[]" class="form-control" value="<?= $kode_produksi ?>">
-                                </div>
-                                <div class="col-sm-3">
-                                    <label>Expired</label>
-                                    <input type="date" name="expired[]" class="form-control" value="<?= $expired ?>">
-                                </div>
-                                <div class="col-sm-3">
-                                    <label>Keterangan</label>
-                                    <input type="text" name="keterangan[]" class="form-control" value="<?= $keterangan ?>">
-                                </div>
-                                <div class="col-sm-3 d-flex align-items-end">
-                                    <button type="button" class="btn btn-danger btn-remove">Hapus</button>
+                            <!-- Tombol hapus di bawah -->
+                            <div class="form-group row mt-2">
+                                <div class="col-12 text-right">
+                                    <button type="button" class="btn btn-danger btn-sm btn-remove">Hapus</button>
                                 </div>
                             </div>
                         </div>
+
 
                     <?php endforeach; ?>
                 </div>

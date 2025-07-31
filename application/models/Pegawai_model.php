@@ -147,6 +147,20 @@ class Pegawai_model extends CI_Model {
 		return $data;
 	}
 
+	public function get_data_by_plant()
+	{
+		$plant = $this->session->userdata('plant'); 
+
+		$this->db->order_by('a.created_at', 'DESC');
+		$this->db->select('a.*, b.departemen, c.plant as nama_plant');
+		$this->db->from('pegawai a');
+		$this->db->join('departemen b', 'a.departemen = b.uuid', 'left');
+		$this->db->join('plant c', 'a.plant = c.uuid', 'left');
+		$this->db->where('a.plant', $plant);
+
+		return $this->db->get()->result();
+	}
+
 	public function get_by_uuid($uuid)
 	{
 		$data = $this->db->get_where('pegawai', array('uuid' => $uuid))->row();
@@ -201,6 +215,14 @@ class Pegawai_model extends CI_Model {
 			return $query->row()->plant;
 		}
 		return null;
+	}
+
+	public function get_pegawai_produksi_by_plant($plant_uuid)
+	{
+		return $this->db->get_where('pegawai', [
+			'tipe_user' => 3,
+			'plant' => $plant_uuid
+		])->result();
 	}
 
 }

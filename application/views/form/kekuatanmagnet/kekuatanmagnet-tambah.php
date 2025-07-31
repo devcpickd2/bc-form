@@ -32,7 +32,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Nilai Pengukuran</label>
+                            <label class="form-label font-weight-bold">Nilai Pengukuran (Gauss)</label>
                             <input type="text" name="nilai" class="form-control <?= form_error('nilai') ? 'invalid' : '' ?> " value="<?= set_value('nilai'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('nilai')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('nilai') ?>

@@ -22,134 +22,88 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <form method="post" action="<?= base_url('pecahbelah/tambah'); ?>" enctype="multipart/form-data">
+                <?php
+                $produksi_data = $this->session->userdata('produksi_data');
+                $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
+                $shift_sess = $produksi_data['shift'] ?? '';
+                ?>
                 <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Tanggal</label>
-                        <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?>" value="<?= date("Y-m-d") ?>">
-                        <div class="invalid-feedback <?= form_error('date') ? 'd-block' : '' ?>"><?= form_error('date') ?></div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Shift</label>
-                        <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
-                            <option disabled selected>Pilih Shift</option>
-                            <option value="1" <?= set_select('shift', 1) ?>>Shift 1</option>
-                            <option value="2" <?= set_select('shift', 2) ?>>Shift 2</option>
-                            <option value="3" <?= set_select('shift', 3) ?>>Shift 3</option>
-                        </select>
-                        <div class="invalid-feedback <?= form_error('shift') ? 'd-block' : '' ?>"><?= form_error('shift') ?></div>
-                    </div>
+                  <div class="col-md-4">
+                    <label class="font-weight-bold">Tanggal</label>
+                    <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
+                    value="<?= set_value('date', $tanggal_sess) ?>">
+                    <div class="invalid-feedback"><?= form_error('date') ?></div>
                 </div>
-                <hr>
+                <div class="col-md-4">
+                    <label class="font-weight-bold">Shift</label>
+                    <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
+                        <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
+                        <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
+                        <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
+                        <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
+                    </select>
+                    <div class="invalid-feedback"><?= form_error('shift') ?></div>
+                </div>
+            </div>
 
-                <div class="form-area" id="form-pecahbelah-wrapper">
-                    <label class="form-label font-weight-bold">Checklist Alat</label>
-                    <div class="pecahbelah-group border p-3 mb-4 rounded bg-light" data-index="0">
-                        <div class="form-group row">
-                            <div class="col-sm-3">
-                                <label>Nama Alat</label>
-                                <select class="form-control select2-alat" name="nama_barang[]" style="width: 100%;">
-                                    <option disabled selected>Nama Barang</option>
-                                    <option value="Lampu + Cover">Lampu + Cover</option>
-                                    <option value="Akrilik Showcase">Akrilik Showcase</option>
-                                    <option value="Akrilik Freezer">Akrilik Freezer</option>
-                                    <option value="Akrilik Pada Pintu">Akrilik Pada Pintu</option>
-                                    <option value="Akrilik Jendela">Akrilik Jendela</option>
-                                    <option value="Akrilik pada pintu & jendela">Akrilik pada pintu & jendela</option>
-                                    <option value="Akrilik Penutup Blower">Akrilik Penutup Blower</option>
-                                    <option value="Akrilik Sheeting Moulding">Akrilik Sheeting Moulding</option>
-                                    <option value="Akrilik Timer Oven">Akrilik Timer Oven</option>
-                                    <option value="Akrilik Box Lakban">Akrilik Box Lakban</option>
-                                    <option value="Akrilik Panel">Akrilik Panel</option>
-                                    <option value="Penutup Mesin Cutting">Penutup Mesin Cutting</option>
-                                    <option value="Penutup Mesin Sieving">Penutup Mesin Sieving</option>
-                                    <option value="Box Preparasi">Box Preparasi</option>
-                                    <option value="Box Tepung Besar">Box Tepung Besar</option>
-                                    <option value="Box Tepung Kecil">Box Tepung Kecil</option>
-                                    <option value="Penutup Box Tepung Kecil">Penutup Box Tepung Kecil</option>
-                                    <option value="Box Water Chiller">Box Water Chiller</option>
-                                    <option value="Box Reject dan Waste">Box Reject dan Waste</option>
-                                    <option value="Box Metal Detector">Box Metal Detector</option>
-                                    <option value="Box Pencucian">Box Pencucian</option>
-                                    <option value="Botol Semprot">Botol Semprot</option>
-                                    <option value="Baking Cart">Baking Cart</option>
-                                    <option value="Tempat minyak goreng">Tempat minyak goreng</option>
-                                    <option value="Jam Dinding">Jam Dinding</option>
-                                    <option value="Display Suhu">Display Suhu</option>
-                                    <option value="Fly Catcher">Fly Catcher</option>
-                                    <option value="Tempat telepon akrilik">Tempat telepon akrilik</option>
-                                    <option value="Cermin">Cermin</option>
-                                    <option value="Dispenser handsanitizer">Dispenser handsanitizer</option>
-                                    <option value="Tempat Sampah">Tempat Sampah</option>
-                                    <option value="Helm Code Red">Helm Code Red</option>
-                                    <option value="Lampu Alarm">Lampu Alarm</option>
-                                    <option value="Test Piece">Test Piece</option>
-                                    <option value="Kacamata">Kacamata</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-3">
-                                <label>Area</label>
-                                <select class="form-control" name="area[]">
-                                    <option disabled selected>Nama Area</option>
-                                    <option value="Ruang Buffer">Ruang Buffer</option>
-                                    <option value="Ruang Pengayakan">Ruang Pengayakan</option>
-                                    <option value="Chiller 2">Chiller 2</option>
-                                    <option value="Ruang Preparasi">Ruang Preparasi</option>
-                                    <option value="Ruang Mixing">Ruang Mixing</option>
-                                    <option value="Ruang Fermentasi">Ruang Fermentasi</option>
-                                    <option value="Ruang Baking">Ruang Baking</option>
-                                    <option value="Ruang Cleaning">Ruang Cleaning</option>
-                                    <option value="Ruang Cutting">Ruang Cutting</option>
-                                    <option value="Ruang Grinding">Ruang Grinding</option>
-                                    <option value="Ruang Aging">Ruang Aging</option>
-                                    <option value="Ruang Packing">Ruang Packing</option>
-                                    <option value="Office QC">Office QC</option>
-                                    <option value="Office Produksi">Office Produksi</option>
-                                    <option value="Ruang RM">Ruang RM</option>
-                                    <option value="Lift">Lift</option>
-                                    <option value="Anteroom">Anteroom</option>
-                                    <option value="Loker">Loker</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-3">
-                                <label>Pemilik</label>
-                                <select class="form-control" name="pemilik[]">
-                                    <option value="Produksi">Produksi</option>
-                                    <option value="QC">QC</option>
-                                </select>
-                            </div>
-                        </div>
+            <hr>
+            <h5 class="font-weight-bold mb-3">Checklist Benda Mudah Pecah</h5>
 
-                        <div class="row kondisi-wrapper">
-                            <div class="col-sm-3">
-                                <label>Jumlah</label>
-                                <input type="number" name="jumlah[]" class="form-control">
-                            </div>
-                            <div class="col-sm-3">
-                                <label>Keterangan</label>
-                                <input type="text" name="keterangan[]" class="form-control">
-                            </div>
-                            <div class="col-3">
-                                <label>Kondisi Awal</label>
-                                <div class="form-check"><input type="radio" name="kondisi_awal[0]" value="Ok" class="form-check-input"><label class="form-check-label">Ok</label></div>
-                                <div class="form-check"><input type="radio" name="kondisi_awal[0]" value="Tidak Ok" class="form-check-input"><label class="form-check-label">Tidak Ok</label></div>
-                            </div>
-                            <div class="col-sm-3 d-flex align-items-end">
-                                <button type="button" class="btn btn-danger btn-remove">Hapus</button>
-                            </div> 
-                        </div>
-                    </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm align-middle text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Benda</th>
+                            <th>Area</th>
+                            <th>Pemilik</th>
+                            <th>Jumlah</th>
+                            <th>Kondisi Awal</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($benda_list as $i => $benda): ?>
+                            <tr>
+                                <td><?= $i + 1 ?></td>
+                                <td class="text-left">
+                                    <input type="hidden" name="nama_barang[]" value="<?= htmlspecialchars($benda->nama_benda) ?>">
+                                    <?= htmlspecialchars($benda->nama_benda) ?>
+                                </td>
+                                <td class="text-left">
+                                    <input type="hidden" name="pemilik[]" value="<?= htmlspecialchars($benda->pemilik) ?>">
+                                    <?= htmlspecialchars($benda->pemilik) ?>
+                                </td>
+                                <td class="text-left">
+                                    <input type="hidden" name="area[]" value="<?= htmlspecialchars($benda->area) ?>">
+                                    <?= htmlspecialchars($benda->area) ?>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="jumlah[]" value="<?= htmlspecialchars($benda->jumlah) ?>">
+                                    <?= htmlspecialchars($benda->jumlah) ?>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="kondisi_awal[<?= $i ?>]" value="Ok">
+                                </td>
+                                <td>
+                                    <input type="text" name="keterangan[]" class="form-control form-control-sm">
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col">
+                    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan</button>
+                    <a href="<?= base_url('pecahbelah') ?>" class="btn btn-danger"><i class="fa fa-times"></i> Batal</a>
                 </div>
-                <button type="button" class="btn btn-primary mt-2" id="add-pecahbelah">+ Tambah Benda</button>
-                <hr>
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="btn btn-md btn-success mr-2"><i class="fa fa-save"></i> Simpan</button>
-                        <a href="<?= base_url('pecahbelah') ?>" class="btn btn-md btn-danger"><i class="fa fa-times"></i> Batal</a>
-                    </div>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
+
     </div>
+</div>
 </div>
 </div>
 <style>
@@ -159,39 +113,11 @@
     .input-lainnya-wrapper {
         margin-top: 10px;
     }
+    th, td {
+        vertical-align: middle !important;
+    }
+    .table th {
+        background-color: #3498DB;
+        color: white;
+    }
 </style>
-
-<script>
-$(document).ready(function () {
-    let index = 1;
-
-    $('#add-pecahbelah').click(function () {
-        const newGroup = $('.pecahbelah-group').first().clone();
-        newGroup.attr('data-index', index);
-
-        // Reset input
-        newGroup.find('input[type="text"], input[type="number"]').val('');
-        newGroup.find('input[type="radio"]').prop('checked', false);
-
-        // Reset select native (tanpa Select2)
-        newGroup.find('select').val('');
-
-        // Update name radio button berdasarkan index
-        newGroup.find('input[type="radio"]').each(function () {
-            const baseName = $(this).attr('name').split('[')[0];
-            $(this).attr('name', baseName + '[' + index + ']');
-        });
-
-        $('#form-pecahbelah-wrapper').append(newGroup);
-        index++;
-    });
-
-    $(document).on('click', '.btn-remove', function () {
-        if ($('.pecahbelah-group').length > 1) {
-            $(this).closest('.pecahbelah-group').remove();
-        } else {
-            alert("Minimal satu baris harus ada.");
-        }
-    });
-});
-</script>

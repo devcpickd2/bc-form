@@ -38,7 +38,6 @@
                             <th>Nama Produk</th>
                             <th>Kode Produksi / Best Before</th>
                             <th>Permintaan Analisis</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th>LAB</th>
                             <th class="text-center">Action</th>
@@ -79,17 +78,6 @@
                                     $nilai = explode(',', $val->analisis);
                                     $hasil = array_map('tampilkan_analisis', array_map('trim', $nilai));
                                     echo htmlspecialchars(implode(', ', $hasil));
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
                                     ?>
                                 </td>
                                 <td class="text-center">

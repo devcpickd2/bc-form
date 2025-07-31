@@ -27,9 +27,9 @@ class Inventaris_model extends CI_Model {
 	{
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$plant = $this->session->userdata('plant');
 
 		$nama_alat = $this->input->post('nama_alat');
 		$jumlah = $this->input->post('jumlah');
@@ -42,11 +42,9 @@ class Inventaris_model extends CI_Model {
 				'nama_alat' => $nama_alat[$i],
 				'jumlah' => isset($jumlah[$i]) ? $jumlah[$i] : '',
 				'kondisi_awal' => isset($kondisi_awal[$i])
-				? (is_array($kondisi_awal[$i])
-					? implode(', ', $kondisi_awal[$i])
-					: $kondisi_awal[$i])
+				? (is_array($kondisi_awal[$i]) ? implode(', ', $kondisi_awal[$i]) : $kondisi_awal[$i])
 				: '',
-				'kondisi_akhir' => '-', 
+				'kondisi_akhir' => '-',
 				'keterangan' => isset($keterangan[$i]) ? $keterangan[$i] : '',
 			];
 		}
@@ -58,49 +56,48 @@ class Inventaris_model extends CI_Model {
 			'date' => $date,
 			'shift' => $shift,
 			'peralatan' => json_encode($peralatan),
-			'status_spv' => "0"
+			'status_spv' => "0",
+			'created_at' => date('Y-m-d H:i:s')
 		];
 
 		$this->db->insert('inventaris', $data);
 		return ($this->db->affected_rows() > 0);
 	}
 
-
 	public function update($uuid)
 	{
-		$username = $this->session->userdata('username');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
+		$username       = $this->session->userdata('username');
+		$date           = $this->input->post('date');
+		$shift          = $this->input->post('shift');
+		$nama_alat      = $this->input->post('nama_alat');
+		$jumlah         = $this->input->post('jumlah');
+		$kondisi_awal   = $this->input->post('kondisi_awal');
+		$kondisi_akhir  = $this->input->post('kondisi_akhir');
+		$keterangan     = $this->input->post('keterangan');
 
-		$nama_alat = $this->input->post('nama_alat');
-		$jumlah = $this->input->post('jumlah');
-		$kondisi_awal = $this->input->post('kondisi_awal');
-		$keterangan = $this->input->post('keterangan');
+		$data = $this->db->get_where('inventaris', ['uuid' => $uuid])->row();
+		if (!$data) {
+			return false;
+		}
 
 		$peralatan_lama = json_decode($data->peralatan, true);
 		$index_lama = [];
+
 		if (!empty($peralatan_lama)) {
 			foreach ($peralatan_lama as $item) {
 				$nama_key = strtolower(trim($item['nama_alat']));
 				$index_lama[$nama_key] = $item;
 			}
 		}
+
 		$peralatan_baru = [];
 
 		foreach ($nama_alat as $i => $nama) {
-			$nama_key = strtolower(trim($nama));
-
-			$jumlah_val        = isset($jumlah[$i]) ? trim($jumlah[$i]) : '';
-			$kondisi_awal_val  = isset($kondisi_awal[$i]) ? trim($kondisi_awal[$i]) : '';
-			$keterangan_val    = isset($keterangan[$i]) ? trim($keterangan[$i]) : '';
-
-			if (isset($kondisi_akhir[$i]) && trim($kondisi_akhir[$i]) !== '') {
-				$kondisi_akhir_val = trim($kondisi_akhir[$i]);
-			} elseif (isset($index_lama[$nama_key]['kondisi_akhir'])) {
-				$kondisi_akhir_val = $index_lama[$nama_key]['kondisi_akhir'];
-			} else {
-				$kondisi_akhir_val = '-';
-			}
+			$nama_key           = strtolower(trim($nama));
+			$jumlah_val         = isset($jumlah[$i]) ? trim($jumlah[$i]) : '';
+			$kondisi_awal_val   = isset($kondisi_awal[$i]) ? trim($kondisi_awal[$i]) : '';
+			$kondisi_akhir_val   = isset($kondisi_akhir[$i]) ? trim($kondisi_akhir[$i]) : '';
+			$keterangan_val     = isset($keterangan[$i]) ? trim($keterangan[$i]) : '';
 
 			$peralatan_baru[] = [
 				'nama_alat'     => $nama,
@@ -112,11 +109,11 @@ class Inventaris_model extends CI_Model {
 		}
 
 		$updateData = [
-			'username' => $username,
-			'date' => $date,
-			'shift' => $shift,
-			'peralatan' => json_encode($peralatan_baru), 
-			'modified_at' => date('Y-m-d H:i:s'),
+			'qc_update'      => $username,
+			'date'          => $date,
+			'shift'         => $shift,
+			'peralatan'     => json_encode($peralatan_baru),
+			'modified_at'   => date('Y-m-d H:i:s'),
 		];
 
 		$this->db->where('uuid', $uuid);

@@ -51,7 +51,7 @@
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Jumlah Temuan</label>
-                            <input type="text" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?> " value="<?= $verifikasimagnet->jumlah_temuan; ?>">
+                            <input type="number" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?> " value="<?= $verifikasimagnet->jumlah_temuan; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('jumlah_temuan')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('jumlah_temuan') ?>
                             </div>

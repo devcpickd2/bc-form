@@ -14,7 +14,7 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('kebersihanruang/tambah');?>" enctype="multipart/form-data">
-                   <div style="display: flex; gap: 20px;">
+                 <div style="display: flex; gap: 20px;">
                     <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 30%; text-align: left; font-family: Arial, sans-serif; font-size: 12px;">
                         <thead style="background-color: #f2f2f2;">
                             <tr>
@@ -44,53 +44,57 @@
                     </table>
                 </div>
                 <br>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Tanggal</label>
-                        <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?php echo date("Y-m-d") ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('date') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Shift</label>
-                        <select class="form-control <?= form_error('shift') ? 'invalid' : '' ?>" name="shift">
-                            <option disabled selected>Pilih Shift</option>
-                            <option value="1" <?= set_select('shift', 1); ?>>Shift 1</option>
-                            <option value="2" <?= set_select('shift', 2); ?>>Shift 2</option>
-                            <option value="3" <?= set_select('shift', 3); ?>>Shift 3</option>
-                        </select>
-                        <div class="invalid-feedback <?= !empty(form_error('shift')) ? 'd-block' : '' ; ?> "><?= form_error('shift') ?></div>
-                    </div> 
-                </div>
                 <?php
-                $plant_uuid = $this->session->userdata('plant');
-                $plant_map = [
-                    '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
-                    '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
-                ];
-                $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+                $produksi_data = $this->session->userdata('produksi_data');
+                $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
+                $shift_sess = $produksi_data['shift'] ?? '';
                 ?>
-
                 <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Plant</label>
-                        <input type="text" class="form-control" value="<?= $plant_name ?>" readonly>
-                        <input type="hidden" name="plant" id="plantHidden" value="<?= $plant_name ?>">
-                    </div>
+                    <div class="col-md-3">
+                    <label class="font-weight-bold">Tanggal</label>
+                    <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
+                    value="<?= set_value('date', $tanggal_sess) ?>">
+                    <div class="invalid-feedback"><?= form_error('date') ?></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="font-weight-bold">Shift</label>
+                    <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
+                        <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
+                        <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
+                        <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
+                        <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
+                    </select>
+                    <div class="invalid-feedback"><?= form_error('shift') ?></div>
+                </div>
+            </div>
+            <?php
+            $plant_uuid = $this->session->userdata('plant');
+            $plant_map = [
+                '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
+                '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
+            ];
+            $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+            ?>
 
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Lokasi</label>
-                        <select name="lokasi" id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
-                            <option value="">-- Pilih Lokasi --</option>
-                        </select>
-                        <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
-                            <?= form_error('lokasi') ?>
-                        </div>
-                    </div>
+            <div class="form-group row">
+                <div class="col-sm-3">
+                    <label class="form-label font-weight-bold">Plant</label>
+                    <input type="text" class="form-control" value="<?= $plant_name ?>" readonly>
+                    <input type="hidden" name="plant" id="plantHidden" value="<?= $plant_name ?>">
                 </div>
 
-                <hr>
+                <div class="col-sm-3">
+                    <label class="form-label font-weight-bold">Lokasi</label>
+                    <select name="lokasi" id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
+                        <option value="">-- Pilih Lokasi --</option>
+                    </select>
+                    <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
+                        <?= form_error('lokasi') ?>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
 
 <!-- area pengayakan -->
 <div id="form-pengayakan" class="form-area d-none">

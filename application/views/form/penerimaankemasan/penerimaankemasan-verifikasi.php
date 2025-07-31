@@ -13,7 +13,7 @@
 
     <?php if($this->session->flashdata('error_msg')): ?>
         <div class="alert alert-danger text-center">
-            <i class="fas fa-check"></i>
+            <i class="fas fa-times"></i>
             <?= $this->session->flashdata('error_msg') ?>
         </div>
         <br>
@@ -22,105 +22,73 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
-                <form action="<?= base_url('penerimaankemasan/cetak') ?>" method="post" id="form_cetak_pdf">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th width="30px" class="text-center">
-                                    <i class="fas fa-print fa-lg"></i>
-                                </th>
-                                <th width="20px" class="text-center">No</th>
-                                <th>Tanggal</th>
-                                <th>Jenis Kemasan</th>
-                                <th>Pemasok</th>
-                                <th>Kode Produksi</th>
-                                <th>Last Updated</th>
-                                <th>Last Verified</th>
-                                <th>SPV</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $no = 1;
-                            foreach($penerimaankemasan as $val) {
-                                $datetime = new datetime($val->date);
-                                $datetime = $datetime->format('d-m-Y');
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="20px" class="text-center">No</th>
+                            <th>Tanggal</th>
+                            <th>Jenis Kemasan</th>
+                            <th>Pemasok</th>
+                            <th>Kode Produksi</th>
+                            <th>Last Updated</th>
+                            <th>Last Verified</th>
+                            <th class="text-center">SPV</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $no = 1;
+                        foreach($penerimaankemasan as $val) {
+                            $datetime = new DateTime($val->date);
+                            $tanggal_format = $datetime->format('d-m-Y');
+                        ?>
+                        <tr>
+                            <td class="text-center"><?= $no++; ?></td>
+                            <td><?= $tanggal_format; ?></td>
+                            <td><?= $val->jenis_kemasan; ?></td>
+                            <td><?= $val->pemasok; ?></td>
+                            <td><?= $val->kode_produksi; ?></td>
+                            <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
+                            <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
+                            <td class="text-center">
+                                <?php
+                                if ($val->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($val->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($val->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
                                 ?>
-                                <tr>
-                                    <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
-                                    <td class="text-center"><?= $no; ?></td>
-                                    <td><?= $datetime; ?></td>
-                                    <td><?= $val->jenis_kemasan; ?></td>
-                                    <td><?= $val->pemasok; ?></td>
-                                    <td><?= $val->kode_produksi; ?></td>
-                                    <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
-                                    <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
-                                    <td class="text-center">
-                                        <?php
-                                        if ($val->status_spv == 0) {
-                                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                        } elseif ($val->status_spv == 1) {
-                                            echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                        } elseif ($val->status_spv == 2) {
-                                            echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                        }
-                                        ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= base_url('penerimaankemasan/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                            <span class="text">Verifikasi</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <?php 
-                                $no++;
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                    <input type="hidden" name="checkbox[]" id="selected_items">
-                </form>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('penerimaankemasan/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                                    <span class="text">Verifikasi</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
             </div>
 
             <br>
-            <hr>
-            <div class="form-group">
-                <label>Pilih Data yang akan dicetak:</label>
-                <br>
-                <button type="submit" form="form_cetak_pdf" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
+            <div class="mb-3">
+                <form action="<?= base_url('penerimaankemasan/cetak') ?>" method="post" class="form-inline">
+                    <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
+                    <input type="date" name="tanggal" class="form-control mr-2" required>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 </div>
 
-<script>
-    document.getElementById('select_all').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('.select_row');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.checked = this.checked;
-        });
-    });
-
-    document.getElementById('form_cetak_pdf').addEventListener('submit', function(event) {
-        var selectedCheckboxes = document.querySelectorAll('.select_row:checked');
-        var selectedItems = [];
-
-        selectedCheckboxes.forEach(function(checkbox) {
-            selectedItems.push(checkbox.value); 
-        });
-        if (selectedItems.length === 0) {
-            event.preventDefault(); 
-            alert("Silakan pilih data yang ingin dicetak.");
-            return;
-        }
-        document.getElementById('selected_items').value = selectedItems.join(',');
-    });
-</script>
-<style> 
+<style>
     th {
         background-color: #f8f9fc;
     }

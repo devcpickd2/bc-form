@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Produksi extends CI_Controller {
 
@@ -11,6 +13,7 @@ class Produksi extends CI_Controller {
 		$this->load->model('auth_model'); 
 		$this->load->model('produksi_model');
 		$this->load->model('packing_model');
+		$this->load->model('produk_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
 		}
@@ -41,7 +44,6 @@ class Produksi extends CI_Controller {
 
 	public function tambah()
 	{
-
 		$rules = $this->produksi_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -50,20 +52,65 @@ class Produksi extends CI_Controller {
 			if ($insert) {
 				$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di simpan');
 				redirect('produksi');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Verifikasi Produksi gagal di simpan');
 				redirect('produksi');
 			}
 		}
 
+		$kode_produksi_terakhir = $this->produksi_model->getLastKodeProduksiHariIni();
+		$produk_list = $this->produk_model->get_all_produk();
+
 		$data = array(
-			'active_nav' => 'produksi');
+			'active_nav' => 'produksi',
+			'kode_produksi_terakhir' => $kode_produksi_terakhir,
+			'produk_list' => $produk_list
+		);
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-tambah');
+		$this->load->view('form/produksi/produksi-tambah', $data);
 		$this->load->view('partials/footer');
 	}
 
+	public function file_check_kode($str)
+	{
+		if (!empty($_FILES['gambar_kode_kemasan']['name'])) {
+			$allowed_mime = ['image/jpeg', 'image/png', 'image/gif'];
+			$mime = mime_content_type($_FILES['gambar_kode_kemasan']['tmp_name']);
+
+			if (!in_array($mime, $allowed_mime)) {
+				$this->form_validation->set_message('file_check_kode', 'File harus berupa gambar JPG, PNG, atau GIF.');
+				return false;
+			}
+
+			if ($_FILES['gambar_kode_kemasan']['size'] > 2 * 1024 * 1024) {
+				$this->form_validation->set_message('file_check_kode', 'Ukuran gambar maksimal 2MB.');
+				return false;
+			}
+		}
+
+    // Jika tidak ada file diunggah, anggap valid
+		return true;
+	}
+	public function file_check_kondisi($str)
+	{
+		if (!empty($_FILES['gambar_kondisi_kemasan']['name'])) {
+			$allowed_mime = ['image/jpeg', 'image/png', 'image/gif'];
+			$mime = mime_content_type($_FILES['gambar_kondisi_kemasan']['tmp_name']);
+
+			if (!in_array($mime, $allowed_mime)) {
+				$this->form_validation->set_message('file_check_kondisi', 'File harus berupa gambar JPG, PNG, atau GIF.');
+				return false;
+			}
+
+			if ($_FILES['gambar_kondisi_kemasan']['size'] > 2 * 1024 * 1024) {
+				$this->form_validation->set_message('file_check_kondisi', 'Ukuran gambar maksimal 2MB.');
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	public function edit($uuid)
 	{
@@ -71,7 +118,7 @@ class Produksi extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			
+
 			$update = $this->produksi_model->update($uuid);
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
@@ -114,7 +161,7 @@ class Produksi extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			
+
 			$update = $this->produksi_model->material($uuid);
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
@@ -243,32 +290,32 @@ class Produksi extends CI_Controller {
 		$this->load->view('partials/footer');
 	}
 
-	public function grinding($uuid)
-	{
-		$rules = $this->produksi_model->rules_grinding();
-		$this->form_validation->set_rules($rules);
+	// public function grinding($uuid)
+	// {
+	// 	$rules = $this->produksi_model->rules_grinding();
+	// 	$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
+	// 	if ($this->form_validation->run() == TRUE) { 
 
-			$update = $this->produksi_model->grind($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
-				redirect('produksi');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Verifikasi Produksi gagal di Update');
-				redirect('produksi');
-			}
-		}
+	// 		$update = $this->produksi_model->grind($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
+	// 			redirect('produksi');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Verifikasi Produksi gagal di Update');
+	// 			redirect('produksi');
+	// 		}
+	// 	}
 
-		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
-		);
+	// 	$data = array(
+	// 		'produksi' => $this->produksi_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'produksi'
+	// 	);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-grinding', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/produksi/produksi-grinding', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function drying($uuid)
 	{
@@ -343,7 +390,7 @@ class Produksi extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			
+
 			$update = $this->produksi_model->verifikasi_update($uuid);
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
@@ -382,7 +429,7 @@ class Produksi extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			
+
 			$update = $this->produksi_model->diketahui_update($uuid);
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Status Verifikasi Produksi berhasil di Update');
@@ -638,12 +685,12 @@ class Produksi extends CI_Controller {
 		$pdf->Cell(195, 4, 'Mixing Dough', 1, 0, 'L');
 		$pdf->Ln();
 		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Waktu Mixing (Speed 1/ Speed 2)', 1, 0, 'L');
+		$pdf->Cell(35, 4, 'Waktu Mixing (11 Menit)', 1, 0, 'L');
 		$dataCount = count($produksi_data);
 		$emptyColumns = 4 - $dataCount;
 
 		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->mix_dough_waktu_1 . " / " . $item->mix_dough_waktu_2, 1, 0, 'C');
+			$pdf->Cell(40, 4, $item->mix_dough_waktu_1, 1, 0, 'C');
 		}
 		for ($i = 0; $i < $emptyColumns; $i++) {
 			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
@@ -661,19 +708,6 @@ class Produksi extends CI_Controller {
 
 		for ($i = 0; $i < $emptyColumns; $i++) {
 			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Sensori', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->mix_dough_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
 		}
 
 		$pdf->Ln();
@@ -788,36 +822,9 @@ class Produksi extends CI_Controller {
 		}
 
 		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Hasil Proofing', 1, 0, 'L');
-
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->fermen_hasil_proof, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
 		$pdf->SetFont('times', 'B', 7);
 		$pdf->Cell(195, 4, 'Electric Baking', 1, 0, 'L');
-		$pdf->Ln();
 		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Baking Time (High / Low)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->electric_baking_time_high. ' / '. $item->electric_baking_time_low, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
 		$pdf->Ln();
 		$pdf->Cell(35, 4, 'Suhu Produk(80-97°C)', 1, 0, 'L');
 		$dataCount = count($produksi_data);
@@ -863,7 +870,7 @@ class Produksi extends CI_Controller {
 			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
 		}
 
-		$pdf->SetFont('times', 'B', 7);
+		$pdf->SetFont('times', '', 7);
 		$pdf->Ln();
 		$pdf->Cell(35, 4, 'Rasa', 1, 0, 'L');
 		$pdf->SetFont('dejavusans', '', 7);	
@@ -878,7 +885,7 @@ class Produksi extends CI_Controller {
 			$pdf->Cell(40, 4, '', 1, 0, 'C');
 		}
 
-		$pdf->SetFont('times', 'B', 7);
+		$pdf->SetFont('times', '', 7);
 		$pdf->Ln();
 		$pdf->Cell(35, 4, 'Aroma', 1, 0, 'L');
 		$pdf->SetFont('dejavusans', '', 7);	
@@ -893,7 +900,7 @@ class Produksi extends CI_Controller {
 			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
 		}
 
-		$pdf->SetFont('times', 'B', 7);
+		$pdf->SetFont('times', '', 7);
 		$pdf->Ln();
 		$pdf->Cell(35, 4, 'Tekstur', 1, 0, 'L');
 		$pdf->SetFont('dejavusans', '', 7);	
@@ -907,7 +914,7 @@ class Produksi extends CI_Controller {
 			$pdf->Cell(40, 4, '', 1, 0, 'C');
 		}
 
-		$pdf->SetFont('times', 'B', 7);
+		$pdf->SetFont('times', '', 7);
 		$pdf->Ln();
 		$pdf->Cell(35, 4, 'Warna', 1, 0, 'L');
 		$pdf->SetFont('dejavusans', '', 7);	
@@ -965,37 +972,9 @@ class Produksi extends CI_Controller {
 		}
 
 		$pdf->Ln();
-
-		$pdf->Cell(35, 4, 'Lama Aging', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$jamBerhenti = date('H:i', strtotime($item->stall_aging));
-			$pdf->Cell(40, 4, $jamBerhenti, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
 		$pdf->Cell(35, 4, 'Kadar Air 32-34(%)', 1, 0, 'L');
 		foreach ($produksi_data as $item) {
 			$pdf->Cell(40, 4, $item->stall_kadar_air, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Grinding', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-
-		$pdf->Cell(35, 4, 'Hasil Grinding', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->hasil_grinding, 1, 0, 'C');
 		}
 
 		for ($i = 0; $i < $emptyColumns; $i++) {
@@ -1034,43 +1013,6 @@ class Produksi extends CI_Controller {
 		}
 		for ($i = 0; $i < $emptyColumns; $i++) {
 			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Packing Area', 1, 0, 'L');
-		$pdf->Ln();
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Nama Produk', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->packing_nama_produk, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Kode Kemasan', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->packing_kode_kemasan, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Best Before', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$bestBefore = date('d-m-Y', strtotime($item->packing_bb));
-			$pdf->Cell(40, 4, $bestBefore, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
 		}
 
 		$pdf->Ln();
@@ -1139,38 +1081,52 @@ class Produksi extends CI_Controller {
 		}
 
 		$pdf->Ln();
+		$pdf->SetFont('times', 'B', 7);
+		$pdf->Cell(195, 4, 'Packing Area', 1, 0, 'L');
+		$pdf->Ln();
+
 		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Kondisi Kemasan / Ketepatan', 1, 0, 'L');
+		$rowHeight = 6;
+		$totalHeight = $rowHeight * 3;
+		$pdf->MultiCell(35, $rowHeight, 'Nama Produk', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+		$pdf->Ln();
+		$pdf->MultiCell(35, $rowHeight, 'Kode Kemasan', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+		$pdf->Ln();
+		$pdf->MultiCell(35, $rowHeight, 'Best Before', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+		$pdf->Ln();
+
+		$pdf->SetY($pdf->GetY() - $totalHeight); 
+		$pdf->SetX(44); 
+
 		foreach ($produksi_data as $item) {
-			$kondisi = ($item->packing_kondisi_kemasan == 1) ? 'Oke' : 'Tidak Oke';
-			$pdf->Cell(40, 4, $kondisi . " / " . $item->packing_ketepatan, 1, 0, 'C');
+			$imagePath = FCPATH . 'uploads/' . $item->gambar_kode_kemasan;
+			if (file_exists($imagePath)) {
+				$x = $pdf->GetX();
+				$y = $pdf->GetY();
+				$pdf->MultiCell(40, $totalHeight, '', 1, 'C', false, 0); 
+				$pdf->Image($imagePath, $x + 5, $y + 1.5, 30, 14);
+			} else {
+				$pdf->MultiCell(40, $totalHeight, 'Tidak ada gambar', 1, 'C', false, 0);
+			}
+		}
+
+		for ($i = 0; $i < $emptyColumns; $i++) {
+			$pdf->MultiCell(40, $totalHeight, '', 1, 'C', false, 0);
+		}
+		$pdf->Ln();
+		$pdf->SetFont('times', '', 7);
+		$pdf->Cell(35, 4, 'Kondisi Kemasan', 1, 0, 'L');
+		$pdf->SetFont('dejavusans', '', 7);  
+		foreach ($produksi_data as $item) {
+			$kondisi = ($item->packing_kondisi_kemasan == 1) ? '✔' : '✘';
+			$pdf->Cell(40, 4, $kondisi, 1, 0, 'C');
 		}
 		for ($i = 0; $i < $emptyColumns; $i++) {
 			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
 		}
 
 		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Kode Supplier Kemasan', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->packing_kode_supplier, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Net Weight (9.850 - 10.100 g)', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->packing_net_weight, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-
+		$pdf->SetFont('times', '', 7);
 		$tanggal_update = $data['produksi']->tgl_update;
 		$update = new DateTime($tanggal_update); 
 		$update_tanggal = $update->format('d-m-Y | H:i');
@@ -1220,15 +1176,15 @@ class Produksi extends CI_Controller {
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 
 			if (!empty($data['produksi']->nama_produksi)) {
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" 
-				. $nama_prod . "\n"
-				. "Foreman/Forelady Produksi\n"
-				. $update_tanggal_prod;
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, $nama_prod, 0, 1, 'C');
 
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
 				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
 			}
+
 			$pdf->SetXY(150, $y_verifikasi + 5);
 			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
 
@@ -1247,11 +1203,90 @@ class Produksi extends CI_Controller {
 			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
-
 		$pdf->setPrintFooter(false);
 		$filename = "Verifikasi Produksi_{$formatted_date2}.pdf";
 		$pdf->Output($filename, 'I');
 	}
+
+	public function get_produk_by_tanggal()
+	{
+		$tanggal = $this->input->post('tanggal');
+		$produk = $this->produksi_model->get_produk_by_tanggal($tanggal);
+		header('Content-Type: application/json');
+		echo json_encode($produk);
+	}
+
+	public function export_excel()
+	{
+		$tanggal = $this->input->post('tanggal');
+		$produk  = $this->input->post('nama_produk');
+
+		if (!$tanggal || !$produk) {
+			show_error('Tanggal dan Produk harus dipilih.');
+		}
+
+		$this->load->model('produksi_model');
+		$data_mixing = $this->produksi_model->get_data_by_tanggal_produk($tanggal, $produk);
+
+		if (empty($data_mixing)) {
+			show_error('Data produksi tidak ditemukan.');
+		}
+
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$sheet->setTitle('Data Produksi');
+		$sheet->mergeCells('A1:E1');
+		$sheet->setCellValue('A1', "Laporan Produksi\nTanggal: " . date('d-m-Y', strtotime($tanggal)) . " Produk: " . $produk);
+		$sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+		$sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+		$headers = ['Tanggal', 'Nama Produk', 'Kode Produksi', 'Shift',];
+		$col = 'A';
+		foreach ($headers as $header) {
+			$sheet->setCellValue($col . '3', $header);
+			$sheet->getStyle($col . '3')->getFont()->setBold(true);
+			$sheet->getStyle($col . '3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+			$col++;
+		}
+
+		$row = 4;
+		foreach ($data_mixing as $item) {
+			$sheet->setCellValue('A' . $row, $item->date);
+			$sheet->setCellValue('B' . $row, $item->nama_produk);
+			$sheet->setCellValue('C' . $row, $item->kode_produksi);
+			$sheet->setCellValue('D' . $row, $item->shift);
+			$row++;
+		}
+
+		foreach (range('A', 'E') as $columnID) {
+			$sheet->getColumnDimension($columnID)->setAutoSize(true);
+		}
+
+		$lastRow = $row - 1;
+		$sheet->getStyle("A3:E{$lastRow}")->applyFromArray([
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+					'color' => ['argb' => 'FF000000'],
+				],
+			],
+		]);
+
+		$sheet->freezePane('A4');
+
+		$filename = "Laporan_Produksi_{$tanggal}_{$produk}.xlsx";
+
+		ob_end_clean();
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		header('Cache-Control: max-age=0');
+
+		$writer = new Xlsx($spreadsheet);
+		$writer->save('php://output');
+		exit;
+	}
+
 
 }
 

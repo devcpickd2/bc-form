@@ -192,24 +192,24 @@ class Releasepacking extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$releasepacking_data = $this->releasepacking_model->get_by_uuid_releasepacking($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$releasepacking_data_verif = $this->releasepacking_model->get_by_uuid_releasepacking_verif($selected_items);
+		$releasepacking_data = $this->releasepacking_model->get_by_date($tanggal, $plant); 
+		$releasepacking_data_verif = $this->releasepacking_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$releasepacking_data || !$releasepacking_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['releasepacking'] = $releasepacking_data_verif;
-
-
-		if (!$data['releasepacking']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 

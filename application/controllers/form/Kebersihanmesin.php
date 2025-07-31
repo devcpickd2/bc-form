@@ -187,24 +187,25 @@ class Kebersihanmesin extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal');  
+		$shift   = $this->input->post('shift'); 
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$kebersihanmesin_data = $this->kebersihanmesin_model->get_by_uuid_kebersihanmesin($selected_items);
+		$plant = $this->session->userdata('plant');
 
-		$kebersihanmesin_data_verif = $this->kebersihanmesin_model->get_by_uuid_kebersihanmesin_verif($selected_items);
+		$kebersihanmesin_data = $this->kebersihanmesin_model->get_by_date($tanggal, $plant, $shift); 
+		$kebersihanmesin_data_verif = $this->kebersihanmesin_model->get_last_verif_by_date($tanggal, $plant, $shift); 
+
+		if (!$kebersihanmesin_data || !$kebersihanmesin_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['kebersihanmesin'] = $kebersihanmesin_data_verif;
-
-
-		if (!$data['kebersihanmesin']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
@@ -308,7 +309,7 @@ class Kebersihanmesin extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$data['kebersihanmesin']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['kebersihanmesin']->username);
 		$data['kebersihanmesin']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['kebersihanmesin']->nama_spv);
-		$data['kebersihanmesin']->nama_lengkap_produksi = $this->pegawai_model->get_nama_lengkap($data['kebersihanmesin']->nama_produksi);
+		$data['kebersihanmesin']->nama_lengkap_produksi = $data['kebersihanmesin']->nama_produksi;
 
 		$y_after_keterangan = $pdf->GetY() + 2;
 		$status_verifikasi = true;
@@ -334,16 +335,39 @@ class Kebersihanmesin extends CI_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// Diketahui oleh (Produksi)
+		// // Diketahui oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['kebersihanmesin']->status_produksi == 1 && !empty($data['kebersihanmesin']->nama_produksi)) {
+		// 		$update_tanggal_produksi = (new DateTime($data['kebersihanmesin']->tgl_update_produksi))->format('d-m-Y | H:i');
+		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['kebersihanmesin']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if ($data['kebersihanmesin']->status_produksi == 1 && !empty($data['kebersihanmesin']->nama_produksi)) {
 				$update_tanggal_produksi = (new DateTime($data['kebersihanmesin']->tgl_update_produksi))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['kebersihanmesin']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(135, 5, $data['kebersihanmesin']->nama_produksi, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 20);
+				// $pdf->Cell(135, 5, $update_tanggal_produksi, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}

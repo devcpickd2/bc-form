@@ -32,6 +32,10 @@ class Sanitasi_model extends CI_Model {
 
 	public function insert()
 	{
+
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
@@ -39,7 +43,7 @@ class Sanitasi_model extends CI_Model {
 		$shift = $this->input->post('shift');
 		$waktu = $this->input->post('waktu');
 		$catatan = $this->input->post('catatan');
-		$status_produksi = "0";
+		$status_produksi = "1";
 		$status_spv = "0";
 
 		$sub_area = $this->input->post('sub_area');
@@ -97,6 +101,7 @@ class Sanitasi_model extends CI_Model {
 			'area'            => json_encode($area),
 			'catatan'         => $catatan,
 			'status_produksi' => $status_produksi,
+			'nama_produksi'   => $nama_produksi,
 			'status_spv'      => $status_spv
 		);
 
@@ -301,11 +306,13 @@ class Sanitasi_model extends CI_Model {
 
 	public function get_by_date($date, $plant = null)
 	{
-		$this->db->where('DATE(waktu)', $date);
+		$this->db->where('DATE(date)', $date);
 		if (!empty($plant)) {
 			$this->db->where('plant', $plant);
 		}
-		return $this->db->get('sanitasi')->result();
+		$query = $this->db->get('sanitasi');
+		log_message('debug', 'QUERY SANITASI: ' . $this->db->last_query());
+		return $query->result();
 	}
 
 

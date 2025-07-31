@@ -10,6 +10,7 @@ class Pengayakan extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('auth_model'); 
 		$this->load->model('pengayakan_model');
+		$this->load->model('pegawai_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
 		}
@@ -189,27 +190,28 @@ class Pengayakan extends CI_Controller {
 
 	public function cetak()
 	{
-		$this->load->model('pegawai_model');
+		$tanggal = $this->input->post('tanggal');  
 
-		$selected_items = $this->input->post('checkbox'); 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$pengayakan_data = $this->pengayakan_model->get_by_uuid_pengayakan($selected_items);
-		$pengayakan_data_verif = $this->pengayakan_model->get_by_uuid_pengayakan_verif($selected_items);
+		$plant = $this->session->userdata('plant');
+
+		$pengayakan_data = $this->pengayakan_model->get_by_date($tanggal, $plant); 
+		$pengayakan_data_verif = $this->pengayakan_model->get_last_verif_by_date($tanggal, $plant); 
+
+		if (!$pengayakan_data || !$pengayakan_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
+
 		$data['pengayakan'] = $pengayakan_data_verif;
-
-		if (!$data['pengayakan']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
-
 	// Ambil nama lengkap hanya sekali
-		$data['pengayakan']->nama_lengkap_qc = $this->Pegawai_model->get_nama_lengkap($data['pengayakan']->username);
-		$data['pengayakan']->nama_lengkap_spv = $this->Pegawai_model->get_nama_lengkap($data['pengayakan']->nama_spv);
-		$data['pengayakan']->nama_lengkap_produksi = $this->Pegawai_model->get_nama_lengkap($data['pengayakan']->nama_produksi);
+		$data['pengayakan']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['pengayakan']->username);
+		$data['pengayakan']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['pengayakan']->nama_spv);
+		$data['pengayakan']->nama_lengkap_produksi = $data['pengayakan']->nama_produksi;
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -252,8 +254,8 @@ class Pengayakan extends CI_Controller {
 		foreach ($pengayakan_data as $pengayakan) {
 			$created_date = (new DateTime($pengayakan->date))->format('d-m-Y');
 			$ex_date = (new DateTime($pengayakan->expired_date))->format('d-m-Y');
-			$nama_qc = $this->Pegawai_model->get_nama_lengkap($pengayakan->username);
-			$nama_prod = $this->Pegawai_model->get_nama_lengkap($pengayakan->nama_produksi);
+			$nama_qc = $this->pegawai_model->get_nama_lengkap($pengayakan->username);
+			$nama_prod = $this->pegawai_model->get_nama_lengkap($pengayakan->nama_produksi);
 
 			$pdf->Cell(15, 5, $created_date, 1, 0, 'C');
 			$pdf->Cell(8, 5, $pengayakan->shift, 1, 0, 'C');
@@ -264,7 +266,7 @@ class Pengayakan extends CI_Controller {
 			$pdf->Cell(12, 5, $pengayakan->kba_screenmess, 1, 0, 'C');
 			$pdf->Cell(11, 5, $pengayakan->kba_kerikil, 1, 0, 'C');
 			$pdf->Cell(11, 5, $pengayakan->kba_benang, 1, 0, 'C');
-			$pdf->Cell(12, 5, $nama_prod, 1, 0, 'C');
+			$pdf->Cell(12, 5, $pengayakan->nama_produksi, 1, 0, 'C');
 			$pdf->Cell(12, 5, $nama_qc, 1, 0, 'C');
 			$pdf->Cell(36, 5, $pengayakan->kondisi, 1, 0, 'C');
 			$pdf->Ln();
@@ -307,19 +309,43 @@ class Pengayakan extends CI_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
 
-		// Diketahui oleh (Produksi)
+		// // Diketahui oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['pengayakan']->status_produksi == 1 && !empty($data['pengayakan']->nama_produksi)) {
+		// 		$update_tanggal_prod = (new DateTime($data['pengayakan']->tgl_update_prod))->format('d-m-Y | H:i');
+		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['pengayakan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_prod;
+		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+			// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if ($data['pengayakan']->status_produksi == 1 && !empty($data['pengayakan']->nama_produksi)) {
 				$update_tanggal_prod = (new DateTime($data['pengayakan']->tgl_update_prod))->format('d-m-Y | H:i');
-				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['pengayakan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_prod;
-				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(90, $y_verifikasi + 24);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(90, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, $data['pengayakan']->nama_produksi, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(90, $y_verifikasi + 15);
+				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(90, $y_verifikasi + 20);
+				// $pdf->Cell(35, 5, $update_tanggal_prod, 0, 0, 'C');
 			} else {
+				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
 
 		// Disetujui oleh (SPV)
 			$pdf->SetXY(150, $y_verifikasi + 5);

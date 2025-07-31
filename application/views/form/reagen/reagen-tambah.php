@@ -26,11 +26,14 @@
                     <div class="form-group row">
                         <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Nama Larutan</label>
-                            <input type="text" name="nama_larutan" class="form-control <?= form_error('nama_larutan') ? 'invalid' : '' ?> " value="Reagen C1₂–1" readonly>
-                            <div class="invalid-feedback <?= !empty(form_error('nama_larutan')) ? 'd-block' : '' ; ?> ">
+                            <p class="form-control-plaintext font-weight-bold">Reagen C1₂–1</p>
+                            <input type="hidden" name="nama_larutan" value="Reagen C1₂–1">
+                            <div class="invalid-feedback <?= !empty(form_error('nama_larutan')) ? 'd-block' : '' ?>">
                                 <?= form_error('nama_larutan') ?>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group row">
                         <div class="col-sm-4">
                             <label class="form-label font-weight-bold">No. Lot</label>
                             <input type="text" name="no_lot" class="form-control <?= form_error('no_lot') ? 'invalid' : '' ?> " value="<?= set_value('no_lot'); ?>">
@@ -56,14 +59,14 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Volume Penggunaan Larutan (mL)</label>
                         <input type="text" name="volume_penggunaan" class="form-control <?= form_error('volume_penggunaan') ? 'invalid' : '' ?> " value="<?= set_value('volume_penggunaan'); ?>">
                         <div class="invalid-feedback <?= !empty(form_error('volume_penggunaan')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('volume_penggunaan') ?>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Volume Akhir Larutan (mL)</label>
                         <input type="text" name="volume_akhir" class="form-control <?= form_error('volume_akhir') ? 'invalid' : '' ?> " value="<?= set_value('volume_akhir'); ?>">
                         <div class="invalid-feedback <?= !empty(form_error('volume_akhir')) ? 'd-block' : '' ; ?> ">
@@ -74,7 +77,7 @@
                 <hr>
                 <div class="row form-group">
                     <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Catatan</label>
+                        <label class="form-label font-weight-bold">Catatan (Optional)</label>
                         <textarea class="form-control" name="catatan"></textarea>
                         <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('catatan') ?>

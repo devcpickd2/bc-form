@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Proses Pemeriksaan Finish Product</h1>
+    <h1 class="h3 mb-2 text-gray-800">PACKING AREA</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -13,35 +13,9 @@
     </nav>
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form class="user" method="post" action="<?= base_url('produksi/packing/'.$produksi->uuid);?>">
-                <!-- <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
-                <label class="form-label font-weight-bold">Tanggal : <?= $produksi->date;?></label>
-                <hr> -->
-
-                <label class="form-label font-weight-bold">PACKING</label>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Nama Produk</label>
-                        <input type="text" name="packing_nama_produk" class="form-control <?= form_error('packing_nama_produk') ? 'invalid' : '' ?>" value="<?= $produksi->nama_produk; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_nama_produk')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_nama_produk') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Kode Kemasan</label>
-                        <input type="text" name="packing_kode_kemasan" class="form-control <?= form_error('packing_kode_kemasan') ? 'invalid' : '' ?>" value="<?= $produksi->kode_produksi; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_kode_kemasan')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_kode_kemasan') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Best Before</label>
-                        <input type="date" name="packing_bb" class="form-control <?= form_error('packing_bb') ? 'invalid' : '' ?>" value="<?= $produksi->packing_bb; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_bb')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_bb') ?>
-                        </div>
-                    </div>
-                </div>
+            <form class="user" method="post" action="<?= base_url('produksi/packing/'.$produksi->uuid);?>" enctype="multipart/form-data">
+                <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
+                <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label>
                 <hr>
                 <label class="form-label font-weight-bold">SENSORI PRODUK</label>
                 <div class="form-group row">
@@ -117,7 +91,59 @@
                     </div>
                 </div>
                 <hr>
+                <label class="form-label font-weight-bold">KEMASAN</label>
                 <div class="form-group row">
+                    <!-- <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Nama Produk</label>
+                        <input type="text" name="packing_nama_produk" class="form-control <?= form_error('packing_nama_produk') ? 'invalid' : '' ?>" value="<?= $produksi->nama_produk; ?>" readonly>
+                        <div class="invalid-feedback <?= !empty(form_error('packing_nama_produk')) ? 'd-block' : '' ; ?>">
+                            <?= form_error('packing_nama_produk') ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Kode Kemasan</label>
+                        <input type="text" name="packing_kode_kemasan" class="form-control <?= form_error('packing_kode_kemasan') ? 'invalid' : '' ?>" value="<?= $produksi->kode_produksi; ?>" readonly>
+                        <div class="invalid-feedback <?= !empty(form_error('packing_kode_kemasan')) ? 'd-block' : '' ; ?>">
+                            <?= form_error('packing_kode_kemasan') ?>
+                        </div>
+                    </div> -->
+                    <!-- <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Best Before</label>
+                        <?php
+                        $bb_date = (new DateTime($produksi->date))->modify('+1 year')->format('Y-m-d');
+                        ?>
+                        <input type="date" name="packing_bb" class="form-control <?= form_error('packing_bb') ? 'invalid' : '' ?>" value="<?= $bb_date; ?>">
+
+                        <div class="invalid-feedback <?= !empty(form_error('packing_bb')) ? 'd-block' : '' ; ?>">
+                            <?= form_error('packing_bb') ?>
+                        </div>
+                    </div> -->
+                    <div class="col-sm-4">
+                        <label class="form-label" for="gambar_kode_kemasan">Aktual Nama, Kode, Best Before Kemasan</label>
+                        <br>
+                        <div class="custom-file">
+                            <input type="file" name="gambar_kode_kemasan" id="gambar_kode_kemasan" 
+                            class="custom-file-input <?= form_error('gambar_kode_kemasan') ? 'is-invalid' : '' ?>" 
+                            accept="image/*,application/pdf" capture="camera">
+                            <label class="custom-file-label" for="gambar_kode_kemasan">Masukkan Gambar...</label>
+                        </div>
+
+                        <?php if (!empty($produksi->gambar_kode_kemasan)): ?>
+                            <a href="<?= base_url('uploads/' . $produksi->gambar_kode_kemasan); ?>" target="_blank" class="d-block mt-2">
+                                Lihat Gambar Sebelumnya
+                            </a>
+                        <?php endif; ?>
+
+                        <small class="text-danger font-italic d-block mt-1">
+                            *Masukkan gambar kemasan
+                        </small>
+
+                        <div class="invalid-feedback <?= form_error('gambar_kode_kemasan') ? 'd-block' : '' ; ?>">
+                            <?= form_error('gambar_kode_kemasan') ?>
+                        </div>
+                    </div>                    
+                </div>
+                <!-- <div class="form-group row">
                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Suhu Produk Sebelum Packing (32 - 35°C)</label>
                         <input type="text" name="packing_suhu_before" class="form-control <?= form_error('packing_suhu_before') ? 'invalid' : '' ?>" value="<?= $produksi->packing_suhu_before; ?>">
@@ -140,10 +166,9 @@
                         </div>
                     </div>
                 </div>
-                <hr>
-                <label class="form-label font-weight-bold">KEMASAN</label>
+                <hr> -->
                 <div class="form-group row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Kondisi Kemasan</label>
                         <select class="form-control <?= form_error('packing_kondisi_kemasan') ? 'invalid' : '' ?>" name="packing_kondisi_kemasan">
                             <option value="1" <?= set_select('packing_kondisi_kemasan', '1'); ?> <?= $produksi->packing_kondisi_kemasan == 1?'selected':'';?>>Oke</option>
@@ -153,7 +178,20 @@
                             <?= form_error('packing_kondisi_kemasan') ?>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <!-- <div class="col-sm-6">
+                        <label class="form-label" for="gambar_kondisi_kemasan">Aktual Kondisi Kemasan</label>
+                        <br>
+                        <input type="file" name="gambar_kondisi_kemasan" id="gambar_kondisi_kemasan" class="form-control no-border <?= form_error('gambar_kondisi_kemasan') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf" capture="camera">
+                        <?php if (!empty($produksi->gambar_kondisi_kemasan)): ?>
+                            <a href="<?= base_url('uploads/' . $produksi->gambar_kondisi_kemasan); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
+                            <br>
+                        <?php endif; ?>
+                        <br>
+                        <div class="invalid-feedback <?= form_error('gambar_kondisi_kemasan') ? 'd-block' : '' ; ?>">
+                            <?= form_error('gambar_kondisi_kemasan') ?>
+                        </div>
+                    </div>  --> 
+                  <!--   <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Ketepatan Labelisasi</label>
                         <select class="form-control <?= form_error('packing_ketepatan') ? 'invalid' : '' ?>" name="packing_ketepatan">
                             <option value="1" <?= set_select('packing_ketepatan', '1'); ?> <?= $produksi->packing_ketepatan == 1?'selected':'';?>>Oke</option>
@@ -176,7 +214,7 @@
                         <div class="invalid-feedback <?= !empty(form_error('packing_net_weight')) ? 'd-block' : '' ; ?>">
                             <?= form_error('packing_net_weight') ?>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <hr>
                 <div class="form-group row">

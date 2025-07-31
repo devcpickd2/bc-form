@@ -35,7 +35,6 @@
                             <th>Date / Shift</th>
                             <th>Types of Product</th>
                             <th>Production Code</th>
-                            <th>Produksi</th>
                             <th>Supervisor</th>
                             <th class="text-center">Process</th>
                             <th class="text-center">Packing</th>
@@ -56,17 +55,6 @@
                                 <td><?= $val->kode_produksi; ?></td>
                                 <td class="text-center">
                                     <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
                                     if ($val->status_spv == 0) {
                                         echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
                                     } elseif ($val->status_spv == 1) {
@@ -76,7 +64,7 @@
                                     }
                                     ?>
                                 </td>
-                                <td class="text-center">
+<!--                                 <td class="text-center">
                                     <a href="<?= base_url('produksi/bahan/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Raw Material">
                                         <i class="fas fa-box fa-lg"></i>
                                     </a>
@@ -114,17 +102,55 @@
                                     <a href="<?= base_url('produksi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
                                      <i class="fas fa-trash fa-lg"></i>
                                  </a>
-                             </td>
-                         </tr>
-                         <?php 
-                         $no++;
-                     }
-                     ?>
-                 </tbody>
-             </table>
-         </form>
-     </div>
- </div>
+                             </td> -->
+
+                             <td class="text-center">
+                                <a href="<?= base_url('produksi/bahan/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Raw Material">
+                                    RM
+                                </a>
+                                <a href="<?= base_url('produksi/mixing/'.$val->uuid);?>" class="btn btn-info btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Mixing">
+                                    Mix
+                                </a>
+                                <a href="<?= base_url('produksi/fermentasi/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Fermentasi">
+                                    Fermen
+                                </a>
+                                <a href="<?= base_url('produksi/baking/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Baking">
+                                    Bake
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('produksi/stalling/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Stalling">
+                                    Stall
+                                </a>
+                                <a href="<?= base_url('produksi/drying/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Drying">
+                                    Dry
+                                </a>
+                                <a href="<?= base_url('produksi/packing/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Packing">
+                                    Pack
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('produksi/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Edit">
+                                    Edit
+                                </a>
+                                <a href="<?= base_url('produksi/detail/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 shadow" data-bs-toggle="tooltip" title="Detail">
+                                    Detail
+                                </a>
+                                <a href="<?= base_url('produksi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    Hapus
+                                </a>
+                            </td>
+
+                        </tr>
+                        <?php 
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
 </div>
 </div>
 </div>

@@ -36,11 +36,11 @@
                             <th>Pukul</th>
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
-                            <th>No. Program</th>
-                            <th>Deteksi NG</th>
-                            <th>Produksi</th>
+                            <th>Check ke-1</th>
+                            <th>Check ke-2</th>
+                            <th>Check ke-3</th>
                             <th>Supervisor</th>
-                            <th>Action</th>
+                            <th style="text-align:center;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,21 +60,16 @@
                                 <td><?= $timing; ?></td>
                                 <td><?= $val->nama_produk; ?></td>
                                 <td><?= $val->kode_produksi; ?></td>
-                                <td><?= $val->no_program; ?></td>
-                                <td>
-                                    <?= $val->deteksi_ng == '1' ? 'Belt Conveyor Berhenti' : ($val->deteksi_ng == '2' ? 'Rejector' : '-') ?>
+                                <td class="text-center">
+                                    <?= ($val->fe_d || $val->nonfe_d || $val->sus_d) ? '✅' : '❌' ?>
                                 </td>
                                 <td class="text-center">
-                                    <?php
-                                    if ($val->status_produksi == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_produksi == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_produksi == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
+                                    <?= ($val->fe_t || $val->nonfe_t || $val->sus_t) ? '✅' : '❌' ?>
                                 </td>
+                                <td class="text-center">
+                                    <?= ($val->fe_b || $val->nonfe_b || $val->sus_b) ? '✅' : '❌' ?>
+                                </td>
+
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {
@@ -87,32 +82,27 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('metal/edit2/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Check ke-2">
-                                        <span class="step-circle">>2</span>
+                                    <a href="<?= base_url('metal/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                                        <span class="text">Update</span>
                                     </a>
-                                    <a href="<?= base_url('metal/edit3/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Check ke-3">
-                                        <span class="step-circle">>3</span>
+                                    <a href="<?= base_url('metal/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
+                                        <span class="text">Detail</span>
                                     </a>
-                                    <a href="<?= base_url('metal/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                        <i class="fas fa-edit fa-lg"></i>
+                                    <a href="<?= base_url('metal/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <span class="text">Delete</span>
                                     </a>
-                                    <a href="<?= base_url('metal/detail/'.$val->uuid);?>" class="btn btn-success btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail">
-                                        <i class="fas fa-info-circle fa-lg"></i>
-                                    </a>
-                                    <a href="<?= base_url('metal/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                       <i class="fas fa-trash fa-lg"></i>
-                                   </td>
-                               </tr>
-                               <?php 
-                               $no++;
-                           }
-                           ?>
-                       </tbody>
-                   </table>
-               </form>
-           </div>
-       </div>
-   </div>
+                                </td>
+                            </tr>
+                            <?php 
+                            $no++;
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
 </div>
 </div>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">

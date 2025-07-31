@@ -26,26 +26,25 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th width="30px" class="text-center" rowspan="2">
+                                <th width="30px" class="text-center">
                                     <i class="fas fa-print fa-lg"></i>
                                 </th>
-                                <th width="20px" class="text-center" rowspan="2">No</th>
-                                <th rowspan="2">Tanggal / Shift</th>
-                                <th rowspan="2">Start - Finish Loading</th>
-                                <th rowspan="2">Tujuan</th>
-                                <th colspan="4" style="text-align: center;">LOADING</th>
-                                <th rowspan="2">Last Updated</th>
-                                <th rowspan="2">Last Verified</th>
-                                <th rowspan="2">Warehouse</th>
-                                <th rowspan="2">SPV</th>
-                                <th class="text-center" rowspan="2">Action</th>
+                                <th width="20px" class="text-center">No</th>
+                                <th>Tanggal / Shift</th>
+                                <th>Start - Finish Loading</th>
+                                <th>Tujuan</th>
+                                <th style="text-align: center;">LOADING</th>
+                                <th>Last Updated</th>
+                                <th>Last Verified</th>
+                                <th>SPV</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <th>Nama Produk</th>
                                 <th>Kode Produksi</th>
                                 <th>Kode Expired</th>
                                 <th>Keterangan</th>
-                            </tr>
+                            </tr> -->
                         </thead>
                         <tbody>
                             <?php 
@@ -59,7 +58,7 @@
                                $finish = new DateTime($val->finish_loading);
                                $finishFormatted = $finish->format('H:i');
 
-                               $loadings = json_decode($val->loading, true);
+                               $result = json_decode($val->loading, true);
                                ?>
                                <tr>
                                 <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
@@ -68,99 +67,70 @@
                                 <td><?= $startFormatted . " / ". $finishFormatted; ?></td>
                                 <td><?= htmlspecialchars($val->tujuan) ?></td>
                                 <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['nama_produk']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['kode_produksi']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['expired']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <?php 
-                                        if (!empty($loadings)) {
-                                            foreach ($loadings as $load) {
-                                                echo '<li>' . htmlspecialchars($load['keterangan']) . '</li>';
-                                            }
-                                        }
-                                        ?>
-                                    </ul>
-                                </td>
-                                <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
-                                <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_wh == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_wh == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Checked</span>';
-                                    } elseif ($val->status_wh == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Re-Check</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('loading/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Verifikasi</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
-                        }
-                        ?>
-                    </tbody>
-                </table>
-                <input type="hidden" name="checkbox[]" id="selected_items">
-            </form>
-        </div>
-
-        <br>
-        <hr>
-        <div class="form-group">
-            <label>Pilih Data yang akan dicetak:</label>
-            <br>
-            <button type="submit" form="form_cetak_pdf" class="btn btn-success">
-                <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-            </button>
-        </div>
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead style="background-color:#2E86C1; color:gray; text-align:center;">
+                                            <tr>
+                                                <th width="30%">Nama Produk</th>
+                                                <th width="20%">Kode Produksi</th>
+                                                <th width="20%">Kode Expired</th>
+                                                <th width="20%">Keterangan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($result) && is_array($result)): ?>
+                                            <?php foreach ($result as $row): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($row['nama_produk'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['kode_produksi'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['expired'] ?? '-'); ?></td>
+                                                    <td style="text-align:center;"><?= htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        <?php else: ?>
+                                            <tr><td colspan="3" class="text-center">Tidak ada data</td></tr>
+                                        <?php endif ?>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
+                            <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
+                            <td class="text-center">
+                                <?php
+                                if ($val->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($val->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($val->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                                ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('loading/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                                    <span class="text">Verifikasi</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php 
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <input type="hidden" name="checkbox[]" id="selected_items">
+        </form>
     </div>
+
+    <br>
+    <hr>
+    <div class="form-group">
+        <label>Pilih Data yang akan dicetak:</label>
+        <br>
+        <button type="submit" form="form_cetak_pdf" class="btn btn-success">
+            <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+        </button>
+    </div>
+</div>
 </div>
 </div>
 </div>

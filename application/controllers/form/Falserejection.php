@@ -144,24 +144,24 @@ class Falserejection extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+		$tanggal = $this->input->post('tanggal'); 
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
 		}
 
-		$falserejection_data = $this->falserejection_model->get_by_uuid_falserejection($selected_items);
+		$this->load->model('falserejection_model');
 
-		$falserejection_data_verif = $this->falserejection_model->get_by_uuid_falserejection_verif($selected_items);
+		$falserejection_data = $this->falserejection_model->get_by_date($tanggal); 
+		$falserejection_data_verif = $this->falserejection_model->get_last_verif_by_date($tanggal); 
+
+		if (!$falserejection_data || !$falserejection_data_verif) {
+			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+		}
 
 		$data['falserejection'] = $falserejection_data_verif;
-
-
-		if (!$data['falserejection']) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-		}
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 		$pdf = new TCPDF('L', PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -225,10 +225,12 @@ class Falserejection extends CI_Controller {
 			$pdf->Ln();
 		}
 // Ambil nama lengkap dari model
-		$this->load->model('Pegawai_model');
-		$nama_lengkap_qc = $this->Pegawai_model->get_nama_lengkap($data['falserejection']->username_2);
-		$nama_lengkap_prod = $this->Pegawai_model->get_nama_lengkap($data['falserejection']->nama_produksi_false);
-		$nama_lengkap_spv = $this->Pegawai_model->get_nama_lengkap($data['falserejection']->nama_spv_false);
+		$this->load->model('pegawai_model');
+		$nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['falserejection']->username_2);
+		// $nama_lengkap_prod = $this->pegawai_model->get_nama_lengkap($data['falserejection']->nama_produksi_false);
+		$nama_lengkap_prod = $data['falserejection']->nama_produksi_false;
+		$nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['falserejection']->nama_spv_false);
+
 
 // Waktu update
 		$tanggal_update = $data['falserejection']->tgl_update_spv_false;
@@ -274,15 +276,40 @@ class Falserejection extends CI_Controller {
 			$pdf->SetXY(20, $y_after_keterangan + 17);
 			$pdf->Cell(60, 5, 'QC Inspector', 0, 0, 'C');
 
-	// Produksi
+	// // Produksi
+	// 		$pdf->SetXY(110, $y_after_keterangan);
+	// 		$pdf->Cell(80, 5, 'Diketahui Oleh,', 0, 0, 'C');
+	// 		if (!empty($data['falserejection']->nama_produksi_false)) {
+	// 			$qr_text_prod = "Diketahui secara digital oleh,\n" . $nama_lengkap_prod . "\nForeman/Forelady Produksi\n" . $data['falserejection']->tgl_update_produksi_false;
+	// 			$pdf->write2DBarcode($qr_text_prod, 'QRCODE,L', 141, $y_after_keterangan + 5, 17, 17, null, 'N');
+	// 			$pdf->SetXY(120, $y_after_keterangan + 22);
+	// 			$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+	// 		}
+
+			// Produksi
 			$pdf->SetXY(110, $y_after_keterangan);
 			$pdf->Cell(80, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 			if (!empty($data['falserejection']->nama_produksi_false)) {
-				$qr_text_prod = "Diketahui secara digital oleh,\n" . $nama_lengkap_prod . "\nForeman/Forelady Produksi\n" . $data['falserejection']->tgl_update_produksi_false;
-				$pdf->write2DBarcode($qr_text_prod, 'QRCODE,L', 141, $y_after_keterangan + 5, 17, 17, null, 'N');
-				$pdf->SetXY(120, $y_after_keterangan + 22);
-				$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$nama_lengkap_prod = $data['falserejection']->nama_produksi_false;
+				$tanggal_update = (new DateTime($data['falserejection']->tgl_update_produksi_false))->format('d-m-Y | H:i');
+
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->SetXY(120, $y_after_keterangan + 8);
+				$pdf->Cell(60, 5, $nama_lengkap_prod, 0, 1, 'C');
+
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(120, $y_after_keterangan + 13);
+				$pdf->Cell(60, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+				// $pdf->SetXY(120, $y_after_keterangan + 18);
+				// $pdf->Cell(60, 5, $tanggal_update, 0, 0, 'C');
+			} else {
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(120, $y_after_keterangan + 8);
+				$pdf->Cell(60, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
 
 	// SPV
 			$pdf->SetXY(195, $y_after_keterangan);
