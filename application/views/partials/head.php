@@ -64,9 +64,9 @@
 
                 <div id="collapseDataMaster" class="collapse <?= $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' ?'show':'';?>" aria-labelledby="headingDataMaster" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item <?= $active_nav == 'pegawai' ?'active':'';?>" href="<?= base_url('pegawai')?>">Pegawai</a>
+                        <!-- <a class="collapse-item <?= $active_nav == 'pegawai' ?'active':'';?>" href="<?= base_url('pegawai')?>">Pegawai</a>
                         <a class="collapse-item <?= $active_nav == 'departemen' ?'active':'';?>" href="<?= base_url('departemen')?>">Departemen</a>
-                        <a class="collapse-item <?= $active_nav == 'plant' ?'active':'';?>" href="<?= base_url('plant')?>">Plant</a>
+                        <a class="collapse-item <?= $active_nav == 'plant' ?'active':'';?>" href="<?= base_url('plant')?>">Plant</a> -->
                         <a class="collapse-item <?= $active_nav == 'produk' ?'active':'';?>" href="<?= base_url('produk')?>">List Produk</a>
                         <a class="collapse-item <?= $active_nav == 'material' ?'active':'';?>" href="<?= base_url('material')?>">List Material</a>
                         <a class="collapse-item <?= $active_nav == 'alatqc' ?'active':'';?>" href="<?= base_url('alatqc')?>">Alat QC</a>
@@ -111,7 +111,7 @@
 
         <div id="collapseQC2" class="collapse <?= in_array($active_nav, [
             'pengayakan', 'kekuatanmagnet', 'verifikasimagnet', 'thermometer', 'timbangan',
-            'magnettrap', 'inventaris', 'pecahbelah', 'produksi', 'ketidaksesuaian', 'proses'
+            'magnettrap', 'inventaris', 'pecahbelah', 'produksi', 'ketidaksesuaian', 'proses', 'retain', 'disposisi', 'pemusnahan'
             ]) ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
 
@@ -134,7 +134,9 @@
                     <a class="collapse-item <?= $active_nav == 'inventaris' ? 'active' : ''; ?>" href="<?= base_url('inventaris') ?>">Checklist Inventaris Peralatan QC</a>
                     <a class="collapse-item <?= $active_nav == 'pecahbelah' ? 'active' : ''; ?>" href="<?= base_url('pecahbelah') ?>">Pemeriksaan Benda Mudah Pecah</a>
                 <?php endif; ?>
-
+                <a class="collapse-item <?= $active_nav == 'disposisi' ?'active':'';?>" href="<?= base_url('disposisi')?>">Disposisi Produk dan Prosedur</a>
+                <a class="collapse-item <?= $active_nav == 'pemusnahan' ?'active':'';?>" href="<?= base_url('pemusnahan')?>">Pemusnahan Barang / Produk</a>
+                <a class="collapse-item <?= $active_nav == 'retain' ?'active':'';?>" href="<?= base_url('retain')?>">Retain Sample Report</a>
             </div>
         </div>
 
@@ -157,15 +159,14 @@
         aria-expanded="true" aria-controls="collapseQC4">
         <i class="fas fa-cubes"></i>
         <span>WAREHOUSE</span></a>
-        <div id="collapseQC4" class="collapse <?=  $active_nav == 'pemusnahan' | $active_nav == 'retain' | $active_nav == 'penerimaankemasan' |  $active_nav == 'pemeriksaanpengiriman' |  $active_nav == 'pemeriksaanchemical' |  $active_nav == 'seasoning' |  $active_nav == 'sanitasiwarehouse' |  $active_nav == 'loading' |  $active_nav == 'disposisi' |  $active_nav == 'analisis' ?'show':'';?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
+        <div id="collapseQC4" class="collapse <?=  $active_nav == 'penerimaankemasan' |  $active_nav == 'pemeriksaanpengiriman' |  $active_nav == 'pemeriksaanchemical' |  $active_nav == 'seasoning' |  $active_nav == 'sanitasiwarehouse' |  $active_nav == 'loading' |  $active_nav == 'analisis' ?'show':'';?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item <?= $active_nav == 'sanitasiwarehouse' ?'active':'';?>" href="<?= base_url('sanitasiwarehouse')?>">Pemeriksaan Sanitasi Warehouse</a>
-                <a class="collapse-item <?= $active_nav == 'analisis' ?'active':'';?>" href="<?= base_url('analisis')?>">Permohonan Analisis Sampel Lab</a>
-                <a class="collapse-item <?= $active_nav == 'disposisi' ?'active':'';?>" href="<?= base_url('disposisi')?>">Disposisi Produk dan Prosedur</a>
-                <a class="collapse-item <?= $active_nav == 'pemusnahan' ?'active':'';?>" href="<?= base_url('pemusnahan')?>">Pemusnahan Barang / Produk</a>
-                <a class="collapse-item <?= $active_nav == 'retain' ?'active':'';?>" href="<?= base_url('retain')?>">Retain Sample Report</a>
+                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                    <a class="collapse-item <?= $active_nav == 'analisis' ?'active':'';?>" href="<?= base_url('analisis')?>">Permohonan Analisis Sampel Lab</a>
+                <?php endif; ?>
                 <a class="collapse-item <?= $active_nav == 'penerimaankemasan' ?'active':'';?>" href="<?= base_url('penerimaankemasan')?>">Penerimaan Kemasan</a>
-                <a class="collapse-item <?= $active_nav == 'pemeriksaanpengiriman' ?'active':'';?>" href="<?= base_url('pemeriksaanpengiriman')?>">Pemeriksaan Pengiriman</a>
+                <!-- <a class="collapse-item <?= $active_nav == 'pemeriksaanpengiriman' ?'active':'';?>" href="<?= base_url('pemeriksaanpengiriman')?>">Pemeriksaan Pengiriman</a> -->
                 <a class="collapse-item <?= $active_nav == 'pemeriksaanchemical' ?'active':'';?>" href="<?= base_url('pemeriksaanchemical')?>">Pemeriksaan Chemical</a>
                 <a class="collapse-item <?= $active_nav == 'seasoning' ?'active':'';?>" href="<?= base_url('seasoning')?>">Pemeriksaan Seasoning</a>
                 <a class="collapse-item <?= $active_nav == 'loading' ?'active':'';?>" href="<?= base_url('loading')?>">Pemeriksaan Loading Produk</a>
@@ -205,7 +206,7 @@
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQC22" aria-expanded="true" aria-controls="collapseQC22">
                 <i class="fas fa-database"></i>
                 <span>PRODUKSI</span></a>
-                <div id="collapseQC22" class="collapse <?= ($active_nav == 'verifikasi-pengayakan' || $active_nav == 'verifikasi-produksi' || $active_nav == 'verifikasi-kekuatanmagnet' || $active_nav == 'verifikasi-verifikasimagnet' || $active_nav == 'verifikasi-thermometer' || $active_nav == 'verifikasi-timbangan' || $active_nav == 'verifikasi-ketidaksesuaian' ||  $active_nav == 'verifikasi-magnettrap' || $active_nav == 'verifikasi-inventaris' || $active_nav == 'verifikasi-pecahbelah' || $active_nav == 'verifikasi-proses') ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
+                <div id="collapseQC22" class="collapse <?= ($active_nav == 'verifikasi-pengayakan' || $active_nav == 'verifikasi-produksi' || $active_nav == 'verifikasi-kekuatanmagnet' || $active_nav == 'verifikasi-verifikasimagnet' || $active_nav == 'verifikasi-thermometer' || $active_nav == 'verifikasi-timbangan' || $active_nav == 'verifikasi-ketidaksesuaian' ||  $active_nav == 'verifikasi-magnettrap' || $active_nav == 'verifikasi-inventaris' || $active_nav == 'verifikasi-pecahbelah' || $active_nav == 'verifikasi-proses' || $active_nav == 'verifikasi-pemusnahan' || $active_nav == 'verifikasi-retain' || $active_nav == 'verifikasi-disposisi' ) ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item <?= $active_nav == 'verifikasi-pengayakan' ? 'active' : ''; ?>" href="<?= base_url('pengayakan/verifikasi')?>">Pengayakan</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-kekuatanmagnet' ? 'active' : ''; ?>" href="<?= base_url('kekuatanmagnet/verifikasi')?>">Pemeriksaan Kekuatan Magnet Trap</a>
@@ -225,6 +226,10 @@
                             <a class="collapse-item <?= $active_nav == 'verifikasi-inventaris' ? 'active' : ''; ?>" href="<?= base_url('inventaris/verifikasi')?>">Checklist Inventaris Peralatan QC</a>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-pecahbelah' ? 'active' : ''; ?>" href="<?= base_url('pecahbelah/verifikasi')?>">Pemeriksaan Benda Mudah Pecah</a>
                         <?php endif; ?>
+
+                        <a class="collapse-item <?= $active_nav == 'verifikasi-disposisi' ? 'active' : ''; ?>" href="<?= base_url('disposisi/verifikasi')?>">Disposisi Produk dan Prosedur</a>
+                        <a class="collapse-item <?= $active_nav == 'verifikasi-pemusnahan' ? 'active' : ''; ?>" href="<?= base_url('pemusnahan/verifikasi')?>">Pemusnahan Barang / Produk</a>
+                        <a class="collapse-item <?= $active_nav == 'verifikasi-retain' ? 'active' : ''; ?>" href="<?= base_url('retain/verifikasi')?>">Retain Sample Report</a>
                     </div>
                 </div>
 
@@ -245,15 +250,14 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQC24" aria-expanded="true" aria-controls="collapseQC24">
                         <i class="fas fa-cubes"></i>
                         <span>WAREHOUSE</span></a>
-                        <div id="collapseQC24" class="collapse <?= ( $active_nav == 'verifikasi-pemusnahan' || $active_nav == 'verifikasi-retain' || $active_nav == 'verifikasi-penerimaankemasan' || $active_nav == 'verifikasi-pemeriksaanpengiriman' || $active_nav == 'verifikasi-pemeriksaanchemical' || $active_nav == 'verifikasi-seasoning' || $active_nav == 'verifikasi-sanitasiwarehouse' || $active_nav == 'verifikasi-loading' || $active_nav == 'verifikasi-disposisi' || $active_nav == 'verifikasi-analisis') ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
+                        <div id="collapseQC24" class="collapse <?= ( $active_nav == 'verifikasi-penerimaankemasan' || $active_nav == 'verifikasi-pemeriksaanpengiriman' || $active_nav == 'verifikasi-pemeriksaanchemical' || $active_nav == 'verifikasi-seasoning' || $active_nav == 'verifikasi-sanitasiwarehouse' || $active_nav == 'verifikasi-loading' || $active_nav == 'verifikasi-analisis') ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
                             <div class="bg-white py-2 collapse-inner rounded">
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-sanitasiwarehouse' ? 'active' : ''; ?>" href="<?= base_url('sanitasiwarehouse/verifikasi')?>">Pemeriksaan Sanitasi Warehouse</a>
-                                <a class="collapse-item <?= $active_nav == 'verifikasi-analisis' ? 'active' : ''; ?>" href="<?= base_url('analisis/verifikasi')?>">Permohonan Analisis Sampel Lab</a>
-                                <a class="collapse-item <?= $active_nav == 'verifikasi-disposisi' ? 'active' : ''; ?>" href="<?= base_url('disposisi/verifikasi')?>">Disposisi Produk dan Prosedur</a>
-                                <a class="collapse-item <?= $active_nav == 'verifikasi-pemusnahan' ? 'active' : ''; ?>" href="<?= base_url('pemusnahan/verifikasi')?>">Pemusnahan Barang / Produk</a>
-                                <a class="collapse-item <?= $active_nav == 'verifikasi-retain' ? 'active' : ''; ?>" href="<?= base_url('retain/verifikasi')?>">Retain Sample Report</a>
+                                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                                    <a class="collapse-item <?= $active_nav == 'verifikasi-analisis' ? 'active' : ''; ?>" href="<?= base_url('analisis/verifikasi')?>">Permohonan Analisis Sampel Lab</a>
+                                <?php endif; ?>
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-penerimaankemasan' ? 'active' : ''; ?>" href="<?= base_url('penerimaankemasan/verifikasi')?>">Penerimaan Kemasan</a>
-                                <a class="collapse-item <?= $active_nav == 'verifikasi-pemeriksaanpengiriman' ? 'active' : ''; ?>" href="<?= base_url('pemeriksaanpengiriman/verifikasi')?>">Pemeriksaan Pengiriman</a>
+                                <!-- <a class="collapse-item <?= $active_nav == 'verifikasi-pemeriksaanpengiriman' ? 'active' : ''; ?>" href="<?= base_url('pemeriksaanpengiriman/verifikasi')?>">Pemeriksaan Pengiriman</a> -->
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-pemeriksaanchemical' ? 'active' : ''; ?>" href="<?= base_url('pemeriksaanchemical/verifikasi')?>">Pemeriksaan Chemical</a>
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-seasoning' ? 'active' : ''; ?>" href="<?= base_url('seasoning/verifikasi')?>">Pemeriksaan Seasoning</a>
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-loading' ? 'active' : ''; ?>" href="<?= base_url('loading/verifikasi')?>">Pemeriksaan Loading Produk</a>
@@ -400,11 +404,11 @@
 
                         <!-- Dropdown Menu -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="<?= base_url('profil'); ?>">
+                            <!-- <a class="dropdown-item" href="<?= base_url('profil'); ?>">
                                 <i class="fas fa-user-edit fa-sm fa-fw mr-2 text-primary"></i> 
                                 <span class="text-dark">Profil</span>
                             </a>
-                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-divider"></div> -->
                             <a class="dropdown-item" href="<?= base_url('logout'); ?>">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-danger"></i>
                                 <span class="text-dark">Logout</span>

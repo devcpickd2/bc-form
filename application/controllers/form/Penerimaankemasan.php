@@ -113,6 +113,7 @@ class Penerimaankemasan extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
+
 			$config = array(
 				'upload_path' => "./uploads/",
 				'allowed_types' => "jpg|png|jpeg|pdf",
@@ -123,37 +124,44 @@ class Penerimaankemasan extends CI_Controller {
 
 			$this->upload->initialize($config);
 
+        // Cek apakah ada file baru di-upload
 			if (!empty($_FILES['bukti_coa']['name'])) {
 				if (!$this->upload->do_upload('bukti_coa')) {
 					$error = $this->upload->display_errors();
-					$this->session->set_flashdata('error_msg', 'Upload failed: ' . $error);
+					$this->session->set_flashdata('error_msg', 'Upload gagal: ' . $error);
 					redirect('penerimaankemasan/edit/' . $uuid); 
 				} else {
-					$data = $this->upload->data();
-					$file_name = $data['file_name'];
+					$file_data = $this->upload->data();
+					$file_name = $file_data['file_name'];
 				}
 			} else {
+            // Gunakan file lama jika tidak ada upload baru
 				$file_name = $penerimaankemasan->bukti_coa;
 			}
+
+        // Panggil model update
 			$update = $this->penerimaankemasan_model->update($uuid, $file_name);
 
 			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Penerimaan Kemasan dari Supplier  berhasil diupdate');
-				redirect('penerimaankemasan');
+				$this->session->set_flashdata('success_msg', 'Data berhasil diupdate');
 			} else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Penerimaan Kemasan dari Supplier  gagal diupdate');
-				redirect('penerimaankemasan');
+				$this->session->set_flashdata('error_msg', 'Data gagal diupdate');
 			}
+			redirect('penerimaankemasan');
+		} else {
+        // Tampilkan error validasi
+			$data = array(
+				'penerimaankemasan' => $penerimaankemasan,
+				'active_nav' => 'penerimaankemasan',
+				'validation_errors' => validation_errors()
+			);
 		}
-		$data = array(
-			'penerimaankemasan' => $penerimaankemasan,
-			'active_nav' => 'penerimaankemasan'
-		);
 
 		$this->load->view('partials/head', $data);
 		$this->load->view('form/penerimaankemasan/penerimaankemasan-edit', $data);
 		$this->load->view('partials/footer');
 	}
+
 
 	public function delete($uuid)
 	{
@@ -304,73 +312,127 @@ class Penerimaankemasan extends CI_Controller {
 		$pdf->Write(0, 'Shift: ' . $data['penerimaankemasan']->shift);
 		$pdf->Ln(5);
 
-		$pdf->SetFont('times', '', 11);
+		$pdf->SetFont('times', '', 7);
 		$pdf->Cell(10, 12, 'No.', 1, 0, 'C');
-		$pdf->Cell(35, 12, 'Jenis Kemasan', 1, 0, 'C');
-		$pdf->Cell(32, 12, 'Pemasok', 1, 0, 'C');
-		$pdf->Cell(28, 12, 'Kode Produksi', 1, 0, 'C');
-		$pdf->Cell(15, 12, 'Jumlah', 1, 0, 'C');
-		$pdf->Cell(15, 12, 'Sampel', 1, 0, 'C');
-		$pdf->Cell(15, 12, 'Jumlah', 1, 0, 'C');
-		$pdf->Cell(90, 6, 'Kondisi Fisik', 1, 0, 'C');
-		$pdf->Cell(20, 12, 'Segel', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Jenis Kemasan', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Pemasok', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'Jenis Mobil', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'No. Polisi', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'Identitas', 1, 0, 'C');
+		$pdf->Cell(12, 12, 'No. PO/DO', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Kondisi Mobil', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Kode Produksi', 1, 0, 'C');
+		$pdf->Cell(10, 12, 'Jumlah', 1, 0, 'C');
+		$pdf->Cell(10, 12, 'Sampel', 1, 0, 'C');
+		$pdf->Cell(10, 12, 'Jumlah', 1, 0, 'C');
+		$pdf->Cell(81, 6, 'Kondisi Fisik', 1, 0, 'C');
+		$pdf->Cell(10, 12, 'Segel', 1, 0, 'C');
 		$pdf->Cell(10, 12, 'COA', 1, 0, 'C');
 		$pdf->Cell(20, 6, 'Penerimaan', 1, 0, 'C');
-		$pdf->Cell(30, 12, 'Keterangan', 1, 0, 'C');
+		$pdf->Cell(25, 12, 'Keterangan', 1, 0, 'C');
 		$pdf->Cell(10, 6, '', 0, 1, 'C');
 
-		$pdf->Cell(105, 0, '', 0, 0, 'L');
-		$pdf->Cell(15, 6, 'Datang', 0, 0, 'C');
-		$pdf->Cell(15, 6, 'Pcs', 0, 0, 'C');
-		$pdf->Cell(15, 6, 'Reject', 0, 0, 'C');
+		$pdf->Cell(81, 0, '', 0, 0, 'L');
+		$pdf->Cell(15, 0, 'Pengantar', 0, 0, 'L');
+		$pdf->Cell(51, 0, '', 0, 0, 'L');
+		$pdf->Cell(10, 6, 'Datang', 0, 0, 'C');
+		$pdf->Cell(10, 6, '(Pcs)', 0, 0, 'C');
+		$pdf->Cell(10, 6, 'Reject', 0, 0, 'C');
 		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(10, 6, 'Warna', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Panjang', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Diameter', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Lebar', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Tinggi', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Berat', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Delaminasi', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Bau', 1, 0, 'C');
-		$pdf->Cell(10, 6, 'Desain', 1, 0, 'C');
-		$pdf->Cell(30, 6, '', 0, 0, 'C');
+		$pdf->Cell(9, 6, 'Warna', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Panjang', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Diameter', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Lebar', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Tinggi', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Berat', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Delaminasi', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Bau', 1, 0, 'C');
+		$pdf->Cell(9, 6, 'Desain', 1, 0, 'C');
+		$pdf->Cell(20, 6, '', 0, 0, 'C');
 		$pdf->Cell(10, 6, 'OK', 1, 0, 'C');
 		$pdf->Cell(10, 6, 'Tolak', 1, 0, 'C');
-		$pdf->Cell(30, 0, '', 0, 0, 'C');
+		$pdf->Cell(25, 0, '', 0, 0, 'C');
 		$pdf->Cell(10, 6, '', 0, 1, 'C');
 
 		$no = 1;
-		foreach ($penerimaankemasan_data as $penerimaankemasan) {
-			$pdf->SetFont('times', '', 11);
-			$pdf->Cell(10, 8, $no, 1, 0, 'C');
-			$pdf->Cell(35, 8, $penerimaankemasan->jenis_kemasan, 1, 0, 'C');
-			$pdf->Cell(32, 8, $penerimaankemasan->pemasok, 1, 0, 'C');
-			$pdf->Cell(28, 8, $penerimaankemasan->kode_produksi, 1, 0, 'C');
-			$pdf->Cell(15, 8, $penerimaankemasan->jumlah_datang, 1, 0, 'C');
-			$pdf->Cell(15, 8, $penerimaankemasan->sampel, 1, 0, 'C');
-			$pdf->Cell(15, 8, $penerimaankemasan->jumlah_reject, 1, 0, 'C');
-			$pdf->SetFont('dejavusans', '', 10);	
-			$pdf->Cell(10, 8, ($penerimaankemasan->warna == 'sesuai') ? '✔' : (($penerimaankemasan->warna == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->panjang == 'sesuai') ? '✔' : (($penerimaankemasan->panjang == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->diameter == 'sesuai') ? '✔' : (($penerimaankemasan->diameter == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->lebar == 'sesuai') ? '✔' : (($penerimaankemasan->lebar == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->tinggi == 'sesuai') ? '✔' : (($penerimaankemasan->tinggi == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->berat == 'sesuai') ? '✔' : (($penerimaankemasan->berat == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->delaminasi == 'sesuai') ? '✔' : (($penerimaankemasan->delaminasi == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->bau == 'sesuai') ? '✔' : (($penerimaankemasan->bau == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(10, 8, ($penerimaankemasan->desain == 'sesuai') ? '✔' : (($penerimaankemasan->desain == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->SetFont('times', '', 11);
-			$pdf->Cell(20, 8, $penerimaankemasan->segel, 1, 0, 'C');
-			$pdf->SetFont('dejavusans', '', 10);	
-			$pdf->Cell(10, 8, ($penerimaankemasan->coa == 'ada') ? '✔' : (($penerimaankemasan->coa == 'tidak ada') ? '✘' : '−'), 1, 0, 'C');
+		$kondisi_mobil_map = [
+			1 => 'Bersih',
+			2 => 'Kotor',
+			3 => 'Bau',
+			4 => 'Bocor',
+			5 => 'Basah',
+			6 => 'Kering',
+			7 => 'Bebas Hama',
+		];
 
-			// $pdf->Cell(20, 8, ($penerimaankemasan->penerimaan == 'ok') ? '✔' : (($penerimaankemasan->penerimaan == 'tolak') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->SetFont('times', '', 11);
-			$pdf->Cell(20, 8, $penerimaankemasan->penerimaan, 1, 0, 'C');
-			$pdf->Cell(30, 8, !empty($penerimaankemasan->keterangan) ? $penerimaankemasan->keterangan : '-', 1, 0, 'C');
-			$pdf->Ln();
+		foreach ($penerimaankemasan_data as $penerimaankemasan) {
+			$pdf->SetFont('times', '', 8);
+
+    // Buat teks kondisi mobil (mapping kode ke deskripsi)
+			$kondisi_arr = explode(',', $penerimaankemasan->kondisi_mobil);
+			$kondisi_labels = array_map(function ($val) use ($kondisi_mobil_map) {
+				return isset($kondisi_mobil_map[(int)$val]) ? $kondisi_mobil_map[(int)$val] : $val;
+			}, $kondisi_arr);
+			$kondisi_text = implode(', ', $kondisi_labels);
+
+    // Buat baris data
+			$row_data = [
+				['w' => 10, 'text' => $no],
+				['w' => 20, 'text' => $penerimaankemasan->jenis_kemasan],
+				['w' => 20, 'text' => $penerimaankemasan->pemasok],
+				['w' => 15, 'text' => $penerimaankemasan->jenis_mobil],
+				['w' => 15, 'text' => $penerimaankemasan->no_polisi],
+				['w' => 15, 'text' => $penerimaankemasan->identitas_pengantar],
+				['w' => 12, 'text' => $penerimaankemasan->no_po],
+				['w' => 20, 'text' => $kondisi_text],
+				['w' => 20, 'text' => $penerimaankemasan->kode_produksi],
+				['w' => 10, 'text' => $penerimaankemasan->jumlah_datang],
+				['w' => 10, 'text' => $penerimaankemasan->sampel],
+				['w' => 10, 'text' => $penerimaankemasan->jumlah_reject],
+
+        // Simbol centang silang (ganti font ke DejaVu)
+				['w' => 9, 'text' => ($penerimaankemasan->warna == 'sesuai') ? '✔' : (($penerimaankemasan->warna == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->panjang == 'sesuai') ? '✔' : (($penerimaankemasan->panjang == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->diameter == 'sesuai') ? '✔' : (($penerimaankemasan->diameter == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->lebar == 'sesuai') ? '✔' : (($penerimaankemasan->lebar == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->tinggi == 'sesuai') ? '✔' : (($penerimaankemasan->tinggi == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->berat == 'sesuai') ? '✔' : (($penerimaankemasan->berat == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->delaminasi == 'sesuai') ? '✔' : (($penerimaankemasan->delaminasi == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->bau == 'sesuai') ? '✔' : (($penerimaankemasan->bau == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 9, 'text' => ($penerimaankemasan->desain == 'sesuai') ? '✔' : (($penerimaankemasan->desain == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+
+				['w' => 10, 'text' => $penerimaankemasan->segel],
+				['w' => 10, 'text' => ($penerimaankemasan->coa == 'ada') ? '✔' : (($penerimaankemasan->coa == 'tidak ada') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 20, 'text' => $penerimaankemasan->penerimaan],
+				['w' => 25, 'text' => !empty($penerimaankemasan->keterangan) ? $penerimaankemasan->keterangan : '-'],
+			];
+
+    // Hitung tinggi baris berdasarkan isi terpanjang
+			$lineHeight = 6;
+			$maxLines = 1;
+			foreach ($row_data as $cell) {
+				$pdf->SetFont(isset($cell['font']) ? $cell['font'] : 'times', '', 8);
+				$nb = $pdf->getNumLines($cell['text'], $cell['w']);
+				if ($nb > $maxLines) {
+					$maxLines = $nb;
+				}
+			}
+			$rowHeight = $lineHeight * $maxLines;
+
+    // Simpan posisi awal
+			$startX = $pdf->GetX();
+			$startY = $pdf->GetY();
+
+    // Cetak semua cell
+			foreach ($row_data as $cell) {
+				$pdf->SetFont(isset($cell['font']) ? $cell['font'] : 'times', '', 8);
+				$pdf->MultiCell($cell['w'], $rowHeight, $cell['text'], 1, 'C', false, 0);
+			}
+
+			$pdf->Ln($rowHeight);
 			$no++;
 		}
+
 
 		$pdf->SetY($pdf->GetY() + 3); 
 		$pdf->SetFont('dejavusans', '', 6);

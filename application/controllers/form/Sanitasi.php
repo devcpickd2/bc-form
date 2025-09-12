@@ -185,7 +185,7 @@ class Sanitasi extends CI_Controller {
 		}
 
 		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_by_uuid($uuid),
+			'sanitasi' => $this->sanitasi_model->get_by_uuid($uuid), 
 			'active_nav' => 'diketahui-sanitasi');
 
 		$this->load->view('partials/head', $data);

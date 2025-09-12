@@ -11,12 +11,11 @@
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">List Raw Material</li>
             </ol>
-        </nav>
+        </nav> 
         <div class="card shadow mb-4">
             <div class="card-body">
-             <form class="user" method="post" action="<?= base_url('produksi/bahan/'.$produksi->uuid);?>">
+               <form class="user" method="post" action="<?= base_url('produksi/bahan/'.$produksi->uuid);?>">
                 <label class="form-label font-weight-bold">Produk : <?= $produksi->nama_produk;?></label><br>
-                <!-- <label class="form-label font-weight-bold">Kode Produksi : <?= $produksi->kode_produksi;?></label> -->
                 <hr>
                 <div class="form-group row">
                     <div class="col-sm-4">
@@ -164,6 +163,7 @@
                     </div>
                 </div>
 
+                <!-- PREMIX FORM AREA -->
                 <hr>
                 <div class="form-area" id="form-produksi-wrapper">
                     <label class="form-label font-weight-bold">Premix</label>
@@ -179,22 +179,23 @@
                         echo "<div class='text-muted mb-3'>Belum ada data premix. Klik tombol <strong>+ Tambah Premix</strong> untuk menambahkan.</div>";
                     }
 
-                    $produksi_data = json_decode($produksi->premix, true);
-                    if (!is_array($produksi_data) || empty($produksi_data)) {
-                        $produksi_data = []; 
-                    }
                     foreach ($produksi_data as $i => $detail): 
-                        $kode = isset($detail['kode']) ? $detail['kode'] : '';
-                        $berat = isset($detail['berat']) ? $detail['berat'] : '';
-                        $sens = isset($detail['sens']) ? $detail['sens'] : '';
+                        $nama_premix = $detail['nama_premix'] ?? '';
+                        $kode = $detail['kode'] ?? '';
+                        $berat = $detail['berat'] ?? '';
+                        $sens = $detail['sens'] ?? '';
                         ?>
                         <div class="produksi-group border p-3 mb-3 rounded bg-light" data-index="<?= $i ?>">
                             <div class="form-group row">
                                 <div class="col-sm-3">
+                                    <label>Nama Premix</label>
+                                    <input type="text" name="nama_premix[<?= $i ?>]" class="form-control" value="<?= $nama_premix ?>">
+                                </div>
+                                <div class="col-sm-2">
                                     <label>Kode Produksi</label>
                                     <input type="text" name="kode[<?= $i ?>]" class="form-control" value="<?= $kode ?>">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <label>Berat</label>
                                     <input type="text" name="berat[<?= $i ?>]" class="form-control" value="<?= $berat ?>">
                                 </div>
@@ -209,46 +210,48 @@
                                         <label class="form-check-label">Tidak</label>
                                     </div>
                                 </div>
-                                <div class="col-sm-3 d-flex align-items-end">
+                                <div class="col-sm-2 d-flex align-items-end">
                                     <button type="button" class="btn btn-danger btn-remove">Hapus</button>
                                 </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
-
                 </div>
 
                 <button type="button" class="btn btn-primary mt-2" id="add-produksi">+ Tambah Premix</button>
+
                 <div class="produksi-group border p-3 mb-3 rounded bg-light d-none" id="produksi-template">
                     <div class="form-group row">
                         <div class="col-sm-3">
+                            <label>Nama Premix</label>
+                            <input type="text" name="nama_premix[]" class="form-control">
+                        </div>
+                        <div class="col-sm-2">
                             <label>Kode Produksi</label>
                             <input type="text" name="kode[]" class="form-control">
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <label>Berat</label>
                             <input type="text" name="berat[]" class="form-control">
                         </div>
                         <div class="col-sm-3">
                             <label>Sensori</label><br>
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="sens[]" value="oke" class="form-check-input">
+                                <input type="radio" value="oke" class="form-check-input">
                                 <label class="form-check-label">Oke</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="sens[]" value="tidak" class="form-check-input">
+                                <input type="radio" value="tidak" class="form-check-input">
                                 <label class="form-check-label">Tidak</label>
                             </div>
                         </div>
-                        <div class="col-sm-3 d-flex align-items-end">
+                        <div class="col-sm-2 d-flex align-items-end">
                             <button type="button" class="btn btn-danger btn-remove">Hapus</button>
                         </div>
                     </div>
                 </div>
-
                 <hr>
-
-
+                
                 <label class="form-label font-weight-bold">SHORTENING</label>
                 <div class="form-group row">
                     <div class="col-sm-3">
@@ -332,31 +335,102 @@
         background-color: #2E86C1;
     }
 </style>
-
 <script>
-$(document).ready(function () {
+  $(document).ready(function () {
     let index = $('#form-produksi-wrapper .produksi-group').length;
 
-    $('#add-produksi').on('click', function () {
+    const spesifikasi = {
+        'BC MIX': {
+            tegu_berat: '329.240',
+            tapioka_berat: '22.700',
+            ragi_berat: '7.320',
+            bread_berat: '0.380',
+            shortening_berat: '2.520',
+            chill_water_berat: '180',
+            premix: [
+                { nama: 'Premix Yellow', berat: '0.070' },
+                { nama: 'Premix Orange', berat: '0.060' },
+                { nama: 'Premix Gula & Garam', berat: '7.440' }
+            ]
+        },
+        'BC ORANGE': {
+            tegu_berat: '329.240',
+            tapioka_berat: '22.700',
+            ragi_berat: '7.320',
+            bread_berat: '0.380',
+            shortening_berat: '2.520',
+            chill_water_berat: '180',
+            premix: [
+                { nama: 'Premix Orange', berat: '0.213' },
+                { nama: 'Premix Gula & Garam', berat: '7.440' }
+            ]
+        },
+        'BC YELLOW': {
+            tegu_berat: '329.240',
+            tapioka_berat: '22.700',
+            ragi_berat: '7.320',
+            bread_berat: '0.380',
+            shortening_berat: '2.520',
+            chill_water_berat: '180',
+            premix: [
+                { nama: 'Premix Yellow', berat: '0.070' },
+                { nama: 'Premix Gula & Garam', berat: '7.440' }
+            ]
+        },
+        'BC WHITE INSTITUSI': {
+            tegu_berat: '329.240',
+            tapioka_berat: '22.700',
+            ragi_berat: '7.320',
+            bread_berat: '0.380',
+            shortening_berat: '2.520',
+            chill_water_berat: '180',
+            premix: [
+                { nama: 'Premix Gula & Garam', berat: '7.440' }
+            ]
+        }
+    };
+
+    const namaProduk = "<?= strtoupper($produksi->nama_produk) ?>";
+    const premixDataFromPHP = <?= json_encode($produksi_data) ?>;
+
+    function generatePremixRow(item = { nama: '', berat: '', kode: '' }) {
         const template = $('#produksi-template').clone();
         template.removeClass('d-none').removeAttr('id');
-
-        // Set name atribut agar sesuai array
-        template.find('.kode-input').attr('name', 'kode[]').val('');
-        template.find('.berat-input').attr('name', 'berat[]').val('');
-
-        // Radio buttons name jadi sens[index]
-        template.find('.sens-input').each(function () {
-            $(this).attr('name', 'sens[' + index + ']').prop('checked', false);
+        template.find('[name="nama_premix[]"]').attr('name', `nama_premix[${index}]`).val(item.nama);
+        template.find('[name="kode[]"]').attr('name', `kode[${index}]`).val(item.kode || '');
+        template.find('[name="berat[]"]').attr('name', `berat[${index}]`).val(item.berat);
+        template.find('input[type="radio"]').each(function () {
+            const val = $(this).val();
+            $(this).attr('name', `sens[${index}]`);
+            if (val === 'oke') {
+                $(this).prop('checked', true);
+            }
         });
-
         $('#form-produksi-wrapper').append(template);
         index++;
+    }
+
+    if ((!premixDataFromPHP || premixDataFromPHP.length === 0) && spesifikasi[namaProduk]) {
+        const data = spesifikasi[namaProduk];
+        $('[name="tegu_berat"]').val(data.tegu_berat);
+        $('[name="tapioka_berat"]').val(data.tapioka_berat);
+        $('[name="ragi_berat"]').val(data.ragi_berat);
+        $('[name="bread_berat"]').val(data.bread_berat);
+        $('[name="shortening_berat"]').val(data.shortening_berat);
+        $('[name="chill_water_berat"]').val(data.chill_water_berat);
+        $('#form-produksi-wrapper .produksi-group').remove();
+        data.premix.forEach(p => generatePremixRow(p));
+    }
+
+    // Tambah premix manual
+    $('#add-produksi').on('click', function () {
+        generatePremixRow();
     });
 
-    // Tombol hapus
+    // Hapus baris premix
     $(document).on('click', '.btn-remove', function () {
         $(this).closest('.produksi-group').remove();
     });
 });
+
 </script>

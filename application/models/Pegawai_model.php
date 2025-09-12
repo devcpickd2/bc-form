@@ -225,4 +225,71 @@ class Pegawai_model extends CI_Model {
 		])->result();
 	}
 
+	public function syncUser($data)
+	{
+		$existing = $this->db->where('uuid', $data['uuid'])->get('pegawai')->row();
+		if ($existing) {
+            // Update
+			return $this->db->where('uuid', $data['uuid'])->update('pegawai', $data);
+		} else {
+            // Insert
+			return $this->db->insert('pegawai', $data);
+		}
+	}
+
+	public function activation($data)
+	{
+		$activation = [
+			'activation' => true
+		];
+
+		return $this->db->where('uuid', $data['uuid'])->update('pegawai', $activation);
+	}
+
+	public function changePasswordAPI($data)
+	{
+		try {
+        // Validasi data
+			if (!isset($data['uuid']) || !isset($data['password'])) {
+				throw new Exception("UUID dan Password harus diisi");
+			}
+
+        // Data yang akan diupdate
+			$password = [
+				'password' => $data['password']
+			];
+
+        // Eksekusi query update
+			$this->db->where('uuid', $data['uuid']);
+			$update = $this->db->update('pegawai', $password);
+
+        // Cek hasil update
+			if (!$update) {
+            // Ambil error dari database
+				$dbError = $this->db->error();
+				throw new Exception("Gagal update password: " . $dbError['message']);
+			}
+
+        // Jika sukses
+			return [
+				'status' => true,
+				'message' => 'Password berhasil diupdate'
+			];
+
+		} catch (Exception $e) {
+        // Tangani error
+			return [
+				'status' => false,
+				'message' => $e->getMessage()
+			];
+		}
+	}
+
+	public function desyncUser($user_uuid)
+	{
+        // Example: delete from access table by UUID
+		$this->db->where('uuid', $user_uuid);
+		return $this->db->delete('pegawai');
+        // or update a flag instead of delete
+	}
 }

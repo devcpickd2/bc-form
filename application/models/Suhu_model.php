@@ -205,7 +205,7 @@ class Suhu_model extends CI_Model {
 
 	public function get_suhu_by_plant()
 	{
-		$this->db->order_by('created_at', 'DESC');
+		$this->db->order_by('date', 'DESC');
 		$plant = $this->session->userdata('plant');
 		return $this->db->get_where('suhu', ['plant' => $plant])->result();
 	}

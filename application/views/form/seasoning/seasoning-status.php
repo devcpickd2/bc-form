@@ -17,8 +17,8 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <?php 
-                $datetime = (new DateTime($seasoning->date))->format('d-m-Y');
-                $exp = (new DateTime($seasoning->expired))->format('d-m-Y');
+            $datetime = (new DateTime($seasoning->date))->format('d-m-Y');
+            $exp = (new DateTime($seasoning->expired))->format('d-m-Y');
             ?>
             <div class="table-responsive">
                 <table class="table table-bordered">
@@ -30,6 +30,29 @@
                         <tr><td><b>Jenis Seasoning</b></td><td colspan="6"><?= $seasoning->jenis_seasoning; ?></td></tr>
                         <tr><td><b>Spesifikasi</b></td><td colspan="6"><?= $seasoning->spesifikasi; ?></td></tr>
                         <tr><td><b>Pemasok</b></td><td colspan="6"><?= $seasoning->pemasok; ?></td></tr>
+                        <tr><td><b>Jenis Mobil</b></td><td colspan="6"><?= $seasoning->jenis_mobil; ?></td></tr>
+                        <tr><td><b>No. Polisi</b></td><td colspan="6"><?= $seasoning->no_polisi; ?></td></tr>
+                        <tr><td><b>Identitas Pengantar</b></td><td colspan="6"><?= $seasoning->identitas_pengantar; ?></td></tr>
+                        <tr><td><b>No. PO / DO</b></td><td colspan="6"><?= $seasoning->no_po; ?></td></tr>
+                        <!-- Kondisi Mobil -->
+                        <tr class="table-primary text-center font-weight-bold">
+                            <th colspan="9">KONDISI MOBIL</th>
+                        </tr>
+                        <tr>
+                            <td colspan="9">
+                                <?php
+                                $keteranganMobil = [1=>'Bersih',2=>'Kotor',3=>'Bau',4=>'Bocor',5=>'Basah',6=>'Kering',7=>'Bebas Hama'];
+                                if (!empty($seasoning->kondisi_mobil)) {
+                                    $mobilList = is_array($seasoning->kondisi_mobil) ? $seasoning->kondisi_mobil : explode(',', $seasoning->kondisi_mobil);
+                                    echo '<ul class="mb-0">';
+                                    foreach ($mobilList as $m) echo '<li>' . ($keteranganMobil[trim($m)] ?? 'Tidak diketahui') . '</li>';
+                                    echo '</ul>';
+                                } else {
+                                    echo 'Tidak ada data';
+                                }
+                                ?>
+                            </td>
+                        </tr>
                         <tr><td><b>Kode Produksi</b></td><td colspan="6"><?= $seasoning->kode_produksi; ?></td></tr>
                         <tr><td><b>Expired Date</b></td><td colspan="6"><?= $exp; ?></td></tr>
                         <tr>

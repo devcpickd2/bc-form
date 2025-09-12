@@ -18,14 +18,14 @@ class Produk extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'produk' => $this->produk_model->get_all(),
+			'produk' => $this->produk_model->get_produk_by_plant(),
 			'active_nav' => 'produk', 
 		);
 
 		$this->load->view('partials/head', $data);
 		$this->load->view('produk/produk', $data);
 		$this->load->view('partials/footer');
-	}
+	} 
 
 	public function tambah()
 	{

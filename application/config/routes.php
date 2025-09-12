@@ -54,10 +54,14 @@ $route['login'] = 'auth/login';
 $route['home'] = 'home';
 $route['profil'] = 'profil/index';
 
-
 // $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['api/user-sync']['post']       = 'User/syncApi';
+$route['api/user-desync']     		  = 'User/desyncApi'; 
+$route['api/activation']['post']      = 'User/activation';
+$route['api/password-change']['post'] = 'User/changePassword';
 
 // $route['login'] = 'auth/login';
 $route['logout'] = 'auth/logout';

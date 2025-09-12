@@ -13,7 +13,7 @@
         </nav> 
         <div class="card shadow mb-4">
             <div class="card-body">
-               <form action="<?= base_url('larutan/tambah'); ?>" method="post" enctype="multipart/form-data">
+             <form action="<?= base_url('larutan/tambah'); ?>" method="post" enctype="multipart/form-data">
                 <?php
                 $produksi_data = $this->session->userdata('produksi_data');
                 $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
@@ -74,19 +74,29 @@
                       <td><input type="text" name="bahan_kimia[]" class="form-control form-control-sm" value="<?= $row['kimia'] ?>" readonly></td>
                       <td><input type="text" name="air_bersih[]" class="form-control form-control-sm" value="<?= $row['air'] ?>" readonly></td>
                       <td><input type="text" name="volume_akhir[]" class="form-control form-control-sm" value="<?= $row['volume'] ?>" readonly></td>
-                      <td><input type="text" name="kebutuhan[]" class="form-control form-control-sm"></td>
-                      <td class="text-center">
-                          <input type="checkbox" name="keterangan[<?= $i ?>]" value="Sesuai">
-                      </td>
-                      <td><input type="text" name="tindakan[]" class="form-control form-control-sm"></td>
-                      <td><input type="text" name="verifikasi[]" class="form-control form-control-sm"></td>
-                  </tr>
-              <?php endforeach; ?>
-          </tbody>
-      </table>
-  </div>
+                      <td>
+                          <select name="kebutuhan[]" class="form-control form-control-sm">
+                            <option value="">-- Pilih --</option>
+                            <option value="Cleaning Lantai">Cleaning Lantai</option>
+                            <option value="Cleaning mesin dan alat">Cleaning mesin dan alat</option>
+                            <option value="Cuci tangan">Cuci tangan</option>
+                            <option value="Sanitasi Mesin dan alat">Sanitasi Mesin dan alat</option>
+                            <option value="Foot Basin">Foot Basin</option>
+                            <option value="Hand Basin">Hand Basin</option>
+                        </select>
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" name="keterangan[<?= $i ?>]" value="Sesuai">
+                  </td>
+                  <td><input type="text" name="tindakan[]" class="form-control form-control-sm"></td>
+                  <td><input type="text" name="verifikasi[]" class="form-control form-control-sm"></td>
+              </tr>
+          <?php endforeach; ?>
+      </tbody>
+  </table>
+</div>
 
-  <div class="form-group mt-3">
+<div class="form-group mt-3">
     <label class="font-weight-bold">Catatan</label>
     <textarea name="catatan" rows="3" class="form-control" placeholder="Tulis catatan jika ada..."></textarea>
 </div>

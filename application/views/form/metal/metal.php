@@ -36,9 +36,9 @@
                             <th>Pukul</th>
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
-                            <th>Check ke-1</th>
-                            <th>Check ke-2</th>
-                            <th>Check ke-3</th>
+                            <th>Fe</th>
+                            <th>Non Fe</th>
+                            <th>SUS 304</th>
                             <th>Supervisor</th>
                             <th style="text-align:center;">Action</th>
                         </tr>
@@ -61,47 +61,59 @@
                                 <td><?= $val->nama_produk; ?></td>
                                 <td><?= $val->kode_produksi; ?></td>
                                 <td class="text-center">
-                                    <?= ($val->fe_d || $val->nonfe_d || $val->sus_d) ? '✅' : '❌' ?>
-                                </td>
-                                <td class="text-center">
-                                    <?= ($val->fe_t || $val->nonfe_t || $val->sus_t) ? '✅' : '❌' ?>
-                                </td>
-                                <td class="text-center">
-                                    <?= ($val->fe_b || $val->nonfe_b || $val->sus_b) ? '✅' : '❌' ?>
-                                </td>
+                                  <?= (
+                                    $val->fe_d === 'terdeteksi' &&
+                                    $val->nonfe_d === 'terdeteksi' &&
+                                    $val->sus_d === 'terdeteksi'
+                                ) ? '✅' : '❌' ?>
+                            </td>
+                            <td class="text-center">
+                              <?= (
+                                $val->fe_t === 'terdeteksi' &&
+                                $val->nonfe_t === 'terdeteksi' &&
+                                $val->sus_t === 'terdeteksi'
+                            ) ? '✅' : '❌' ?>
+                        </td>
+                        <td class="text-center">
+                          <?= (
+                            $val->fe_b === 'terdeteksi' &&
+                            $val->nonfe_b === 'terdeteksi' &&
+                            $val->sus_b === 'terdeteksi'
+                        ) ? '✅' : '❌' ?>
+                    </td>
 
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('metal/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Update</span>
-                                    </a>
-                                    <a href="<?= base_url('metal/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
-                                        <span class="text">Detail</span>
-                                    </a>
-                                    <a href="<?= base_url('metal/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <span class="text">Delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
+                    <td class="text-center">
+                        <?php
+                        if ($val->status_spv == 0) {
+                            echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                        } elseif ($val->status_spv == 1) {
+                            echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                        } elseif ($val->status_spv == 2) {
+                            echo '<span style="color: red; font-weight: bold;">Revision</span>';
                         }
                         ?>
-                    </tbody>
-                </table>
-            </form>
-        </div>
-    </div>
+                    </td>
+                    <td class="text-center">
+                        <a href="<?= base_url('metal/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                            <span class="text">Update</span>
+                        </a>
+                        <a href="<?= base_url('metal/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
+                            <span class="text">Detail</span>
+                        </a>
+                        <a href="<?= base_url('metal/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                            <span class="text">Delete</span>
+                        </a>
+                    </td>
+                </tr>
+                <?php 
+                $no++;
+            }
+            ?>
+        </tbody>
+    </table>
+</form>
+</div>
+</div>
 </div>
 </div>
 </div>

@@ -64,7 +64,7 @@ class Metal extends CI_Controller {
 
 		$this->load->view('partials/head', $data);
 		$this->load->view('form/metal/metal-tambah');
-		$this->load->view('partials/footer');
+		$this->load->view('partials/footer'); 
 	}
 
 	public function edit($uuid)
@@ -339,26 +339,26 @@ class Metal extends CI_Controller {
 
 		foreach ($metal_data as $metal) {
 			$formattedTime = date('H:i', strtotime($metal->time));
-
-			$pdf->Cell(14, 5, $formattedTime, 1, 0, 'C');
-			$pdf->Cell(50, 5, $metal->nama_produk.' - '. $metal->kode_produksi, 1, 0, 'L');
-			$pdf->Cell(12, 5, $metal->no_program, 1, 0, 'C');
-			$pdf->Cell(12, 5, $metal->deteksi_ng, 1, 0, 'C');
+			$pdf->SetFont('times', '', 8);
+			$pdf->Cell(14, 6, $formattedTime, 1, 0, 'C');
+			$pdf->Cell(50, 6, $metal->nama_produk.' - '. $metal->kode_produksi, 1, 0, 'L');
+			$pdf->Cell(12, 6, $metal->no_program, 1, 0, 'C');
+			$pdf->Cell(12, 6, $metal->deteksi_ng, 1, 0, 'C');
 
 			$pdf->SetFont('dejavusans', '', 8);	
-			$pdf->Cell(6, 5, ($metal->fe_d === null || $metal->fe_d === '') ? '-' : (($metal->fe_d == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(7, 5, ($metal->nonfe_d === null || $metal->nonfe_d === '') ? '-' : (($metal->nonfe_d == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(7, 5, ($metal->sus_d === null || $metal->sus_d === '') ? '-' : (($metal->sus_d == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(6, 5, ($metal->fe_t === null || $metal->fe_t === '') ? '-' : (($metal->fe_t == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(7, 5, ($metal->nonfe_t === null || $metal->nonfe_t === '') ? '-' : (($metal->nonfe_t == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(7, 5, ($metal->sus_t === null || $metal->sus_t === '') ? '-' : (($metal->sus_t == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(6, 5, ($metal->fe_b === null || $metal->fe_b === '') ? '-' : (($metal->fe_b == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(7, 5, ($metal->nonfe_b === null || $metal->nonfe_b === '') ? '-' : (($metal->nonfe_b == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->Cell(7, 5, ($metal->sus_b === null || $metal->sus_b === '') ? '-' : (($metal->sus_b == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
-			$pdf->SetFont('times', '', 7);
-			$pdf->Cell(20, 5, !empty($metal->keterangan) ? $metal->keterangan : '-', 1, 0, 'C');
-			$pdf->Cell(13, 5, $metal->username_1, 1, 0, 'C');
-			$pdf->Cell(13, 5, $metal->nama_produksi_metal, 1, 0, 'C');
+			$pdf->Cell(6, 6, ($metal->fe_d === null || $metal->fe_d === '') ? '-' : (($metal->fe_d == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(7, 6, ($metal->nonfe_d === null || $metal->nonfe_d === '') ? '-' : (($metal->nonfe_d == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(7, 6, ($metal->sus_d === null || $metal->sus_d === '') ? '-' : (($metal->sus_d == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(6, 6, ($metal->fe_t === null || $metal->fe_t === '') ? '-' : (($metal->fe_t == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(7, 6, ($metal->nonfe_t === null || $metal->nonfe_t === '') ? '-' : (($metal->nonfe_t == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(7, 6, ($metal->sus_t === null || $metal->sus_t === '') ? '-' : (($metal->sus_t == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(6, 6, ($metal->fe_b === null || $metal->fe_b === '') ? '-' : (($metal->fe_b == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(7, 6, ($metal->nonfe_b === null || $metal->nonfe_b === '') ? '-' : (($metal->nonfe_b == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->Cell(7, 6, ($metal->sus_b === null || $metal->sus_b === '') ? '-' : (($metal->sus_b == 'terdeteksi') ? '✔' : '✘'), 1, 0, 'C');
+			$pdf->SetFont('times', '', 8);
+			$pdf->Cell(20, 6, !empty($metal->keterangan) ? $metal->keterangan : '-', 1, 0, 'C');
+			$pdf->Cell(13, 6, $metal->username_1, 1, 0, 'C');
+			$pdf->Cell(13, 6, $metal->nama_produksi_metal, 1, 0, 'C');
 			$pdf->Ln();
 		}
 

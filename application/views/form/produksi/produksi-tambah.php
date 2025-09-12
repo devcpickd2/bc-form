@@ -55,20 +55,16 @@
 
                 <div class="col-sm-4">
                     <label class="form-label font-weight-bold">Kode Produksi</label>
-                    <input type="text" name="kode_produksi" class="form-control <?= form_error('kode_produksi') ? 'invalid' : '' ?>" placeholder="Masukkan Kode Produksi" value="<?= set_value('kode_produksi', $kode_produksi_terakhir); ?>">
-
+                    <input type="text" name="kode_produksi" class="form-control <?= form_error('kode_produksi') ? 'invalid' : '' ?>" value="<?= set_value('kode_produksi', $kode_produksi_terakhir); ?>">
                     <div class="invalid-feedback <?= !empty(form_error('kode_produksi')) ? 'd-block' : '' ; ?>">
                         <?= form_error('kode_produksi') ?>
                     </div>
-
                     <?php if (!empty($kode_produksi_terakhir)): ?>
                         <small class="form-text text-muted mt-1">Kode terakhir hari ini: <strong class="text-danger"><?= $kode_produksi_terakhir ?></strong></small>
                     <?php else: ?>
                         <small class="form-text text-muted mt-1">Belum ada kode produksi hari ini</small>
                     <?php endif; ?>
                 </div>
-
-
             </div>
             <div class="row">
                 <div class="col">
