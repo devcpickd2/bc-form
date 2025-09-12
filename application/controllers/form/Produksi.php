@@ -59,7 +59,10 @@ class Produksi extends CI_Controller {
 		}
 
 		$kode_produksi_terakhir = $this->produksi_model->getLastKodeProduksiHariIni();
-		$produk_list = $this->produk_model->get_all_produk();
+		$plant = $this->session->userdata('plant');
+		$produk_list = $this->produk_model->get_all_produk_by_plant($plant);
+
+		// $produk_list = $this->produk_model->get_all_produk();
 
 		$data = array(
 			'active_nav' => 'produksi',
@@ -384,7 +387,7 @@ class Produksi extends CI_Controller {
 	}
 
 
-	public function status($uuid)
+	public function status($uuid) 
 	{
 		$rules = $this->produksi_model->rules_verifikasi();
 		$this->form_validation->set_rules($rules);
@@ -451,23 +454,27 @@ class Produksi extends CI_Controller {
 
 	public function cetak()
 	{
-		$selected_items = $this->input->post('checkbox'); 
+    // Ambil tanggal dan nama produk dari form
+		$tanggal = $this->input->post('tanggal');
+		$nama_produk = $this->input->post('nama_produk');
 
-		log_message('debug', 'UUID yang dipilih: ' . print_r($selected_items, true));
+		log_message('debug', 'Tanggal cetak: ' . $tanggal);
+		log_message('debug', 'Nama produk: ' . $nama_produk);
 
-		if (empty($selected_items)) {
-			show_error('Tidak ada item yang dipilih', 404);
+		if (empty($tanggal) || empty($nama_produk)) {
+			show_error('Tanggal dan nama produk harus diisi', 404);
 		}
 
-		$produksi_data = $this->produksi_model->get_by_uuid_produksi($selected_items);
-
-		$produksi_data_verif = $this->produksi_model->get_by_uuid_produksi_verif($selected_items);
+		$produksi_data = $this->produksi_model->get_by_uuid_produksi($tanggal, $nama_produk);
+		$produksi_data_verif = $this->produksi_model->get_by_uuid_produksi_verif($tanggal, $nama_produk);
 
 		$data['produksi'] = $produksi_data_verif;
 
-		if (empty($produksi_data)) {
-			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
+		if (!$produksi_data || !$produksi_data_verif) {
+			$this->session->set_flashdata('error_msg', 'Data tidak ditemukan untuk tanggal yang dipilih.');
+			redirect('produksi/verifikasi'); 
 		}
+
 		$this->load->model('pegawai_model');
 		$nama_qc = $this->pegawai_model->get_nama_lengkap($data['produksi']->username);
 		$nama_prod = $this->pegawai_model->get_nama_lengkap($data['produksi']->nama_produksi);
@@ -477,733 +484,746 @@ class Produksi extends CI_Controller {
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
 		$pdf->setPrintHeader(false); 
-		$pdf->SetMargins(9, 10, 8);
 		$pdf->AddPage();
-		$pdf->SetFont('times', 'B', 13);
 
-		$logo_path = FCPATH . 'assets/img/logo.jpg';
-		if (file_exists($logo_path)) {
-			$pdf->Image($logo_path, 10, 10, 35);
-		} else {
-			$pdf->Write(7, "Logo tidak ditemukan\n");
-		}
+		$maxColumnsPerPage = 4;
+		$chunks = array_chunk($produksi_data, $maxColumnsPerPage);
 
-		$pdf->Write(11, "\n");
-		$pdf->MultiCell(0, 5, 'VERIFIKASI PROSES PRODUKSI', 0, 'C');
-		$pdf->Ln(5);
+		foreach ($chunks as $chunkIndex => $chunk) {
+			if ($chunkIndex > 0) {
+				$pdf->AddPage();
+			}
 
-		setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
-		$tanggal = $data['produksi']->date;
-		$date = new DateTime($tanggal);
-		$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
-		$formatted_date2 = strftime('%d %B %Y', $date->getTimestamp());
+			$pdf->SetMargins(9, 10, 8);
+			$pdf->SetFont('times', 'B', 13);
 
-		$pdf->SetFont('times', '', 8);
-		$pdf->SetX(8);
-		$pdf->Write(0, 'Tanggal: ' . $formatted_date);
-		$pdf->SetX($pdf->GetX() + 10);
-		$pdf->Write(0, 'Shift: ' . $data['produksi']->shift);
-		$pdf->SetX($pdf->GetX() + 10);
-		$pdf->Write(0, 'Produk: ' . $data['produksi']->nama_produk);
-		$pdf->Ln(4);
+			$logo_path = FCPATH . 'assets/img/logo.jpg';
+			if (file_exists($logo_path)) {
+				$pdf->Image($logo_path, 10, 10, 35);
+			} else {
+				$pdf->Write(7, "Logo tidak ditemukan\n");
+			}
 
-		$pdf->Cell(35, 4, 'Jenis Produk', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->nama_produk, 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
+			$pdf->Write(11, "\n");
+			$pdf->MultiCell(0, 5, 'VERIFIKASI PROSES PRODUKSI', 0, 'C');
+			$pdf->Ln(5);
 
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Kode Produksi', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
+			setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
+			$tanggal = $data['produksi']->date;
+			$date = new DateTime($tanggal);
+			$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
+			$formatted_date2 = strftime('%d %B %Y', $date->getTimestamp());
 
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->kode_produksi, 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
+			$pdf->SetFont('times', '', 8);
+			$pdf->SetX(8);
+			$pdf->Write(0, 'Tanggal: ' . $formatted_date);
+			$pdf->SetX($pdf->GetX() + 10);
+			$pdf->Write(0, 'Shift: ' . $data['produksi']->shift);
+			$pdf->SetX($pdf->GetX() + 10);
+			$pdf->Write(0, 'Produk: ' . $data['produksi']->nama_produk);
+			$pdf->Ln(4);
 
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(35, 4, 'Parameter', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, 'Kode', 1, 0, 'C');
-			$pdf->Cell(10, 4, 'Kg', 1, 0, 'C');
-			$pdf->Cell(10, 4, 'Sens', 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, 'Kode', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, 'Kg', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, 'Sens', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(195, 4, 'Raw Material', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Tepung Terigu', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, $item->tegu_kode, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->tegu_berat, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->tegu_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, '', 1, 0, 'C');
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Tapioka Stract', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, $item->tapioka_kode, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->tapioka_berat, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->tapioka_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, '', 1, 0, 'C');
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Ragi', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, $item->ragi_kode, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->ragi_berat, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->ragi_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, '', 1, 0, 'C');
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Bread Improver', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, $item->bread_kode, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->bread_berat, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->bread_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, '', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, '', 1, 0, 'C');
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-		}
-		$pdf->Ln();
-
-		$maxColumns = 4;
-		$selectedProduksi = array_slice($produksi_data, 0, $maxColumns);
-
-		$premixColumns = [];
-		foreach ($selectedProduksi as $item) {
-			$premixData = json_decode($item->premix, true);
-			$premixColumns[] = is_array($premixData) ? $premixData : [];
-		}
-
-		$maxRows = 0;
-		foreach ($premixColumns as $col) {
-			$maxRows = max($maxRows, count($col));
-		}
-
-		for ($row = 0; $row < $maxRows; $row++) {
-			$pdf->Cell(35, 4, ($row === 0) ? 'Premix' : '', 1, 0, 'L');
-
-			for ($col = 0; $col < $maxColumns; $col++) {
-				$kode  = $premixColumns[$col][$row]['kode']  ?? '';
-				$berat = $premixColumns[$col][$row]['berat'] ?? '';
-				$sens  = $premixColumns[$col][$row]['sens']  ?? '';
-
-				$pdf->Cell(20, 4, $kode, 1, 0, 'C');
-				$pdf->Cell(10, 4, $berat, 1, 0, 'C');
-				$pdf->Cell(10, 4, $sens, 1, 0, 'C');
+			$pdf->Cell(35, 4, 'Jenis Produk', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->nama_produk, 1, 0, 'C');
+			}
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
 			}
 
 			$pdf->Ln();
-		}
-
-		$pdf->Cell(35, 4, 'Shortening', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, $item->shortening_kode, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->shortening_berat, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->shortening_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, '', 1, 0, 'C');
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Chill Water (15 ± 1°C)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(20, 4, $item->chill_water_kode, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->chill_water_berat, 1, 0, 'C');
-			$pdf->Cell(10, 4, $item->chill_water_sens, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(20, 4, '', 1, 0, 'C');
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-			$pdf->Cell(10, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Mixing Dough', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Waktu Mixing (11 Menit)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->mix_dough_waktu_1, 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Hasil & Nomor Mesin', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$hasil = ($item->mix_dough_hasil == 1) ? 'Oke' : 'Tidak Oke';
-			$pdf->Cell(40, 4, $hasil . ' / ' . $item->mix_dough_mesin, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Dough Cutting(630-670 g)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->mix_dough_cutting, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Suhu & RH Ruang', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->mix_dough_suhu_ruang. ' / '. $item->mix_dough_rh_ruang, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Suhu Adonan (29-31°C)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->mix_dough_suhu_adonan, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Fermentasi', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Suhu (°C)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->fermen_suhu, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'RH (%)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->fermen_rh, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Jam Mulai', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$jam_mulai = date('H:i', strtotime($item->fermen_jam_mulai));
-			$pdf->Cell(40, 4, $jam_mulai, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Jam Selesai', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$jam_selesai = date('H:i', strtotime($item->fermen_jam_selesai));
-			$pdf->Cell(40, 4, $jam_selesai, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Lama Proses', 1, 0, 'L');
-
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->fermen_lama_proses, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Electric Baking', 1, 0, 'L');
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Suhu Produk(80-97°C)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->electric_baking_suhu, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'No.Mesin & Expand Roti(%)', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->electric_baking_mesin. ' / '. $item->electric_baking_expand, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Sensori', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Kematangan', 1, 0, 'L');
-
-		$pdf->SetFont('dejavusans', '', 7);	
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->sens_kematangan == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Rasa', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);	
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->sens_rasa == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Aroma', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);	
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->sens_aroma == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Tekstur', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);	
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->sens_tekstur == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Warna', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);	
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->sens_warna == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln(6);
-		$pdf->SetFont('times', '', 8);
-		$tanggal_stall = $data['produksi']->date_stall;
-		$stall = new DateTime($tanggal_stall);
-		$formatted_stall = strftime('%A, %d %B %Y', $stall->getTimestamp());
-		$pdf->SetX(8);
-		$pdf->Write(0, 'Tanggal: ' . $formatted_stall);
-		$pdf->SetX($pdf->GetX() + 10);
-		$pdf->Write(0, 'Shift: ' . $data['produksi']->shift_pack);
-		$pdf->SetX($pdf->GetX() + 10);
-		$pdf->Write(0, 'Produk: ' . $data['produksi']->nama_produk);
-		$pdf->Ln(4);
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Stalling', 1, 0, 'L');
-		$pdf->Ln();
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Jam Mulai', 1, 0, 'L');
-		$dataCount = count($produksi_data);
-		$emptyColumns = 4 - $dataCount;
-
-		foreach ($produksi_data as $item) {
-			$jamMulai = date('H:i', strtotime($item->stall_jam_mulai));
-			$pdf->Cell(40, 4, $jamMulai, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-
-		$pdf->Cell(35, 4, 'Jam Berhenti', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$jamBerhenti = date('H:i', strtotime($item->stall_jam_berhenti));
-			$pdf->Cell(40, 4, $jamBerhenti, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Kadar Air 32-34(%)', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->stall_kadar_air, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Drying', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-
-		$pdf->Cell(35, 4, 'Suhu (°C)', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->dry_suhu, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Speed Rotasi (4-6 RPM)', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->dry_rotasi, 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Kadar Air 4-8(%)', 1, 0, 'L');
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, $item->dry_kadar_air, 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Produk', 1, 0, 'L');
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Hasil', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);    
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->produk_hasil == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Rasa', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);    
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->produk_rasa == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-		$pdf->Cell(35, 4, 'Aroma', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);    
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->produk_aroma == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-
-		$pdf->Cell(35, 4, 'Tekstur', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);    
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->produk_tekstur == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C');
-		}
-
-		$pdf->SetFont('times', '', 7);
-		$pdf->Ln();
-
-		$pdf->Cell(35, 4, 'Warna', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);    
-		foreach ($produksi_data as $item) {
-			$pdf->Cell(40, 4, ($item->produk_warna == 'oke') ? '✔' : '✘', 1, 0, 'C');
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', 'B', 7);
-		$pdf->Cell(195, 4, 'Packing Area', 1, 0, 'L');
-		$pdf->Ln();
-
-		$pdf->SetFont('times', '', 7);
-		$rowHeight = 6;
-		$totalHeight = $rowHeight * 3;
-		$pdf->MultiCell(35, $rowHeight, 'Nama Produk', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
-		$pdf->Ln();
-		$pdf->MultiCell(35, $rowHeight, 'Kode Kemasan', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
-		$pdf->Ln();
-		$pdf->MultiCell(35, $rowHeight, 'Best Before', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
-		$pdf->Ln();
-
-		$pdf->SetY($pdf->GetY() - $totalHeight); 
-		$pdf->SetX(44); 
-
-		foreach ($produksi_data as $item) {
-			$imagePath = FCPATH . 'uploads/' . $item->gambar_kode_kemasan;
-			if (file_exists($imagePath)) {
-				$x = $pdf->GetX();
-				$y = $pdf->GetY();
-				$pdf->MultiCell(40, $totalHeight, '', 1, 'C', false, 0); 
-				$pdf->Image($imagePath, $x + 5, $y + 1.5, 30, 14);
-			} else {
-				$pdf->MultiCell(40, $totalHeight, 'Tidak ada gambar', 1, 'C', false, 0);
+			$pdf->Cell(35, 4, 'Kode Produksi', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->kode_produksi, 1, 0, 'C');
 			}
-		}
-
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->MultiCell(40, $totalHeight, '', 1, 'C', false, 0);
-		}
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(35, 4, 'Kondisi Kemasan', 1, 0, 'L');
-		$pdf->SetFont('dejavusans', '', 7);  
-		foreach ($produksi_data as $item) {
-			$kondisi = ($item->packing_kondisi_kemasan == 1) ? '✔' : '✘';
-			$pdf->Cell(40, 4, $kondisi, 1, 0, 'C');
-		}
-		for ($i = 0; $i < $emptyColumns; $i++) {
-			$pdf->Cell(40, 4, '', 1, 0, 'C'); 
-		}
-
-		$pdf->Ln();
-		$pdf->SetFont('times', '', 7);
-		$tanggal_update = $data['produksi']->tgl_update;
-		$update = new DateTime($tanggal_update); 
-		$update_tanggal = $update->format('d-m-Y | H:i');
-
-		$tanggal_update = $data['produksi']->tgl_update_prod;
-		$update_prod = new DateTime($tanggal_update); 
-		$update_tanggal_prod = $update_prod->format('d-m-Y | H:i');
-
-		$status_verifikasi = true;
-		foreach ($produksi_data as $item) {
-			if ($item->status_spv != '1') {
-				$status_verifikasi = false;
-				break; 
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
 			}
-		}
 
-		$pdf->SetY($pdf->GetY() + 2); 
-		$pdf->SetFont('dejavusans', '', 5);
-		$pdf->MultiCell(0, 7, "✓ : Ok\n✗ : Tidak Ok", 0, 'L');
-
-		$pdf->SetY($pdf->GetY() + 2); 
-		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L'); 
-		foreach ($produksi_data as $item) {
-			if (!empty($item->catatan)) {
-				$pdf->Cell(8, 0, '', 0, 0, 'L'); 
-				$pdf->Cell(200, 0, ' - ' . $item->catatan, 0, 1, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(35, 4, 'Parameter', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, 'Kode', 1, 0, 'C');
+				$pdf->Cell(10, 4, 'Kg', 1, 0, 'C');
+				$pdf->Cell(10, 4, 'Sens', 1, 0, 'C');
 			}
-		}
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, 'Kode', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, 'Kg', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, 'Sens', 1, 0, 'C');
+			}
 
-		$y_after_keterangan = $pdf->GetY();
+			$pdf->Ln();
+			$pdf->Cell(195, 4, 'Raw Material', 1, 0, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Tepung Terigu', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
 
-		if ($status_verifikasi) {
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, $item->tegu_kode, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->tegu_berat, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->tegu_sens, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, '', 1, 0, 'C');
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Tapioka Stract', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, $item->tapioka_kode, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->tapioka_berat, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->tapioka_sens, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, '', 1, 0, 'C');
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Ragi', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, $item->ragi_kode, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->ragi_berat, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->ragi_sens, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, '', 1, 0, 'C');
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Bread Improver', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, $item->bread_kode, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->bread_berat, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->bread_sens, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, '', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, '', 1, 0, 'C');
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+			}
+			$pdf->Ln();
+
+			$maxColumns = 4;
+			$selectedProduksi = array_slice($chunk, 0, $maxColumns);
+
+			$premixColumns = [];
+			foreach ($selectedProduksi as $item) {
+				$premixData = json_decode($item->premix, true);
+				$premixColumns[] = is_array($premixData) ? $premixData : [];
+			}
+
+			$maxRows = 0;
+			foreach ($premixColumns as $col) {
+				$maxRows = max($maxRows, count($col));
+			}
+
+			$pdf->Cell(195, 4, 'Premix', 1, 0, 'L');
+			$pdf->Ln();
+			for ($row = 0; $row < $maxRows; $row++) {
+				$nama_premix = $premixColumns[0][$row]['nama_premix'] ?? '';
+				$pdf->Cell(35, 4, $nama_premix, 1, 0, 'L');
+
+				for ($col = 0; $col < $maxColumns; $col++) {
+					$kode  = $premixColumns[$col][$row]['kode']  ?? '';
+					$berat = $premixColumns[$col][$row]['berat'] ?? '';
+					$sens  = $premixColumns[$col][$row]['sens']  ?? '';
+
+					$pdf->Cell(20, 4, $kode, 1, 0, 'C');
+					$pdf->Cell(10, 4, $berat, 1, 0, 'C');
+					$pdf->Cell(10, 4, $sens, 1, 0, 'C');
+				}
+
+				$pdf->Ln();
+			}
+
+			$pdf->Cell(35, 4, 'Shortening', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, $item->shortening_kode, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->shortening_berat, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->shortening_sens, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, '', 1, 0, 'C');
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Chill Water (15 ± 1°C)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(20, 4, $item->chill_water_kode, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->chill_water_berat, 1, 0, 'C');
+				$pdf->Cell(10, 4, $item->chill_water_sens, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(20, 4, '', 1, 0, 'C');
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+				$pdf->Cell(10, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Mixing Dough', 1, 0, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Waktu Mixing (11 Menit)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->mix_dough_waktu_1, 1, 0, 'C');
+			}
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Hasil & Nomor Mesin', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$hasil = ($item->mix_dough_hasil == 1) ? 'Oke' : 'Tidak Oke';
+				$pdf->Cell(40, 4, $hasil . ' / ' . $item->mix_dough_mesin, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Dough Cutting(630-670 g)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->mix_dough_cutting, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Suhu & RH Ruang', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->mix_dough_suhu_ruang. ' / '. $item->mix_dough_rh_ruang, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Suhu Adonan (29-31°C)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->mix_dough_suhu_adonan, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Fermentasi', 1, 0, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Suhu (°C)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->fermen_suhu, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'RH (%)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->fermen_rh, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Jam Mulai', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$jam_mulai = date('H:i', strtotime($item->fermen_jam_mulai));
+				$pdf->Cell(40, 4, $jam_mulai, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Jam Selesai', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$jam_selesai = date('H:i', strtotime($item->fermen_jam_selesai));
+				$pdf->Cell(40, 4, $jam_selesai, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Lama Proses', 1, 0, 'L');
+
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->fermen_lama_proses, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Electric Baking', 1, 0, 'L');
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Suhu Produk(80-97°C)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->electric_baking_suhu, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'No.Mesin & Expand Roti(%)', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->electric_baking_mesin. ' / '. $item->electric_baking_expand, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Sensori', 1, 0, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Kematangan', 1, 0, 'L');
+
+			$pdf->SetFont('dejavusans', '', 7);	
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->sens_kematangan == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Rasa', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);	
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->sens_rasa == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Aroma', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);	
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->sens_aroma == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Tekstur', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);	
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->sens_tekstur == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Warna', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);	
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
+
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->sens_warna == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln(6);
 			$pdf->SetFont('times', '', 8);
-			$pdf->SetTextColor(0, 0, 0);
-			$y_verifikasi = $y_after_keterangan;
+			$tanggal_stall = $data['produksi']->date_stall;
+			$stall = new DateTime($tanggal_stall);
+			$formatted_stall = strftime('%A, %d %B %Y', $stall->getTimestamp());
+			$pdf->SetX(8);
+			$pdf->Write(0, 'Tanggal: ' . $formatted_stall);
+			$pdf->SetX($pdf->GetX() + 10);
+			$pdf->Write(0, 'Shift: ' . $data['produksi']->shift_pack);
+			$pdf->SetX($pdf->GetX() + 10);
+			$pdf->Write(0, 'Produk: ' . $data['produksi']->nama_produk);
+			$pdf->Ln(4);
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Stalling', 1, 0, 'L');
+			$pdf->Ln();
 
-			$pdf->SetXY(25, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Jam Mulai', 1, 0, 'L');
+			$dataCount = count($chunk);
+			$emptyColumns = 4 - $dataCount;
 
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8);
-			$pdf->Cell(35, 5, $nama_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8);
-			$pdf->Cell(67, 5, 'QC Inspector', 0, 0, 'C');
+			foreach ($chunk as $item) {
+				$jamMulai = date('H:i', strtotime($item->stall_jam_mulai));
+				$pdf->Cell(40, 4, $jamMulai, 1, 0, 'C');
+			}
 
-			$pdf->SetXY(90, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
 
-			if (!empty($data['produksi']->nama_produksi)) {
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(35, 5, $nama_prod, 0, 1, 'C');
+			$pdf->Ln();
 
+			$pdf->Cell(35, 4, 'Jam Berhenti', 1, 0, 'L');
+			foreach ($chunk as $item) {
+				$jamBerhenti = date('H:i', strtotime($item->stall_jam_berhenti));
+				$pdf->Cell(40, 4, $jamBerhenti, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Kadar Air 32-34(%)', 1, 0, 'L');
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->stall_kadar_air, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Drying', 1, 0, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+
+			$pdf->Cell(35, 4, 'Suhu (°C)', 1, 0, 'L');
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->dry_suhu, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Speed Rotasi (4-6 RPM)', 1, 0, 'L');
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->dry_rotasi, 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Kadar Air 4-8(%)', 1, 0, 'L');
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, $item->dry_kadar_air, 1, 0, 'C');
+			}
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Produk', 1, 0, 'L');
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Hasil', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);    
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->produk_hasil == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Rasa', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);    
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->produk_rasa == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+			$pdf->Cell(35, 4, 'Aroma', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);    
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->produk_aroma == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+
+			$pdf->Cell(35, 4, 'Tekstur', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);    
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->produk_tekstur == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C');
+			}
+
+			$pdf->SetFont('times', '', 7);
+			$pdf->Ln();
+
+			$pdf->Cell(35, 4, 'Warna', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);    
+			foreach ($chunk as $item) {
+				$pdf->Cell(40, 4, ($item->produk_warna == 'oke') ? '✔' : '✘', 1, 0, 'C');
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', 'B', 7);
+			$pdf->Cell(195, 4, 'Packing Area', 1, 0, 'L');
+			$pdf->Ln();
+
+			$pdf->SetFont('times', '', 7);
+			$rowHeight = 6;
+			$totalHeight = $rowHeight * 3;
+			$pdf->MultiCell(35, $rowHeight, 'Nama Produk', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+			$pdf->Ln();
+			$pdf->MultiCell(35, $rowHeight, 'Kode Kemasan', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+			$pdf->Ln();
+			$pdf->MultiCell(35, $rowHeight, 'Best Before', 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+			$pdf->Ln();
+
+			$pdf->SetY($pdf->GetY() - $totalHeight); 
+			$pdf->SetX(44); 
+
+			foreach ($chunk as $item) {
+				$imagePath = FCPATH . 'uploads/' . $item->gambar_kode_kemasan;
+				if (file_exists($imagePath)) {
+					$x = $pdf->GetX();
+					$y = $pdf->GetY();
+					$pdf->MultiCell(40, $totalHeight, '', 1, 'C', false, 0); 
+					$pdf->Image($imagePath, $x + 5, $y + 1.5, 30, 14);
+				} else {
+					$pdf->MultiCell(40, $totalHeight, 'Tidak ada gambar', 1, 'C', false, 0);
+				}
+			}
+
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->MultiCell(40, $totalHeight, '', 1, 'C', false, 0);
+			}
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$pdf->Cell(35, 4, 'Kondisi Kemasan', 1, 0, 'L');
+			$pdf->SetFont('dejavusans', '', 7);  
+			foreach ($chunk as $item) {
+				$kondisi = ($item->packing_kondisi_kemasan == 1) ? '✔' : '✘';
+				$pdf->Cell(40, 4, $kondisi, 1, 0, 'C');
+			}
+			for ($i = 0; $i < $emptyColumns; $i++) {
+				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
+			}
+
+			$pdf->Ln();
+			$pdf->SetFont('times', '', 7);
+			$tanggal_update = $data['produksi']->tgl_update;
+			$update = new DateTime($tanggal_update); 
+			$update_tanggal = $update->format('d-m-Y | H:i');
+
+			$tanggal_update = $data['produksi']->tgl_update_prod;
+			$update_prod = new DateTime($tanggal_update); 
+			$update_tanggal_prod = $update_prod->format('d-m-Y | H:i');
+
+			$status_verifikasi = true;
+			foreach ($produksi_data as $item) {
+				if ($item->status_spv != '1') {
+					$status_verifikasi = false;
+					break; 
+				}
+			}
+
+			$pdf->SetY($pdf->GetY() + 2); 
+			$pdf->SetFont('dejavusans', '', 5);
+			$pdf->MultiCell(0, 7, "✓ : Ok\n✗ : Tidak Ok", 0, 'L');
+
+			$pdf->SetY($pdf->GetY() + 2); 
+			$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L'); 
+			foreach ($produksi_data as $item) {
+				if (!empty($item->catatan)) {
+					$pdf->Cell(8, 0, '', 0, 0, 'L'); 
+					$pdf->Cell(200, 0, ' - ' . $item->catatan, 0, 1, 'L');
+				}
+			}
+
+			$y_after_keterangan = $pdf->GetY();
+
+			if ($status_verifikasi) {
 				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 15);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$pdf->SetTextColor(0, 0, 0);
+				$y_verifikasi = $y_after_keterangan;
+
+				$pdf->SetXY(25, $y_verifikasi + 5);
+				$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
+
+				$pdf->SetXY(25, $y_verifikasi + 10);
+				$pdf->SetFont('times', 'U', 8);
+				$pdf->Cell(35, 5, $nama_qc, 0, 1, 'C');
+				$pdf->SetFont('times', '', 8);
+				$pdf->Cell(67, 5, 'QC Inspector', 0, 0, 'C');
+
+				$pdf->SetXY(90, $y_verifikasi + 5);
+				$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
+				if (!empty($data['produksi']->nama_produksi)) {
+					$pdf->SetFont('times', 'U', 8);
+					$pdf->SetXY(90, $y_verifikasi + 10);
+					$pdf->Cell(35, 5, $nama_prod, 0, 1, 'C');
+
+					$pdf->SetFont('times', '', 8);
+					$pdf->SetXY(90, $y_verifikasi + 15);
+					$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				}
+
+				$pdf->SetXY(150, $y_verifikasi + 5);
+				$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
+
+				$qr_text = "Diverifikasi secara digital oleh,\n"
+				. $nama_spv . "\n"
+				. "SPV QC Bread Crumb\n"
+				. $update_tanggal;
+
+				$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(150, $y_verifikasi + 24);
+				$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+			} else {
+				$pdf->SetTextColor(255, 0, 0); 
+				$pdf->SetFont('times', '', 8);
+				$pdf->SetXY(100, $y_after_keterangan);
+				$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 			}
-
-			$pdf->SetXY(150, $y_verifikasi + 5);
-			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-
-			$qr_text = "Diverifikasi secara digital oleh,\n"
-			. $nama_spv . "\n"
-			. "SPV QC Bread Crumb\n"
-			. $update_tanggal;
-
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
-			$pdf->SetXY(150, $y_verifikasi + 24);
-			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
-		} else {
-			$pdf->SetTextColor(255, 0, 0); 
-			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(100, $y_after_keterangan);
-			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->setPrintFooter(false);
 		}
-
-		$pdf->setPrintFooter(false);
 		$filename = "Verifikasi Produksi_{$formatted_date2}.pdf";
 		$pdf->Output($filename, 'I');
 	}

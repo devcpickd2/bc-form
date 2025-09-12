@@ -7,106 +7,35 @@ class Penerimaankemasan_model extends CI_Model {
 	
 	public function rules()
 	{
-		return[
-			[
-				'field' => 'date',
-				'label' => 'Date',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'shift',
-				'label' => 'Shift',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'jenis_kemasan',
-				'label' => 'Packaging',
-				'rules' => 'required'
-			],
-			[ 
-				'field' => 'pemasok',
-				'label' => 'Supplier',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'kode_produksi',
-				'label' => 'Production Code',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'jumlah_datang',
-				'label' => 'Incoming',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'sampel',
-				'label' => 'Sample',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'jumlah_reject',
-				'label' => 'Rejected',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'warna',
-				'label' => 'Color'
-			],
-			[
-				'field' => 'panjang',
-				'label' => 'Long'
-			],
-			[
-				'field' => 'diameter',
-				'label' => 'Diameter'
-			],
-			[
-				'field' => 'lebar',
-				'label' => 'Width'
-			],
-			[
-				'field' => 'tinggi',
-				'label' => 'Height'
-			],
-			[
-				'field' => 'berat',
-				'label' => 'Weight'
-			],
-			[
-				'field' => 'delaminasi',
-				'label' => 'Delamination'
-			],
-			[
-				'field' => 'bau',
-				'label' => 'Smell'
-			],
-			[
-				'field' => 'desain',
-				'label' => 'Design'
-			],
-			[
-				'field' => 'segel',
-				'label' => 'Seal'
-			],
-			[
-				'field' => 'coa',
-				'label' => 'COA'
-			],
-			[
-				'field' => 'bukti_coa',
-				'label' => 'Evidence',
-				'rules' => 'callback_file_check'
-			],
-			[
-				'field' => 'penerimaan',
-				'label' => 'received'
-			],
-			[
-				'field' => 'keterangan',
-				'label' => 'Notes'
-			]
+		return [
+			['field' => 'date', 'label' => 'Date', 'rules' => 'required'],
+			['field' => 'shift', 'label' => 'Shift', 'rules' => 'required'],
+			['field' => 'jenis_kemasan', 'label' => 'Packaging', 'rules' => 'required'],
+			['field' => 'pemasok', 'label' => 'Supplier', 'rules' => 'required'],
+			['field' => 'jenis_mobil', 'label' => 'Transportation', 'rules' => 'required'],
+			['field' => 'no_polisi', 'label' => 'Police Number', 'rules' => 'required'],
+			['field' => 'identitas_pengantar', 'label' => 'Identity', 'rules' => 'required'],
+			['field' => 'no_po', 'label' => 'PO Number', 'rules' => 'required'],
+			['field' => 'kode_produksi', 'label' => 'Production Code', 'rules' => 'required'],
+			['field' => 'jumlah_datang', 'label' => 'Incoming', 'rules' => 'required'],
+			['field' => 'sampel', 'label' => 'Sample', 'rules' => 'required'],
+			['field' => 'jumlah_reject', 'label' => 'Rejected', 'rules' => 'required'],
+			['field' => 'warna', 'label' => 'Color'],
+			['field' => 'panjang', 'label' => 'Long'],
+			['field' => 'diameter', 'label' => 'Diameter'],
+			['field' => 'lebar', 'label' => 'Width'],
+			['field' => 'tinggi', 'label' => 'Height'],
+			['field' => 'berat', 'label' => 'Weight'],
+			['field' => 'delaminasi', 'label' => 'Delamination'],
+			['field' => 'bau', 'label' => 'Smell'],
+			['field' => 'desain', 'label' => 'Design'],
+			['field' => 'segel', 'label' => 'Seal'],
+			['field' => 'coa', 'label' => 'COA'],
+			['field' => 'bukti_coa', 'label' => 'Evidence', 'rules' => 'callback_file_check'],
+			['field' => 'penerimaan', 'label' => 'received'],
+			['field' => 'keterangan', 'label' => 'Notes']
 		];
-	}
+	} 
 
 	public function insert($file_name)
 	{
@@ -117,6 +46,10 @@ class Penerimaankemasan_model extends CI_Model {
 		$shift = $this->input->post('shift');
 		$jenis_kemasan = $this->input->post('jenis_kemasan');
 		$pemasok = $this->input->post('pemasok');
+		$jenis_mobil = $this->input->post('jenis_mobil');
+		$no_polisi = $this->input->post('no_polisi');
+		$identitas_pengantar = $this->input->post('identitas_pengantar');
+		$no_po = $this->input->post('no_po');
 		$kode_produksi = $this->input->post('kode_produksi');
 		$jumlah_datang = $this->input->post('jumlah_datang');
 		$sampel = $this->input->post('sampel');
@@ -136,6 +69,12 @@ class Penerimaankemasan_model extends CI_Model {
 		$keterangan = $this->input->post('keterangan');
 		$status_spv = "0";
 
+		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
+		if(empty($kondisi_mobil)) {
+			$kondisi_mobil = ['Tidak Sesuai'];
+		}
+		$kondisi_mobil_str = implode(", ", $kondisi_mobil);
+
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
@@ -144,6 +83,10 @@ class Penerimaankemasan_model extends CI_Model {
 			'shift' => $shift,
 			'jenis_kemasan' => $jenis_kemasan,
 			'pemasok' => $pemasok,
+			'jenis_mobil' => $jenis_mobil,
+			'no_polisi' => $no_polisi,
+			'identitas_pengantar' => $identitas_pengantar,
+			'no_po' => $no_po,
 			'kode_produksi' => $kode_produksi,
 			'jumlah_datang' => $jumlah_datang,
 			'sampel' => $sampel,
@@ -162,12 +105,12 @@ class Penerimaankemasan_model extends CI_Model {
 			'bukti_coa' => $file_name,
 			'penerimaan' => $penerimaan,
 			'keterangan' => $keterangan,
+			'kondisi_mobil' => $kondisi_mobil_str,
 			'status_spv' => $status_spv
 		);
 
 		$this->db->insert('penerimaan_kemasan', $data);
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		return ($this->db->affected_rows() > 0) ? true : false;
 	}
 
 	public function update($uuid, $file_name)
@@ -177,6 +120,10 @@ class Penerimaankemasan_model extends CI_Model {
 		$shift = $this->input->post('shift');
 		$jenis_kemasan = $this->input->post('jenis_kemasan');
 		$pemasok = $this->input->post('pemasok');
+		$jenis_mobil = $this->input->post('jenis_mobil');
+		$no_polisi = $this->input->post('no_polisi');
+		$identitas_pengantar = $this->input->post('identitas_pengantar');
+		$no_po = $this->input->post('no_po');
 		$kode_produksi = $this->input->post('kode_produksi');
 		$jumlah_datang = $this->input->post('jumlah_datang');
 		$sampel = $this->input->post('sampel');
@@ -194,6 +141,12 @@ class Penerimaankemasan_model extends CI_Model {
 		$coa = $this->input->post('coa');
 		$penerimaan = $this->input->post('penerimaan');
 		$keterangan = $this->input->post('keterangan');
+		
+		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
+		if(empty($kondisi_mobil)) {
+			$kondisi_mobil = ['Tidak Sesuai'];
+		}
+		$kondisi_mobil_str = implode(", ", $kondisi_mobil);
 
 		$data = array(
 			'username' => $username,
@@ -201,6 +154,10 @@ class Penerimaankemasan_model extends CI_Model {
 			'shift' => $shift,
 			'jenis_kemasan' => $jenis_kemasan,
 			'pemasok' => $pemasok,
+			'jenis_mobil' => $jenis_mobil,
+			'no_polisi' => $no_polisi,
+			'identitas_pengantar' => $identitas_pengantar,
+			'no_po' => $no_po,
 			'kode_produksi' => $kode_produksi,
 			'jumlah_datang' => $jumlah_datang,
 			'sampel' => $sampel,
@@ -219,19 +176,25 @@ class Penerimaankemasan_model extends CI_Model {
 			'bukti_coa' => $file_name,
 			'penerimaan' => $penerimaan,
 			'keterangan' => $keterangan,
-
+			'kondisi_mobil' => $kondisi_mobil_str,
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('penerimaan_kemasan', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->where('uuid', $uuid);
+		$result = $this->db->update('penerimaan_kemasan', $data);
 
+		if(!$result){
+			log_message('error', 'Update gagal: ' . $this->db->last_query());
+			log_message('error', 'DB error: ' . json_encode($this->db->error()));
+		}
+
+		return ($this->db->affected_rows() > 0) ? true : false;
 	}
 
 	public function rules_verifikasi()
 	{
 		return[
-			[
+			[ 
 				'field' => 'status_spv',
 				'label' => 'Date',
 				'rules' => 'required'
@@ -240,7 +203,7 @@ class Penerimaankemasan_model extends CI_Model {
 				'field' => 'catatan_spv',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 
@@ -275,7 +238,7 @@ class Penerimaankemasan_model extends CI_Model {
 				'field' => 'catatan_produksi',
 				'label' => 'Notes'
 			]
-			
+
 		];
 	}
 

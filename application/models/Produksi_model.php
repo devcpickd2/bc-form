@@ -21,7 +21,7 @@ class Produksi_model extends CI_Model {
 			[
 				'field' => 'nama_produk',
 				'label' => 'Produk Name',
-				'rules' => 'required'
+				'rules' => 'required' 
 			],
 			[
 				'field' => 'kode_produksi',
@@ -40,7 +40,7 @@ class Produksi_model extends CI_Model {
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$jenis_produk = $this->input->post('nama_produk');
+		$jenis_produk = $this->input->post('nama_produk'); 
 		$nama_produk = $this->input->post('nama_produk');
 		$kode_produksi = $this->input->post('kode_produksi');
 		$status_produksi = "1";
@@ -112,92 +112,74 @@ class Produksi_model extends CI_Model {
 			[
 				'field' => 'tegu_kode',
 				'label' => 'Kode Tepung Terigu',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'tegu_berat',
 				'label' => 'Berat Tepung Terigu',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'tegu_sens',
 				'label' => 'Sensori Tepung Terigu',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'tapioka_kode',
 				'label' => 'Kode Tepung Tapioka',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'tapioka_berat',
 				'label' => 'Berat Tepung Tapioka',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'tapioka_sens',
 				'label' => 'Sensori Tepung Tapioka',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'ragi_kode',
 				'label' => 'Kode Ragi',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'ragi_berat',
 				'label' => 'Berat Ragi',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'ragi_sens',
 				'label' => 'Sensori Ragi',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'bread_kode',
 				'label' => 'Kode Bread Improver',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'bread_berat',
 				'label' => 'Berat Bread Improver',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'bread_sens',
 				'label' => 'Sensori Bread Improver',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'shortening_kode',
 				'label' => 'Kode Shortening',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'shortening_berat',
 				'label' => 'Berat Shortening',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'shortening_sens',
 				'label' => 'Sensori Shortening',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'chill_water_kode',
 				'label' => 'Kode Chill Water',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'chill_water_berat',
 				'label' => 'Berat Chill Water',
-				'rules' => 'required'
 			],
 			[
 				'field' => 'chill_water_sens',
 				'label' => 'Sensori Chill Water',
-				'rules' => 'required'
 			],
 		];
 	} 
@@ -226,6 +208,7 @@ class Produksi_model extends CI_Model {
 		$chill_water_berat = $this->input->post('chill_water_berat');
 		$chill_water_sens = $this->input->post('chill_water_sens');
 
+		$nama_premix = $this->input->post('nama_premix');
 		$kode = $this->input->post('kode');
 		$berat = $this->input->post('berat');
 		$sens  = $this->input->post('sens');
@@ -235,6 +218,7 @@ class Produksi_model extends CI_Model {
 		foreach ($kode as $i => $b) {
 			if (!empty($b) || !empty($berat[$i]) || !empty($sens[$i])) {
 				$premix[] = [
+					'nama_premix' => $nama_premix[$i],
 					'kode'  => $b,
 					'berat' => $berat[$i],
 					'sens'  => $sens[$i],
@@ -870,34 +854,41 @@ class Produksi_model extends CI_Model {
 		return $data;
 	}
 
-	public function get_by_uuid_produksi($uuid_array)
+	public function get_by_uuid_produksi($tanggal, $nama_produk)
 	{
-		if (empty($uuid_array)) {
+		if (empty($tanggal) || empty($nama_produk)) {
 			return false;
 		}
-		log_message('debug', 'Array UUID yang diterima: ' . print_r($uuid_array, true));
+		log_message('debug', 'Tanggal yang diterima: ' . $tanggal);
+		log_message('debug', 'Nama produk yang diterima: ' . $nama_produk);
 
-		$this->db->where_in('uuid', $uuid_array);
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('nama_produk', $nama_produk);
+		$this->db->order_by('date', 'ASC');
 		$query = $this->db->get('mixing');
 
 		log_message('debug', 'Query yang dijalankan: ' . $this->db->last_query());
 
 		if ($query->num_rows() > 0) {
-			return $query->result(); 
-		}	
+			return $query->result();
+		}   
 		return false;  
 	}
 
-	public function get_by_uuid_produksi_verif($uuid_array)
+
+	public function get_by_uuid_produksi_verif($tanggal, $nama_produk)
 	{
+		if (empty($tanggal) || empty($nama_produk)) {
+			return false;
+		}
 		$this->db->select('nama_spv, tgl_update, date, shift, date_stall, nama_produk, shift_pack, catatan, status_spv, username, premix, nama_produksi, tgl_update_prod');
-		$this->db->where_in('uuid', $uuid_array);
-		$this->db->order_by('tgl_update', 'DESC');  
-		$this->db->limit(1);  
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('nama_produk', $nama_produk);
+		$this->db->order_by('tgl_update', 'DESC');
+		$this->db->limit(1);
 		$query = $this->db->get('mixing');
 
-		$data_produksi = $query->row();  
-		return $data_produksi; 
+		return $query->row();
 	}
 
 	public function get_latest_today() {
@@ -983,7 +974,7 @@ class Produksi_model extends CI_Model {
 		->get('mixing')
 		->row();
 	}
-
+ 
 	public function get_produksi_by_plant_and_date($plant_uuid, $tanggal)
 	{
 		$this->db->where('plant', $plant_uuid);

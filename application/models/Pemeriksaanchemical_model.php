@@ -28,6 +28,10 @@ class Pemeriksaanchemical_model extends CI_Model {
 				'label' => 'Supplier',
 				'rules' => 'required'
 			],
+			['field' => 'jenis_mobil', 'label' => 'Transportation', 'rules' => 'required'],
+			['field' => 'no_polisi', 'label' => 'Police Number', 'rules' => 'required'],
+			['field' => 'identitas_pengantar', 'label' => 'Identity', 'rules' => 'required'],
+			['field' => 'no_po', 'label' => 'PO Number', 'rules' => 'required'],
 			[
 				'field' => 'kode_produksi',
 				'label' => 'Production Code',
@@ -106,6 +110,10 @@ class Pemeriksaanchemical_model extends CI_Model {
 		$shift = $this->input->post('shift');
 		$jenis_chemical = $this->input->post('jenis_chemical');
 		$pemasok = $this->input->post('pemasok');
+		$jenis_mobil = $this->input->post('jenis_mobil');
+		$no_polisi = $this->input->post('no_polisi');
+		$identitas_pengantar = $this->input->post('identitas_pengantar');
+		$no_po = $this->input->post('no_po');
 		$kode_produksi = $this->input->post('kode_produksi');
 		$expired = $this->input->post('expired');
 		$jumlah_barang = $this->input->post('jumlah_barang');
@@ -122,6 +130,12 @@ class Pemeriksaanchemical_model extends CI_Model {
 		$catatan = $this->input->post('catatan');
 		$status_spv = "0";
 
+		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
+		if(empty($kondisi_mobil)) {
+			$kondisi_mobil = ['Tidak Sesuai'];
+		}
+		$kondisi_mobil_str = implode(", ", $kondisi_mobil);
+
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
@@ -130,6 +144,11 @@ class Pemeriksaanchemical_model extends CI_Model {
 			'shift' => $shift,
 			'jenis_chemical' => $jenis_chemical,
 			'pemasok' => $pemasok,
+			'jenis_mobil' => $jenis_mobil,
+			'no_polisi' => $no_polisi,
+			'identitas_pengantar' => $identitas_pengantar,
+			'no_po' => $no_po,
+			'kondisi_mobil' => $kondisi_mobil_str,
 			'kode_produksi' => $kode_produksi,
 			'expired' => $expired,
 			'jumlah_barang' => $jumlah_barang,
@@ -160,6 +179,10 @@ class Pemeriksaanchemical_model extends CI_Model {
 		$shift = $this->input->post('shift');
 		$jenis_chemical = $this->input->post('jenis_chemical');
 		$pemasok = $this->input->post('pemasok');
+		$jenis_mobil = $this->input->post('jenis_mobil');
+		$no_polisi = $this->input->post('no_polisi');
+		$identitas_pengantar = $this->input->post('identitas_pengantar');
+		$no_po = $this->input->post('no_po');
 		$kode_produksi = $this->input->post('kode_produksi');
 		$expired = $this->input->post('expired');
 		$jumlah_barang = $this->input->post('jumlah_barang');
@@ -174,6 +197,11 @@ class Pemeriksaanchemical_model extends CI_Model {
 		$penerimaan = $this->input->post('penerimaan');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
+		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
+		if(empty($kondisi_mobil)) {
+			$kondisi_mobil = ['Tidak Sesuai'];
+		}
+		$kondisi_mobil_str = implode(", ", $kondisi_mobil);
 
 		$data = array(
 			'username' => $username,
@@ -181,6 +209,11 @@ class Pemeriksaanchemical_model extends CI_Model {
 			'shift' => $shift,
 			'jenis_chemical' => $jenis_chemical,
 			'pemasok' => $pemasok,
+			'jenis_mobil' => $jenis_mobil,
+			'no_polisi' => $no_polisi,
+			'identitas_pengantar' => $identitas_pengantar,
+			'no_po' => $no_po,
+			'kondisi_mobil' => $kondisi_mobil_str,
 			'kode_produksi' => $kode_produksi,
 			'expired' => $expired,
 			'jumlah_barang' => $jumlah_barang,

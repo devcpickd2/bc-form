@@ -28,7 +28,7 @@
                             <th width="20px" class="text-center">No</th>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Types of Product</th>
+                            <th>Types of Product</th> 
                             <th>Production Code</th>
                             <th>Last Updated</th>
                             <th>Last Verified</th>

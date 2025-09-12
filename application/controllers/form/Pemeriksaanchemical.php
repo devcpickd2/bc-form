@@ -271,68 +271,116 @@ class Pemeriksaanchemical extends CI_Controller {
 		$pdf->Cell($value_width, 5, $data['pemeriksaanchemical']->shift, 0, 1);
 		$pdf->Ln(1);
 
-		$pdf->SetFont('times', '', 11);
+		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(10, 12, 'No.', 1, 0, 'C');
-		$pdf->Cell(35, 12, 'Jenis Chemical', 1, 0, 'C');
-		$pdf->Cell(32, 12, 'Pemasok', 1, 0, 'C');
-		$pdf->Cell(28, 12, 'Kode Produksi', 1, 0, 'C');
-		$pdf->Cell(23, 12, 'Exp. Date', 1, 0, 'C');
-		$pdf->Cell(15, 12, 'Jumlah', 1, 0, 'C');
-		$pdf->Cell(15, 12, 'Sampel', 1, 0, 'C');
-		$pdf->Cell(15, 12, 'Jumlah', 1, 0, 'C');
-		$pdf->Cell(45, 6, 'Kondisi Fisik', 1, 0, 'C');
-		$pdf->Cell(25, 6, 'Dokumen Halal', 1, 0, 'C');
-		$pdf->Cell(20, 12, 'Segel', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Jenis Chemical', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Pemasok', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'Jenis Mobil', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'No. Polisi', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'Identitas', 1, 0, 'C');
+		$pdf->Cell(15, 12, 'No. PO/DO', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Kondisi Mobil', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Kode Produksi', 1, 0, 'C');
+		$pdf->Cell(20, 12, 'Exp. Date', 1, 0, 'C');
+		$pdf->Cell(12, 12, 'Jumlah', 1, 0, 'C');
+		$pdf->Cell(12, 12, 'Sampel', 1, 0, 'C');
+		$pdf->Cell(12, 12, 'Jumlah', 1, 0, 'C');
+		$pdf->Cell(30, 6, 'Kondisi Fisik', 1, 0, 'C');
+		$pdf->Cell(20, 6, 'Dokumen Halal', 1, 0, 'C');
+		$pdf->Cell(10, 12, 'Segel', 1, 0, 'C');
 		$pdf->Cell(10, 12, 'COA', 1, 0, 'C');
 		$pdf->Cell(20, 6, 'Penerimaan', 1, 0, 'C');
-		$pdf->Cell(30, 12, 'Keterangan', 1, 0, 'C');
+		$pdf->Cell(27, 12, 'Keterangan', 1, 0, 'C');
 		$pdf->Cell(10, 6, '', 0, 1, 'C');
 
-		$pdf->Cell(128, 0, '', 0, 0, 'L');
-		$pdf->Cell(15, 6, 'Barang', 0, 0, 'C');
-		$pdf->Cell(15, 6, '', 0, 0, 'C');
-		$pdf->Cell(15, 6, 'Reject', 0, 0, 'C');
+		$pdf->Cell(80, 0, '', 0, 0, 'L');
+		$pdf->Cell(15, 6, 'Pengantar', 0, 0, 'C');
+		$pdf->Cell(75, 6, '', 0, 0, 'C');
+		$pdf->Cell(12, 6, 'Barang', 0, 0, 'C');
+		$pdf->Cell(12, 6, '', 0, 0, 'C');
+		$pdf->Cell(12, 6, 'Reject', 0, 0, 'C');
 		$pdf->SetFont('times', '', 7);
-		$pdf->Cell(15, 6, 'Kemasan', 1, 0, 'C');
-		$pdf->Cell(15, 6, 'Warna', 1, 0, 'C');
-		$pdf->Cell(15, 6, 'pH', 1, 0, 'C');
-		$pdf->Cell(12, 6, 'Berlaku', 1, 0, 'C');
-		$pdf->Cell(13, 6, 'Tdk Berlaku', 1, 0, 'C');
-		$pdf->Cell(30, 6, '', 0, 0, 'C');
+		$pdf->Cell(10, 6, 'Kemasan', 1, 0, 'C');
+		$pdf->Cell(10, 6, 'Warna', 1, 0, 'C');
+		$pdf->Cell(10, 6, 'pH', 1, 0, 'C');
+		$pdf->Cell(10, 6, 'Berlaku', 1, 0, 'C');
+		$pdf->Cell(10, 6, 'Tdk', 1, 0, 'C');
+		$pdf->Cell(20, 6, '', 0, 0, 'C');
 		$pdf->Cell(10, 6, 'OK', 1, 0, 'C');
 		$pdf->Cell(10, 6, 'Tolak', 1, 0, 'C');
 		$pdf->Cell(30, 0, '', 0, 0, 'C');
 		$pdf->Cell(10, 6, '', 0, 1, 'C');
 
 		$no = 1;
+
+// Mapping kondisi mobil (jika bentuk kode angka)
+		$kondisi_mobil_map = [
+			1 => 'Bersih',
+			2 => 'Kotor',
+			3 => 'Bau',
+			4 => 'Bocor',
+			5 => 'Basah',
+			6 => 'Kering',
+			7 => 'Bebas Hama',
+		];
+
 		foreach ($pemeriksaanchemical_data as $pemeriksaanchemical) {
-			$exp = $pemeriksaanchemical->expired;
-			$exp = new DateTime($exp); 
-			$exp = $exp->format('d-m-Y');
-			$pdf->SetFont('times', '', 9);
-			$pdf->Cell(10, 8, $no, 1, 0, 'C');
-			$pdf->Cell(35, 8, $pemeriksaanchemical->jenis_chemical, 1, 0, 'C');
-			$pdf->Cell(32, 8, $pemeriksaanchemical->pemasok, 1, 0, 'C');
-			$pdf->Cell(28, 8, $pemeriksaanchemical->kode_produksi, 1, 0, 'C');
-			$pdf->Cell(23, 8, $exp, 1, 0, 'C');
-			$pdf->Cell(15, 8, $pemeriksaanchemical->jumlah_barang, 1, 0, 'C');
-			$pdf->Cell(15, 8, $pemeriksaanchemical->sampel, 1, 0, 'C');
-			$pdf->Cell(15, 8, $pemeriksaanchemical->jumlah_reject, 1, 0, 'C');
-			$pdf->SetFont('dejavusans', '', 9);	
-			$pdf->Cell(15, 8, ($pemeriksaanchemical->kemasan == 'sesuai') ? '✔' : (($pemeriksaanchemical->kemasan == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(15, 8, ($pemeriksaanchemical->warna == 'sesuai') ? '✔' : (($pemeriksaanchemical->warna == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->SetFont('times', '', 9);
-			$pdf->Cell(15, 8, $pemeriksaanchemical->ph, 1, 0, 'C');
-			$pdf->Cell(25, 8, $pemeriksaanchemical->halal_berlaku, 1, 0, 'C');
-			$pdf->Cell(20, 8, $pemeriksaanchemical->segel, 1, 0, 'C');
-			$pdf->SetFont('dejavusans', '', 9);	
-			$pdf->Cell(10, 8, ($pemeriksaanchemical->coa == 'ada') ? '✔' : (($pemeriksaanchemical->coa == 'tidak ada') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->SetFont('times', '', 9);
-			$pdf->Cell(20, 8, $pemeriksaanchemical->penerimaan, 1, 0, 'C');
-			$pdf->Cell(30, 8, !empty($pemeriksaanchemical->keterangan) ? $pemeriksaanchemical->keterangan : '-', 1, 0, 'C');
-			$pdf->Ln();
+			$exp = (new DateTime($pemeriksaanchemical->expired))->format('d-m-Y');
+
+	// Mapping kondisi mobil ke teks
+			$kondisi_arr = explode(',', $pemeriksaanchemical->kondisi_mobil);
+			$kondisi_labels = array_map(function ($val) use ($kondisi_mobil_map) {
+				return $kondisi_mobil_map[(int)$val] ?? $val;
+			}, $kondisi_arr);
+			$kondisi_text = implode(', ', $kondisi_labels);
+
+	// Buat array data baris
+			$row_data = [
+				['w' => 10, 'text' => $no],
+				['w' => 20, 'text' => $pemeriksaanchemical->jenis_chemical],
+				['w' => 20, 'text' => $pemeriksaanchemical->pemasok],
+				['w' => 15, 'text' => $pemeriksaanchemical->jenis_mobil],
+				['w' => 15, 'text' => $pemeriksaanchemical->no_polisi],
+				['w' => 15, 'text' => $pemeriksaanchemical->identitas_pengantar],
+				['w' => 15, 'text' => $pemeriksaanchemical->no_po],
+				['w' => 20, 'text' => $kondisi_text],
+				['w' => 20, 'text' => $pemeriksaanchemical->kode_produksi],
+				['w' => 20, 'text' => $exp],
+				['w' => 12, 'text' => $pemeriksaanchemical->jumlah_barang],
+				['w' => 12, 'text' => $pemeriksaanchemical->sampel],
+				['w' => 12, 'text' => $pemeriksaanchemical->jumlah_reject],
+				['w' => 10, 'text' => ($pemeriksaanchemical->kemasan == 'sesuai') ? '✔' : (($pemeriksaanchemical->kemasan == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 10, 'text' => ($pemeriksaanchemical->warna == 'sesuai') ? '✔' : (($pemeriksaanchemical->warna == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 10, 'text' => $pemeriksaanchemical->ph],
+				['w' => 20, 'text' => $pemeriksaanchemical->halal_berlaku],
+				['w' => 10, 'text' => $pemeriksaanchemical->segel],
+				['w' => 10, 'text' => ($pemeriksaanchemical->coa == 'ada') ? '✔' : (($pemeriksaanchemical->coa == 'tidak ada') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 20, 'text' => $pemeriksaanchemical->penerimaan],
+				['w' => 27, 'text' => !empty($pemeriksaanchemical->keterangan) ? $pemeriksaanchemical->keterangan : '-'],
+			];
+
+	// Hitung tinggi baris dinamis
+			$lineHeight = 6;
+			$maxLines = 1;
+			foreach ($row_data as $cell) {
+				$pdf->SetFont($cell['font'] ?? 'times', '', 8);
+				$nb = $pdf->getNumLines($cell['text'], $cell['w']);
+				if ($nb > $maxLines) {
+					$maxLines = $nb;
+				}
+			}
+			$rowHeight = $lineHeight * $maxLines;
+
+	// Tulis semua kolom pakai MultiCell
+			foreach ($row_data as $cell) {
+				$pdf->SetFont($cell['font'] ?? 'times', '', 8);
+				$pdf->MultiCell($cell['w'], $rowHeight, $cell['text'], 1, 'C', false, 0);
+			}
+
+			$pdf->Ln($rowHeight);
 			$no++;
 		}
+
 
 		$this->load->model('pegawai_model');
 		$data['pemeriksaanchemical']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['pemeriksaanchemical']->username);

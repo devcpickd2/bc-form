@@ -64,7 +64,10 @@ class Proses extends CI_Controller {
 		}
 
 		$kode_produksi_terakhir = $this->proses_model->getLastKodeproduksiHariIni();
-		$produk_list = $this->produk_model->get_all_produk();
+		// $produk_list = $this->produk_model->get_all_produk();
+
+		$plant = $this->session->userdata('plant');
+		$produk_list = $this->produk_model->get_all_produk_by_plant($plant);
 
 		$data = array(
 			'active_nav' => 'proses',

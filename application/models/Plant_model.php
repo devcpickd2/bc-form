@@ -68,4 +68,14 @@ class Plant_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('plant');
 	}
+
+	public function getUuid($data)
+	{
+		$this->db->select('*');
+		$this->db->from('plant');
+		$this->db->like('plant', $data); 
+
+		$query = $this->db->get();  
+		return $query->row();     
+	}
 }

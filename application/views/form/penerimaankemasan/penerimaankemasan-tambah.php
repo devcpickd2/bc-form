@@ -55,6 +55,75 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">Jenis Mobil</label>
+                        <input type="text" name="jenis_mobil" class="form-control <?= form_error('jenis_mobil') ? 'invalid' : '' ?> " value="<?= set_value('jenis_mobil'); ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('jenis_mobil')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('jenis_mobil') ?>
+                        </div>
+                    </div> 
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">No. Polisi</label>
+                        <input type="text" name="no_polisi" class="form-control <?= form_error('no_polisi') ? 'invalid' : '' ?> " value="<?= set_value('no_polisi'); ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('no_polisi')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('no_polisi') ?>
+                        </div>
+                    </div> 
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">Identitas Pengantar</label>
+                        <input type="text" name="identitas_pengantar" class="form-control <?= form_error('identitas_pengantar') ? 'invalid' : '' ?> " value="<?= set_value('identitas_pengantar'); ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('identitas_pengantar')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('identitas_pengantar') ?>
+                        </div>
+                    </div> 
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">No. PO / DO</label>
+                        <input type="text" name="no_po" class="form-control <?= form_error('no_po') ? 'invalid' : '' ?> " value="<?= set_value('no_po'); ?>">
+                        <div class="invalid-feedback <?= !empty(form_error('no_po')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('no_po') ?>
+                        </div>
+                    </div> 
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label class="form-label font-weight-bold d-block mb-2">Kondisi Mobil</label>
+                    <h6 style="color: red; font-style: italic; font-size: 12px;">*Centang sesuai kondisi</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <?php 
+                                    $keterangan = [
+                                        1 => 'Bersih',
+                                        2 => 'Kotor',
+                                        3 => 'Bau',
+                                        4 => 'Bocor',
+                                        5 => 'Basah',
+                                        6 => 'Kering',
+                                        7 => 'Bebas Hama'
+                                    ];
+                                    for ($i = 1; $i <= 7; $i++): ?>
+                                        <th><?= $keterangan[$i] ?></th>
+                                    <?php endfor; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <?php for ($i = 1; $i <= 7; $i++): ?>
+                                        <td>
+                                            <input type="checkbox" name="kondisi_mobil[]" value="<?= $i ?>" <?= set_checkbox('kondisi_mobil[]', $i) ?> style="transform: scale(1.5);">
+                                        </td>
+                                    <?php endfor; ?>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <div class="col-sm-6">
                         <label class="form-label font-weight-bold">Kode Produksi</label>
                         <input type="text" name="kode_produksi" class="form-control <?= form_error('kode_produksi') ? 'invalid' : '' ?> " value="<?= set_value('kode_produksi'); ?>">
                         <div class="invalid-feedback <?= !empty(form_error('kode_produksi')) ? 'd-block' : '' ; ?> ">
@@ -86,148 +155,66 @@
                     </div> 
                 </div>
                 <hr>
-                <label class="form-label font-weight-bold">Kondisi Fisik</label>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Warna</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('warna') ? 'is-invalid' : '' ?>" type="radio" name="warna" value="sesuai" <?= set_value('warna') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('warna') ? 'is-invalid' : '' ?>" type="radio" name="warna" value="tidak sesuai" <?= set_value('warna') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('warna') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Panjang</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('panjang') ? 'is-invalid' : '' ?>" type="radio" name="panjang" value="sesuai" <?= set_value('panjang') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('panjang') ? 'is-invalid' : '' ?>" type="radio" name="panjang" value="tidak sesuai" <?= set_value('panjang') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('panjang') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Diameter</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('diameter') ? 'is-invalid' : '' ?>" type="radio" name="diameter" value="sesuai" <?= set_value('diameter') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('diameter') ? 'is-invalid' : '' ?>" type="radio" name="diameter" value="tidak sesuai" <?= set_value('diameter') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('diameter') ?>
-                        </div>
+                <div class="form-group">
+                    <label class="form-label font-weight-bold d-block mb-2">Kondisi Fisik</label>
+                    <h6 style="color: red; font-style: italic; font-size: 12px;">*Centang jika sesuai</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <?php 
+                                    $fisik = [
+                                        'warna' => 'Warna',
+                                        'panjang' => 'Panjang',
+                                        'diameter' => 'Diameter',
+                                        'lebar' => 'Lebar',
+                                        'tinggi' => 'Tinggi',
+                                        'berat' => 'Berat',
+                                        'delaminasi' => 'Delaminasi',
+                                        'bau' => 'Bau',
+                                        'desain' => 'Desain'
+                                    ];
+                                    foreach ($fisik as $key => $label): ?>
+                                        <th><?= $label ?></th>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <?php foreach ($fisik as $key => $label): ?>
+                                        <td>
+                                            <input type="checkbox" name="<?= $key ?>" value="sesuai" <?= set_value($key) == 'sesuai' ? 'checked' : '' ?> style="transform: scale(1.5);">
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Lebar</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('lebar') ? 'is-invalid' : '' ?>" type="radio" name="lebar" value="sesuai" <?= set_value('lebar') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('lebar') ? 'is-invalid' : '' ?>" type="radio" name="lebar" value="tidak sesuai" <?= set_value('lebar') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('lebar') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Tinggi</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('tinggi') ? 'is-invalid' : '' ?>" type="radio" name="tinggi" value="sesuai" <?= set_value('tinggi') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('tinggi') ? 'is-invalid' : '' ?>" type="radio" name="tinggi" value="tidak sesuai" <?= set_value('tinggi') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('tinggi') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Berat</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('berat') ? 'is-invalid' : '' ?>" type="radio" name="berat" value="sesuai" <?= set_value('berat') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('berat') ? 'is-invalid' : '' ?>" type="radio" name="berat" value="tidak sesuai" <?= set_value('berat') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('berat') ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Delaminasi</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('delaminasi') ? 'is-invalid' : '' ?>" type="radio" name="delaminasi" value="sesuai" <?= set_value('delaminasi') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('delaminasi') ? 'is-invalid' : '' ?>" type="radio" name="delaminasi" value="tidak sesuai" <?= set_value('delaminasi') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('delaminasi') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Bau</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('bau') ? 'is-invalid' : '' ?>" type="radio" name="bau" value="sesuai" <?= set_value('bau') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('bau') ? 'is-invalid' : '' ?>" type="radio" name="bau" value="tidak sesuai" <?= set_value('bau') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('bau') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold d-block">Desain</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('desain') ? 'is-invalid' : '' ?>" type="radio" name="desain" value="sesuai" <?= set_value('desain') == 'sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Sesuai</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input <?= form_error('desain') ? 'is-invalid' : '' ?>" type="radio" name="desain" value="tidak sesuai" <?= set_value('desain') == 'tidak sesuai' ? 'checked' : '' ?>>
-                            <label class="form-check-label">Tidak Sesuai</label>
-                        </div>
-                        <div class="invalid-feedback d-block">
-                            <?= form_error('desain') ?>
-                        </div>
-                    </div>
-                </div>
+
                 <hr>
                 <div class="form-group row">
                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Segel</label>
-                        <input type="text" name="segel" class="form-control <?= form_error('segel') ? 'invalid' : '' ?> " value="<?= set_value('segel'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('segel')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('segel') ?>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input <?= form_error('segel') ? 'is-invalid' : '' ?>" 
+                                type="radio" name="segel" id="segel_sesuai" value="Sesuai" 
+                                <?= set_value('segel') == 'Sesuai' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="segel_sesuai">Sesuai</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input <?= form_error('segel') ? 'is-invalid' : '' ?>" 
+                                type="radio" name="segel" id="segel_tidak" value="Tidak Sesuai" 
+                                <?= set_value('segel') == 'Tidak Sesuai' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="segel_tidak">Tidak Sesuai</label>
+                            </div>
+                            <div class="invalid-feedback d-block">
+                                <?= form_error('segel') ?>
+                            </div>
                         </div>
-                    </div> 
+                    </div>
+
                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold d-block">Penerimaan</label>
                         <div class="form-check form-check-inline">
@@ -242,52 +229,50 @@
                             <?= form_error('penerimaan') ?>
                         </div>
                     </div>
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold d-block">COA</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input <?= form_error('coa') ? 'is-invalid' : '' ?>" type="radio" name="coa" value="ada" <?= set_value('coa') == 'ada' ? 'checked' : '' ?>>
+                            <label class="form-check-label">Ada</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input <?= form_error('coa') ? 'is-invalid' : '' ?>" type="radio" name="coa" value="tidak ada" <?= set_value('coa') == 'tidak ada' ? 'checked' : '' ?>>
+                            <label class="form-check-label">Tidak Ada</label>
+                        </div>
+                        <div class="invalid-feedback d-block">
+                            <?= form_error('coa') ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="form-label">Upload Bukti COA</label><br>
+                        <input type="file" name="bukti_coa" class="form-control <?= form_error('bukti_coa') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf">
+                        <div class="invalid-feedback"><?= form_error('bukti_coa') ?></div>
+                        <h6 style="color: red; font-style: italic; font-size: 12px;">*Upload COA jika ada</h6>
+                    </div>
                 </div>
+                <hr>
                 <div class="form-group row">
-                 <div class="col-sm-3">
-                    <label class="form-label font-weight-bold d-block">COA</label>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input <?= form_error('coa') ? 'is-invalid' : '' ?>" type="radio" name="coa" value="ada" <?= set_value('coa') == 'ada' ? 'checked' : '' ?>>
-                        <label class="form-check-label">Ada</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input <?= form_error('coa') ? 'is-invalid' : '' ?>" type="radio" name="coa" value="tidak ada" <?= set_value('coa') == 'tidak ada' ? 'checked' : '' ?>>
-                        <label class="form-check-label">Tidak Ada</label>
-                    </div>
-                    <div class="invalid-feedback d-block">
-                        <?= form_error('coa') ?>
+                    <div class="col-sm-6">
+                        <label class="form-label font-weight-bold">Keterangan</label>
+                        <textarea class="form-control" name="keterangan"></textarea>
+                        <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
+                            <?= form_error('keterangan') ?>
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-3">
-                    <label class="form-label">Upload Bukti COA</label><br>
-                    <input type="file" name="bukti_coa" class="form-control <?= form_error('bukti_coa') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf">
-                    <div class="invalid-feedback"><?= form_error('bukti_coa') ?></div>
-                    <h6 style="color: red; font-style: italic; font-size: 12px;">*Upload COA jika ada</h6>
-                </div>
-            </div>
-            <hr>
-            <div class="form-group row">
-                <div class="col-sm-6">
-                    <label class="form-label font-weight-bold">Keterangan</label>
-                    <textarea class="form-control" name="keterangan"></textarea>
-                    <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
-                        <?= form_error('keterangan') ?>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn btn-md btn-success mr-2">
+                            <i class="fa fa-save"></i> Simpan
+                        </button>
+                        <a href="<?= base_url('penerimaankemasan')?>" class="btn btn-md btn-danger">
+                            <i class="fa fa-times"></i> Batal
+                        </a>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <button type="submit" class="btn btn-md btn-success mr-2">
-                        <i class="fa fa-save"></i> Simpan
-                    </button>
-                    <a href="<?= base_url('penerimaankemasan')?>" class="btn btn-md btn-danger">
-                        <i class="fa fa-times"></i> Batal
-                    </a>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 </div>
 </div>
 <style type="text/css">

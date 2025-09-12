@@ -265,42 +265,54 @@ class Seasoning extends CI_Controller {
 
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(6, 15, 'No.', 1, 0, 'C');
-		$pdf->Cell(25, 15, 'Jenis Seasoning', 1, 0, 'C');
-		$pdf->Cell(20, 15, 'Spesifikasi', 1, 0, 'C');
-		$pdf->Cell(23, 15, 'Pemasok', 1, 0, 'C');
-		$pdf->Cell(20, 15, 'Kode Produksi', 1, 0, 'C');
-		$pdf->Cell(20, 15, 'Exp. Date', 1, 0, 'C');
-		$pdf->Cell(15, 15, 'Jumlah', 1, 0, 'C');
-		$pdf->Cell(15, 15, 'Sampel', 1, 0, 'C');
-		$pdf->Cell(15, 15, 'Jumlah', 1, 0, 'C');
+		$pdf->Cell(20, 15, 'Jenis Seasoning', 1, 0, 'C');
+		$pdf->Cell(15, 15, 'Spesifikasi', 1, 0, 'C');
+		$pdf->Cell(15, 15, 'Pemasok', 1, 0, 'C');
+		$pdf->Cell(12, 15, 'Jenis', 1, 0, 'C');
+		$pdf->Cell(12, 15, 'No.', 1, 0, 'C');
+		$pdf->Cell(12, 15, 'Identitas', 1, 0, 'C');
+		$pdf->Cell(12, 15, 'No. PO', 1, 0, 'C');
+		$pdf->Cell(15, 15, 'Kondisi', 1, 0, 'C');
+		$pdf->Cell(15, 15, 'Kode', 1, 0, 'C');
+		$pdf->Cell(12, 15, 'Exp. Date', 1, 0, 'C');
+		$pdf->Cell(10, 15, 'Jumlah', 1, 0, 'C');
+		$pdf->Cell(10, 15, 'Sampel', 1, 0, 'C');
+		$pdf->Cell(10, 15, 'Jumlah', 1, 0, 'C');
 		$pdf->Cell(24, 5, 'Kondisi Fisik', 1, 0, 'C');
-		$pdf->Cell(14, 10, 'Logo', 1, 0, 'C');
+		$pdf->Cell(12, 10, 'Logo', 1, 0, 'C');
 		$pdf->Cell(10, 15, 'Kadar', 1, 0, 'C');
-		$pdf->Cell(18, 15, 'Negara Asal', 1, 0, 'C');
-		$pdf->Cell(15, 15, 'Segel', 1, 0, 'C');
-		$pdf->Cell(16, 5, 'Penerimaan', 1, 0, 'C');
-		$pdf->Cell(30, 5, 'Persyaratan Dokumen', 1, 0, 'C');
+		$pdf->Cell(15, 15, 'Negara Asal', 1, 0, 'C');
+		$pdf->Cell(10, 15, 'Segel', 1, 0, 'C');
+		$pdf->Cell(14, 5, 'Penerimaan', 1, 0, 'C');
+		$pdf->Cell(28, 5, 'Persyaratan Dokumen', 1, 0, 'C');
 		$pdf->Cell(14, 5, 'Allergen', 1, 0, 'C');
 		$pdf->Cell(20, 15, 'Keterangan', 1, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
-		$pdf->Cell(114, 0, '', 0, 0, 'L');
-		$pdf->Cell(15, 10, 'Barang', 0, 0, 'C');
-		$pdf->Cell(15, 10, '', 0, 0, 'C');
-		$pdf->Cell(15, 10, 'Reject', 0, 0, 'C');
+		$pdf->Cell(57, 0, '', 0, 0, 'L');
+		$pdf->Cell(11, 10, 'Mobil', 0, 0, 'L');
+		$pdf->Cell(12, 10, 'Polisi', 0, 0, 'C');
+		$pdf->Cell(12, 10, 'Pengantar', 0, 0, 'C');
+		$pdf->Cell(12, 10, '/ DO', 0, 0, 'C');
+		$pdf->Cell(15, 10, 'Mobil', 0, 0, 'C');
+		$pdf->Cell(15, 10, 'Produksi', 0, 0, 'C');
+		$pdf->Cell(12, 10, '', 0, 0, 'C');
+		$pdf->Cell(10, 10, 'Datang', 0, 0, 'C');
+		$pdf->Cell(10, 10, '', 0, 0, 'C');
+		$pdf->Cell(10, 10, 'Reject', 0, 0, 'C');
 		$pdf->SetFont('times', '', 5);
 		$pdf->Cell(6, 10, 'Kemasan', 1, 0, 'C');
 		$pdf->Cell(6, 10, 'Warna', 1, 0, 'C');
 		$pdf->Cell(6, 10, 'Kotoran', 1, 0, 'C');
 		$pdf->Cell(6, 10, 'Aroma', 1, 0, 'C');
 		$pdf->SetFont('times', '', 8);
-		$pdf->Cell(14, 5, 'Halal', 0, 0, 'C');
+		$pdf->Cell(12, 5, 'Halal', 0, 0, 'C');
 		$pdf->Cell(10, 10, 'Air (%)', 0, 0, 'C');
-		$pdf->Cell(18, 10, 'Dibuatnya', 0, 0, 'C');
-		$pdf->Cell(15, 10, '', 0, 0, 'C');
-		$pdf->Cell(8, 10, 'OK', 1, 0, 'C');
-		$pdf->Cell(8, 10, 'Tolak', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Halal', 1, 0, 'C');
+		$pdf->Cell(15, 10, 'Dibuatnya', 0, 0, 'C');
+		$pdf->Cell(10, 10, '', 0, 0, 'C');
+		$pdf->Cell(7, 10, 'OK', 1, 0, 'C');
+		$pdf->Cell(7, 10, 'Tolak', 1, 0, 'C');
+		$pdf->Cell(18, 5, 'Halal', 1, 0, 'C');
 		$pdf->Cell(10, 10, 'COA', 1, 0, 'C');
 		$pdf->Cell(7, 10, 'A', 1, 0, 'C');
 		$pdf->Cell(7, 10, 'NA', 1, 0, 'C');
@@ -308,52 +320,91 @@ class Seasoning extends CI_Controller {
 		$pdf->Cell(5, 0, '', 0, 0, 'C');
 		$pdf->Cell(5, 5, '', 0, 1, 'C');
 
-		$pdf->Cell(183, 0, '', 0, 0, 'L');
-		$pdf->Cell(7, 5, 'Ada', 1, 0, 'C');
-		$pdf->Cell(7, 5, 'Tdk', 1, 0, 'C');
-		$pdf->Cell(59, 0, '', 0, 0, 'C');
+		$pdf->Cell(200, 0, '', 0, 0, 'L');
+		$pdf->Cell(6, 5, 'Ada', 1, 0, 'C');
+		$pdf->Cell(6, 5, 'Tdk', 1, 0, 'C');
+		$pdf->Cell(49, 0, '', 0, 0, 'C');
 		$pdf->SetFont('times', '', 5);
-		$pdf->Cell(10, 5, 'Berlaku', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Tdk Berlaku', 1, 0, 'C');
+		$pdf->Cell(9, 5, 'Berlaku', 1, 0, 'C');
+		$pdf->Cell(9, 5, 'Tdk Berlaku', 1, 0, 'C');
 		$pdf->SetFont('times', '', 7);
 		$pdf->Cell(34, 0, '', 0, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
 		$no = 1;
+		$kondisi_mobil_map = [
+			1 => 'Bersih',
+			2 => 'Kotor',
+			3 => 'Bau',
+			4 => 'Bocor',
+			5 => 'Basah',
+			6 => 'Kering',
+			7 => 'Bebas Hama',
+		];
+
 		foreach ($seasoning_data as $seasoning) {
-			$exp = $seasoning->expired;
-			$exp = new DateTime($exp); 	
-			$exp = $exp->format('d-m-Y');
-			$pdf->SetFont('times', '', 9);
-			$pdf->Cell(6, 8, $no, 1, 0, 'C');
-			$pdf->Cell(25, 8, $seasoning->jenis_seasoning, 1, 0, 'C');
-			$pdf->Cell(20, 8, $seasoning->spesifikasi, 1, 0, 'C');
-			$pdf->Cell(23, 8, $seasoning->pemasok, 1, 0, 'C');
-			$pdf->SetFont('times', '', 8);
-			$pdf->Cell(20, 8, $seasoning->kode_produksi, 1, 0, 'C');
-			$pdf->SetFont('times', '', 9);
-			$pdf->Cell(20, 8, $exp, 1, 0, 'C');
-			$pdf->Cell(15, 8, $seasoning->jumlah_barang, 1, 0, 'C');
-			$pdf->Cell(15, 8, $seasoning->sampel, 1, 0, 'C');
-			$pdf->Cell(15, 8, $seasoning->jumlah_reject, 1, 0, 'C');
-			$pdf->SetFont('dejavusans', '', 8);	
-			$pdf->Cell(6, 8, ($seasoning->kemasan == 'sesuai') ? '✔' : (($seasoning->kemasan == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(6, 8, ($seasoning->warna == 'sesuai') ? '✔' : (($seasoning->warna == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(6, 8, ($seasoning->kotoran == 'sesuai') ? '✔' : (($seasoning->kotoran == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->Cell(6, 8, ($seasoning->aroma == 'sesuai') ? '✔' : (($seasoning->aroma == 'tidak sesuai') ? '✘' : '−'), 1, 0, 'C');
-			$pdf->SetFont('times', '', 7);
-			$pdf->Cell(14, 8, $seasoning->logo_halal, 1, 0, 'C');
-			$pdf->Cell(10, 8, $seasoning->kadar_air, 1, 0, 'C');
-			$pdf->Cell(18, 8, $seasoning->negara_asal, 1, 0, 'C');
-			$pdf->Cell(15, 8, $seasoning->segel, 1, 0, 'C');
-			$pdf->Cell(16, 8, $seasoning->penerimaan, 1, 0, 'C');
-			$pdf->Cell(20, 8, $seasoning->sertif_halal, 1, 0, 'C');
-			$pdf->Cell(10, 8, $seasoning->coa, 1, 0, 'C');
-			$pdf->Cell(14, 8, $seasoning->allergen, 1, 0, 'C');
-			$pdf->Cell(20, 8, !empty($seasoning->keterangan) ? $seasoning->keterangan : '-', 1, 0, 'C');
+			$exp = (new DateTime($seasoning->expired))->format('d-m-Y');
+			$kondisi_arr = explode(',', $seasoning->kondisi_mobil);
+			$kondisi_labels = array_map(function ($val) use ($kondisi_mobil_map) {
+				return isset($kondisi_mobil_map[(int)$val]) ? $kondisi_mobil_map[(int)$val] : $val;
+			}, $kondisi_arr);
+			$kondisi_text = implode(', ', $kondisi_labels);
+
+    // Data kolom
+			$row = [
+				['w' => 6,  'txt' => $no],
+				['w' => 20, 'txt' => $seasoning->jenis_seasoning],
+				['w' => 15, 'txt' => $seasoning->spesifikasi],
+				['w' => 15, 'txt' => $seasoning->pemasok],
+				['w' => 12, 'txt' => $seasoning->jenis_mobil],
+				['w' => 12, 'txt' => $seasoning->no_polisi],
+				['w' => 12, 'txt' => $seasoning->identitas_pengantar],
+				['w' => 12, 'txt' => $seasoning->no_po],
+				['w' => 15, 'txt' => $kondisi_text],
+				['w' => 15, 'txt' => $seasoning->kode_produksi],
+				['w' => 12, 'txt' => $exp],
+				['w' => 10, 'txt' => $seasoning->jumlah_barang],
+				['w' => 10, 'txt' => $seasoning->sampel],
+				['w' => 10, 'txt' => $seasoning->jumlah_reject],
+				['w' => 6,  'txt' => ($seasoning->kemasan == 'sesuai') ? '✔' : (($seasoning->kemasan == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 6,  'txt' => ($seasoning->warna == 'sesuai') ? '✔' : (($seasoning->warna == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 6,  'txt' => ($seasoning->kotoran == 'sesuai') ? '✔' : (($seasoning->kotoran == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 6,  'txt' => ($seasoning->aroma == 'sesuai') ? '✔' : (($seasoning->aroma == 'tidak sesuai') ? '✘' : '−'), 'font' => 'dejavusans'],
+				['w' => 12, 'txt' => $seasoning->logo_halal],
+				['w' => 10, 'txt' => $seasoning->kadar_air],
+				['w' => 15, 'txt' => $seasoning->negara_asal],
+				['w' => 10, 'txt' => $seasoning->segel],
+				['w' => 14, 'txt' => $seasoning->penerimaan],
+				['w' => 18, 'txt' => $seasoning->sertif_halal],
+				['w' => 10, 'txt' => $seasoning->coa],
+				['w' => 14, 'txt' => $seasoning->allergen],
+				['w' => 20, 'txt' => !empty($seasoning->keterangan) ? $seasoning->keterangan : '-'],
+			];
+
+    // Hitung tinggi maksimum berdasarkan line count terbanyak
+			$lineHeight = 6;
+			$maxLines = 1;
+			foreach ($row as $col) {
+				$pdf->SetFont(isset($col['font']) ? $col['font'] : 'times', '', 8);
+				$lines = $pdf->getNumLines($col['txt'], $col['w']);
+				if ($lines > $maxLines) $maxLines = $lines;
+			}
+			$rowHeight = $lineHeight * $maxLines;
+
+    // Simpan posisi awal
+			$x = $pdf->GetX();
+			$y = $pdf->GetY();
+
+    // Tulis setiap kolom dengan tinggi seragam
+			foreach ($row as $col) {
+				$pdf->SetFont(isset($col['font']) ? $col['font'] : 'times', '', 8);
+				$pdf->MultiCell($col['w'], $rowHeight, $col['txt'], 1, 'C', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+			}
+
 			$pdf->Ln();
 			$no++;
 		}
+
 
 		$this->load->model('pegawai_model');
 		$data['seasoning']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['seasoning']->username);

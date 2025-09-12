@@ -15,44 +15,105 @@
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('seasoning/edit/'.$seasoning->uuid);?>" enctype="multipart/form-data">
                     <div class="form-group row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Tanggal</label>
                             <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?= $seasoning->date; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('date') ?>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Jenis Seasoning</label>
                             <input type="text" name="jenis_seasoning" class="form-control <?= form_error('jenis_seasoning') ? 'invalid' : '' ?> " value="<?= $seasoning->jenis_seasoning; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('jenis_seasoning')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('jenis_seasoning') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-4">
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Spesifikasi</label>
                             <input type="text" name="spesifikasi" class="form-control <?= form_error('spesifikasi') ? 'invalid' : '' ?> " value="<?= $seasoning->spesifikasi; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('spesifikasi')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('spesifikasi') ?>
                             </div>
                         </div> 
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Pemasok</label>
                             <input type="text" name="pemasok" class="form-control <?= form_error('pemasok') ? 'invalid' : '' ?> " value="<?= $seasoning->pemasok; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('pemasok')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('pemasok') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-4">
+                    </div>
+                    <hr>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Jenis Mobil</label>
+                            <input type="text" name="jenis_mobil" class="form-control <?= form_error('jenis_mobil') ? 'invalid' : '' ?>" value="<?= set_value('jenis_mobil', $seasoning->jenis_mobil); ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('jenis_mobil')) ? 'd-block' : '' ?>"><?= form_error('jenis_mobil') ?></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">No. Polisi</label>
+                            <input type="text" name="no_polisi" class="form-control <?= form_error('no_polisi') ? 'invalid' : '' ?>" value="<?= set_value('no_polisi', $seasoning->no_polisi); ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('no_polisi')) ? 'd-block' : '' ?>"><?= form_error('no_polisi') ?></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Identitas Pengantar</label>
+                            <input type="text" name="identitas_pengantar" class="form-control <?= form_error('identitas_pengantar') ? 'invalid' : '' ?>" value="<?= set_value('identitas_pengantar', $seasoning->identitas_pengantar); ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('identitas_pengantar')) ? 'd-block' : '' ?>"><?= form_error('identitas_pengantar') ?></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">No. PO / DO</label>
+                            <input type="text" name="no_po" class="form-control <?= form_error('no_po') ? 'invalid' : '' ?>" value="<?= set_value('no_po', $seasoning->no_po); ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('no_po')) ? 'd-block' : '' ?>"><?= form_error('no_po') ?></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="form-label font-weight-bold d-block mb-2">Kondisi Mobil</label>
+                        <h6 style="color: red; font-style: italic; font-size: 12px;">*Centang sesuai kondisi</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <?php 
+                                        $keterangan = [
+                                            1 => 'Bersih', 2 => 'Kotor', 3 => 'Bau', 4 => 'Bocor',
+                                            5 => 'Basah', 6 => 'Kering', 7 => 'Bebas Hama'
+                                        ];
+                                        foreach($keterangan as $label): ?>
+                                            <th><?= $label ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <?php foreach($keterangan as $key => $label): ?>
+                                            <td>
+                                                <input type="checkbox" name="kondisi_mobil[]" value="<?= $key ?>" 
+                                                <?= in_array($key, explode(',', $seasoning->kondisi_mobil ?? '')) ? 'checked' : '' ?> 
+                                                style="transform: scale(1.5);">
+                                            </td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Kode Produksi</label>
                             <input type="text" name="kode_produksi" class="form-control <?= form_error('kode_produksi') ? 'invalid' : '' ?> " value="<?= $seasoning->kode_produksi; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('kode_produksi')) ? 'd-block' : '' ; ?> ">
                                 <?= form_error('kode_produksi') ?>
                             </div>
                         </div> 
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Expired Date</label>
                             <input type="date" name="expired" class="form-control <?= form_error('expired') ? 'invalid' : '' ?> " value="<?= $seasoning->expired; ?>">
                             <div class="invalid-feedback <?= !empty(form_error('expired')) ? 'd-block' : '' ; ?> ">
@@ -83,83 +144,39 @@
                             </div>
                         </div> 
                     </div>
+                    <!-- Kondisi Fisik -->
                     <hr>
-                    <label class="form-label font-weight-bold">Kondisi Fisik</label>
-                    <div class="form-group row">
-                        <div class="col-sm-3">
-                            <label class="form-label font-weight-bold d-block">Kemasan</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('kemasan') ? 'is-invalid' : '' ?>" type="radio" name="kemasan" value="sesuai" <?= $seasoning->kemasan == 'sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Sesuai</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('kemasan') ? 'is-invalid' : '' ?>" type="radio" name="kemasan" value="tidak sesuai" <?= $seasoning->kemasan == 'tidak sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Tidak Sesuai</label>
-                            </div>
-                            <div class="invalid-feedback d-block">
-                                <?= form_error('kemasan') ?>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label font-weight-bold d-block">Warna</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('warna') ? 'is-invalid' : '' ?>" type="radio" name="warna" value="sesuai" <?= $seasoning->warna == 'sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Sesuai</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('warna') ? 'is-invalid' : '' ?>" type="radio" name="warna" value="tidak sesuai" <?= $seasoning->warna == 'tidak sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Tidak Sesuai</label>
-                            </div>
-                            <div class="invalid-feedback d-block">
-                                <?= form_error('warna') ?>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label font-weight-bold d-block">Kotoran</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('kotoran') ? 'is-invalid' : '' ?>" type="radio" name="kotoran" value="sesuai" <?= $seasoning->kotoran == 'sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Sesuai</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('kotoran') ? 'is-invalid' : '' ?>" type="radio" name="kotoran" value="tidak sesuai" <?= $seasoning->kotoran == 'tidak sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Tidak Sesuai</label>
-                            </div>
-                            <div class="invalid-feedback d-block">
-                                <?= form_error('kotoran') ?>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label font-weight-bold d-block">Aroma</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('aroma') ? 'is-invalid' : '' ?>" type="radio" name="aroma" value="sesuai" <?= $seasoning->aroma == 'sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Sesuai</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('aroma') ? 'is-invalid' : '' ?>" type="radio" name="aroma" value="tidak sesuai" <?= $seasoning->aroma == 'tidak sesuai' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Tidak Sesuai</label>
-                            </div>
-                            <div class="invalid-feedback d-block">
-                                <?= form_error('aroma') ?>
-                            </div>
+                    <div class="form-group">
+                        <label class="form-label font-weight-bold d-block mb-2">Kondisi Fisik</label>
+                        <h6 style="color: red; font-style: italic; font-size: 12px;">*Centang jika sesuai</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <?php 
+                                        $fisik = ['kemasan'=>'Kemasan','warna'=>'Warna','kotoran'=>'Kotoran','aroma'=>'Aroma'];
+                                        foreach ($fisik as $key => $label): ?>
+                                            <th><?= $label ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <?php foreach ($fisik as $key => $label): ?>
+                                            <td>
+                                                <input type="checkbox" name="<?= $key ?>" value="sesuai" 
+                                                <?= $seasoning->$key == 'sesuai' ? 'checked' : '' ?> style="transform: scale(1.5);">
+                                            </td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+
                     <hr>
                     <label class="form-label font-weight-bold">Spesifikasi</label>
                     <div class="form-group row">
-                        <div class="col-sm-3">
-                            <label class="form-label font-weight-bold d-block">Logo Halal</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('logo_halal') ? 'is-invalid' : '' ?>" type="radio" name="logo_halal" value="ada" <?= $seasoning->logo_halal == 'ada' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Ada</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input <?= form_error('logo_halal') ? 'is-invalid' : '' ?>" type="radio" name="logo_halal" value="tidak ada" <?= $seasoning->logo_halal == 'tidak ada' ? 'checked' : '' ?>>
-                                <label class="form-check-label">Tidak Ada</label>
-                            </div>
-                            <div class="invalid-feedback d-block">
-                                <?= form_error('logo_halal') ?>
-                            </div>
-                        </div>
                         <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Kadar Air (%)</label>
                             <input type="text" name="kadar_air" class="form-control <?= form_error('kadar_air') ? 'invalid' : '' ?> " value="<?= $seasoning->kadar_air; ?>">
@@ -176,11 +193,34 @@
                         </div> 
                         <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Segel</label>
-                            <input type="text" name="segel" class="form-control <?= form_error('segel') ? 'invalid' : '' ?> " value="<?= $seasoning->segel; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('segel')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('segel') ?>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input <?= form_error('segel') ? 'is-invalid' : '' ?>" 
+                                    type="radio" name="segel" value="Sesuai" <?= $seasoning->segel=='Sesuai' ? 'checked' : '' ?>>
+                                    <label class="form-check-label">Sesuai</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input <?= form_error('segel') ? 'is-invalid' : '' ?>" 
+                                    type="radio" name="segel" value="Tidak Sesuai" <?= $seasoning->segel=='Tidak Sesuai' ? 'checked' : '' ?>>
+                                    <label class="form-check-label">Tidak Sesuai</label>
+                                </div>
+                                <div class="invalid-feedback d-block"><?= form_error('segel') ?></div>
                             </div>
-                        </div> 
+                        </div>
+                        <div class="col-sm-3">
+                            <label class="form-label font-weight-bold d-block">Logo Halal</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input <?= form_error('logo_halal') ? 'is-invalid' : '' ?>" type="radio" name="logo_halal" value="ada" <?= $seasoning->logo_halal == 'ada' ? 'checked' : '' ?>>
+                                <label class="form-check-label">Ada</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input <?= form_error('logo_halal') ? 'is-invalid' : '' ?>" type="radio" name="logo_halal" value="tidak ada" <?= $seasoning->logo_halal == 'tidak ada' ? 'checked' : '' ?>>
+                                <label class="form-check-label">Tidak Ada</label>
+                            </div>
+                            <div class="invalid-feedback d-block">
+                                <?= form_error('logo_halal') ?>
+                            </div>
+                        </div>
                     </div>
                     <hr>
                     <label class="form-label font-weight-bold">Persyaratan Dokumen & Allergen</label>

@@ -15,7 +15,7 @@
         <div class="card-body">
             <form method="post" action="<?= base_url('kebersihanperalatan/tambah'); ?>" enctype="multipart/form-data">
 
-                <?php
+                <?php 
                 $produksi_data = $this->session->userdata('produksi_data');
                 $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
                 $shift_sess = $produksi_data['shift'] ?? '';
@@ -100,6 +100,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 
 <style>

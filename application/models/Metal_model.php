@@ -48,7 +48,7 @@ class Metal_model extends CI_Model {
 				'label' => 'STD Fe',
 				'rules' => 'required'
 			],
-			[
+			[ 
 				'field' => 'std_nonfe',
 				'label' => 'STD Non Fe',
 				'rules' => 'required'
@@ -58,141 +58,6 @@ class Metal_model extends CI_Model {
 				'label' => 'STD SUS 304',
 				'rules' => 'required'
 			],
-			[
-				'field' => 'fe_d',
-				'label' => 'First'
-			],
-			[
-				'field' => 'nonfe_d',
-				'label' => 'First'
-			],
-			[
-				'field' => 'sus_d',
-				'label' => 'Last'
-			],
-			[
-				'field' => 'keterangan',
-				'label' => 'Notes'
-			],
-			[
-				'field' => 'catatan_metal',
-				'label' => 'Notes'
-			]
-		];
-	}
-
-	public function insert()
-	{
-		$produksi_data = $this->session->userdata('produksi_data');
-		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
-		$uuid = Uuid::uuid4()->toString();
-		$username = $this->session->userdata('username');
-		$plant = $this->session->userdata('plant');
-		$date_metal = $this->input->post('date_metal');
-		$shift = $this->input->post('shift');
-		$time = $this->input->post('time');
-		$nama_produk = $this->input->post('nama_produk');
-		$kode_produksi = $this->input->post('kode_produksi');
-		$no_program = $this->input->post('no_program');
-		$deteksi_ng = $this->input->post('deteksi_ng');
-		$std_fe = $this->input->post('std_fe');
-		$std_nonfe = $this->input->post('std_nonfe');
-		$std_sus304 = $this->input->post('std_sus304');
-		$fe_d = $this->input->post('fe_d');
-		$nonfe_d = $this->input->post('nonfe_d');
-		$sus_d = $this->input->post('sus_d');
-		$keterangan = $this->input->post('keterangan');
-		$catatan_metal = $this->input->post('catatan_metal');
-		$status_produksi = "1";
-		$status_spv = "0";
-		$status_produksi_false = "1";
-		$status_spv_false = "0";
-
-		$data = array(
-			'uuid' => $uuid,
-			'username_1' => $username,
-			'plant' => $plant,
-			'date_metal' => $date_metal,
-			'shift' => $shift,
-			'time' => $time,
-			'nama_produk' => $nama_produk,
-			'kode_produksi' => $kode_produksi,
-			'no_program' => $no_program,
-			'deteksi_ng' => $deteksi_ng,
-			'std_fe' => $std_fe,
-			'std_nonfe' => $std_nonfe,
-			'std_sus304' => $std_sus304,
-			'fe_d' => $fe_d,
-			'nonfe_d' => $nonfe_d,
-			'sus_d' => $sus_d,
-			'keterangan' => $keterangan,
-			'catatan_metal' => $catatan_metal,
-			'status_produksi' => $status_produksi,
-			'status_spv' => $status_spv,
-			'status_produksi_false' => $status_produksi_false,
-			'nama_produksi_metal' => $nama_produksi,
-			'nama_produksi_false' => $nama_produksi,
-			'status_spv_false' => $status_spv_false
-		);
-
-		$this->db->insert('metal', $data);
-		return($this->db->affected_rows() > 0) ? true :false;
-
-	}
-
-	public function rules_update()
-	{
-		return[
-			[
-				'field' => 'date_metal',
-				'label' => 'Date',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'shift',
-				'label' => 'Shift',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'time',
-				'label' => 'Time',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'nama_produk',
-				'label' => 'Produk Name',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'kode_produksi',
-				'label' => 'Product Code',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'no_program',
-				'label' => 'Program Number',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'deteksi_ng',
-				'label' => 'NG Detection',
-				'rules' => 'required'
-			],
-			// [
-			// 	'field' => 'std_fe',
-			// 	'label' => 'STD Fe',
-			// 	'rules' => 'required'
-			// ],
-			// [
-			// 	'field' => 'std_nonfe',
-			// 	'label' => 'STD Non Fe',
-			// 	'rules' => 'required'
-			// ],
-			// [
-			// 	'field' => 'std_sus304',
-			// 	'label' => 'STD SUS 304',
-			// 	'rules' => 'required'
-			// ],
 			[
 				'field' => 'fe_d',
 				'label' => 'First'
@@ -219,27 +84,15 @@ class Metal_model extends CI_Model {
 			],
 			[
 				'field' => 'fe_b',
-				'label' => 'FE Middle'
+				'label' => 'FE Last'
 			],
 			[
 				'field' => 'nonfe_b',
-				'label' => 'Non FE Middle'
+				'label' => 'Non FE Last'
 			],
 			[
 				'field' => 'sus_b',
-				'label' => 'SUS Middle'
-			],
-			[
-				'field' => 'update_time_t',
-				'label' => 'Middle Time'
-			],
-			[
-				'field' => 'update_time_b',
-				'label' => 'Last Time'
-			],
-			[
-				'field' => 'sus_b',
-				'label' => 'SUS Middle'
+				'label' => 'SUS Last'
 			],
 			[
 				'field' => 'keterangan',
@@ -250,11 +103,15 @@ class Metal_model extends CI_Model {
 				'label' => 'Notes'
 			]
 		];
-	}
+	} 
 
-	public function update($uuid)
+	public function insert()
 	{
-		$username= $this->session->userdata('username');
+		$produksi_data = $this->session->userdata('produksi_data');
+		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+		$uuid = Uuid::uuid4()->toString();
+		$username = $this->session->userdata('username');
+		$plant = $this->session->userdata('plant');
 		$date_metal = $this->input->post('date_metal');
 		$shift = $this->input->post('shift');
 		$time = $this->input->post('time');
@@ -262,25 +119,29 @@ class Metal_model extends CI_Model {
 		$kode_produksi = $this->input->post('kode_produksi');
 		$no_program = $this->input->post('no_program');
 		$deteksi_ng = $this->input->post('deteksi_ng');
-		// $std_fe = $this->input->post('std_fe');
-		// $std_nonfe = $this->input->post('std_nonfe');
-		// $std_sus304 = $this->input->post('std_sus304');
-		$fe_d = $this->input->post('fe_d');
-		$nonfe_d = $this->input->post('nonfe_d');
-		$sus_d = $this->input->post('sus_d');
-		$fe_t = $this->input->post('fe_t');
-		$nonfe_t = $this->input->post('nonfe_t');
-		$sus_t = $this->input->post('sus_t');
-		$fe_b = $this->input->post('fe_b');
-		$nonfe_b = $this->input->post('nonfe_b');
-		$sus_b = $this->input->post('sus_b');
-		$update_time_b = $this->input->post('update_time_b');
-		$update_time_t = $this->input->post('update_time_t');
+		$std_fe = $this->input->post('std_fe');
+		$std_nonfe = $this->input->post('std_nonfe');
+		$std_sus304 = $this->input->post('std_sus304');
+		$fe_d = $this->input->post('fe_d') ?? 'tidak terdeteksi';
+		$nonfe_d = $this->input->post('nonfe_d') ?? 'tidak terdeteksi';
+		$sus_d = $this->input->post('sus_d') ?? 'tidak terdeteksi';
+		$fe_t = $this->input->post('fe_t') ?? 'tidak terdeteksi';
+		$nonfe_t = $this->input->post('nonfe_t') ?? 'tidak terdeteksi';
+		$sus_t = $this->input->post('sus_t') ?? 'tidak terdeteksi';
+		$fe_b = $this->input->post('fe_b') ?? 'tidak terdeteksi';
+		$nonfe_b = $this->input->post('nonfe_b') ?? 'tidak terdeteksi';
+		$sus_b = $this->input->post('sus_b') ?? 'tidak terdeteksi';
 		$keterangan = $this->input->post('keterangan');
 		$catatan_metal = $this->input->post('catatan_metal');
+		$status_produksi = "1";
+		$status_spv = "0";
+		$status_produksi_false = "1";
+		$status_spv_false = "0";
 
 		$data = array(
+			'uuid' => $uuid,
 			'username_1' => $username,
+			'plant' => $plant,
 			'date_metal' => $date_metal,
 			'shift' => $shift,
 			'time' => $time,
@@ -288,9 +149,9 @@ class Metal_model extends CI_Model {
 			'kode_produksi' => $kode_produksi,
 			'no_program' => $no_program,
 			'deteksi_ng' => $deteksi_ng,
-			// 'std_fe' => $std_fe,
-			// 'std_nonfe' => $std_nonfe,
-			// 'std_sus304' => $std_sus304,
+			'std_fe' => $std_fe,
+			'std_nonfe' => $std_nonfe,
+			'std_sus304' => $std_sus304,
 			'fe_d' => $fe_d,
 			'nonfe_d' => $nonfe_d,
 			'sus_d' => $sus_d,
@@ -300,18 +161,126 @@ class Metal_model extends CI_Model {
 			'fe_b' => $fe_b,
 			'nonfe_b' => $nonfe_b,
 			'sus_b' => $sus_b,
-			'update_time_t' => $update_time_t,
-			'update_time_b' => $update_time_b,
 			'keterangan' => $keterangan,
 			'catatan_metal' => $catatan_metal,
-
-			'modified_at' => date("Y-m-d H:i:s")
+			'status_produksi' => $status_produksi,
+			'status_spv' => $status_spv,
+			'status_produksi_false' => $status_produksi_false,
+			'nama_produksi_metal' => $nama_produksi,
+			'nama_produksi_false' => $nama_produksi,
+			'status_spv_false' => $status_spv_false
 		);
 
-		$this->db->update('metal', $data, array('uuid' => $uuid));
+		$this->db->insert('metal', $data);
 		return($this->db->affected_rows() > 0) ? true :false;
 
 	}
+
+	public function rules_update()
+	{
+		return [
+			[
+				'field' => 'date_metal',
+				'label' => 'Tanggal',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'shift',
+				'label' => 'Shift',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'time',
+				'label' => 'Pukul',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'nama_produk',
+				'label' => 'Nama Produk',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'kode_produksi',
+				'label' => 'Kode Produksi',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'no_program',
+				'label' => 'No Program',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'deteksi_ng',
+				'label' => 'Deteksi NG',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'std_fe',
+				'label' => 'Standar Fe',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'std_nonfe',
+				'label' => 'Standar Non Fe',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'std_sus304',
+				'label' => 'Standar SUS 304',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'keterangan',
+				'label' => 'Keterangan',
+				'rules' => 'trim'
+			],
+			[
+				'field' => 'catatan_metal',
+				'label' => 'Catatan',
+				'rules' => 'trim'
+			]
+		];
+	}
+
+	public function update($uuid)
+	{
+		$username = $this->session->userdata('username');
+
+		$data = [
+			'username_1'   => $username,
+			'date_metal'   => $this->input->post('date_metal'),
+			'shift'        => $this->input->post('shift'),
+			'time'         => $this->input->post('time'),
+			'nama_produk'  => $this->input->post('nama_produk'),
+			'kode_produksi'=> $this->input->post('kode_produksi'),
+			'no_program'   => $this->input->post('no_program'),
+			'deteksi_ng'   => $this->input->post('deteksi_ng'),
+			'std_fe'       => $this->input->post('std_fe'),
+			'std_nonfe'    => $this->input->post('std_nonfe'),
+			'std_sus304'   => $this->input->post('std_sus304'),
+
+			'fe_d'         => $this->input->post('fe_d') ?: 'tidak terdeteksi',
+			'nonfe_d'      => $this->input->post('nonfe_d') ?: 'tidak terdeteksi',
+			'sus_d'        => $this->input->post('sus_d') ?: 'tidak terdeteksi',
+			'fe_t'         => $this->input->post('fe_t') ?: 'tidak terdeteksi',
+			'nonfe_t'      => $this->input->post('nonfe_t') ?: 'tidak terdeteksi',
+			'sus_t'        => $this->input->post('sus_t') ?: 'tidak terdeteksi',
+			'fe_b'         => $this->input->post('fe_b') ?: 'tidak terdeteksi',
+			'nonfe_b'      => $this->input->post('nonfe_b') ?: 'tidak terdeteksi',
+			'sus_b'        => $this->input->post('sus_b') ?: 'tidak terdeteksi',
+
+			'keterangan'   => $this->input->post('keterangan'),
+			'catatan_metal'=> $this->input->post('catatan_metal'),
+
+			'modified_at'  => date("Y-m-d H:i:s")
+		];
+
+		$this->db->where('uuid', $uuid);
+		$this->db->update('metal', $data);
+
+		return $this->db->affected_rows() > 0;
+	}
+
 
 	// public function rules_update2()
 	// {

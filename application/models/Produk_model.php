@@ -12,7 +12,7 @@ class Produk_model extends CI_Model {
 				'field' => 'nama_produk',
 				'label' => 'Name of Things',
 				'rules' => 'required'
-			]
+			] 
 		];
 	}
 
@@ -57,6 +57,13 @@ class Produk_model extends CI_Model {
 		return $data;
 	}
 
+	public function get_produk_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('produk', ['plant' => $plant])->result();
+	}
+
 	public function get_by_uuid($uuid)
 	{
 		$data = $this->db->get_where('produk', array('uuid' => $uuid))->row();
@@ -71,6 +78,13 @@ class Produk_model extends CI_Model {
 	
 	public function get_all_produk()
 	{
+		return $this->db->get('produk')->result();
+	}
+
+	public function get_all_produk_by_plant($plant)
+	{
+		$this->db->where('plant', $plant);
+		$this->db->order_by('created_at', 'DESC');
 		return $this->db->get('produk')->result();
 	}
 
