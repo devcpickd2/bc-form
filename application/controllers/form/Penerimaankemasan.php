@@ -457,15 +457,22 @@ class Penerimaankemasan extends CI_Controller {
 		if ($status_verifikasi) {
 			$y_verifikasi = $y_after_keterangan;
 
-	// Dibuat oleh (QC)
 			$pdf->SetXY(60, $y_verifikasi);
 			$pdf->Cell(50, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(60, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 9);
-			$pdf->Cell(50, 5, $data['penerimaankemasan']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 9); 
-			$pdf->SetXY(60, $y_verifikasi + 15);
-			$pdf->Cell(50, 5, 'QC Inspector', 0, 0, 'C');
+			if (!empty($data['penerimaankemasan']->nama_lengkap_qc)) {
+				$update_tanggal_qc = !empty($data['penerimaankemasan']->created_at)
+				? (new DateTime($data['penerimaankemasan']->created_at))->format('d-m-Y | H:i')
+				: date('d-m-Y | H:i'); 
+
+				$qr_text_qc = "Dibuat secara digital oleh,\n" .
+				$data['penerimaankemasan']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 78, $y_verifikasi + 5, 15, 15, null, 'N');
+				$pdf->SetXY(60, $y_verifikasi + 20);
+				$pdf->Cell(50, 5, 'QC Inspector', 0, 0, 'C');
+			} else {
+				$pdf->SetXY(60, $y_verifikasi + 15);
+				$pdf->Cell(50, 5, 'Belum Diverifikasi', 0, 0, 'C');
+			}
 
 	// Disetujui oleh (SPV)
 			$update_tanggal = (new DateTime($data['penerimaankemasan']->tgl_update_spv))->format('d-m-Y | H:i');

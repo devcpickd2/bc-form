@@ -512,3 +512,15 @@ $route['suhu/diketahui'] = 'form/suhu/diketahui';
 $route['suhu/statusprod/(:any)'] = 'form/suhu/statusprod/$1';
 $route['suhu/delete/(:any)'] = 'form/suhu/delete/$1';
 $route['suhu/export-excel'] = 'form/suhu/export_excel';
+
+$route['gosong'] = 'form/gosong';
+$route['gosong/tambah'] = 'form/gosong/tambah';
+$route['gosong/detail/(:any)'] = 'form/gosong/detail/$1';
+$route['gosong/edit/(:any)'] = 'form/gosong/edit/$1';
+$route['gosong/verifikasi'] = 'form/gosong/verifikasi';
+$route['gosong/status/(:any)'] = 'form/gosong/status/$1';
+$route['gosong/cetak'] = 'form/gosong/cetak';
+$route['gosong/diketahui'] = 'form/gosong/diketahui';
+$route['gosong/statusprod/(:any)'] = 'form/gosong/statusprod/$1';
+$route['gosong/delete/(:any)'] = 'form/gosong/delete/$1';
+$route['gosong/export-excel'] = 'form/gosong/export_excel';

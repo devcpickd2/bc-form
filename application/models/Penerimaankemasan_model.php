@@ -357,7 +357,7 @@ class Penerimaankemasan_model extends CI_Model {
 
 	public function get_last_verif_by_date($tanggal, $plant = null)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date, shift');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, created_at');
 		$this->db->where('DATE(date)', $tanggal);
 
 		if (!empty($plant)) {

@@ -338,7 +338,7 @@ class Pemeriksaanchemical_model extends CI_Model {
 // Ambil info verifikasi (nama_spv, username, dsb) hanya satu baris terakhir dari tanggal tsb
 	public function get_by_tanggal_verif($tanggal)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date, shift');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, created_at');
 		$this->db->where('DATE(date)', $tanggal);
 		$this->db->order_by('tgl_update_spv', 'DESC');
 		$this->db->limit(1);

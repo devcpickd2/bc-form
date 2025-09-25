@@ -146,7 +146,6 @@ class Proses extends CI_Controller {
 		$this->load->view('partials/footer');
 	}
 
-
 	public function delete($uuid)
 	{
 		if (!$uuid) {

@@ -75,12 +75,21 @@ class Loading_model extends CI_Model {
 		$list_kondisi = $this->input->post('list_kondisi');
 		$kondisi_mobil_keterangan = $this->input->post('kondisi_mobil_keterangan');
 
+// jika null ubah jadi array kosong
+		if (!is_array($list_kondisi)) {
+			$list_kondisi = [];
+		}
+		if (!is_array($kondisi_mobil_keterangan)) {
+			$kondisi_mobil_keterangan = [];
+		}
+
+// baru looping
 		$kondisi_mobil = [];
 		for ($i = 0; $i < count($list_kondisi); $i++) {
-			$kondisi_mobil[] = array(
+			$kondisi_mobil[] = [
 				'list_kondisi' => $list_kondisi[$i],
 				'kondisi_mobil_keterangan' => isset($kondisi_mobil_keterangan[$i]) ? $kondisi_mobil_keterangan[$i] : '',
-			);
+			];
 		}
 
 		$nama_produk = $this->input->post('nama_produk');
@@ -306,7 +315,7 @@ class Loading_model extends CI_Model {
 
 	public function get_by_uuid_loading_verif($uuid_array)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_wh, shift, no_pol, start_loading, finish_loading, nama_supir, ekspedisi, tujuan, no_segel, status_wh, tgl_update_wh');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_wh, shift, no_pol, start_loading, finish_loading, nama_supir, ekspedisi, tujuan, no_segel, status_wh, tgl_update_wh, created_at');
 		$this->db->where_in('uuid', $uuid_array);
 		$this->db->order_by('tgl_update_spv', 'DESC');   
 		$this->db->limit(1);  

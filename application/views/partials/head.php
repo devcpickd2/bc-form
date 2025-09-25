@@ -111,7 +111,7 @@
 
         <div id="collapseQC2" class="collapse <?= in_array($active_nav, [
             'pengayakan', 'kekuatanmagnet', 'verifikasimagnet', 'thermometer', 'timbangan',
-            'magnettrap', 'inventaris', 'pecahbelah', 'produksi', 'ketidaksesuaian', 'proses', 'retain', 'disposisi', 'pemusnahan'
+            'magnettrap', 'inventaris', 'pecahbelah', 'produksi', 'ketidaksesuaian', 'proses', 'retain', 'disposisi', 'pemusnahan', 'gosong'
             ]) ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
 
@@ -137,6 +137,7 @@
                 <a class="collapse-item <?= $active_nav == 'disposisi' ?'active':'';?>" href="<?= base_url('disposisi')?>">Disposisi Produk dan Prosedur</a>
                 <a class="collapse-item <?= $active_nav == 'pemusnahan' ?'active':'';?>" href="<?= base_url('pemusnahan')?>">Pemusnahan Barang / Produk</a>
                 <a class="collapse-item <?= $active_nav == 'retain' ?'active':'';?>" href="<?= base_url('retain')?>">Retain Sample Report</a>
+                <a class="collapse-item <?= $active_nav == 'gosong' ?'active':'';?>" href="<?= base_url('gosong')?>">Laporan Roti Gosong</a>
             </div>
         </div>
 
@@ -206,7 +207,7 @@
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQC22" aria-expanded="true" aria-controls="collapseQC22">
                 <i class="fas fa-database"></i>
                 <span>PRODUKSI</span></a>
-                <div id="collapseQC22" class="collapse <?= ($active_nav == 'verifikasi-pengayakan' || $active_nav == 'verifikasi-produksi' || $active_nav == 'verifikasi-kekuatanmagnet' || $active_nav == 'verifikasi-verifikasimagnet' || $active_nav == 'verifikasi-thermometer' || $active_nav == 'verifikasi-timbangan' || $active_nav == 'verifikasi-ketidaksesuaian' ||  $active_nav == 'verifikasi-magnettrap' || $active_nav == 'verifikasi-inventaris' || $active_nav == 'verifikasi-pecahbelah' || $active_nav == 'verifikasi-proses' || $active_nav == 'verifikasi-pemusnahan' || $active_nav == 'verifikasi-retain' || $active_nav == 'verifikasi-disposisi' ) ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
+                <div id="collapseQC22" class="collapse <?= ($active_nav == 'verifikasi-pengayakan' || $active_nav == 'verifikasi-produksi' || $active_nav == 'verifikasi-kekuatanmagnet' || $active_nav == 'verifikasi-verifikasimagnet' || $active_nav == 'verifikasi-thermometer' || $active_nav == 'verifikasi-timbangan' || $active_nav == 'verifikasi-ketidaksesuaian' ||  $active_nav == 'verifikasi-magnettrap' || $active_nav == 'verifikasi-inventaris' || $active_nav == 'verifikasi-pecahbelah' || $active_nav == 'verifikasi-proses' || $active_nav == 'verifikasi-pemusnahan' || $active_nav == 'verifikasi-retain' || $active_nav == 'verifikasi-disposisi' || $active_nav == 'verifikasi-gosong' ) ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item <?= $active_nav == 'verifikasi-pengayakan' ? 'active' : ''; ?>" href="<?= base_url('pengayakan/verifikasi')?>">Pengayakan</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-kekuatanmagnet' ? 'active' : ''; ?>" href="<?= base_url('kekuatanmagnet/verifikasi')?>">Pemeriksaan Kekuatan Magnet Trap</a>
@@ -230,6 +231,7 @@
                         <a class="collapse-item <?= $active_nav == 'verifikasi-disposisi' ? 'active' : ''; ?>" href="<?= base_url('disposisi/verifikasi')?>">Disposisi Produk dan Prosedur</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-pemusnahan' ? 'active' : ''; ?>" href="<?= base_url('pemusnahan/verifikasi')?>">Pemusnahan Barang / Produk</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-retain' ? 'active' : ''; ?>" href="<?= base_url('retain/verifikasi')?>">Retain Sample Report</a>
+                        <a class="collapse-item <?= $active_nav == 'verifikasi-gosong' ? 'active' : ''; ?>" href="<?= base_url('gosong/verifikasi')?>">Laporan Roti Gosong</a>
                     </div>
                 </div>
 
