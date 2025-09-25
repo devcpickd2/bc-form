@@ -445,45 +445,55 @@ class Loading extends CI_Controller {
 		// Dibuat oleh (QC)
 			$pdf->SetXY(25, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8); // underline
-			$pdf->Cell(35, 5, $data['loading']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8); 
-			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+			if (!empty($data['loading']->nama_lengkap_qc)) {
+				$update_tanggal_qc = !empty($data['loading']->created_at)
+				? (new DateTime($data['loading']->created_at))->format('d-m-Y | H:i')
+				: date('d-m-Y | H:i'); 
 
-		// Diketahui oleh (Produksi)
-			// $pdf->SetXY(90, $y_verifikasi + 5);
-			// $pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-			// if ($data['loading']->status_wh == 1 && !empty($data['loading']->nama_wh)) {
-			// 	$update_tanggal_wh = (new DateTime($data['loading']->tgl_update_wh))->format('d-m-Y | H:i');
-			// 	$qr_text_wh = "Diketahui secara digital oleh,\n" . $data['loading']->nama_lengkap_wh . "\nForeman/Forelady Produksi\n" . $update_tanggal_wh;
-			// 	$pdf->write2DBarcode($qr_text_wh, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-			// 	$pdf->SetXY(90, $y_verifikasi + 24);
-			// 	$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
-			// } else {
-			// 	$pdf->SetXY(90, $y_verifikasi + 10);
-			// 	$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
-			// }
+				$qr_text_qc = "Dibuat secara digital oleh,\n" .
+				$data['loading']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 35, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(25, $y_verifikasi + 24);
+				$pdf->Cell(35, 5, 'QC Inspector', 0, 0, 'C');
+			} else {
+				$pdf->SetXY(25, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+			}
+
+			// Diketahui oleh (Produksi)
+			$pdf->SetXY(90, $y_verifikasi + 5);
+			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 			if ($data['loading']->status_wh == 1 && !empty($data['loading']->nama_wh)) {
 				$update_tanggal_wh = (new DateTime($data['loading']->tgl_update_wh))->format('d-m-Y | H:i');
-
-				$pdf->SetXY(90, $y_verifikasi + 5);
-				$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(35, 5, $data['loading']->nama_wh, 0, 0, 'C');
-
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 14);
+				$qr_text_wh = "Diketahui secara digital oleh,\n" . $data['loading']->nama_lengkap_wh . "\nForeman/Forelady Warehouse\n" . $update_tanggal_wh;
+				$pdf->write2DBarcode($qr_text_wh, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(90, $y_verifikasi + 24);
 				$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
-
-				// $pdf->SetXY(90, $y_verifikasi + 18);
-				// $pdf->Cell(35, 5, $update_tanggal_wh, 0, 0, 'C');
 			} else {
-				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
+
+			// if ($data['loading']->status_wh == 1 && !empty($data['loading']->nama_wh)) {
+			// 	$update_tanggal_wh = (new DateTime($data['loading']->tgl_update_wh))->format('d-m-Y | H:i');
+
+			// 	$pdf->SetXY(90, $y_verifikasi + 5);
+			// 	$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			// 	$pdf->SetFont('times', 'U', 8);
+			// 	$pdf->SetXY(90, $y_verifikasi + 10);
+			// 	$pdf->Cell(35, 5, $data['loading']->nama_wh, 0, 0, 'C');
+
+			// 	$pdf->SetFont('times', '', 8);
+			// 	$pdf->SetXY(90, $y_verifikasi + 14);
+			// 	$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
+
+			// 	// $pdf->SetXY(90, $y_verifikasi + 18);
+			// 	// $pdf->Cell(35, 5, $update_tanggal_wh, 0, 0, 'C');
+			// } else {
+			// 	$pdf->SetFont('times', '', 8);
+			// 	$pdf->SetXY(90, $y_verifikasi + 10);
+			// 	$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+			// }
 
 		// Disetujui oleh (SPV)
 			$pdf->SetXY(150, $y_verifikasi + 5);

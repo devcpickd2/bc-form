@@ -132,10 +132,10 @@
                     <table class="table table-bordered">
                         <thead class="thead-light">
                             <tr>
-                                <th style="width: 14%;">Jenis Produksi</th>
-                                <th style="width: 2%;"></th>
+                                <th style="width: 30%;">Jenis Produksi</th>
+                                <th style="width: 5%;"></th>
                                 <?php for ($i = 1; $i <= 10; $i++): ?>
-                                    <th style="width: 7.8%;">Input ke-<?= $i ?></th>
+                                    <th style="width: 10%;" class="text-center">Input ke-<?= $i ?></th>
                                 <?php endfor; ?>
                             </tr>
                         </thead>
@@ -171,28 +171,30 @@
                                                     <?php
                                                     $paramName = $subParams[0];
                                                     $value = set_value("proses_produksi[{$kategori}][{$paramName}][{$col}]");
-                                                    ?>
-                                                    <?php
                                                     $additionalClass = '';
                                                     if ($paramName == 'kode_produksi') {
                                                         $additionalClass = 'kode_produksi_field';
                                                     } elseif ($paramName == 'nama_produk') {
                                                         $additionalClass = 'nama_produk_array';
                                                     }
+                                                    // Tentukan type input otomatis time/text
+                                                    $inputType = in_array($paramName, ['jam_mulai', 'jam_selesai']) ? 'time' : 'text';
                                                     ?>
-
                                                     <input
-                                                    type="text"
+                                                    type="<?= $inputType ?>"
                                                     name="proses_produksi[<?= $kategori ?>][<?= $paramName ?>][<?= $col ?>]"
                                                     class="form-control form-control-sm <?= $additionalClass ?>"
                                                     <?= ($paramName == 'kode_produksi' && $col == 0) ? 'id="kode_produksi_0"' : '' ?>
-                                                    value="<?= $value ?>"
-                                                    >
-
+                                                    value="<?= $value ?>">
                                                 <?php else: ?>
                                                     <div class="d-flex">
                                                         <?php foreach ($subParams as $i => $sub): ?>
-                                                            <input type="text" name="proses_produksi[<?= $kategori ?>][<?= $sub ?>][<?= $col ?>]" class="form-control form-control-sm <?= ($i == 0) ? 'mr-1' : '' ?>" style="width: 50%;" value="<?= set_value("proses_produksi[{$kategori}][{$sub}][{$col}]") ?>">
+                                                            <?php $inputType = in_array($sub, ['jam_mulai','jam_selesai']) ? 'time' : 'text'; ?>
+                                                            <input type="<?= $inputType ?>"
+                                                                   name="proses_produksi[<?= $kategori ?>][<?= $sub ?>][<?= $col ?>]"
+                                                                   class="form-control form-control-sm <?= ($i == 0) ? 'mr-1' : '' ?>"
+                                                                   style="width: 100%;"
+                                                                   value="<?= set_value("proses_produksi[{$kategori}][{$sub}][{$col}]") ?>">
                                                         <?php endforeach; ?>
                                                     </div>
                                                 <?php endif; ?>
@@ -230,9 +232,10 @@
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    // Fitur auto-fill nama_produk
+        // Fitur auto-fill nama_produk
         const selectNamaProduk = document.getElementById('select_nama_produk');
         const namaProdukFields = document.querySelectorAll('.nama_produk_array');
 
@@ -257,23 +260,23 @@
             const kodeAwal = this.value.trim();
             const inputs = document.querySelectorAll('.kode_produksi_field');
 
-        // Pastikan kode diakhiri dua digit angka
-        const match = kodeAwal.match(/^(.+?)(\d{2})$/);  // misal: PG26301AB01 → ["PG26301AB01", "PG26301AB", "01"]
-        if (!match) {
-            for (let i = 1; i < inputs.length; i++) {
-                inputs[i].value = '';
+            // Pastikan kode diakhiri dua digit angka
+            const match = kodeAwal.match(/^(.+?)(\d{2})$/);
+            if (!match) {
+                for (let i = 1; i < inputs.length; i++) {
+                    inputs[i].value = '';
+                }
+                return;
             }
-            return;
-        }
 
-        const prefix = match[1];        // "PG26301AB"
-        const startNum = parseInt(match[2]);  // 1
+            const prefix = match[1];
+            const startNum = parseInt(match[2]);
 
-        for (let i = 1; i < inputs.length; i++) {
-            const num = (startNum + i).toString().padStart(2, '0');
-            inputs[i].value = `${prefix}${num}`;
-        }
-    });
+            for (let i = 1; i < inputs.length; i++) {
+                const num = (startNum + i).toString().padStart(2, '0');
+                inputs[i].value = `${prefix}${num}`;
+            }
+        });
     });
 </script>
 
@@ -287,5 +290,4 @@
     .mr-1 {
         margin-right: 0.25rem;
     }
-
 </style>

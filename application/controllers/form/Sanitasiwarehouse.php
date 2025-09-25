@@ -351,49 +351,36 @@ class Sanitasiwarehouse extends CI_Controller {
 
 		if ($status_verifikasi) {
 			$y_verifikasi = $y_after_keterangan;
-
-		// Dibuat oleh (QC)
 			$pdf->SetXY(25, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8); // underline
-			$pdf->Cell(35, 5, $data['sanitasiwarehouse']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8); 
-			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+			if (!empty($data['sanitasiwarehouse']->nama_lengkap_qc)) {
+				$update_tanggal_qc = !empty($data['sanitasiwarehouse']->created_at)
+				? (new DateTime($data['sanitasiwarehouse']->created_at))->format('d-m-Y | H:i')
+				: date('d-m-Y | H:i'); 
 
-		// // Diketahui oleh (Produksi)
-		// 	$pdf->SetXY(90, $y_verifikasi + 5);
-		// 	$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-		// 	if ($data['sanitasiwarehouse']->status_wh == 1 && !empty($data['sanitasiwarehouse']->nama_wh)) {
-		// 		$update_tanggal_wh = (new DateTime($data['sanitasiwarehouse']->tgl_update_wh))->format('d-m-Y | H:i');
-		// 		$qr_text_wh = "Diketahui secara digital oleh,\n" . $data['sanitasiwarehouse']->nama_lengkap_wh . "\nForeman/Forelady Produksi\n" . $update_tanggal_wh;
-		// 		$pdf->write2DBarcode($qr_text_wh, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 		$pdf->SetXY(90, $y_verifikasi + 24);
-		// 		$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
-		// 	} else {
-		// 		$pdf->SetXY(90, $y_verifikasi + 10);
-		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
-		// 	}
+				$qr_text_qc = "Dibuat secara digital oleh,\n" .
+				$data['sanitasiwarehouse']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 35, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(25, $y_verifikasi + 24);
+				$pdf->Cell(35, 5, 'QC Inspector', 0, 0, 'C');
+			} else {
+				$pdf->SetXY(25, $y_verifikasi + 10);
+				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+			}
 
-			// Diketahui oleh (Warehouse)
+
+		// Diketahui oleh (Produksi)
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-
 			if ($data['sanitasiwarehouse']->status_wh == 1 && !empty($data['sanitasiwarehouse']->nama_wh)) {
-				$update_tanggal_wh = (new DateTime($data['sanitasiwarehouse']->tgl_update_wh))->format('d-m-Y | H:i');
-
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(35, 5, $data['sanitasiwarehouse']->nama_wh, 0, 1, 'C');
-
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 15);
-				$pdf->Cell(35, 5, 'Warehouse', 0, 1, 'C');
-
-				// $pdf->SetXY(90, $y_verifikasi + 20);
-				// $pdf->Cell(35, 5, $update_tanggal_wh, 0, 0, 'C');
+				$update_tanggal_wh = (new DateTime($data['sanitasiwarehouse']->tgl_update_wh))
+				->modify('+1 hour')
+				->format('d-m-Y | H:i');
+				$qr_text_wh = "Diketahui secara digital oleh,\n" . $data['sanitasiwarehouse']->nama_lengkap_wh . "\nForeman/Forelady Warehouse\n" . $update_tanggal_wh;
+				$pdf->write2DBarcode($qr_text_wh, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(90, $y_verifikasi + 24);
+				$pdf->Cell(35, 5, 'Warehouse', 0, 0, 'C');
 			} else {
-				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
