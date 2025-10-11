@@ -116,6 +116,8 @@ class Magnettrap_model extends CI_Model {
 		$catatan = $this->input->post('catatan');
 		$keterangan = $this->input->post('keterangan');
 
+		$old_data = $this->db->get_where('magnet_trap', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -135,7 +137,20 @@ class Magnettrap_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		$this->db->update('magnet_trap', $data);
 
-		return $this->db->affected_rows() > 0;
+		$new_data = $this->db->get_where('magnet_trap', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus magnet_trap_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'magnet_trap_logs', // nama tabel log khusus magnet_trap
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_verifikasi()

@@ -99,7 +99,8 @@ class Reagen_model extends CI_Model {
 		$volume_penggunaan = $this->input->post('volume_penggunaan');
 		$volume_akhir = $this->input->post('volume_akhir');
 		$catatan = $this->input->post('catatan');
-
+		$old_data = $this->db->get_where('reagen', ['uuid'=>$uuid])->row_array();
+		
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -114,8 +115,24 @@ class Reagen_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('reagen', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		
+		$this->db->update('reagen', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('reagen', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus reagen_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'reagen_logs', // nama tabel log khusus reagen
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

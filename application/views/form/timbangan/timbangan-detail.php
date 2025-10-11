@@ -31,47 +31,38 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="2"><b>Tanggal:</b> <?= $formattedDate; ?></td>
-                            <td colspan="5"></td>
+                            <td colspan="2"><b>Tanggal: </b> <?= $formattedDate; ?></td>
+                            <td colspan="5"><b>Shift: </b><?= $timbangan->shift; ?></td>
                         </tr>
-                        <tr>
-                            <td><b>Shift</b></td>
-                            <td colspan="6"><?= $timbangan->shift; ?></td>
-                        </tr>
-                        <tr>
-                            <td><b>Kode Timbangan</b></td>
-                            <td colspan="6"><?= $timbangan->kode_timbangan; ?></td>
-                        </tr>
-                        <tr>
-                            <td><b>Kapasitas</b></td>
-                            <td colspan="6"><?= $timbangan->kapasitas; ?></td>
-                        </tr>
-                        <tr>
-                            <td><b>Model</b></td>
-                            <td colspan="6"><?= $timbangan->model; ?></td>
-                        </tr>
-                        <tr>
-                            <td><b>Lokasi</b></td>
-                            <td colspan="6"><?= $timbangan->lokasi; ?></td>
-                        </tr>
-                        <tr>
-                            <td><b>Standar</b></td>
-                            <td colspan="6"><?= $timbangan->peneraan_standar; ?></td>
-                        </tr>
+
                         <tr class="bg-light text-center">
                             <td colspan="7" class="font-weight-bold">Daftar Hasil Pemeriksaan</td>
                         </tr>
+
                         <tr class="table-primary text-center">
-                            <th>No</th>
-                            <th colspan="3">Waktu</th>
-                            <th colspan="3">Hasil</th>
+                            <!-- <th>No</th> -->
+                            <th>Kode Thermometer</th>
+                            <th>Kapasitas</th>
+                            <th>Model</th>
+                            <th>Lokasi</th>
+                            <th>Waktu</th>
+                            <th>Standar Suhu (°C)</th>
+                            <th>Hasil</th>
                         </tr>
-                        <?php $no = 1; foreach ($result as $row): ?>
-                        <tr class="text-center">
-                            <td><?= $no++ ?></td>
-                            <td colspan="3"><?= htmlspecialchars($row['pukul']) ?></td>
-                            <td colspan="3"><?= htmlspecialchars($row['hasil']) ?></td>
-                        </tr>
+
+                        <?php 
+                        // $no = 1; 
+                        foreach ($result as $row): ?>
+                            <tr class="text-center">
+                                <!-- <td><?= $no++ ?></td> -->
+                                <td><?= htmlspecialchars($row['kode_timbangan'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['kapasitas'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['model'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['lokasi'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['pukul'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['peneraan_standar'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['hasil'] ?? '-') ?></td>
+                            </tr>
                         <?php endforeach; ?>
                         <tr class="bg-light text-center">
                             <td colspan="7" class="font-weight-bold">VERIFIKASI</td>
@@ -84,13 +75,13 @@
                             <td><b>Disetujui Supervisor</b></td>
                             <td colspan="6">
                                 <?php
-                                    if ($timbangan->status_spv == 0) {
-                                        echo '<span class="text-secondary font-weight-bold">Created</span>';
-                                    } elseif ($timbangan->status_spv == 1) {
-                                        echo '<span class="text-success font-weight-bold">Verified</span>';
-                                    } elseif ($timbangan->status_spv == 2) {
-                                        echo '<span class="text-danger font-weight-bold">Revision</span>';
-                                    }
+                                if ($timbangan->status_spv == 0) {
+                                    echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                } elseif ($timbangan->status_spv == 1) {
+                                    echo '<span class="text-success font-weight-bold">Verified</span>';
+                                } elseif ($timbangan->status_spv == 2) {
+                                    echo '<span class="text-danger font-weight-bold">Revision</span>';
+                                }
                                 ?>
                             </td>
                         </tr>

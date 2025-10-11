@@ -29,34 +29,38 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="2"><b>Tanggal:</b> <?= $formattedDate; ?></td>
-                            <td colspan="5"></td>
+                            <td colspan="2"><b>Tanggal: </b> <?= $formattedDate; ?></td>
+                            <td colspan="5"><b>Shift: </b><?= $thermometer->shift; ?></td>
                         </tr>
-                        <tr>
-                            <td><b>Kode Thermometer</b></td>
-                            <td colspan="6"><?= $thermometer->kode_thermo; ?></td>
-                        </tr>
-                        <tr>
-                            <td><b>Area</b></td>
-                            <td colspan="6"><?= $thermometer->area; ?></td>
-                        </tr>
+
                         <tr class="bg-light text-center">
                             <td colspan="7" class="font-weight-bold">Daftar Hasil Pemeriksaan</td>
                         </tr>
+
                         <tr class="table-primary text-center">
                             <th>No</th>
-                            <th colspan="2">Waktu</th>
-                            <th colspan="2">Standar Suhu (°C)</th>
-                            <th colspan="2">Hasil</th>
+                            <th>Kode Thermometer</th>
+                            <th>Model</th>
+                            <th>Area</th>
+                            <th>Waktu</th>
+                            <th>Standar Suhu (°C)</th>
+                            <th>Hasil</th>
                         </tr>
-                        <?php $no = 1; foreach ($result as $row): ?>
-                        <tr class="text-center">
-                            <td><?= $no++ ?></td>
-                            <td colspan="2"><?= htmlspecialchars($row['pukul']) ?></td>
-                            <td colspan="2"><?= htmlspecialchars($row['standar']) ?></td>
-                            <td colspan="2"><?= htmlspecialchars($row['hasil']) ?></td>
-                        </tr>
+
+                        <?php 
+                        $no = 1; 
+                        foreach ($result as $row): ?>
+                            <tr class="text-center">
+                                <td><?= $no++ ?></td>
+                                <td><?= htmlspecialchars($row['kode_thermo'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['model'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['area'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['pukul'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['standar'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['hasil'] ?? '-') ?></td>
+                            </tr>
                         <?php endforeach; ?>
+
                         <tr>
                             <td><b>Tindakan Perbaikan</b></td>
                             <td colspan="6"><?= !empty($thermometer->tindakan_perbaikan) ? $thermometer->tindakan_perbaikan : 'Tidak ada'; ?></td>
@@ -65,6 +69,7 @@
                             <td><b>Keterangan</b></td>
                             <td colspan="6"><?= !empty($thermometer->keterangan) ? $thermometer->keterangan : 'Tidak ada'; ?></td>
                         </tr>
+
                         <tr class="table-primary text-center">
                             <th colspan="7">VERIFIKASI</th>
                         </tr>
@@ -82,14 +87,14 @@
                                 <?php
                                 switch ($thermometer->status_spv) {
                                     case 1:
-                                        echo '<span class="text-success font-weight-bold">Verified</span>';
-                                        break;
+                                    echo '<span class="text-success font-weight-bold">Verified</span>';
+                                    break;
                                     case 2:
-                                        echo '<span class="text-danger font-weight-bold">Revision</span>';
-                                        break;
+                                    echo '<span class="text-danger font-weight-bold">Revision</span>';
+                                    break;
                                     default:
-                                        echo '<span class="text-secondary font-weight-bold">Created</span>';
-                                        break;
+                                    echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                    break;
                                 }
                                 ?>
                             </td>
@@ -99,6 +104,7 @@
                             <td colspan="6"><?= !empty($thermometer->catatan_spv) ? $thermometer->catatan_spv : 'Tidak ada'; ?></td>
                         </tr>
                     </tbody>
+
                 </table>
             </div>
         </div>

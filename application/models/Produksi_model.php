@@ -86,6 +86,8 @@ class Produksi_model extends CI_Model {
 		$nama_produk = $this->input->post('nama_produk');
 		$kode_produksi = $this->input->post('kode_produksi');
 
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'date' => $date,
 			'shift' => $shift,
@@ -95,9 +97,23 @@ class Produksi_model extends CI_Model {
 
 			'modified_at' => date("Y-m-d H:i:s")
 		);
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 
@@ -207,7 +223,7 @@ class Produksi_model extends CI_Model {
 		$chill_water_kode = $this->input->post('chill_water_kode');
 		$chill_water_berat = $this->input->post('chill_water_berat');
 		$chill_water_sens = $this->input->post('chill_water_sens');
-
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 		$nama_premix = $this->input->post('nama_premix');
 		$kode = $this->input->post('kode');
 		$berat = $this->input->post('berat');
@@ -254,7 +270,21 @@ class Produksi_model extends CI_Model {
 
 		$this->db->update('mixing', $data, ['uuid' => $uuid]);
 
-		return ($this->db->affected_rows() > 0) ? true : false;
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_mixing()
@@ -318,7 +348,7 @@ class Produksi_model extends CI_Model {
 		$mix_dough_suhu_ruang = $this->input->post('mix_dough_suhu_ruang');
 		$mix_dough_rh_ruang = $this->input->post('mix_dough_rh_ruang');
 		$mix_dough_suhu_adonan = $this->input->post('mix_dough_suhu_adonan');
-
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'mix_dough_waktu_1' => $mix_dough_waktu_1,
 			// 'mix_dough_waktu_2' => $mix_dough_waktu_2,
@@ -333,8 +363,23 @@ class Produksi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
+
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 
@@ -382,6 +427,7 @@ class Produksi_model extends CI_Model {
 		$fermen_jam_selesai = $this->input->post('fermen_jam_selesai');
 		$fermen_lama_proses = $this->input->post('fermen_lama_proses');
 		// $fermen_hasil_proof = $this->input->post('fermen_hasil_proof');
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 
 		$data = array(
 			'fermen_suhu' => $fermen_suhu,
@@ -394,8 +440,23 @@ class Produksi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
+
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 
@@ -459,6 +520,7 @@ class Produksi_model extends CI_Model {
 		$sens_aroma = $this->input->post('sens_aroma');
 		$sens_tekstur = $this->input->post('sens_tekstur');
 		$sens_warna = $this->input->post('sens_warna');
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 
 		$data = array(
 			'electric_baking_suhu' => $electric_baking_suhu,
@@ -475,8 +537,24 @@ class Produksi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
+
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 
@@ -521,7 +599,7 @@ class Produksi_model extends CI_Model {
 		$stall_jam_berhenti = $this->input->post('stall_jam_berhenti');
 		// $stall_aging = $this->input->post('stall_aging'); 
 		$stall_kadar_air = $this->input->post('stall_kadar_air'); 
-
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'username' => $username,
 			'date_stall' => $date_stall,
@@ -533,8 +611,24 @@ class Produksi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
+
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	// public function rules_grinding()
@@ -594,7 +688,7 @@ class Produksi_model extends CI_Model {
 		$dry_suhu = $this->input->post('dry_suhu'); 
 		$dry_rotasi = $this->input->post('dry_rotasi');
 		$dry_kadar_air = $this->input->post('dry_kadar_air');
-
+		$old_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'username' => $username,
 			'dry_suhu' => $dry_suhu,
@@ -603,8 +697,23 @@ class Produksi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
+
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 
@@ -702,6 +811,7 @@ class Produksi_model extends CI_Model {
 	{
 		$username = $this->session->userdata('username');
 		$old_data = $this->db->get_where('mixing', ['uuid' => $uuid])->row();
+		$old_data2 = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
 
 // === Proses Upload Gambar Kode Kemasan ===
 		$gambar_kode_kemasan = $old_data->gambar_kode_kemasan; 
@@ -758,8 +868,24 @@ class Produksi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('mixing', $data, array('uuid' => $uuid));
-		return ($this->db->affected_rows() > 0) ? true : false;
+		
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
+
+		// ambil data baru setelah update
+		$new_data = $this->db->get_where('mixing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus mixing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'mixing_logs', // nama tabel log khusus mixing
+                $uuid,
+                $old_data2,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 
@@ -974,7 +1100,7 @@ class Produksi_model extends CI_Model {
 		->get('mixing')
 		->row();
 	}
- 
+
 	public function get_produksi_by_plant_and_date($plant_uuid, $tanggal)
 	{
 		$this->db->where('plant', $plant_uuid);

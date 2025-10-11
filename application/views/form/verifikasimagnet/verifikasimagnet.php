@@ -37,6 +37,7 @@
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
                             <th>Jumlah Temuan</th>
+                            <th>Bukti Temuan</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -56,37 +57,48 @@
                                 <td><?= $val->kode_produksi; ?></td>
                                 <td><?= $val->jumlah_temuan; ?></td>
                                 <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('verifikasimagnet/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Edit</span>
-                                    </a>
-                                    <a href="<?= base_url('verifikasimagnet/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
-                                        <span class="text">Detail</span>
-                                    </a>
-                                    <a href="<?= base_url('verifikasimagnet/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <span class="text">Delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
+                                    <?php if (!empty($val->bukti_temuan)): ?>
+                                        <a href="<?= base_url('uploads/bukti_temuan/' . $val->bukti_temuan) ?>" 
+                                         target="_blank" 
+                                         class="btn btn-sm btn-outline-primary">
+                                         <i class="fa fa-image"></i> Lihat
+                                     </a>
+                                 <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center">
+                                <?php
+                                if ($val->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($val->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($val->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                                ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('verifikasimagnet/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                                    <span class="text">Edit</span>
+                                </a>
+                                <a href="<?= base_url('verifikasimagnet/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
+                                    <span class="text">Detail</span>
+                                </a>
+                                <a href="<?= base_url('verifikasimagnet/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    <span class="text">Delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php 
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 </div>
 </div>
 <style> 

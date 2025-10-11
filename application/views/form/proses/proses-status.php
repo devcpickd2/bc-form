@@ -118,63 +118,58 @@ if (is_string($proses_data)) {
       <?php endif; ?>
 
       <?php
+// Ambil data packing
       $packing_raw = $proses->proses_packing ?? [];
+
+// Jika string, decode JSON
       if (is_string($packing_raw)) {
-        $packing_raw = json_decode($packing_raw, true);
+        $decoded = json_decode($packing_raw, true);
+        $packing_raw = is_array($decoded) ? $decoded : [];
       }
 
+// Pastikan tetap array
+      if (!is_array($packing_raw)) {
+        $packing_raw = [];
+      }
+
+// Label parameter packing
       $label_param_packing = [
         'jam_mulai' => 'Jam Mulai',
         'jam_selesai' => 'Jam Selesai',
-        'lama_aging' => 'Lama Aging',
-        'kadar_air' => 'Kadar Air',
+        'lama_aging' => 'Lama Aging (9 - 12 jam)',
+        'kadar_air' => 'Kadar Air Produk (32 - 34%)',
         'hasil_grinding' => 'Hasil Grinding',
-        'suhu_setting' => 'Suhu Setting',
+        'suhu_setting' => 'Suhu Setting (85 - 90°C)',
         'suhu_aktual' => 'Suhu Aktual',
-        'dryer_speed' => 'Dryer Speed',
+        'dryer_speed' => 'Dryer Speed (4 - 6 rpm)',
         'nama_produk' => 'Nama Produk',
         'kode_produksi' => 'Kode Produksi',
         'best_before' => 'Best Before',
-        'suhu_sebelum_packing' => 'Suhu Sebelum Packing',
-        'kadar_air_produk' => 'Kadar Air Produk',
-        'bulk_density' => 'Bulk Density',
+        'suhu_sebelum_packing' => 'Suhu Sebelum Packing (32 - 35°C)',
+        'kadar_air_produk' => 'Kadar Air Produk (4 - 8%)',
+        'bulk_density' => 'Bulk Density (225 - 325 g/l)',
         'sensori_produk' => 'Sensori Produk',
         'kondisi_kemasan' => 'Kondisi Kemasan',
         'ketepatan_labelisasi' => 'Ketepatan Labelisasi',
         'kode_supplier' => 'Kode Supplier',
-        'net_weight' => 'Net Weight'
+        'net_weight' => 'Nett Weight (9,850 - 10,100 g/plastic bag)',
+        'bukti_labelisasi' => 'Bukti Labelisasi'
       ];
 
-// Transpose data menjadi [kategori][parameter][index]
-      $packing_data = [];
-
-      foreach ($packing_raw as $index => $kategoriData) {
-        foreach ($kategoriData as $kategori => $paramSet) {
-          foreach ($paramSet as $param => $value) {
-            $packing_data[$kategori][$param][$index] = $value[0] ?? '-';
-          }
-        }
-      }
+// Ambil data kategori pertama (1 kolom saja)
+      $packing_data = !empty($packing_raw) ? reset($packing_raw) : [];
 
       ?>
 
       <?php if (!empty($packing_data)): ?>
         <div class="mt-5">
-          <h4 class="text-dark font-weight-bold mb-3">Verifikasi Proses Produksi</h4>
+          <h4 class="text-dark font-weight-bold mb-3">Verifikasi Proses Packing</h4>
 
           <table class="table table-sm table-bordered w-50">
             <tr>
               <th style="width: 40%;">Hari / Tanggal</th>
               <td>
-                <?php
-                if (!empty($proses->date_stall) && $proses->date_stall !== '0000-00-00') {
-                  setlocale(LC_TIME, 'id_ID.utf8');
-                  $tanggal = strtotime($proses->date_stall);
-                  echo strftime('%A, %d %B %Y', $tanggal);
-                } else {
-                  echo '-';
-                }
-                ?>
+                <?= (!empty($proses->date_stall) && $proses->date_stall !== '0000-00-00') ? strftime('%A, %d %B %Y', strtotime($proses->date_stall)) : '-' ?>
               </td>
             </tr>
             <tr>
@@ -188,23 +183,34 @@ if (is_string($proses_data)) {
               <thead class="thead-light">
                 <tr>
                   <th style="width: 20%;">Jenis Parameter</th>
-                  <?php for ($i = 1; $i <= 10; $i++): ?>
-                    <th>Input ke-<?= $i ?></th>
-                  <?php endfor; ?>
+                  <th>Input</th>
                 </tr>
               </thead>
               <tbody>
                 <?php foreach ($packing_data as $kategori => $param_list): ?>
                   <tr style="background-color: #f8f9fc; font-weight: bold;">
-                   <td colspan="11"><?= strtoupper(str_replace('_', ' ', $kategori)) ?></td>
-                   <?php foreach ($param_list as $param => $values): ?>
+                    <td colspan="2"><?= strtoupper(str_replace('_', ' ', $kategori)) ?></td>
+                  </tr>
+                  <?php foreach ($param_list as $param => $value): ?>
                     <tr>
                       <td><?= $label_param_packing[$param] ?? $param ?></td>
-                      <?php for ($i = 0; $i < 10; $i++): ?>
-                        <td><?= htmlspecialchars($values[$i] ?? '-') ?></td>
-                      <?php endfor; ?>
+                      <td>
+                        <?php 
+                        if ($param === 'bukti_labelisasi' && !empty($value)) {
+                          $file = is_array($value) ? ($value[0] ?? '') : $value;
+                          if ($file && file_exists(FCPATH . 'uploads/bukti_labelisasi/' . $file)) {
+                            echo '<a href="' . base_url('uploads/bukti_labelisasi/' . $file) . '" target="_blank">Lihat Gambar</a>';
+                          } else {
+                            echo '-';
+                          }
+                        } else {
+                          echo is_array($value) ? ($value[0] ?? '-') : ($value ?? '-');
+                        }
+                        ?>
+                      </td>
                     </tr>
                   <?php endforeach; ?>
+
                 <?php endforeach; ?>
               </tbody>
             </table>

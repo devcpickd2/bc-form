@@ -55,7 +55,7 @@
             <?php if ($tipe_user == 0): ?>
                 <hr class="sidebar-divider">
                 <div class="sidebar-heading">MASTER DATA</div>
-                <li class="nav-item <?= $active_nav == 'data_master' | $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material'?'active':'';?>">
+                <li class="nav-item <?= $active_nav == 'data_master' | $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' ?'active':'';?>">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDataMaster"
                     aria-expanded="true" aria-controls="collapseDataMaster">
                     <i class="fas fa-briefcase"></i>
@@ -72,6 +72,7 @@
                         <a class="collapse-item <?= $active_nav == 'alatqc' ?'active':'';?>" href="<?= base_url('alatqc')?>">Alat QC</a>
                         <a class="collapse-item <?= $active_nav == 'bendapecah' ?'active':'';?>" href="<?= base_url('bendapecah')?>">Benda Pecah Belah</a>
                         <a class="collapse-item <?= $active_nav == 'peralatan' ?'active':'';?>" href="<?= base_url('peralatan')?>">Peralatan Kebersihan</a>
+                        <a class="collapse-item <?= $active_nav == 'area_kebersihan' ?'active':'';?>" href="<?= base_url('area_kebersihan')?>">Area Kebersihan</a>
                     </div>
                 </div>
             </li>
@@ -364,6 +365,61 @@
                 <?php endif; ?>
             <?php endif; ?> -->
             <!-- Batas WH, Eng, Lab -->
+
+            <?php if (in_array($tipe_user, [0])): ?>
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">LOGS</div>
+                <li class="nav-item <?= ($active_nav == 'logs_disposisi' | $active_nav == 'logs_analisis' | $active_nav == 'logs_chiller' | $active_nav == 'logs_falserejection' | $active_nav == 'logs_gosong' | $active_nav == 'logs_inventaris' | $active_nav == 'logs_kebersihankaryawan' | $active_nav == 'logs_kebersihanmesin' | $active_nav == 'logs_kebersihanperalatan' | $active_nav == 'logs_kebersihanruang' | $active_nav == 'logs_kebersihanmagnet' | $active_nav == 'logs_ketidaksesuaian' | $active_nav == 'logs_kondisikerja' | $active_nav == 'logs_kontaminasi' | $active_nav == 'logs_larutan' | $active_nav == 'logs_loading' | $active_nav == 'logs_magnettrap' | $active_nav == 'logs_metal' | $active_nav == 'logs_pecahbelah' | $active_nav == 'logs_pembuatanlarutan' | $active_nav == 'logs_pemeriksaanchemical' | $active_nav == 'logs_pemeriksaanpengiriman' | $active_nav == 'logs_pemusnahan' | $active_nav == 'logs_penerimaankemasan' | $active_nav == 'logs_pengayakan' | $active_nav == 'logs_pengemasan' | $active_nav == 'logs_produksi' | $active_nav == 'logs_proses' | $active_nav == 'logs_reagen' | $active_nav == 'logs_releasepacking' | $active_nav == 'logs_residu' | $active_nav == 'logs_retain' | $active_nav == 'logs_sanitasi' | $active_nav == 'logs_sanitasiwarehouse' | $active_nav == 'logs_seasoning' | $active_nav == 'logs_sensori' | $active_nav == 'logs_suhu' | $active_nav == 'logs_thermometer' | $active_nav == 'logs_timbangan' | $active_nav == 'logs_verifikasimagnet') ? 'active' : ''; ?>">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapselogs"
+                    aria-expanded="true" aria-controls="collapselogs">
+                    <i class="fas fa-broom"></i>
+                    <span>LOGGING</span></a>
+                    <div id="collapselogs" class="collapse <?= ($active_nav == 'logs_disposisi' | $active_nav == 'logs_analisis' | $active_nav == 'logs_chiller') ? 'show' : ''; ?>"
+                        aria-labelledby="headingQC" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item <?= ($active_nav == 'logs_disposisi') ? 'active' : ''; ?>" href="<?= base_url('disposisi/logs')?>">Disposisi Produk</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_analisis') ? 'active' : ''; ?>" href="<?= base_url('analisis/logs')?>">Analisis Produk</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_chiller') ? 'active' : ''; ?>" href="<?= base_url('chiller/logs')?>">Suhu Chiller</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_falserejection') ? 'active' : ''; ?>" href="<?= base_url('falserejection/logs')?>">False Rejection</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_gosong') ? 'active' : ''; ?>" href="<?= base_url('gosong/logs')?>">Roti Gosong</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_inventaris') ? 'active' : ''; ?>" href="<?= base_url('inventaris/logs')?>">Inventaris</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_kebersihankaryawan') ? 'active' : ''; ?>" href="<?= base_url('kebersihankaryawan/logs')?>">Kebersihan Karyawan</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_kebersihanmesin') ? 'active' : ''; ?>" href="<?= base_url('kebersihanmesin/logs')?>">Kebersihan Mesin</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_kebersihanperalatan') ? 'active' : ''; ?>" href="<?= base_url('kebersihanperalatan/logs')?>">Kebersihan Peralatan</a>
+                            <a class="collapse-item <?= ($active_nav == 'logs_kebersihanruang') ? 'active' : ''; ?>" href="<?= base_url('kebersihanruang/logs')?>">Kebersihan Ruang</a>
+                            <a class="collapse-item" href="<?= base_url('kekuatanmagnet/logs')?>">Kekuatan Magnet</a>
+                            <a class="collapse-item" href="<?= base_url('ketidaksesuaian/logs')?>">Ketidaksesuaian</a>
+                            <a class="collapse-item" href="<?= base_url('kondisikerja/logs')?>">Kondisi Kerja</a>
+                            <a class="collapse-item" href="<?= base_url('kontaminasi/logs')?>">Kontaminasi</a>
+                            <a class="collapse-item" href="<?= base_url('larutan/logs')?>">Larutan</a>
+                            <a class="collapse-item" href="<?= base_url('loading/logs')?>">Loading</a>
+                            <a class="collapse-item" href="<?= base_url('magnettrap/logs')?>">Magnet Trap</a>
+                            <a class="collapse-item" href="<?= base_url('metal/logs')?>">Metal Detector</a>
+                            <a class="collapse-item" href="<?= base_url('pecahbelah/logs')?>">Benda Pecah Belah</a>
+                            <a class="collapse-item" href="<?= base_url('pembuatanlarutan/logs')?>">Pembuatan Larutan</a>
+                            <a class="collapse-item" href="<?= base_url('pemeriksaanchemical/logs')?>">Pemeriksaan Chemical</a>
+                            <a class="collapse-item" href="<?= base_url('pemeriksaanpengiriman/logs')?>">Pemeriksaan Pengiriman</a>
+                            <a class="collapse-item" href="<?= base_url('pemusnahan/logs')?>">Pemusnahan</a>
+                            <a class="collapse-item" href="<?= base_url('penerimaankemasan/logs')?>">Penerimaan Kemasan</a>
+                            <a class="collapse-item" href="<?= base_url('pengayakan/logs')?>">Pengayakan</a>
+                            <a class="collapse-item" href="<?= base_url('pengemasan/logs')?>">Pengemasan</a>
+                            <a class="collapse-item" href="<?= base_url('produksi/logs')?>">Verifikasi Produksi</a>
+                            <a class="collapse-item" href="<?= base_url('reagen/logs')?>">Reagen</a>
+                            <a class="collapse-item" href="<?= base_url('releasepacking/logs')?>">Release Packing</a>
+                            <a class="collapse-item" href="<?= base_url('residu/logs')?>">Residu</a>
+                            <a class="collapse-item" href="<?= base_url('retain/logs')?>">Retain</a>
+                            <a class="collapse-item" href="<?= base_url('sanitasi/logs')?>">Sanitasi</a>
+                            <a class="collapse-item" href="<?= base_url('sanitasiwarehouse/logs')?>">Sanitasi Warehouse</a>
+                            <a class="collapse-item" href="<?= base_url('seasoning/logs')?>">Seasoning</a>
+                            <a class="collapse-item" href="<?= base_url('sensori/logs')?>">Sensori FG</a>
+                            <a class="collapse-item" href="<?= base_url('suhu/logs')?>">Suhu</a>
+                            <a class="collapse-item" href="<?= base_url('thermometer/logs')?>">Thermometer</a>
+                            <a class="collapse-item" href="<?= base_url('timbangan/logs')?>">Timbangan</a>
+                            <a class="collapse-item" href="<?= base_url('verifikasimagnet/logs')?>">Verifikasi Magnet</a>
+                        </div>
+                    </div>
+                </li>
+            <?php endif; ?>
 
             <hr class="sidebar-divider">
             <div class="text-center d-none d-md-inline">

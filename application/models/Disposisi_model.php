@@ -4,6 +4,12 @@ use Ramsey\Uuid\Uuid;
 
 
 class Disposisi_model extends CI_Model {
+
+	public function __construct() {
+		parent::__construct();
+		$this->load->library('activity_logger');
+	}
+
 	
 	public function rules()
 	{
@@ -99,6 +105,9 @@ class Disposisi_model extends CI_Model {
 		$catatan = $this->input->post('catatan');
 		$cc = $this->input->post('cc');
 
+        // ambil data lama sebelum update
+		$old_data = $this->db->get_where('disposisi', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -109,14 +118,58 @@ class Disposisi_model extends CI_Model {
 			'uraian_disposisi' => $uraian_disposisi,
 			'catatan' => $catatan,
 			'cc' => $cc,
-
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('disposisi', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('disposisi', $data, ['uuid' => $uuid]);
 
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('disposisi', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus disposisi_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'disposisi_logs', // nama tabel log khusus disposisi
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
+
+	// public function update($uuid)
+	// {
+	// 	$username = $this->session->userdata('username');
+	// 	$date = $this->input->post('date');
+	// 	$nomor = $this->input->post('nomor');
+	// 	$kepada = $this->input->post('kepada');
+	// 	$disposisi = $this->input->post('disposisi');
+	// 	$dasar_disposisi = $this->input->post('dasar_disposisi');
+	// 	$uraian_disposisi = $this->input->post('uraian_disposisi');
+	// 	$catatan = $this->input->post('catatan');
+	// 	$cc = $this->input->post('cc');
+
+	// 	$data = array(
+	// 		'username' => $username,
+	// 		'date' => $date,
+	// 		'nomor' => $nomor,
+	// 		'kepada' => $kepada,
+	// 		'disposisi' => $disposisi,
+	// 		'dasar_disposisi' => $dasar_disposisi,
+	// 		'uraian_disposisi' => $uraian_disposisi,
+	// 		'catatan' => $catatan,
+	// 		'cc' => $cc,
+
+	// 		'modified_at' => date("Y-m-d H:i:s") 
+	// 	);
+
+	// 	$this->db->update('disposisi', $data, array('uuid' => $uuid));
+	// 	return($this->db->affected_rows() > 0) ? true :false;
+
+	// }
 
 	public function rules_verifikasi()
 	{

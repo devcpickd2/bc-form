@@ -74,7 +74,7 @@ class Suhu_model extends CI_Model {
 		$shift = $this->input->post('shift');
 		$lokasi = $this->input->post('lokasi'); 
 		$catatan = $this->input->post('catatan');
-
+		$old_data = $this->db->get_where('suhu', ['uuid'=>$uuid])->row_array();
 		$data = [
 			'username' => $username,
 			'date' => $date,
@@ -85,8 +85,24 @@ class Suhu_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		];
 
+		
 		$this->db->update('suhu', $data, ['uuid' => $uuid]);
-		return $this->db->affected_rows() > 0;
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('suhu', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus suhu_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'suhu_logs', // nama tabel log khusus suhu
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 

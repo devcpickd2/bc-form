@@ -99,6 +99,9 @@ class Analisis_model extends CI_Model {
 		$best_before = $this->input->post('best_before');
 		$jumlah_sampel = $this->input->post('jumlah_sampel');
 
+  // ambil data lama sebelum update
+		$old_data = $this->db->get_where('analisis_lab', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -112,8 +115,23 @@ class Analisis_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('analisis_lab', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('analisis_lab', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('analisis_lab', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus analisis_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'analisis_logs', // nama tabel log khusus analisis_lab
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	public function analysis($uuid)

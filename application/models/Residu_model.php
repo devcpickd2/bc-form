@@ -104,6 +104,7 @@ class Residu_model extends CI_Model {
 		$tindakan = $this->input->post('tindakan');
 		$verifikasi = $this->input->post('verifikasi');
 		$catatan = $this->input->post('catatan');
+		$old_data = $this->db->get_where('residu', ['uuid'=>$uuid])->row_array();
 
 		$data = array(
 			'username' => $username,
@@ -120,8 +121,24 @@ class Residu_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('residu', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		
+		$this->db->update('residu', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('residu', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus residu_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'residu_logs', // nama tabel log khusus residu
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

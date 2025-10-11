@@ -54,7 +54,6 @@ class Bendapecah_model extends CI_Model {
 
 	public function update($uuid)
 	{
-
 		$nama_benda = $this->input->post('nama_benda');
 		$jumlah = $this->input->post('jumlah');
 		$pemilik = $this->input->post('pemilik');

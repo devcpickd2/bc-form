@@ -232,6 +232,8 @@ class Seasoning_model extends CI_Model {
 		$allergen = $this->input->post('allergen');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
+		$old_data = $this->db->get_where('seasoning', ['uuid'=>$uuid])->row_array();
+
 		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
 		if(empty($kondisi_mobil)) {
 			$kondisi_mobil = ['Tidak Sesuai'];
@@ -273,8 +275,23 @@ class Seasoning_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('seasoning', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('seasoning', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('seasoning', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus seasoning_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'seasoning_logs', // nama tabel log khusus seasoning
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

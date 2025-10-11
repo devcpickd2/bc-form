@@ -29,88 +29,83 @@
             <hr>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                  <thead>
+                    <tr>
+                        <th width="20px" class="text-center">No</th>
+                        <th>Tanggal</th>
+                        <th>Hasil Pemeriksaan</th>
+                        <th>Supervisor</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $no = 1;
+                    foreach ($thermometer as $val) {
+                        $datetime = new DateTime($val->date);
+                        $datetime = $datetime->format('d-m-Y');
+                        $result = json_decode($val->peneraan_hasil, true);
+                        ?>
                         <tr>
-                            <th width="20px" class="text-center">No</th>
-                            <th>Tanggal</th>
-                            <th>Kode Thermometer</th>
-                            <th>Model</th>
-                            <th>Area</th>
-                            <th>Hasil Pemeriksaan</th>
-                            <th>Supervisor</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $no = 1;
-                        foreach($thermometer as $val) {
-                            $datetime = new datetime($val->date);
-                            $datetime = $datetime->format('d-m-Y');
-
-                            $result = json_decode($val->peneraan_hasil, true);
-                            ?>
-                            <tr>
-                                <td class="text-center"><?= $no; ?></td>
-                                <td><?= $datetime; ?></td>
-                                <td><?= $val->kode_thermo; ?></td>
-                                <td><?= $val->model; ?></td>
-                                <td><?= $val->area; ?></td>
-                                <td>
-                                    <table class="table table-sm table-bordered mb-0">
-                                        <thead style="background-color:#2E86C1; color:gray; text-align:center;">
+                            <td class="text-center"><?= $no++; ?></td>
+                            <td><?= $datetime; ?></td>
+                            <td>
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead class="text-center" style="background-color:#skyblue; color:darkblue;">
+                                        <tr>
+                                            <th width="15%">Kode Thermometer</th>
+                                            <th width="15%">Model</th>
+                                            <th width="15%">Area</th>
+                                            <th width="10%">Pukul</th>
+                                            <th width="15%">Standar Suhu (°C)</th>
+                                            <th width="10%">Hasil</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($result) && is_array($result)): ?>
+                                        <?php foreach ($result as $row): ?>
                                             <tr>
-                                                <th width="20%">Waktu</th>
-                                                <th width="30%">Standar Suhu (°C)</th>
-                                                <th width="20%">Hasil</th>
+                                                <td><?= htmlspecialchars($row['kode_thermo'] ?? '-'); ?></td>
+                                                <td><?= htmlspecialchars($row['model'] ?? '-'); ?></td>
+                                                <td><?= htmlspecialchars($row['area'] ?? '-'); ?></td>
+                                                <td class="text-center"><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
+                                                <td class="text-center"><?= htmlspecialchars($row['standar'] ?? '-'); ?>°C</td>
+                                                <td class="text-center"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (!empty($result) && is_array($result)): ?>
-                                            <?php foreach ($result as $row): ?>
-                                                <tr>
-                                                    <td><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
-                                                    <td style="text-align:center;"><?= htmlspecialchars($row['standar'] ?? '-'); ?></td>
-                                                    <td style="text-align:center;"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
-                                                </tr>
-                                            <?php endforeach ?>
-                                        <?php else: ?>
-                                            <tr><td colspan="3" class="text-center">Tidak ada data</td></tr>
-                                        <?php endif ?>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td class="text-center">
-                                <?php
-                                if ($val->status_spv == 0) {
-                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                } elseif ($val->status_spv == 1) {
-                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                } elseif ($val->status_spv == 2) {
-                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                }
-                                ?>
-                            </td>
-                            <td class="text-center">
-                                <a href="<?= base_url('thermometer/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                    <span class="text">Edit</span>
-                                </a>
-                                <a href="<?= base_url('thermometer/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
-                                    <span class="text">Detail</span>
-                                </a>
-                                <a href="<?= base_url('thermometer/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                    <span class="text">Delete</span>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php 
-                        $no++;
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr><td colspan="6" class="text-center">Tidak ada data</td></tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td class="text-center">
+                            <?php
+                            if ($val->status_spv == 0) {
+                                echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                            } elseif ($val->status_spv == 1) {
+                                echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                            } elseif ($val->status_spv == 2) {
+                                echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                            }
+                            ?>
+                        </td>
+                        <td class="text-center">
+                            <a href="<?= base_url('thermometer/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="<?= base_url('thermometer/detail/'.$val->uuid);?>" class="btn btn-success btn-sm">Detail</a>
+                            <a href="<?= base_url('thermometer/delete/'.$val->uuid);?>" 
+                             class="btn btn-danger btn-sm"
+                             onclick="return confirm('Yakin ingin menghapus data ini?')">
+                             Delete
+                         </a>
+                     </td>
+                 </tr>
+             <?php } ?>
+         </tbody>
+
+     </table>
+ </div>
+</div>
 </div>
 </div>
 </div>

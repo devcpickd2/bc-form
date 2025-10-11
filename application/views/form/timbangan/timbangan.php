@@ -33,9 +33,6 @@
                         <tr>
                             <th width="20px" class="text-center">No</th>
                             <th>Tanggal / Shift</th>
-                            <th>Kode Timbangan</th>
-                            <th>Kapasitas / Model / Lokasi</th>
-                            <th>Standar</th>
                             <th>Hasil Pemeriksaan</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
@@ -44,37 +41,43 @@
                     <tbody>
                         <?php 
                         $no = 1;
-                        foreach($timbangan as $val) {
-                            $datetime = new datetime($val->date);
+                        foreach ($timbangan as $val) {
+                            $datetime = new DateTime($val->date);
                             $datetime = $datetime->format('d-m-Y');
-
                             $result = json_decode($val->peneraan_hasil, true);
                             ?>
                             <tr>
-                                <td class="text-center"><?= $no; ?></td>
-                                <td><?= $datetime . " / " . $val->shift; ?></td>
-                                <td><?= $val->kode_timbangan; ?></td>
-                                <td><?= $val->kapasitas . " / ". $val->model . " / ". $val->lokasi ; ?></td>
-                                <td><?= $val->peneraan_standar; ?></td>
+                                <td class="text-center"><?= $no++; ?></td>
+                                <td><?= $datetime . " / Shift " . htmlspecialchars($val->shift); ?></td>
                                 <td>
                                     <table class="table table-sm table-bordered mb-0">
-                                        <thead style="background-color:#2E86C1; color:gray; text-align:center;">
+                                        <thead class="text-center" style="background-color:skyblue; color:darkblue;">
                                             <tr>
-                                                <th width="20%">Waktu</th>
-                                                <th width="20%">Hasil</th>
+                                                <th width="15%">Kode Timbangan</th>
+                                                <th width="15%">Kapasitas</th>
+                                                <th width="15%">Model</th>
+                                                <th width="15%">Lokasi</th>
+                                                <th width="10%">Pukul</th>
+                                                <th width="15%">Peneraan Standar</th>
+                                                <th width="10%">Hasil</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php if (!empty($result) && is_array($result)): ?>
                                             <?php foreach ($result as $row): ?>
                                                 <tr>
-                                                    <td><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
-                                                    <td style="text-align:center;"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($row['kode_timbangan'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['kapasitas'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['model'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['lokasi'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['peneraan_standar'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
                                                 </tr>
-                                            <?php endforeach ?>
+                                            <?php endforeach; ?>
                                         <?php else: ?>
-                                            <tr><td colspan="3" class="text-center">Tidak ada data</td></tr>
-                                        <?php endif ?>
+                                            <tr><td colspan="7" class="text-center">Tidak ada data</td></tr>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </td>
@@ -90,25 +93,21 @@
                                 ?>
                             </td>
                             <td class="text-center">
-                                <a href="<?= base_url('timbangan/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                    <span class="text">Edit</span>
-                                </a>
-                                <a href="<?= base_url('timbangan/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
-                                    <span class="text">Detail</span>
-                                </a>
-                                <a href="<?= base_url('timbangan/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                    <span class="text">Delete</span>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php 
-                        $no++;
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                                <a href="<?= base_url('timbangan/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="<?= base_url('timbangan/detail/'.$val->uuid);?>" class="btn btn-success btn-sm">Detail</a>
+                                <a href="<?= base_url('timbangan/delete/'.$val->uuid);?>" 
+                                 class="btn btn-danger btn-sm"
+                                 onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                 Delete
+                             </a>
+                         </td>
+                     </tr>
+                 <?php } ?>
+             </tbody>
+
+         </table>
+     </div>
+ </div>
 </div>
 </div>
 </div>

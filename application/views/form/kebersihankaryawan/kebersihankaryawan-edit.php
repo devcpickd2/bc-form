@@ -40,18 +40,57 @@
                                 <?= form_error('nama') ?>
                             </div>
                         </div> 
+                        <?php
+                        $plant_uuid = $this->session->userdata('plant');
+                        $plant_map = [
+                            '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
+                            '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
+                        ];
+                        $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+
+                        $area_list = [];
+                        if ($plant_name === 'Salatiga') {
+                            $area_list = $this->db->select('area')->from('area_kebersihan')->order_by('area', 'ASC')->get()->result();
+                        }
+
+                        $selected_bagian = set_value('bagian', $kebersihankaryawan->bagian ?? '');
+                        ?>
+
                         <div class="col-sm-3">
                             <label class="form-label font-weight-bold">Bagian</label>
-                            <input type="text" name="bagian" class="form-control <?= form_error('bagian') ? 'invalid' : '' ?> " value="<?= $kebersihankaryawan->bagian; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('bagian')) ? 'd-block' : '' ; ?> ">
+
+                            <?php if ($plant_name === 'Cikande'): ?>
+                                <!-- Input text untuk Cikande -->
+                                <input type="text" name="bagian" 
+                                class="form-control <?= form_error('bagian') ? 'is-invalid' : '' ?>" 
+                                value="<?= $selected_bagian ?>">
+
+                            <?php elseif ($plant_name === 'Salatiga'): ?>
+                                <!-- Dropdown dinamis untuk Salatiga -->
+                                <select name="bagian" class="form-control <?= form_error('bagian') ? 'is-invalid' : '' ?>">
+                                    <option value="">-- Pilih Bagian --</option>
+                                    <?php foreach ($area_list as $row): ?>
+                                        <option value="<?= $row->area ?>" <?= ($selected_bagian == $row->area) ? 'selected' : ''; ?>>
+                                            <?= $row->area ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+
+                            <?php else: ?>
+                                <!-- Default jika plant tidak dikenali -->
+                                <input type="text" name="bagian" class="form-control" placeholder="Plant tidak dikenali">
+                            <?php endif; ?>
+
+                            <div class="invalid-feedback <?= !empty(form_error('bagian')) ? 'd-block' : '' ; ?>">
                                 <?= form_error('bagian') ?>
                             </div>
-                        </div> 
+                        </div>
+
                     </div>
                     <hr>
                     <label class="form-label font-weight-bold">Kebersihan</label>
                     <div class="form-group row">
-                       <div class="col-sm-3">
+                     <div class="col-sm-3">
                         <label class="form-label font-weight-bold">Seragam</label><br>
                         <?php
                         $seragam = set_value('seragam', isset($kebersihankaryawan->seragam) ? $kebersihankaryawan->seragam : '');
@@ -145,7 +184,7 @@
                 </div>
 
                 <div class="form-group row">
-                   <div class="col-sm-3">
+                 <div class="col-sm-3">
                     <label class="form-label font-weight-bold">Perhiasan</label><br>
                     <?php
                     $perhiasan = set_value('perhiasan', isset($kebersihankaryawan->perhiasan) ? $kebersihankaryawan->perhiasan : '');

@@ -80,7 +80,7 @@ class Releasepacking_model extends CI_Model {
 		$best_before = $this->input->post('best_before');
 		$jumlah = $this->input->post('jumlah');
 		$keterangan = $this->input->post('keterangan');
-
+		$old_data = $this->db->get_where('release_packing', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -93,8 +93,23 @@ class Releasepacking_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('release_packing', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('release_packing', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('release_packing', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus release_packing_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'release_packing_logs', // nama tabel log khusus release_packing
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

@@ -198,6 +198,9 @@ class Pemeriksaanchemical_model extends CI_Model {
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
 		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
+
+		$old_data = $this->db->get_where('pemeriksaan_chemical', ['uuid'=>$uuid])->row_array();
+
 		if(empty($kondisi_mobil)) {
 			$kondisi_mobil = ['Tidak Sesuai'];
 		}
@@ -232,9 +235,24 @@ class Pemeriksaanchemical_model extends CI_Model {
 
 			'modified_at' => date("Y-m-d H:i:s")
 		);
+		
+		$this->db->update('pemeriksaan_chemical', $data, ['uuid' => $uuid]);
 
-		$this->db->update('pemeriksaan_chemical', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('pemeriksaan_chemical', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus pemeriksaan_chemical_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'pemeriksaan_chemical_logs', // nama tabel log khusus pemeriksaan_chemical
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

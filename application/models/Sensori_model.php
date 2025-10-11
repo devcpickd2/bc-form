@@ -95,7 +95,7 @@ class Sensori_model extends CI_Model {
 		$rasa = $this->input->post('rasa');
 		$aroma = $this->input->post('aroma');
 		$kenampakan = $this->input->post('kenampakan');
-
+		$old_data = $this->db->get_where('sensori_fg', ['uuid'=>$uuid])->row_array();
 		$date = $this->input->post('date');
 		$nama_produk = $this->input->post('nama_produk');
 		$tindakan = $this->input->post('tindakan');
@@ -127,7 +127,22 @@ class Sensori_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		$this->db->update('sensori_fg', $updateData);
 
-		return ($this->db->affected_rows() > 0);
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('sensori_fg', ['uuid' => $uuid])->row_array();
+
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'sensori_fg_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 

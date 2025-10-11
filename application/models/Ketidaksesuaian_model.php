@@ -119,6 +119,8 @@ class Ketidaksesuaian_model extends CI_Model {
 		$verifikasi = $this->input->post('verifikasi');
 		$catatan = $this->input->post('catatan');
 
+		$old_data = $this->db->get_where('ketidaksesuaian', ['uuid'=>$uuid])->row_array();
+		
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -135,8 +137,24 @@ class Ketidaksesuaian_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('ketidaksesuaian', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		
+		$this->db->update('ketidaksesuaian', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('ketidaksesuaian', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus ketidaksesuaian_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'ketidaksesuaian_logs', // nama tabel log khusus ketidaksesuaian
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

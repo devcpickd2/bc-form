@@ -80,6 +80,8 @@ class Pecahbelah_model extends CI_Model {
 		$kondisi_akhir = $this->input->post('kondisi_akhir'); 
 		$keterangan = $this->input->post('keterangan');
 
+		$old_data = $this->db->get_where('benda_pecah', ['uuid'=>$uuid])->row_array();
+
 		$benda_pecah = [];
 		foreach ($nama_barang as $i => $b) {
 			$benda_pecah[] = [
@@ -104,7 +106,22 @@ class Pecahbelah_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		$this->db->update('benda_pecah', $updateData);
 
-		return ($this->db->affected_rows() > 0);
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('benda_pecah', ['uuid' => $uuid])->row_array();
+
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'benda_pecah_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function update_check($uuid)

@@ -153,6 +153,7 @@ class Loading_model extends CI_Model {
 
 		$list_kondisi = $this->input->post('list_kondisi');
 		$kondisi_mobil_keterangan = $this->input->post('kondisi_mobil_keterangan');
+		$old_data = $this->db->get_where('loading', ['uuid'=>$uuid])->row_array();
 
 		$kondisi_mobil = [];
 		foreach ($list_kondisi as $i => $b) {
@@ -198,7 +199,23 @@ class Loading_model extends CI_Model {
 
 		$this->db->where('uuid', $uuid);
 		$this->db->update('loading', $data);
-		return ($this->db->affected_rows() > 0) ? true : false;
+		
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('loading', ['uuid' => $uuid])->row_array();
+
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'loading_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function rules_verifikasi()

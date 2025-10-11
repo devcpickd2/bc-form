@@ -56,12 +56,17 @@
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Jumlah Temuan</label>
-                            <input type="number" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?> " value="<?= set_value('jumlah_temuan'); ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('jumlah_temuan')) ? 'd-block' : '' ; ?> ">
+                            <input type="number" name="jumlah_temuan" class="form-control <?= form_error('jumlah_temuan') ? 'invalid' : '' ?>" value="<?= set_value('jumlah_temuan'); ?>">
+                            <div class="invalid-feedback <?= !empty(form_error('jumlah_temuan')) ? 'd-block' : ''; ?>">
                                 <?= form_error('jumlah_temuan') ?>
                             </div>
-                        </div> 
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label font-weight-bold">Bukti Temuan (opsional)</label>
+                            <input type="file" name="bukti_temuan" class="form-control">
+                        </div>
                     </div>
+
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Keterangan</label>

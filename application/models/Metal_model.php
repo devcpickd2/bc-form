@@ -245,7 +245,7 @@ class Metal_model extends CI_Model {
 	public function update($uuid)
 	{
 		$username = $this->session->userdata('username');
-
+		$old_data = $this->db->get_where('metal', ['uuid'=>$uuid])->row_array();
 		$data = [
 			'username_1'   => $username,
 			'date_metal'   => $this->input->post('date_metal'),
@@ -278,7 +278,22 @@ class Metal_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		$this->db->update('metal', $data);
 
-		return $this->db->affected_rows() > 0;
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('metal', ['uuid' => $uuid])->row_array();
+
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'metal_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 

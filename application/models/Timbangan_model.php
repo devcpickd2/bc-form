@@ -18,31 +18,31 @@ class Timbangan_model extends CI_Model {
 				'label' => 'Shift',
 				'rules' => 'required'
 			],
-			[
-				'field' => 'kode_timbangan',
-				'label' => 'Scales Code',
-				'rules' => 'required'
-			], 
-			[
-				'field' => 'kapasitas',
-				'label' => 'Capacity',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'model',
-				'label' => 'Type',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'lokasi', 
-				'label' => 'Location',
-				'rules' => 'required'
-			],
-			[
-				'field' => 'peneraan_standar',
-				'label' => 'Standart of Calibration',
-				'rules' => 'required'
-			], 
+			// [
+			// 	'field' => 'kode_timbangan',
+			// 	'label' => 'Scales Code',
+			// 	'rules' => 'required'
+			// ], 
+			// [
+			// 	'field' => 'kapasitas',
+			// 	'label' => 'Capacity',
+			// 	'rules' => 'required'
+			// ],
+			// [
+			// 	'field' => 'model',
+			// 	'label' => 'Type',
+			// 	'rules' => 'required'
+			// ],
+			// [
+			// 	'field' => 'lokasi', 
+			// 	'label' => 'Location',
+			// 	'rules' => 'required'
+			// ],
+			// [
+			// 	'field' => 'peneraan_standar',
+			// 	'label' => 'Standart of Calibration',
+			// 	'rules' => 'required'
+			// ], 
 			[
 				'field' => 'keterangan',
 				'label' => 'Notes'
@@ -63,16 +63,16 @@ class Timbangan_model extends CI_Model {
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
-		$kode_timbangan = $this->input->post('kode_timbangan');
-		$kapasitas = $this->input->post('kapasitas');
-		$model = $this->input->post('model');
-		$lokasi = $this->input->post('lokasi');
-		$peneraan_standar = $this->input->post('peneraan_standar');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
 		$status_produksi = "1";
 		$status_spv = "0";
 
+		$kode_timbangan = $this->input->post('kode_timbangan');
+		$kapasitas = $this->input->post('kapasitas');
+		$model = $this->input->post('model');
+		$lokasi = $this->input->post('lokasi');
+		$peneraan_standar = $this->input->post('peneraan_standar');
 		$pukul = $this->input->post('pukul');
 		$hasil = $this->input->post('hasil');
 
@@ -80,6 +80,11 @@ class Timbangan_model extends CI_Model {
 		for ($i = 0; $i < count($pukul); $i++) {
 			$peneraan_hasil[] = [
 				'pukul' => $pukul[$i],
+				'kode_timbangan' => isset($kode_timbangan[$i]) ? $kode_timbangan[$i] : '',
+				'kapasitas' => isset($kapasitas[$i]) ? $kapasitas[$i] : '',
+				'model' => isset($model[$i]) ? $model[$i] : '',
+				'lokasi' => isset($lokasi[$i]) ? $lokasi[$i] : '',
+				'peneraan_standar' => isset($peneraan_standar[$i]) ? $peneraan_standar[$i] : '',
 				'hasil' => isset($hasil[$i]) ? $hasil[$i] : '',
 			];
 		}
@@ -90,11 +95,6 @@ class Timbangan_model extends CI_Model {
 			'plant' => $plant,
 			'date' => $date,
 			'shift' => $shift,
-			'kode_timbangan' => $kode_timbangan,
-			'kapasitas' => $kapasitas,
-			'model' => $model,
-			'lokasi' => $lokasi,
-			'peneraan_standar' => $peneraan_standar,
 			'peneraan_hasil' => json_encode($peneraan_hasil),
 			'keterangan' => $keterangan,
 			'catatan' => $catatan,
@@ -119,7 +119,7 @@ class Timbangan_model extends CI_Model {
 		$peneraan_standar = $this->input->post('peneraan_standar');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
-
+		$old_data = $this->db->get_where('timbangan', ['uuid'=>$uuid])->row_array();
 		$pukul = $this->input->post('pukul');
 		$hasil = $this->input->post('hasil');
 
@@ -127,6 +127,11 @@ class Timbangan_model extends CI_Model {
 		foreach ($pukul as $i => $b) {
 			$peneraan_hasil[] = [
 				'pukul'   => $b,
+				'kode_timbangan'  => $kode_timbangan[$i],
+				'kapasitas'  => $kapasitas[$i],
+				'model'  => $model[$i],
+				'lokasi'  => $lokasi[$i],
+				'peneraan_standar'  => $peneraan_standar[$i],
 				'hasil'  => $hasil[$i],
 			];
 		}
@@ -135,11 +140,6 @@ class Timbangan_model extends CI_Model {
 			'username' => $username,
 			'date' => $date,
 			'shift' => $shift,
-			'kode_timbangan' => $kode_timbangan,
-			'kapasitas' => $kapasitas,
-			'model' => $model,
-			'lokasi' => $lokasi,
-			'peneraan_standar' => $peneraan_standar,
 			'peneraan_hasil' => json_encode($peneraan_hasil),
 			'keterangan' => $keterangan,
 			'catatan' => $catatan,
@@ -147,8 +147,23 @@ class Timbangan_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('timbangan', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('timbangan', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('timbangan', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus timbangan_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'timbangan_logs', // nama tabel log khusus timbangan
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 
@@ -203,7 +218,6 @@ class Timbangan_model extends CI_Model {
 		];
 	}
 
-
 	public function diketahui_update($uuid)
 	{
 
@@ -220,7 +234,6 @@ class Timbangan_model extends CI_Model {
 
 		$this->db->update('timbangan', $data, array('uuid' => $uuid));
 		return($this->db->affected_rows() > 0) ? true :false;
-
 	}
 
 	public function get_all()
@@ -278,8 +291,8 @@ class Timbangan_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('timbangan');
 	}
-
-	public function get_by_date($tanggal, $plant = null)
+	
+	public function get_by_date($tanggal, $plant = null, $shift = null)
 	{
 		if (empty($tanggal)) {
 			return false;
@@ -288,7 +301,11 @@ class Timbangan_model extends CI_Model {
 		$this->db->where('DATE(date)', $tanggal);
 
 		if (!empty($plant)) {
-			$this->db->where('plant', $plant); 
+			$this->db->where('plant', $plant);
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
 		}
 
 		$this->db->order_by('date', 'ASC');
@@ -303,13 +320,17 @@ class Timbangan_model extends CI_Model {
 		return false;
 	}
 
-	public function get_last_verif_by_date($tanggal, $plant = null)
+	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
 	{
 		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, tgl_update_produksi, status_produksi');
 		$this->db->where('DATE(date)', $tanggal);
 
 		if (!empty($plant)) {
-			$this->db->where('plant', $plant); 
+			$this->db->where('plant', $plant);
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
 		}
 
 		$this->db->order_by('tgl_update_spv', 'DESC');

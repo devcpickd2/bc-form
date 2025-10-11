@@ -124,6 +124,8 @@ class Pemeriksaanpengiriman_model extends CI_Model {
 		$jam_datang = $this->input->post('jam_datang');
 		$keterangan = $this->input->post('keterangan');
 
+		$old_data = $this->db->get_where('pemeriksaan_pengiriman', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -142,8 +144,23 @@ class Pemeriksaanpengiriman_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('pemeriksaan_pengiriman', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('pemeriksaan_pengiriman', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('pemeriksaan_pengiriman', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus pemeriksaan_pengiriman_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'pemeriksaan_pengiriman_logs', // nama tabel log khusus pemeriksaan_pengiriman
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

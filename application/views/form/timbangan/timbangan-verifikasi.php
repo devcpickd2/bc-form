@@ -25,9 +25,6 @@
                         <tr>
                             <th class="text-center" width="20px">No</th>
                             <th>Tanggal / Shift</th>
-                            <th>Kode Timbangan</th>
-                            <th>Kapasitas / Model / Lokasi</th>
-                            <th>Standar</th>
                             <th>Hasil Pemeriksaan</th>
                             <th>Last Updated</th>
                             <th>Last Verified</th>
@@ -41,32 +38,39 @@
                         foreach($timbangan as $val) {
                             $tanggal = (new DateTime($val->date))->format('d-m-Y');
                             $result = json_decode($val->peneraan_hasil, true);
-                        ?>
-                        <tr>
-                            <td class="text-center"><?= $no++; ?></td>
-                            <td><?= $tanggal . " / " . $val->shift; ?></td>
-                            <td><?= $val->kode_timbangan; ?></td>
-                            <td><?= $val->kapasitas . " / ". $val->model . " / ". $val->lokasi ; ?></td>
-                            <td><?= $val->peneraan_standar; ?></td>
-                            <td>
-                                <table class="table table-sm table-bordered mb-0">
-                                    <thead style="background-color:#2E86C1; color:gray; text-align:center;">
-                                        <tr>
-                                            <th width="20%">Waktu</th>
-                                            <th width="20%">Hasil</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php if (!empty($result) && is_array($result)): ?>
-                                            <?php foreach ($result as $row): ?>
+                            ?>
+                            <tr>
+                                <td class="text-center"><?= $no++; ?></td>
+                                <td><?= $tanggal . " / " . $val->shift; ?></td>
+                                <td>
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead class="text-center" style="background-color:skyblue; color:darkblue;">
                                             <tr>
-                                                <td><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
-                                                <td style="text-align:center;"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
+                                                <th width="15%">Kode Timbangan</th>
+                                                <th width="15%">Kapasitas</th>
+                                                <th width="15%">Model</th>
+                                                <th width="15%">Lokasi</th>
+                                                <th width="10%">Pukul</th>
+                                                <th width="15%">Peneraan Standar</th>
+                                                <th width="10%">Hasil</th>
                                             </tr>
-                                            <?php endforeach ?>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($result) && is_array($result)): ?>
+                                            <?php foreach ($result as $row): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($row['kode_timbangan'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['kapasitas'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['model'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['lokasi'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['peneraan_standar'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
                                         <?php else: ?>
-                                            <tr><td colspan="2" class="text-center">Tidak ada data</td></tr>
-                                        <?php endif ?>
+                                            <tr><td colspan="7" class="text-center">Tidak ada data</td></tr>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </td>
@@ -89,23 +93,33 @@
                                 </a>
                             </td>
                         </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <br><hr>
-            <div class="form-group">
-                <form action="<?= base_url('timbangan/cetak') ?>" method="post" class="form-inline">
-                    <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
-                    <input type="date" name="tanggal" class="form-control mr-2" required>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                    </button>
-                </form>
-            </div>
+                    <?php } ?>
+                </tbody>
+            </table>
         </div>
+
+        <br><hr>
+        <div class="form-group">
+            <form action="<?= base_url('timbangan/cetak') ?>" method="post" class="form-inline">
+                <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
+                <input type="date" name="tanggal" class="form-control mr-2" required>
+
+                <label for="shift" class="mr-2 font-weight-bold">Shift:</label>
+                <select name="shift" class="form-control mr-2" required>
+                    <option value="">-- Pilih Shift --</option>
+                    <option value="1">Shift 1</option>
+                    <option value="2">Shift 2</option>
+                    <option value="3">Shift 3</option>
+                </select>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                </button>
+            </form>
+        </div>
+
     </div>
+</div>
 </div>
 </div>
 

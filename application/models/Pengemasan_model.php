@@ -150,6 +150,8 @@ class Pengemasan_model extends CI_Model {
 		$kondisi_karton = $this->input->post('kondisi_karton');
 		$keterangan = $this->input->post('keterangan');
 
+		$old_data = $this->db->get_where('pengemasan', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -170,8 +172,23 @@ class Pengemasan_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('pengemasan', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('pengemasan', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('pengemasan', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus pengemasan_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'pengemasan_logs', // nama tabel log khusus pengemasan
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

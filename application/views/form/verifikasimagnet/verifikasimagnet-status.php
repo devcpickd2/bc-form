@@ -26,8 +26,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="2"><b>Tanggal:</b> <?= $datetime->format('d-m-Y'); ?></td>
-                            <td colspan="5"></td>
+                            <td colspan="7"><b>Tanggal:</b> <?= $datetime->format('d-m-Y'); ?></td>
                         </tr>
                         <tr class="bg-light text-center">
                             <td colspan="7" class="font-weight-bold">Hasil Pemeriksaan</td>
@@ -48,6 +47,19 @@
                             <td><b>Jumlah Temuan</b></td>
                             <td colspan="6"><?= $verifikasimagnet->jumlah_temuan; ?></td>
                         </tr>
+                        <tr>
+                            <td><b>Bukti Temuan</b></td>
+                            <td class="text-center" colspan="2">
+                                <?php if (!empty($verifikasimagnet->bukti_temuan)): ?>
+                                    <img src="<?= base_url('uploads/bukti_temuan/' . $verifikasimagnet->bukti_temuan) ?>" 
+                                    alt="Bukti Temuan" 
+                                    style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+
                         <tr>
                             <td><b>Keterangan</b></td>
                             <td colspan="6"><?= $verifikasimagnet->keterangan; ?></td>
@@ -70,46 +82,46 @@
         </div>
     </div>
 
-    <!-- Form Verifikasi Supervisor -->
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            <form method="post" action="<?= base_url('verifikasimagnet/status/'.$verifikasimagnet->uuid); ?>">
-                <div class="form-group row">
-                    <div class="col-sm-6">
-                        <label class="font-weight-bold">Status</label>
-                        <select name="status_spv" class="form-control <?= form_error('status_spv') ? 'is-invalid' : '' ?>">
-                            <option value="1" <?= set_select('status_spv', '1'); ?> <?= $verifikasimagnet->status_spv == 1 ? 'selected' : ''; ?>>Verified</option>
-                            <option value="2" <?= set_select('status_spv', '2'); ?> <?= $verifikasimagnet->status_spv == 2 ? 'selected' : ''; ?>>Revision</option>
-                        </select>
-                        <div class="invalid-feedback <?= form_error('status_spv') ? 'd-block' : '' ?>">
-                            <?= form_error('status_spv') ?>
-                        </div>
+<!-- Form Verifikasi Supervisor -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="post" action="<?= base_url('verifikasimagnet/status/'.$verifikasimagnet->uuid); ?>">
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <label class="font-weight-bold">Status</label>
+                    <select name="status_spv" class="form-control <?= form_error('status_spv') ? 'is-invalid' : '' ?>">
+                        <option value="1" <?= set_select('status_spv', '1'); ?> <?= $verifikasimagnet->status_spv == 1 ? 'selected' : ''; ?>>Verified</option>
+                        <option value="2" <?= set_select('status_spv', '2'); ?> <?= $verifikasimagnet->status_spv == 2 ? 'selected' : ''; ?>>Revision</option>
+                    </select>
+                    <div class="invalid-feedback <?= form_error('status_spv') ? 'd-block' : '' ?>">
+                        <?= form_error('status_spv') ?>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-group row">
-                    <div class="col-sm-6">
-                        <label class="font-weight-bold">Catatan Revisi</label>
-                        <textarea class="form-control <?= form_error('catatan_spv') ? 'is-invalid' : '' ?>" name="catatan_spv"><?= $verifikasimagnet->catatan_spv; ?></textarea>
-                        <div class="invalid-feedback <?= form_error('catatan_spv') ? 'd-block' : '' ?>">
-                            <?= form_error('catatan_spv') ?>
-                        </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <label class="font-weight-bold">Catatan Revisi</label>
+                    <textarea class="form-control <?= form_error('catatan_spv') ? 'is-invalid' : '' ?>" name="catatan_spv"><?= $verifikasimagnet->catatan_spv; ?></textarea>
+                    <div class="invalid-feedback <?= form_error('catatan_spv') ? 'd-block' : '' ?>">
+                        <?= form_error('catatan_spv') ?>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-group row">
-                    <div class="col">
-                        <button type="submit" class="btn btn-success mr-2">
-                            <i class="fa fa-save"></i> Simpan
-                        </button>
-                        <a href="<?= base_url('verifikasimagnet/verifikasi'); ?>" class="btn btn-danger">
-                            <i class="fa fa-times"></i> Batal
-                        </a>
-                    </div>
+            <div class="form-group row">
+                <div class="col">
+                    <button type="submit" class="btn btn-success mr-2">
+                        <i class="fa fa-save"></i> Simpan
+                    </button>
+                    <a href="<?= base_url('verifikasimagnet/verifikasi'); ?>" class="btn btn-danger">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+</div>
 </div>
 </div>
 

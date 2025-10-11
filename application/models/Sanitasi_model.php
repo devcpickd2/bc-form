@@ -124,6 +124,7 @@ class Sanitasi_model extends CI_Model {
 		$keterangan = $this->input->post('keterangan');
 		$tindakan   = $this->input->post('tindakan');
 		$gambar_lama = $this->input->post('gambar_lama');
+		$old_data = $this->db->get_where('sanitasi', ['uuid'=>$uuid])->row_array();
 
 		$area = [];
 
@@ -173,9 +174,23 @@ class Sanitasi_model extends CI_Model {
 			'catatan'      => $catatan,
 			'modified_at'  => date("Y-m-d H:i:s")
 		);
+		$this->db->update('sanitasi', $data, ['uuid' => $uuid]);
 
-		$this->db->update('sanitasi', $data, array('uuid' => $uuid));
-		return ($this->db->affected_rows() > 0);
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('sanitasi', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus sanitasi_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'sanitasi_logs', // nama tabel log khusus sanitasi
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_verifikasi()

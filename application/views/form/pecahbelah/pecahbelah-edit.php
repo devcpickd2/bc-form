@@ -65,8 +65,8 @@
                                         <?= htmlspecialchars($b->pemilik) ?>
                                     </td>
                                     <td>
-                                        <input type="hidden" name="jumlah[]" value="<?= htmlspecialchars($b->jumlah) ?>">
-                                        <?= htmlspecialchars($b->jumlah) ?>
+                                        <input type="text" name="jumlah[]" value="<?= htmlspecialchars($b->jumlah) ?>">
+                                        <!-- <?= htmlspecialchars($b->jumlah) ?> -->
                                     </td>
                                     <td>
                                         <input type="checkbox" name="kondisi_awal[<?= $i ?>]" value="Ok" <?= ($b->kondisi_awal == 'Ok') ? 'checked' : '' ?>>

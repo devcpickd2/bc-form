@@ -74,6 +74,7 @@ class Sanitasiwarehouse_model extends CI_Model {
 		$kondisi   = $this->input->post('kondisi');
 		$problem   = $this->input->post('problem');
 		$tindakan  = $this->input->post('tindakan');
+		$old_data = $this->db->get_where('sanitasi_wh', ['uuid'=>$uuid])->row_array();
 		$detail = [];
 		foreach ($bagian as $i => $b) {
 			$detail[] = [
@@ -94,7 +95,22 @@ class Sanitasiwarehouse_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		$this->db->update('sanitasi_wh', $updateData);
 
-		return ($this->db->affected_rows() > 0);
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('sanitasi_wh', ['uuid' => $uuid])->row_array();
+
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'sanitasi_wh_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 

@@ -22,13 +22,13 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
-                <form action="<?= base_url('proses/cetak') ?>" method="post" id="form_cetak_pdf">
+                <!-- <form action="<?= base_url('proses/cetak') ?>" method="post" id="form_cetak_pdf"> -->
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th width="30px" class="text-center">
+                               <!--  <th width="30px" class="text-center">
                                     <i class="fas fa-print fa-lg"></i>
-                                </th>
+                                </th> -->
                                 <th width="20px" class="text-center">No</th>
                                 <th>Date</th>
                                 <th>Shift</th>
@@ -47,7 +47,7 @@
                                 $datetime = $datetime->format('d-m-Y');
                                 ?>
                                 <tr>
-                                    <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td>
+                                    <!-- <td class="text-center"><input type="checkbox" name="checkbox[]" value="<?= $val->uuid ?>" class="select_row"></td> -->
                                     <td class="text-center"><?= $no; ?></td>
                                     <td><?= $datetime; ?></td> 
                                     <td><?= $val->shift; ?></td>
@@ -77,21 +77,40 @@
                             ?>
                         </tbody>
                     </table>
-                    <input type="hidden" name="checkbox[]" id="selected_items">
-                </form>
+                   <!--  <input type="hidden" name="checkbox[]" id="selected_items">
+                </form> -->
             </div>
 
             <br>
             <hr>
             <div class="form-group">
                 <label>Pilih Data yang akan dicetak:</label>
-                <br>
-                <button type="submit" form="form_cetak_pdf" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
+                <form action="<?= base_url('proses/cetak') ?>" method="post" id="form_cetak_pdf">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="tanggal">Tanggal</label>
+                            <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="shift">Shift</label>
+                            <select name="shift" id="shift" class="form-control" required>
+                                <option value="">-- Pilih Shift --</option>
+                                <option value="1">Shift 1</option>
+                                <option value="2">Shift 2</option>
+                                <option value="3">Shift 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 align-self-end">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
 </div>
 </div>
 

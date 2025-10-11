@@ -78,7 +78,7 @@ class Kekuatanmagnet_model extends CI_Model {
 		$nilai = $this->input->post('nilai');
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
-
+		$old_data = $this->db->get_where('kekuatan_mt', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -90,8 +90,23 @@ class Kekuatanmagnet_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('kekuatan_mt', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('kekuatan_mt', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('kekuatan_mt', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus kekuatan_mt_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'kekuatan_mt_logs', // nama tabel log khusus kekuatan_mt
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

@@ -44,26 +44,42 @@ class Kebersihankaryawan extends CI_Controller {
 
 	public function tambah()
 	{
-
 		$rules = $this->kebersihankaryawan_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
 			$insert = $this->kebersihankaryawan_model->insert();
 			if ($insert) {
-				$this->session->set_flashdata('success_msg', 'Data Kebersihan Karyawan berhasil di simpan');
+				$this->session->set_flashdata('success_msg', 'Data Kebersihan Karyawan berhasil disimpan');
 				redirect('kebersihankaryawan');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Kebersihan Karyawan gagal di simpan');
+			} else {
+				$this->session->set_flashdata('error_msg', 'Data Kebersihan Karyawan gagal disimpan');
 				redirect('kebersihankaryawan');
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'kebersihankaryawan');
+    // Dapatkan plant dari session
+		$plant_uuid = $this->session->userdata('plant');
+		$plant_map = [
+			'651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
+			'1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
+		];
+		$plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+
+    // Ambil data area jika plant Salatiga
+		$area_list = [];
+		if ($plant_name === 'Salatiga') {
+			$area_list = $this->db->select('area')->from('area_kebersihan')->order_by('area', 'ASC')->get()->result();
+		}
+
+		$data = [
+			'active_nav' => 'kebersihankaryawan',
+			'plant_name' => $plant_name,
+			'area_list'  => $area_list
+		];
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihankaryawan/kebersihankaryawan-tambah');
+		$this->load->view('form/kebersihankaryawan/kebersihankaryawan-tambah', $data);
 		$this->load->view('partials/footer');
 	}
 
@@ -74,20 +90,38 @@ class Kebersihankaryawan extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			
 			$update = $this->kebersihankaryawan_model->update($uuid);
 			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Kebersihan Karyawan berhasil di Update');
+				$this->session->set_flashdata('success_msg', 'Data Kebersihan Karyawan berhasil diupdate');
 				redirect('kebersihankaryawan');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Kebersihan Karyawan gagal di Update');
+			} else {
+				$this->session->set_flashdata('error_msg', 'Data Kebersihan Karyawan gagal diupdate');
 				redirect('kebersihankaryawan');
 			}
 		}
 
-		$data = array(
-			'kebersihankaryawan' => $this->kebersihankaryawan_model->get_by_uuid($uuid),
-			'active_nav' => 'kebersihankaryawan');
+		$kebersihankaryawan = $this->kebersihankaryawan_model->get_by_uuid($uuid);
+
+    // Dapatkan plant dari session
+		$plant_uuid = $this->session->userdata('plant');
+		$plant_map = [
+			'651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
+			'1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
+		];
+		$plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+
+    // Ambil data area jika plant Salatiga
+		$area_list = [];
+		if ($plant_name === 'Salatiga') {
+			$area_list = $this->db->select('area')->from('area_kebersihan')->order_by('area', 'ASC')->get()->result();
+		}
+
+		$data = [
+			'active_nav' => 'kebersihankaryawan',
+			'kebersihankaryawan' => $kebersihankaryawan,
+			'plant_name' => $plant_name,
+			'area_list'  => $area_list
+		];
 
 		$this->load->view('partials/head', $data);
 		$this->load->view('form/kebersihankaryawan/kebersihankaryawan-edit', $data);

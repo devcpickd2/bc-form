@@ -192,49 +192,53 @@ class Timbangan extends CI_Controller {
 
 	public function cetak()
 	{
-		$tanggal = $this->input->post('tanggal');  
+		$tanggal = $this->input->post('tanggal');
+		$shift   = $this->input->post('shift');
 
 		log_message('debug', 'Tanggal yang dipilih: ' . print_r($tanggal, true));
+		log_message('debug', 'Shift yang dipilih: ' . print_r($shift, true));
 
-		if (empty($tanggal)) {
-			show_error('Tidak ada tanggal yang dipilih', 404);
+		if (empty($tanggal) || empty($shift)) {
+			show_error('Tanggal dan shift harus dipilih', 404);
 		}
 
 		$plant = $this->session->userdata('plant');
 
-		$timbangan_data = $this->timbangan_model->get_by_date($tanggal, $plant); 
-		$timbangan_data_verif = $this->timbangan_model->get_last_verif_by_date($tanggal, $plant); 
+		$timbangan_data = $this->timbangan_model->get_by_date($tanggal, $plant, $shift);
+		$timbangan_data_verif = $this->timbangan_model->get_last_verif_by_date($tanggal, $plant, $shift);
+
 
 		if (!$timbangan_data || !$timbangan_data_verif) {
-			show_error('Data tidak ditemukan, Pilih tanggal yang ingin dicetak', 404);
+			show_error('Data tidak ditemukan, pilih tanggal dan shift yang ingin dicetak', 404);
 		}
 
 		$data['timbangan'] = $timbangan_data_verif;
-		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
+		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
-		$pdf->setPrintHeader(false); 
-		$pdf->SetMargins(17, 16, 15); 
+		$pdf->setPrintHeader(false);
+		$pdf->SetMargins(17, 16, 15);
 		$pdf->AddPage('L', 'LEGAL');
 		$pdf->SetFont('times', 'B', 15);
 
+    // === LOGO ===
 		$logo_path = FCPATH . 'assets/img/logo.jpg';
 		if (file_exists($logo_path)) {
 			$pdf->Image($logo_path, 17, 14, 45);
-		} else {
-			$pdf->Write(7, "Logo tidak ditemukan\n");
 		}
 
 		$pdf->Write(9, "\n");
 		$pdf->MultiCell(0, 5, 'PEMERIKSAAN TIMBANGAN', 0, 'C');
 		$pdf->Ln(5);
 
+    // === FORMAT TANGGAL ===
 		setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
 		$tanggal = $data['timbangan']->date;
 		$date = new DateTime($tanggal);
 		$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
 		$formatted_date2 = strftime('%d %B %Y', $date->getTimestamp());
 
+    // === INFORMASI HEADER (Tanggal + Shift) ===
 		$pdf->SetFont('times', '', 10);
 		$pdf->SetX(16);
 		$pdf->Write(0, 'Tanggal : ' . $formatted_date);
@@ -242,8 +246,8 @@ class Timbangan extends CI_Controller {
 		$pdf->Write(0, 'Shift : ' . $data['timbangan']->shift);
 		$pdf->Ln(5);
 
+    // === HEADER TABEL (tidak diubah) ===
 		$pdf->SetFont('times', '', 11);
-
 		$pdf->Cell(10, 15, 'No.', 1, 0, 'C');
 		$pdf->Cell(60, 15, 'Jenis dan Kode Timbangan', 1, 0, 'C');
 		$pdf->Cell(25, 15, 'Kapasitas (kg)', 1, 0, 'C');
@@ -255,74 +259,99 @@ class Timbangan extends CI_Controller {
 
 		$pdf->Cell(145, 15, '', 0, 0, 'C');
 		$pdf->SetFont('times', '', 9);
-		$pdf->Cell(20, 5, 'Check-1', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Check-2', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Check-3', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Check-4', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Check-5', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Check-6', 1, 0, 'C');
-		$pdf->Cell(20, 5, 'Check-7', 1, 0, 'C');
+		for ($i = 1; $i <= 7; $i++) {
+			$pdf->Cell(20, 5, 'Check-' . $i, 1, 0, 'C');
+		}
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
 		$pdf->Cell(120, 15, '', 0, 0, 'C');
 		$pdf->SetFont('times', '', 11);
 		$pdf->Cell(25, 1, 'Berat (g)', 0, 0, 'C');
 		$pdf->SetFont('times', '', 9);
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
-		$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
+		for ($i = 1; $i <= 7; $i++) {
+			$pdf->Cell(10, 5, 'Pukul', 1, 0, 'C');
+			$pdf->Cell(10, 5, 'Hasil', 1, 0, 'C');
+		}
 		$pdf->Cell(38, 0, '', 0, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
 
+		$merged = [];
 
-		$no = 1;
-		foreach ($timbangan_data as $timbangan) {
-			$pdf->SetFont('times', '', 10);
+		foreach ($timbangan_data as $row) {
+			$hasil_array = json_decode($row->peneraan_hasil, true);
+			if (!is_array($hasil_array)) continue;
 
-			$pdf->Cell(10, 8, $no, 1, 0, 'C');
-			$pdf->Cell(60, 8, $timbangan->model . " / " . $timbangan->kode_timbangan, 1, 0, 'C');
-			$pdf->Cell(25, 8, $timbangan->kapasitas, 1, 0, 'C');
-			$pdf->Cell(25, 8, $timbangan->lokasi, 1, 0, 'C');
-			$pdf->Cell(25, 8, $timbangan->peneraan_standar, 1, 0, 'C');
+			foreach ($hasil_array as $hasil) {
+        // 🔹 Semua nilai diambil dari JSON, bukan kolom utama
+				$model     = $hasil['model'] ?? '-';
+				$kode      = $hasil['kode_timbangan'] ?? '-';
+				$kapasitas = $hasil['kapasitas'] ?? '-';
+				$lokasi    = $hasil['lokasi'] ?? '-';
+				$standar   = $hasil['peneraan_standar'] ?? '-';
+				$pukul     = $hasil['pukul'] ?? '';
+				$hasil_uji = $hasil['hasil'] ?? '';
 
-			$hasil_array = json_decode($timbangan->peneraan_hasil, true); 
-			if (!is_array($hasil_array)) {
-				$hasil_array = [];
+        // 🔹 Shift diambil dari tabel utama
+				$shift = $row->shift ?? '-';
+
+        // 🔹 Buat key unik gabungan model + kode + lokasi + shift
+				$key = "{$model}|{$kode}|{$lokasi}|{$shift}";
+
+				if (!isset($merged[$key])) {
+					$merged[$key] = [
+						'model' => $model,
+						'kode_timbangan' => $kode,
+						'kapasitas' => $kapasitas,
+						'lokasi' => $lokasi,
+						'peneraan_standar' => $standar,
+						'shift' => $shift,
+						'checks' => [],
+						'keterangan' => $row->keterangan ?? '-',
+						'catatan' => $row->catatan ?? ''
+					];
+				}
+
+        // 🔹 Gabungkan hasil pemeriksaan berdasarkan pukul & hasil
+				$merged[$key]['checks'][] = [
+					'pukul' => $pukul,
+					'hasil' => $hasil_uji
+				];
 			}
-			for ($i = 0; $i < 7; $i++) {
-				$pdf->SetFont('times', '', 8);
-				$pukul = isset($hasil_array[$i]['pukul']) ? $hasil_array[$i]['pukul'] : '';
-				$hasil = isset($hasil_array[$i]['hasil']) ? $hasil_array[$i]['hasil'] : '';
+		}
 
+
+    // === CETAK ISI DATA ===
+		$no = 1;
+		foreach ($merged as $item) {
+			$pdf->SetFont('times', '', 10);
+			$pdf->Cell(10, 8, $no++, 1, 0, 'C');
+			$pdf->Cell(60, 8, $item['model'] . ' / ' . $item['kode_timbangan'], 1, 0, 'C');
+			$pdf->Cell(25, 8, $item['kapasitas'], 1, 0, 'C');
+			$pdf->Cell(25, 8, $item['lokasi'], 1, 0, 'C');
+			$pdf->Cell(25, 8, $item['peneraan_standar'], 1, 0, 'C');
+
+			for ($i = 0; $i < 7; $i++) {
+				$pukul = $item['checks'][$i]['pukul'] ?? '';
+				$hasil = $item['checks'][$i]['hasil'] ?? '';
 				$pdf->Cell(10, 8, $pukul, 1, 0, 'C');
 				$pdf->Cell(10, 8, $hasil, 1, 0, 'C');
 			}
-			$pdf->Cell(38, 8, !empty($timbangan->keterangan) ? $timbangan->keterangan : '-', 1, 0, 'C');
-			$pdf->Ln();
-			$no++;
+
+			$pdf->Cell(38, 8, $item['keterangan'], 1, 1, 'C');
 		}
 
-		$pdf->SetY($pdf->GetY() + 3); 
+    // === CATATAN ===
+		$pdf->SetY($pdf->GetY() + 3);
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(10, 3, 'Catatan : ', 0, 1, 'L');
-		foreach ($timbangan_data as $item) {
-			if (!empty($item->catatan)) {
-				$pdf->Cell(10, 0, '', 0, 0, 'L'); 
-				$pdf->Cell(200, 0, ' - ' . $item->catatan, 0, 1, 'L');
+		foreach ($merged as $item) {
+			if (!empty($item['catatan'])) {
+				$pdf->Cell(10, 0, '', 0, 0, 'L');
+				$pdf->Cell(200, 0, ' - ' . $item['catatan'], 0, 1, 'L');
 			}
 		}
 
+    // === QR / TANDA TANGAN DIGITAL ===
 		$this->load->model('pegawai_model');
 		$data['timbangan']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['timbangan']->username);
 		$data['timbangan']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['timbangan']->nama_spv);
@@ -343,54 +372,30 @@ class Timbangan extends CI_Controller {
 		if ($status_verifikasi) {
 			$y_verifikasi = $y_after_keterangan;
 
-		// Dibuat oleh (QC)
+        // Dibuat oleh (QC)
 			$pdf->SetXY(25, $y_verifikasi + 5);
 			$pdf->Cell(95, 5, 'Dibuat Oleh,', 0, 0, 'C');
 			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8); 
+			$pdf->SetFont('times', 'U', 8);
 			$pdf->Cell(95, 5, $data['timbangan']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8); 
+			$pdf->SetFont('times', '', 8);
 			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// // Diketahui oleh (Produksi)
-		// 	$pdf->SetXY(90, $y_verifikasi + 5);
-		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
-		// 	if ($data['timbangan']->status_produksi == 1 && !empty($data['timbangan']->nama_produksi)) {
-		// 		$update_tanggal_produksi = (new DateTime($data['timbangan']->tgl_update_produksi))->format('d-m-Y | H:i');
-		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['timbangan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 		$pdf->SetXY(90, $y_verifikasi + 24);
-		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
-		// 	} else {
-		// 		$pdf->SetXY(90, $y_verifikasi + 10);
-		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
-		// 	}
-
-			// Diketahui oleh (Produksi) - tanpa barcode
+        // Diketahui oleh (Produksi)
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
-
 			if ($data['timbangan']->status_produksi == 1 && !empty($data['timbangan']->nama_produksi)) {
 				$update_tanggal_produksi = (new DateTime($data['timbangan']->tgl_update_produksi))->format('d-m-Y | H:i');
-
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(135, 5, $data['timbangan']->nama_produksi, 0, 1, 'C');
-
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 15);
-				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
-
-				// $pdf->SetXY(90, $y_verifikasi + 20);
-				// $pdf->Cell(135, 5, $update_tanggal_produksi, 0, 0, 'C');
+				$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['timbangan']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+				$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
+				$pdf->SetXY(90, $y_verifikasi + 24);
+				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
 			} else {
-				$pdf->SetFont('times', '', 8);
 				$pdf->SetXY(90, $y_verifikasi + 10);
 				$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 			}
 
-
-		// Disetujui oleh (SPV)
+        // Disetujui oleh (SPV)
 			$pdf->SetXY(150, $y_verifikasi + 5);
 			$pdf->Cell(189, 5, 'Disetujui Oleh,', 0, 0, 'C');
 			$update_tanggal = (new DateTime($data['timbangan']->tgl_update_spv))->format('d-m-Y | H:i');
@@ -399,16 +404,16 @@ class Timbangan extends CI_Controller {
 			$pdf->SetXY(170, $y_verifikasi + 24);
 			$pdf->Cell(149, 5, 'Supervisor QC', 0, 0, 'C');
 		} else {
-			$pdf->SetTextColor(255, 0, 0); 
+			$pdf->SetTextColor(255, 0, 0);
 			$pdf->SetFont('times', '', 8);
 			$pdf->SetXY(200, $y_after_keterangan);
 			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 
 		$pdf->setPrintFooter(false);
-		$filename = "Pemeriksaan Timbangan_{$formatted_date2}.pdf";
+		$filename = "Pemeriksaan Timbangan_{$formatted_date2}_Shift{$shift}.pdf";
 		$pdf->Output($filename, 'I');
-
 	}
+
 }
 

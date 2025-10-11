@@ -51,50 +51,50 @@
                 ?>
                 <div class="form-group row">
                     <div class="col-md-3">
-                    <label class="font-weight-bold">Tanggal</label>
-                    <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
-                    value="<?= set_value('date', $tanggal_sess) ?>">
-                    <div class="invalid-feedback"><?= form_error('date') ?></div>
-                </div>
-                <div class="col-md-3">
-                    <label class="font-weight-bold">Shift</label>
-                    <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
-                        <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
-                        <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
-                        <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
-                        <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
-                    </select>
-                    <div class="invalid-feedback"><?= form_error('shift') ?></div>
-                </div>
-            </div>
-            <?php
-            $plant_uuid = $this->session->userdata('plant');
-            $plant_map = [
-                '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
-                '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
-            ];
-            $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
-            ?>
-
-            <div class="form-group row">
-                <div class="col-sm-3">
-                    <label class="form-label font-weight-bold">Plant</label>
-                    <input type="text" class="form-control" value="<?= $plant_name ?>" readonly>
-                    <input type="hidden" name="plant" id="plantHidden" value="<?= $plant_name ?>">
-                </div>
-
-                <div class="col-sm-3">
-                    <label class="form-label font-weight-bold">Lokasi</label>
-                    <select name="lokasi" id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
-                        <option value="">-- Pilih Lokasi --</option>
-                    </select>
-                    <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
-                        <?= form_error('lokasi') ?>
+                        <label class="font-weight-bold">Tanggal</label>
+                        <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
+                        value="<?= set_value('date', $tanggal_sess) ?>">
+                        <div class="invalid-feedback"><?= form_error('date') ?></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="font-weight-bold">Shift</label>
+                        <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
+                            <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
+                            <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
+                            <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
+                            <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
+                        </select>
+                        <div class="invalid-feedback"><?= form_error('shift') ?></div>
                     </div>
                 </div>
-            </div>
+                <?php
+                $plant_uuid = $this->session->userdata('plant');
+                $plant_map = [
+                    '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande',
+                    '1eb341e0-1ec4-4484-ba8f-32d23352b84d' => 'Salatiga'
+                ];
+                $plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : '-';
+                ?>
 
-            <hr>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Plant</label>
+                        <input type="text" class="form-control" value="<?= $plant_name ?>" readonly>
+                        <input type="hidden" name="plant" id="plantHidden" value="<?= $plant_name ?>">
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label class="form-label font-weight-bold">Lokasi</label>
+                        <select name="lokasi" id="lokasiDropdown" class="form-control <?= form_error('lokasi') ? 'is-invalid' : '' ?>">
+                            <option value="">-- Pilih Lokasi --</option>
+                        </select>
+                        <div class="invalid-feedback <?= form_error('lokasi') ? 'd-block' : '' ?>">
+                            <?= form_error('lokasi') ?>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
 
 <!-- area pengayakan -->
 <div id="form-pengayakan" class="form-area d-none">
@@ -671,7 +671,7 @@
 <div id="form-pengayakan-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA PENGAYAKAN</label>
     <?php
-    $bagianpengayakan = ['Ruangan', 'Pintu dan Tirai Plastik', 'Lampu+Cover', 'Palet', 'Saklar/panel lampu', 'Exhaust fan 1', 'Exhaust fan 2', 'Dust Collector', 'Akrilik penutup blower', 'Mesin Sieving', 'Box tampungan tepung terigu (box kuning besar', ' Box tampungan tepung tapioka (box biru besar)', 'Penutup box tepung terigu', 'Box tampungan tepung terigu (box kuning kecil)', 'Box tampungan tepung tapioka (box biru kecil)', 'Penutup box tepung tapioka', 'Sekop tepung terigu', 'Sekop tepung tapioka', 'Meja timbangan', 'Timbangan tepung terigu', 'Timbangan tepung tapioka', 'Gunting', 'Trolley', 'Tempat sampah'];
+    $bagianpengayakan = ['Ruangan', 'Pintu dan Tirai Plastik', 'Lampu+Cover', 'Palet', 'Hand Palet', 'Saklar/panel lampu', 'Exhaust fan 1', 'Exhaust fan 2', 'Dust Collector', 'Akrilik penutup blower', 'Mesin Sieving', 'Box tampungan tepung terigu (box kuning besar', ' Box tampungan tepung tapioka (box biru besar)', 'Penutup box tepung terigu', 'Box tampungan tepung terigu (box kuning kecil)', 'Box tampungan tepung tapioka (box biru kecil)', 'Penutup box tepung tapioka', 'Baskom Tepung Tapioka', 'Sekop tepung terigu', 'Sekop tepung tapioka', 'Meja timbangan', 'Timbangan tepung terigu', 'Timbangan tepung tapioka', 'Gunting', 'Trolley', 'Tempat sampah'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianpengayakan as $indexpengayakan => $bagian): ?>
@@ -842,7 +842,7 @@
 <div id="form-mixing-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA MIXING ADONAN</label>
     <?php
-    $bagianmixing = ['Ruangan', 'Pintu dan tirai plastik', 'Selokan','Lampu+Cover', 'Blower/Exhaust', 'Panel listrik', 'Panel Chill water', 'Display jam', 'Dough Mixer 1', 'Dough Mixer 2', 'Dough Mixer 3', 'Dough Mixer 4', 'Box tampungan air', 'Rak box tampungan air', 'Mangkok pewarna', 'Hand whisker', 'Filter air', 'Pipa Air', 'Selang chill water', 'Selang air cleaning', 'Meja adonan 1', 'Meja adonan 2', 'Meja adonan 3', 'Scrapper', 'Mesin sheeting dan moulding', 'Dough divider', 'Box reject adonan', 'Alas box tampungan tepung (box kecil)', 'Tempat sampah'];
+    $bagianmixing = ['Ruangan', 'Pintu dan tirai plastik', 'Selokan','Lampu+Cover', 'Blower/Exhaust', 'Panel listrik', 'Panel Chill water', 'Display jam', 'Dough Mixer 1', 'Dough Mixer 2', 'Dough Mixer 3', 'Dough Mixer 4', 'Box tampungan air', 'Rak box tampungan air', 'Mangkok pewarna', 'Rak Mangkok pewarna', 'Hand whisker', 'Filter air', 'Pipa Air', 'Selang chill water', 'Selang air cleaning', 'Meja adonan 1', 'Meja adonan 2', 'Meja adonan 3', 'Scrapper', 'Mesin sheeting dan moulding', 'Dough divider', 'Box reject adonan', 'Box Rework Adonan', 'Alas box tampungan tepung (box kecil)', 'Tempat sampah'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianmixing as $indexmixing => $bagian): ?>
@@ -956,7 +956,7 @@
 <div id="form-pemasakan-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA PEMASAKAN</label>
     <?php
-    $bagianpemasakan = ['Ruangan', 'Pintu dan tirai plastik', 'Blower AHU', 'Ventilasi udara', 'Lampu&Cover', 'Kipas angin', 'Display jam', 'Electric baking 1', 'Electric baking 2', 'Electric baking 3', 'Electric baking 4', 'Panel Baking', 'Baking cart', 'Titanium plat', 'Pisau trimming', 'Scrapper', 'Meja Transfer roti after baking', 'Meja tampungan roti gosong', 'Box reject', 'Tampungan dan spryer minyak', 'Meja Telepon'];
+    $bagianpemasakan = ['Ruangan', 'Pintu dan tirai plastik', 'Blower AHU', 'Ventilasi udara', 'Lampu&Cover', 'Kipas angin', 'Display jam', 'Electric baking 1', 'Electric baking 2', 'Electric baking 3', 'Electric baking 4', 'Panel Baking', 'Baking cart', 'Titanium plat', 'Pisau trimming', 'Scrapper', 'Meja Transfer roti after baking', 'Meja tampungan roti gosong', 'Box reject', 'Tampungan dan spryer minyak', 'Fly Catcher', 'Meja Laporan'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianpemasakan as $indexpemasakan => $bagian): ?>
@@ -1013,7 +1013,7 @@
 <div id="form-aging-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA AGING</label>
     <?php
-    $bagianaging = ['Ruangan', 'Pintu', 'Exhaust Fan', 'Fan Heater', 'Ventilasi udara', 'Panel listrik', 'Lampu&Cover', 'Cooling Rak'];
+    $bagianaging = ['Ruangan', 'Pintu', 'Exhaust Fan', 'Fan Heater', 'Ventilasi udara', 'Panel listrik', 'Lampu&Cover', 'Cooling Rak', 'Cooling Rak',];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianaging as $indexaging => $bagian): ?>
@@ -1184,7 +1184,7 @@
 <div id="form-anteroom-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA ANTEROOM PACKING</label>
     <?php
-    $bagiananteroom = ['Pintu Transfer dan Tirai Plastik', 'Fly Catcher'];
+    $bagiananteroom = ['Pintu Transfer dan Tirai Plastik'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagiananteroom as $indexanteroom => $bagian): ?>
@@ -1298,7 +1298,7 @@
 <div id="form-koridor-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA KORIDOR</label>
     <?php
-    $bagiankoridor = ['Ruangan', 'Toilet', 'Loker sepatu luar', 'Loker seragam', 'Loker sepatu boot', 'Lampu&Cover', 'Panel listrik', 'Wastafel', 'Hand Basin', 'Foot Brush', 'Hand Dryer', 'Cermin Loker', 'Cermin Hand Basin', 'Tempat Sampah'];
+    $bagiankoridor = ['Ruangan', 'Toilet', 'Loker sepatu luar', 'Loker seragam', 'Loker sepatu boot', 'Loker Kunci', 'Kotak P3K', 'Dispenser & Galon', 'Alas Galon', 'Lampu & Cover', 'Panel listrik', 'Wastafel', 'Hand Basin', 'Foot Basin', 'Foot Brush', 'Hand Dryer', 'Cermin Loker', 'Cermin Hand Basin', 'Hanger Seragam', 'Tempat Sampah'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagiankoridor as $indexkoridor => $bagian): ?>
@@ -1351,6 +1351,121 @@
 </div>
 <!-- batas form koridor -->
 
+<!-- area ruang pewarna -->
+<div id="form-pewarna-ruang" class="form-area d-none">
+    <label class="form-label font-weight-bold">AREA RUANG PEWARNA</label>
+    <?php
+    $bagianpewarna = ['Ruangan', 'Pintu', 'Pendingin', 'Lampu & Cover', 'Panel Listrik', 'Palet'];
+    $kondisi_options = array_merge(['bersih'], range(1, 6));
+    ?>
+    <?php foreach ($bagianpewarna as $indexpewarna => $bagian): ?>
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label class="form-label font-weight-bold">Bagian</label>
+                <input type="text" name="bagian[]" class="form-control <?= form_error('bagian[]') ? 'invalid' : '' ?>" value="<?= $bagian ?>" readonly>
+                <div class="invalid-feedback <?= !empty(form_error('bagian[]')) ? 'd-block' : '' ?>">
+                    <?= form_error('bagian[]') ?>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label font-weight-bold d-block">Kondisi</label>
+                <?php foreach ($kondisi_options as $opt): ?>
+                    <?php
+                    $value = (string) $opt;
+                    $id = 'kondisi-' . $value . '-' . $indexpewarna;
+                    $checked = in_array($value, set_value('kondisi', [])) ? 'checked' : '';
+                    ?>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input kondisi-checkbox" 
+                        type="checkbox" 
+                        name="kondisi[]" 
+                        value="<?= $value ?>" 
+                        id="<?= $id ?>" 
+                        <?= $checked ?>>
+                        <label class="form-check-label" for="<?= $id ?>"><?= ucfirst($value) ?></label>
+                    </div>
+                <?php endforeach; ?>
+                <div class="invalid-feedback d-block">
+                    <?= form_error('kondisi[]') ?>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label font-weight-bold">Problem</label>
+                <input type="text" name="problem[]" class="form-control <?= form_error('problem[]') ? 'invalid' : '' ?>" value="<?= set_value('problem[]'); ?>">
+                <div class="invalid-feedback <?= !empty(form_error('problem[]')) ? 'd-block' : '' ?>">
+                    <?= form_error('problem[]') ?>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label font-weight-bold">Tindakan</label>
+                <input type="text" name="tindakan[]" class="form-control <?= form_error('tindakan[]') ? 'invalid' : '' ?>" value="<?= set_value('tindakan[]'); ?>">
+                <div class="invalid-feedback <?= !empty(form_error('tindakan[]')) ? 'd-block' : '' ?>">
+                    <?= form_error('tindakan[]') ?>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+<!-- batas form pewarna -->
+
+<!-- area ruang shortening -->
+<div id="form-shortening-ruang" class="form-area d-none">
+    <label class="form-label font-weight-bold">AREA RUANG SHORTENING</label>
+    <?php
+    $bagianshortening = ['Ruangan', 'Pintu', 'Pendingin', 'Lampu & Cover', 'Palet'];
+    $kondisi_options = array_merge(['bersih'], range(1, 6));
+    ?>
+    <?php foreach ($bagianshortening as $indexshortening => $bagian): ?>
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label class="form-label font-weight-bold">Bagian</label>
+                <input type="text" name="bagian[]" class="form-control <?= form_error('bagian[]') ? 'invalid' : '' ?>" value="<?= $bagian ?>" readonly>
+                <div class="invalid-feedback <?= !empty(form_error('bagian[]')) ? 'd-block' : '' ?>">
+                    <?= form_error('bagian[]') ?>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label font-weight-bold d-block">Kondisi</label>
+                <?php foreach ($kondisi_options as $opt): ?>
+                    <?php
+                    $value = (string) $opt;
+                    $id = 'kondisi-' . $value . '-' . $indexshortening;
+                    $checked = in_array($value, set_value('kondisi', [])) ? 'checked' : '';
+                    ?>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input kondisi-checkbox" 
+                        type="checkbox" 
+                        name="kondisi[]" 
+                        value="<?= $value ?>" 
+                        id="<?= $id ?>" 
+                        <?= $checked ?>>
+                        <label class="form-check-label" for="<?= $id ?>"><?= ucfirst($value) ?></label>
+                    </div>
+                <?php endforeach; ?>
+                <div class="invalid-feedback d-block">
+                    <?= form_error('kondisi[]') ?>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label font-weight-bold">Problem</label>
+                <input type="text" name="problem[]" class="form-control <?= form_error('problem[]') ? 'invalid' : '' ?>" value="<?= set_value('problem[]'); ?>">
+                <div class="invalid-feedback <?= !empty(form_error('problem[]')) ? 'd-block' : '' ?>">
+                    <?= form_error('problem[]') ?>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label font-weight-bold">Tindakan</label>
+                <input type="text" name="tindakan[]" class="form-control <?= form_error('tindakan[]') ? 'invalid' : '' ?>" value="<?= set_value('tindakan[]'); ?>">
+                <div class="invalid-feedback <?= !empty(form_error('tindakan[]')) ? 'd-block' : '' ?>">
+                    <?= form_error('tindakan[]') ?>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+<!-- batas form shortening -->
+
+
 <div class="row">
     <div class="col">
         <button type="submit" class="btn btn-md btn-success mr-2">
@@ -1383,7 +1498,7 @@
             "Ruang Buffer Tepung", "Ruang Pengayakan", "Ruang Premix", "Ruang Preparasi",
             "Ruang Mixing Adonan", "Ruang Fermentasi", "Ruang Pemasakan", "Ruang Aging",
             "Ruang Cutting", "Ruang Grinding, Drying dan Packing",
-            "Ruang Anteroom Packing", "Ruang Pencucian", "Ruang Koridor"
+            "Ruang Anteroom Packing", "Ruang Pencucian", "Ruang Koridor" , "Ruang Pewarna" , "Ruang Shortening"
         ]
     };
 
@@ -1463,6 +1578,10 @@
         $('#form-pencucian-ruang').removeClass('d-none');
     } else if(selected === 'Ruang Koridor'){
         $('#form-koridor-ruang').removeClass('d-none');
+    } else if(selected === 'Ruang Pewarna'){
+        $('#form-pewarna-ruang').removeClass('d-none');
+    } else if(selected === 'Ruang Shortening'){
+        $('#form-shortening-ruang').removeClass('d-none');
     }
 });
 });
@@ -1500,6 +1619,8 @@
       "Ruang Anteroom Packing": document.getElementById("form-anteroom-ruang"),
       "Ruang Pencucian": document.getElementById("form-pencucian-ruang"),
       "Ruang Koridor": document.getElementById("form-koridor-ruang"),
+      "Ruang Pewarna": document.getElementById("form-pewarna-ruang"),
+      "Ruang Shortening": document.getElementById("form-shortening-ruang"),
   };
 
   function toggleForms() {

@@ -96,6 +96,8 @@ class Chiller_model extends CI_Model {
 		$chiller_4 = $this->input->post('chiller_4');
 		$catatan = $this->input->post('catatan');
 
+		$old_data = $this->db->get_where('chiller', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -109,9 +111,21 @@ class Chiller_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('chiller', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('chiller', $data, ['uuid' => $uuid]);
 
+		$new_data = $this->db->get_where('chiller', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+			$this->activity_logger->log_activity(
+				'update',
+				'chiller_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_verifikasi()
@@ -240,7 +254,6 @@ class Chiller_model extends CI_Model {
 		return $this->db->delete('chiller');
 	}
 
-
 	public function get_by_date($tanggal, $plant = null)
 	{
 		if (empty($tanggal)) {
@@ -253,7 +266,9 @@ class Chiller_model extends CI_Model {
 			$this->db->where('plant', $plant); 
 		}
 
-		$this->db->order_by('date', 'ASC');
+    // Urutkan berdasarkan waktu
+		$this->db->order_by('TIME(waktu)', 'ASC');  
+
 		$query = $this->db->get('chiller');
 
 		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());
@@ -267,7 +282,7 @@ class Chiller_model extends CI_Model {
 
 	public function get_last_verif_by_date($tanggal, $plant = null)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, status_produksi, tgl_update_produksi');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, nama_produksi, status_produksi, tgl_update_produksi, created_at');
 		$this->db->where('DATE(date)', $tanggal);
 
 		if (!empty($plant)) {

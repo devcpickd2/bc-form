@@ -25,9 +25,6 @@
                         <tr>
                             <th class="text-center" width="20px">No</th>
                             <th>Tanggal</th>
-                            <th>Kode Thermometer</th>
-                            <th>Model</th>
-                            <th>Area</th>
                             <th>Hasil Pemeriksaan</th>
                             <th>Last Updated</th>
                             <th>Last Verified</th>
@@ -45,30 +42,33 @@
                             <tr>
                                 <td class="text-center"><?= $no++; ?></td>
                                 <td><?= $tanggal; ?></td>
-                                <td><?= $val->kode_thermo; ?></td>
-                                <td><?= $val->model; ?></td>
-                                <td><?= $val->area; ?></td>
                                 <td>
                                     <table class="table table-sm table-bordered mb-0">
-                                        <thead style="background-color:#2E86C1; color:gray; text-align:center;">
+                                        <thead class="text-center" style="background-color:#skyblue; color:darkblue;">
                                             <tr>
-                                                <th width="20%">Waktu</th>
-                                                <th width="30%">Standar Suhu (°C)</th>
-                                                <th width="20%">Hasil</th>
+                                                <th width="15%">Kode Thermometer</th>
+                                                <th width="15%">Model</th>
+                                                <th width="15%">Area</th>
+                                                <th width="10%">Pukul</th>
+                                                <th width="15%">Standar Suhu (°C)</th>
+                                                <th width="10%">Hasil</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php if (!empty($result) && is_array($result)): ?>
                                             <?php foreach ($result as $row): ?>
                                                 <tr>
-                                                    <td><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
-                                                    <td style="text-align:center;"><?= htmlspecialchars($row['standar'] ?? '-'); ?></td>
-                                                    <td style="text-align:center;"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($row['kode_thermo'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($row['model'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($row['area'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['pukul'] ?? '-'); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['standar'] ?? '-'); ?>°C</td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['hasil'] ?? '-'); ?></td>
                                                 </tr>
-                                            <?php endforeach ?>
+                                            <?php endforeach; ?>
                                         <?php else: ?>
-                                            <tr><td colspan="3" class="text-center">Tidak ada data</td></tr>
-                                        <?php endif ?>
+                                            <tr><td colspan="6" class="text-center">Tidak ada data</td></tr>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </td>
@@ -101,11 +101,21 @@
             <form action="<?= base_url('thermometer/cetak') ?>" method="post" class="form-inline">
                 <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
                 <input type="date" name="tanggal" class="form-control mr-2" required>
+
+                <label for="shift" class="mr-2 font-weight-bold">Shift:</label>
+                <select name="shift" class="form-control mr-2" required>
+                    <option value="">-- Pilih Shift --</option>
+                    <option value="1">Shift 1</option>
+                    <option value="2">Shift 2</option>
+                    <option value="3">Shift 3</option>
+                </select>
+
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
                 </button>
             </form>
         </div>
+
     </div>
 </div>
 </div>

@@ -84,6 +84,8 @@ class Kebersihanperalatan_model extends CI_Model {
 		$problem = $this->input->post('problem');
 		$tindakan = $this->input->post('tindakan');
 
+		$old_data = $this->db->get_where('kebersihan_peralatan', ['uuid'=>$uuid])->row_array();
+
 		$daftar_peralatan = [];
 
 		if (is_array($nama_alat)) {
@@ -107,7 +109,20 @@ class Kebersihanperalatan_model extends CI_Model {
 		];
 
 		$this->db->update('kebersihan_peralatan', $data, ['uuid' => $uuid]);
-		return $this->db->affected_rows() > 0;
+
+		$new_data = $this->db->get_where('kebersihan_peralatan', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+			$this->activity_logger->log_activity(
+				'update',
+				'kebersihan_peralatan_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_verifikasi()

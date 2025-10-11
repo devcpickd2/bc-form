@@ -130,6 +130,8 @@ class Kontaminasi_model extends CI_Model {
 		$keterangan = $this->input->post('keterangan');
 		$catatan = $this->input->post('catatan');
 
+		$old_data = $this->db->get_where('kontaminasi', ['uuid'=>$uuid])->row_array();
+		
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -148,10 +150,23 @@ class Kontaminasi_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->where('uuid', $uuid);
-		$this->db->update('kontaminasi', $data);
+		$this->db->update('kontaminasi', $data, ['uuid' => $uuid]);
 
-		return $this->db->affected_rows() > 0;
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('kontaminasi', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus kontaminasi_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'kontaminasi_logs', // nama tabel log khusus kontaminasi
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_verifikasi()

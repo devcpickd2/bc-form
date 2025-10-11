@@ -41,34 +41,34 @@
 						$no = 1;
 						foreach($chiller as $val): 
 							$tanggal = (new DateTime($val->date))->format('d-m-Y');
-						?>
-						<tr>
-							<td class="text-center"><?= $no++ ?></td>
-							<td><?= $tanggal ?></td>
-							<td><?= $val->waktu ?></td>
-							<td><?= $val->chiller_1 ?></td>
-							<td><?= $val->chiller_2 ?></td>
-							<td><?= $val->chiller_3 ?></td>
-							<td><?= $val->chiller_4 ?></td>
-							<td><?= date('H:i - d m Y', strtotime($val->modified_at)) ?></td>
-							<td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)) ?></td>
-							<td class="text-center">
-								<?php
-								if ($val->status_spv == 0) {
-									echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-								} elseif ($val->status_spv == 1) {
-									echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-								} elseif ($val->status_spv == 2) {
-									echo '<span style="color: red; font-weight: bold;">Revision</span>';
-								}
-								?>
-							</td>
-							<td class="text-center">
-								<a href="<?= base_url('chiller/status/'.$val->uuid) ?>" class="btn btn-warning btn-icon-split">
-									<span class="text">Verifikasi</span>
-								</a>
-							</td>
-						</tr>
+							?>
+							<tr>
+								<td class="text-center"><?= $no++ ?></td>
+								<td><?= $tanggal ?></td>
+								<td><?= $val->waktu ?></td>
+								<td><?= $val->chiller_1 ?></td>
+								<td><?= $val->chiller_2 ?></td>
+								<td><?= $val->chiller_3 ?></td>
+								<td><?= $val->chiller_4 ?></td>
+								<td><?= date('H:i - d m Y', strtotime($val->modified_at)) ?></td>
+								<td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)) ?></td>
+								<td class="text-center">
+									<?php
+									if ($val->status_spv == 0) {
+										echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+									} elseif ($val->status_spv == 1) {
+										echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+									} elseif ($val->status_spv == 2) {
+										echo '<span style="color: red; font-weight: bold;">Revision</span>';
+									}
+									?>
+								</td>
+								<td class="text-center">
+									<a href="<?= base_url('chiller/status/'.$val->uuid) ?>" class="btn btn-warning btn-icon-split">
+										<span class="text">Verifikasi</span>
+									</a>
+								</td>
+							</tr>
 						<?php endforeach ?>
 					</tbody>
 				</table>
@@ -76,14 +76,20 @@
 
 			<br><hr>
 			<div class="form-group">
-				<form action="<?= base_url('chiller/cetak') ?>" method="post" class="form-inline">
+				<form action="" method="post" class="form-inline">
 					<label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
 					<input type="date" name="tanggal" class="form-control mr-2" required>
-					<button type="submit" class="btn btn-success">
-						<i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+
+					<button type="submit" formaction="<?= base_url('chiller/cetak') ?>" class="btn btn-success mr-2">
+						<i class="fas fa-file-pdf fa-sm text-white-50"></i> Cetak PDF
+					</button>
+
+					<button type="submit" formaction="<?= base_url('chiller/export-excel') ?>" class="btn btn-primary">
+						<i class="fas fa-file-excel fa-sm text-white-50"></i> Cetak Excel
 					</button>
 				</form>
 			</div>
+
 		</div>
 	</div>
 </div>

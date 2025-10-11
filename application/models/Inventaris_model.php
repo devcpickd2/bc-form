@@ -20,7 +20,7 @@ class Inventaris_model extends CI_Model {
 				'label' => 'Shift',
 				'rules' => 'required'
 			]
-		];
+		]; 
 	}
 
 	public function insert()
@@ -75,6 +75,7 @@ class Inventaris_model extends CI_Model {
 		$kondisi_akhir  = $this->input->post('kondisi_akhir');
 		$keterangan     = $this->input->post('keterangan');
 
+		$old_data = $this->db->get_where('inventaris', ['uuid'=>$uuid])->row_array();
 		$data = $this->db->get_where('inventaris', ['uuid' => $uuid])->row();
 		if (!$data) {
 			return false;
@@ -119,7 +120,22 @@ class Inventaris_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		$this->db->update('inventaris', $updateData);
 
-		return ($this->db->affected_rows() > 0);
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('inventaris', ['uuid' => $uuid])->row_array();
+
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'inventaris_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function update_check($uuid)

@@ -141,7 +141,7 @@ class Penerimaankemasan_model extends CI_Model {
 		$coa = $this->input->post('coa');
 		$penerimaan = $this->input->post('penerimaan');
 		$keterangan = $this->input->post('keterangan');
-		
+		$old_data = $this->db->get_where('penerimaan_kemasan', ['uuid'=>$uuid])->row_array();
 		$kondisi_mobil = $this->input->post('kondisi_mobil'); 
 		if(empty($kondisi_mobil)) {
 			$kondisi_mobil = ['Tidak Sesuai'];
@@ -187,8 +187,23 @@ class Penerimaankemasan_model extends CI_Model {
 			log_message('error', 'Update gagal: ' . $this->db->last_query());
 			log_message('error', 'DB error: ' . json_encode($this->db->error()));
 		}
+		
+		if ($this->db->affected_rows() > 0) {
+			$new_data = $this->db->get_where('penerimaan_kemasan', ['uuid' => $uuid])->row_array();
 
-		return ($this->db->affected_rows() > 0) ? true : false;
+        // Catat log activity
+			$this->activity_logger->log_activity(
+				'update',
+				'penerimaan_kemasan_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function rules_verifikasi()

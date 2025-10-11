@@ -14,30 +14,30 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('timbangan/tambah');?>" enctype="multipart/form-data">
-                   <?php
-                   $produksi_data = $this->session->userdata('produksi_data');
-                   $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
-                   $shift_sess = $produksi_data['shift'] ?? '';
-                   ?>
-                   <div class="form-group row">
-                     <div class="col-md-4">
-                        <label class="font-weight-bold">Tanggal</label>
-                        <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
-                        value="<?= set_value('date', $tanggal_sess) ?>">
-                        <div class="invalid-feedback"><?= form_error('date') ?></div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="font-weight-bold">Shift</label>
-                        <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
-                            <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
-                            <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
-                            <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
-                            <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
-                        </select>
-                        <div class="invalid-feedback"><?= form_error('shift') ?></div>
-                    </div>
+                 <?php
+                 $produksi_data = $this->session->userdata('produksi_data');
+                 $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
+                 $shift_sess = $produksi_data['shift'] ?? '';
+                 ?>
+                 <div class="form-group row">
+                   <div class="col-md-4">
+                    <label class="font-weight-bold">Tanggal</label>
+                    <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
+                    value="<?= set_value('date', $tanggal_sess) ?>">
+                    <div class="invalid-feedback"><?= form_error('date') ?></div>
                 </div>
-                <div class="form-group row">
+                <div class="col-md-4">
+                    <label class="font-weight-bold">Shift</label>
+                    <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
+                        <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
+                        <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
+                        <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
+                        <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
+                    </select>
+                    <div class="invalid-feedback"><?= form_error('shift') ?></div>
+                </div>
+            </div>
+<!--                 <div class="form-group row">
                     <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Kode Timbangan</label>
                         <input type="text" name="kode_timbangan" class="form-control <?= form_error('kode_timbangan') ? 'invalid' : '' ?> " value="<?= set_value('kode_timbangan'); ?>">
@@ -75,28 +75,51 @@
                             <?= form_error('peneraan_standar') ?>
                         </div>
                     </div> 
-                </div>
+                </div> -->
                 <hr>
                 <div class="form-area" id="form-timbangan-wrapper">
                     <label class="form-label font-weight-bold">Hasil Pemeriksaan</label>
+
                     <div class="timbangan-group border p-3 mb-3 rounded bg-light" data-index="0">
-                        <div class="form-group row">
-                            <div class="col-sm-3">
+                        <div class="form-group row align-items-end">
+                            <div class="col-sm-2">
+                                <label>Kode Timbangan</label>
+                                <input type="text" name="kode_timbangan[]" class="form-control">
+                            </div>
+                            <div class="col-sm-1">
+                                <label>Kapasitas</label>
+                                <input type="text" name="kapasitas[]" class="form-control">
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Model</label>
+                                <input type="text" name="model[]" class="form-control">
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Lokasi</label>
+                                <input type="text" name="lokasi[]" class="form-control">
+                            </div>
+                            <div class="col-sm-1">
+                                <label>Standar (g)</label>
+                                <input type="text" name="peneraan_standar[]" class="form-control">
+                            </div>
+                            <div class="col-sm-2">
                                 <label>Pukul</label>
                                 <input type="time" name="pukul[]" class="form-control">
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-1">
                                 <label>Hasil</label>
                                 <input type="text" name="hasil[]" class="form-control">
                             </div>
-                            <div class="col-sm-3 d-flex align-items-end">
-                                <button type="button" class="btn btn-danger btn-remove">Hapus</button>
+                            <div class="col-sm-1 text-center">
+                                <button type="button" class="btn btn-danger btn-remove mt-4">Hapus</button>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <button type="button" class="btn btn-primary mt-2" id="add-timbangan">+ Tambah Pemeriksaan</button>
                 <hr>
+
                 <div class="form-group row">
                     <div class="col-sm-6">
                         <label class="form-label font-weight-bold">Keterangan</label>

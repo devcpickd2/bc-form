@@ -72,7 +72,7 @@ class Retain_model extends CI_Model {
 		$sample_storage = $this->input->post('sample_storage');
 		$description = $this->input->post('description'); 
 		$catatan = $this->input->post('catatan');
-
+		$old_data = $this->db->get_where('retain', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -85,7 +85,22 @@ class Retain_model extends CI_Model {
 		);
 
 		$this->db->update('retain', $data, ['uuid' => $uuid]);
-		return ($this->db->affected_rows() > 0);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('retain', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus retain_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'retain_logs', // nama tabel log khusus retain
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 	}
 
 	public function rules_verifikasi()

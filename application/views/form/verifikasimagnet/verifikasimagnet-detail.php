@@ -47,6 +47,19 @@
                             <td colspan="6"><?= $verifikasimagnet->jumlah_temuan; ?></td>
                         </tr>
                         <tr>
+                            <td><b>Bukti Temuan</b></td>
+                            <td class="text-center" colspan="2">
+                                <?php if (!empty($verifikasimagnet->bukti_temuan)): ?>
+                                    <img src="<?= base_url('uploads/bukti_temuan/' . $verifikasimagnet->bukti_temuan) ?>" 
+                                    alt="Bukti Temuan" 
+                                    style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+
+                        <tr>
                             <td><b>Keterangan</b></td>
                             <td colspan="6"><?= $verifikasimagnet->keterangan; ?></td>
                         </tr>
@@ -71,14 +84,14 @@
                                 <?php
                                 switch ($verifikasimagnet->status_spv) {
                                     case 1:
-                                        echo '<span class="text-success font-weight-bold">Verified</span>';
-                                        break;
+                                    echo '<span class="text-success font-weight-bold">Verified</span>';
+                                    break;
                                     case 2:
-                                        echo '<span class="text-danger font-weight-bold">Revision</span>';
-                                        break;
+                                    echo '<span class="text-danger font-weight-bold">Revision</span>';
+                                    break;
                                     default:
-                                        echo '<span class="text-secondary font-weight-bold">Created</span>';
-                                        break;
+                                    echo '<span class="text-secondary font-weight-bold">Created</span>';
+                                    break;
                                 }
                                 ?>
                             </td>

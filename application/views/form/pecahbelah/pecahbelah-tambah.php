@@ -79,8 +79,8 @@
                                     <?= htmlspecialchars($benda->area) ?>
                                 </td>
                                 <td>
-                                    <input type="hidden" name="jumlah[]" value="<?= htmlspecialchars($benda->jumlah) ?>">
-                                    <?= htmlspecialchars($benda->jumlah) ?>
+                                    <input type="text" name="jumlah[]" value="<?= htmlspecialchars($benda->jumlah) ?>">
+                                    <!-- <?= htmlspecialchars($benda->jumlah) ?> -->
                                 </td>
                                 <td>
                                     <input type="checkbox" name="kondisi_awal[<?= $i ?>]" value="Ok">

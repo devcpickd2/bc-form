@@ -29,6 +29,7 @@
                             <th>Nama Produk</th>
                             <th>Kode Produksi</th>
                             <th>Jumlah Temuan</th>
+                            <th>Bukti Temuan</th>
                             <th>Last Updated</th>
                             <th>Last Verified</th>
                             <th>SPV</th>
@@ -40,7 +41,7 @@
                         $no = 1;
                         foreach($verifikasimagnet as $val) {
                             $tanggal = (new DateTime($val->date))->format('d-m-Y');
-                        ?>
+                            ?>
                             <tr>
                                 <td class="text-center"><?= $no++; ?></td>
                                 <td><?= $tanggal; ?></td>
@@ -48,42 +49,53 @@
                                 <td><?= $val->nama_produk; ?></td>
                                 <td><?= $val->kode_produksi; ?></td>
                                 <td><?= $val->jumlah_temuan; ?></td>
-                                <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
-                                <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
                                 <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('verifikasimagnet/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Verifikasi</span>
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
+                                    <?php if (!empty($val->bukti_temuan)): ?>
+                                        <a href="<?= base_url('uploads/bukti_temuan/' . $val->bukti_temuan) ?>" 
+                                         target="_blank" 
+                                         class="btn btn-sm btn-outline-primary">
+                                         <i class="fa fa-image"></i> Lihat
+                                     </a>
+                                 <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
+                            <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
+                            <td class="text-center">
+                                <?php
+                                if ($val->status_spv == 0) {
+                                    echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
+                                } elseif ($val->status_spv == 1) {
+                                    echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
+                                } elseif ($val->status_spv == 2) {
+                                    echo '<span style="color: red; font-weight: bold;">Revision</span>';
+                                }
+                                ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="<?= base_url('verifikasimagnet/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
+                                    <span class="text">Verifikasi</span>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
 
-            <br><hr>
-            <div class="form-group">
-                <form action="<?= base_url('verifikasimagnet/cetak') ?>" method="post" class="form-inline">
-                    <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
-                    <input type="date" name="tanggal" class="form-control mr-2" required>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                    </button>
-                </form>
-            </div>
+        <br><hr>
+        <div class="form-group">
+            <form action="<?= base_url('verifikasimagnet/cetak') ?>" method="post" class="form-inline">
+                <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
+                <input type="date" name="tanggal" class="form-control mr-2" required>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                </button>
+            </form>
         </div>
     </div>
+</div>
 </div>
 </div>
 

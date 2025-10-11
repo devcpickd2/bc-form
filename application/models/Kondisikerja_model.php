@@ -165,7 +165,7 @@ class Kondisikerja_model extends CI_Model {
 		$tindakan_peralatan = $this->input->post('tindakan_peralatan');
 		$verifikasi_peralatan = $this->input->post('verifikasi_peralatan');
 		$catatan = $this->input->post('catatan');
-
+		$old_data = $this->db->get_where('kondisi_kerja', ['uuid'=>$uuid])->row_array();
 		$data = array(
 			'username' => $username,
 			'date' => $date,
@@ -189,8 +189,23 @@ class Kondisikerja_model extends CI_Model {
 			'modified_at' => date("Y-m-d H:i:s") 
 		);
 
-		$this->db->update('kondisi_kerja', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('kondisi_kerja', $data, ['uuid' => $uuid]);
+
+        // ambil data baru setelah update
+		$new_data = $this->db->get_where('kondisi_kerja', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+            // simpan log ke tabel khusus kondisi_kerja_logs
+			$this->activity_logger->log_activity(
+				'update',
+                'kondisi_kerja_logs', // nama tabel log khusus kondisi_kerja
+                $uuid,
+                $old_data,
+                $new_data
+            );
+			return true;
+		}
+		return false;
 
 	}
 

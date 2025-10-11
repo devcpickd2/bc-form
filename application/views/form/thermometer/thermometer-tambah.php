@@ -59,7 +59,7 @@
                             <div class="invalid-feedback"><?= form_error('shift') ?></div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                 <!--    <div class="form-group row">
                      <div class="col-sm-4">
                         <label class="form-label font-weight-bold">Kode Thermometer</label>
                         <input type="text" name="kode_thermo" class="form-control <?= form_error('kode_thermo') ? 'invalid' : '' ?> " value="<?= set_value('kode_thermo'); ?>">
@@ -81,33 +81,57 @@
                             <?= form_error('area') ?>
                         </div> 
                     </div> 
-                </div>
+                </div> -->
                 <hr>
                 <div class="form-area" id="form-thermometer-wrapper">
-                    <label class="form-label font-weight-bold">Hasil Pemeriksaan</label>
+                    <label class="form-label font-weight-bold mb-2">Hasil Pemeriksaan</label>
+
                     <div class="thermometer-group border p-3 mb-3 rounded bg-light" data-index="0">
-                        <div class="form-group row">
-                            <div class="col-sm-3">
-                                <label>Pukul</label>
-                                <input type="time" name="pukul[]" class="form-control">
+                        <div class="form-row d-flex flex-wrap align-items-end">
+                            
+                            <div class="col-auto mb-2">
+                                <label class="small mb-1">Kode Thermometer</label>
+                                <input type="text" name="kode_thermo[]" class="form-control form-control-sm">
                             </div>
-                            <div class="col-sm-3">
-                                <label>Standar Suhu (°C)</label>
-                                <select name="standar[]" class="form-control">
+
+                            <div class="col-auto mb-2">
+                                <label class="small mb-1">Model</label>
+                                <input type="text" name="model[]" class="form-control form-control-sm">
+                            </div>
+
+                            <div class="col-auto mb-2">
+                                <label class="small mb-1">Area</label>
+                                <input type="text" name="area[]" class="form-control form-control-sm">
+                            </div>
+
+                            <div class="col-auto mb-2">
+                                <label class="small mb-1">Pukul</label>
+                                <input type="time" name="pukul[]" class="form-control form-control-sm">
+                            </div>
+
+                            <div class="col-auto mb-2">
+                                <label class="small mb-1">Standar Suhu (°C)</label>
+                                <select name="standar[]" class="form-control form-control-sm">
                                     <option value="0">0°C</option>
                                     <option value="100">100°C</option>
                                 </select>
                             </div>
-                            <div class="col-sm-3">
-                                <label>Hasil</label>
-                                <input type="text" name="hasil[]" class="form-control">
+
+                            <div class="col-auto mb-2">
+                                <label class="small mb-1">Hasil</label>
+                                <input type="text" name="hasil[]" class="form-control form-control-sm">
                             </div>
-                            <div class="col-sm-3 d-flex align-items-end">
-                                <button type="button" class="btn btn-danger btn-remove">Hapus</button>
+
+                            <div class="col-auto mb-2">
+                                <button type="button" class="btn btn-danger btn-sm mt-3 btn-remove">
+                                    Hapus
+                                </button>
                             </div>
+
                         </div>
                     </div>
                 </div>
+
                 <button type="button" class="btn btn-primary mt-2" id="add-thermometer">+ Tambah Pemeriksaan</button>
                 <hr>
                 <div class="form-group row">

@@ -64,6 +64,8 @@ class Falserejection_model extends CI_Model {
 		$false_rejection = $this->input->post('false_rejection');
 		$catatan = $this->input->post('catatan');
 
+		$old_data = $this->db->get_where('metal', ['uuid'=>$uuid])->row_array();
+
 		$data = array(
 			'username_2' => $username,
 			'date_false_rejection' => $date_false_rejection,
@@ -80,8 +82,21 @@ class Falserejection_model extends CI_Model {
 			'modified_at_false' => date("Y-m-d H:i:s")
 		);
 
-		$this->db->update('metal', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
+		$this->db->update('metal', $data, ['uuid' => $uuid]);
+
+		$new_data = $this->db->get_where('metal', ['uuid'=>$uuid])->row_array();
+
+		if ($this->db->affected_rows() > 0) {
+			$this->activity_logger->log_activity(
+				'update',
+				'metal_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
+			return true;
+		}
+		return false;
 
 	}
 

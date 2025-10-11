@@ -32,7 +32,7 @@
                             <div class="invalid-feedback <?= !empty(form_error('shift')) ? 'd-block' : '' ; ?> "><?= form_error('shift') ?></div>
                         </div>
                     </div>
-                    <div class="form-group row">
+<!--                     <div class="form-group row">
                         <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Kode Timbangan</label>
                             <input type="text" name="kode_timbangan" class="form-control <?= form_error('kode_timbangan') ? 'invalid' : '' ?> " value="<?= $timbangan->kode_timbangan; ?>">
@@ -70,9 +70,10 @@
                                 <?= form_error('peneraan_standar') ?>
                             </div>
                         </div> 
-                    </div>
+                    </div> -->
                     <div class="form-area" id="form-timbangan-wrapper">
                         <label class="form-label font-weight-bold">Hasil Pemeriksaan</label>
+
                         <?php
                         $timbangan_data = json_decode($timbangan->peneraan_hasil, true);
 
@@ -81,29 +82,56 @@
                             $timbangan_data = [];
                         }
 
-                        foreach ($timbangan_data as $i => $detail): 
+                        foreach ($timbangan_data as $i => $detail):
+                            $kode_timbangan = isset($detail['kode_timbangan']) ? $detail['kode_timbangan'] : '';
+                            $kapasitas = isset($detail['kapasitas']) ? $detail['kapasitas'] : '';
+                            $model = isset($detail['model']) ? $detail['model'] : '';
+                            $lokasi = isset($detail['lokasi']) ? $detail['lokasi'] : '';
+                            $peneraan_standar = isset($detail['peneraan_standar']) ? $detail['peneraan_standar'] : '';
                             $pukul = isset($detail['pukul']) ? $detail['pukul'] : '';
                             $hasil = isset($detail['hasil']) ? $detail['hasil'] : '';
                             ?>
                             <div class="timbangan-group border p-3 mb-3 rounded bg-light" data-index="<?= $i ?>">
-                                <div class="form-group row">
-                                    <div class="col-sm-3">
+                                <div class="form-group row align-items-end">
+                                    <div class="col-sm-2">
+                                        <label>Kode Timbangan</label>
+                                        <input type="text" name="kode_timbangan[]" class="form-control" value="<?= htmlspecialchars($kode_timbangan) ?>">
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label>Kapasitas</label>
+                                        <input type="text" name="kapasitas[]" class="form-control" value="<?= htmlspecialchars($kapasitas) ?>">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label>Model</label>
+                                        <input type="text" name="model[]" class="form-control" value="<?= htmlspecialchars($model) ?>">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label>Lokasi</label>
+                                        <input type="text" name="lokasi[]" class="form-control" value="<?= htmlspecialchars($lokasi) ?>">
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label>Standar (g)</label>
+                                        <input type="text" name="peneraan_standar[]" class="form-control" value="<?= htmlspecialchars($peneraan_standar) ?>">
+                                    </div>
+                                    <div class="col-sm-2">
                                         <label>Pukul</label>
-                                        <input type="time" name="pukul[]" class="form-control" value="<?= $pukul ?>">
+                                        <input type="time" name="pukul[]" class="form-control" value="<?= htmlspecialchars($pukul) ?>">
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-1">
                                         <label>Hasil</label>
-                                        <input type="text" name="hasil[]" class="form-control" value="<?= $hasil ?>">
+                                        <input type="text" name="hasil[]" class="form-control" value="<?= htmlspecialchars($hasil) ?>">
                                     </div>
-                                    <div class="col-sm-3 d-flex align-items-end">
-                                        <button type="button" class="btn btn-danger btn-remove">Hapus</button>
+                                    <div class="col-sm-1 text-center">
+                                        <button type="button" class="btn btn-danger btn-remove mt-4">Hapus</button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
+
                     <button type="button" class="btn btn-primary mt-2" id="add-timbangan">+ Tambah Pemeriksaan</button>
                     <hr>
+
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Keterangan</label>
