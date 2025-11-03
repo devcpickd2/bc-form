@@ -1,18 +1,20 @@
-<?php 
+<?php
 date_default_timezone_set('Asia/Jakarta');
+
 use Ramsey\Uuid\Uuid;
 
 
-class Produk_model extends CI_Model {
-	
+class Produk_model extends CI_Model
+{
+
 	public function rules()
 	{
-		return[
+		return [
 			[
 				'field' => 'nama_produk',
 				'label' => 'Name of Things',
 				'rules' => 'required'
-			] 
+			]
 		];
 	}
 
@@ -26,12 +28,12 @@ class Produk_model extends CI_Model {
 		$data = array(
 			'uuid' => $uuid,
 			'username' => $username,
-			'nama_produk' => $nama_produk
+			'nama_produk' => $nama_produk,
+			'plant' => $this->session->userdata('plant')
 		);
 
 		$this->db->insert('produk', $data);
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		return ($this->db->affected_rows() > 0) ? true : false;
 	}
 
 	public function update($uuid)
@@ -46,13 +48,12 @@ class Produk_model extends CI_Model {
 		);
 
 		$this->db->update('produk', $data, array('uuid' => $uuid));
-		return($this->db->affected_rows() > 0) ? true :false;
-
+		return ($this->db->affected_rows() > 0) ? true : false;
 	}
 
 	public function get_all()
 	{
-		$this->db->order_by('created_at', 'DESC'); 
+		$this->db->order_by('created_at', 'DESC');
 		$data = $this->db->get('produk')->result();
 		return $data;
 	}
@@ -75,7 +76,7 @@ class Produk_model extends CI_Model {
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('produk');
 	}
-	
+
 	public function get_all_produk()
 	{
 		return $this->db->get('produk')->result();
@@ -87,5 +88,4 @@ class Produk_model extends CI_Model {
 		$this->db->order_by('created_at', 'DESC');
 		return $this->db->get('produk')->result();
 	}
-
 }

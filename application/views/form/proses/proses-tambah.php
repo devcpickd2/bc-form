@@ -89,7 +89,7 @@
                 $standar_berat = [
                     'tepung_terigu' => '',
                     'tepung_tapioka' => '2.270',
-                    'yeast' => '0.372',
+                    'yeast' => '0.732',
                     'bread_improver' => '',
                     'premix' => '',
                     'shortening' => '0.252',
@@ -126,7 +126,7 @@
                     </div>
                 </div>
 
-                <!-- Table Proses Produksi -->
+                <!-- Table -->
                 <div class="table-responsive mt-4" style="overflow-x:auto;">
                     <table class="table table-bordered table-sm" style="min-width:1300px; table-layout:fixed;">
                         <thead class="thead-light">
@@ -175,14 +175,22 @@
                                                     $isCheckbox = false;
                                                     $isNumber = false;
 
-                                                    // ✅ Updated Logic: Checkboxes use ✓ instead of 1
-                                                    if (
-                                                        ($kategori == 'kondisi_rm' && $subLower !== 'chill_water' && !str_contains($subLower, 'suhu')) ||
-                                                        in_array($sub, ['sensori', 'sensori_produk'])
-                                                    ) {
+                                                    // ✅ Kondisi RM logic
+                                                    if ($kategori == 'kondisi_rm' && $subLower !== 'chill_water' && !str_contains($subLower, 'suhu')) {
+                                                        if ($col == 8) {
+                                                            $stdVal = $standar_berat[$subLower] ?? '';
+                                                            echo '<input type="text" name="proses_produksi[' . $kategori . '][' . $subLower . '][' . $col . ']" class="form-control form-control-sm" value="' . $stdVal . '">';
+                                                            continue;
+                                                        } else {
+                                                            $isCheckbox = true;
+                                                        }
+                                                    }
+                                                    // ✅ New: Checkbox for sensori, hasil_proofing, sensori_produk
+                                                    elseif (in_array($subLower, ['sensori', 'hasil_proofing', 'sensori_produk'])) {
                                                         $isCheckbox = true;
-                                                        $checked = ($value == '✓') ? 'checked' : '';
-                                                    } elseif ($subLower === 'chill_water' || str_contains($subLower, 'suhu')) {
+                                                    }
+                                                    // Numeric input
+                                                    elseif ($subLower === 'chill_water' || str_contains($subLower, 'suhu')) {
                                                         $isNumber = true;
                                                     }
 
@@ -190,7 +198,10 @@
                                                 ?>
 
                                                     <?php if ($isCheckbox): ?>
-                                                        <input type="checkbox" name="proses_produksi[<?= $kategori ?>][<?= $sub ?>][<?= $col ?>]" value="&#10003;" <?= $checked ?> class="checkbox-lg">
+                                                        <input type="checkbox"
+                                                            name="proses_produksi[<?= $kategori ?>][<?= $sub ?>][<?= $col ?>]"
+                                                            value="✗"
+                                                            class="checkbox-lg toggle-check">
                                                     <?php elseif ($isNumber): ?>
                                                         <input type="number" step="0.01" name="proses_produksi[<?= $kategori ?>][<?= $sub ?>][<?= $col ?>]" value="<?= $value ?>" class="form-control form-control-sm" placeholder="0.00">
                                                     <?php else: ?>
@@ -211,7 +222,6 @@
                     </table>
                 </div>
 
-                <!-- Catatan -->
                 <div class="form-group row mt-3">
                     <div class="col-sm-6">
                         <label class="font-weight-bold">Catatan</label>
@@ -219,7 +229,6 @@
                     </div>
                 </div>
 
-                <!-- Buttons -->
                 <div class="row mt-3">
                     <div class="col">
                         <button type="submit" class="btn btn-success mr-2"><i class="fa fa-save"></i> Simpan</button>
@@ -227,6 +236,81 @@
                     </div>
                 </div>
             </form>
+
+            <script>
+                $(document).ready(function() {
+                    // --- Autofill Jenis Produk ---
+                    $('#select_nama_produk').change(function() {
+                        const selectedProduk = $(this).val().trim().toLowerCase();
+                        const jenisProdukInputs = $('input[name^="proses_produksi[dough_mixing][nama_produk]"]');
+                        jenisProdukInputs.val('');
+
+                        if (selectedProduk === 'bc orange sintetis') {
+                            jenisProdukInputs.each(function() {
+                                $(this).val('BC Orange');
+                            });
+                        } else if (selectedProduk.includes('bc mix')) {
+                            jenisProdukInputs.each(function(index) {
+                                if (index < 7) $(this).val('BC Yellow');
+                                else $(this).val('BC Orange');
+                            });
+                        }
+                    });
+
+                    // --- Kode Produksi Autofill ---
+                    const kodeProduksiInputs = $('.kode_produksi_field');
+
+                    const firstKode = $('#kode_produksi_1');
+                        firstKode.on('blur', function() {
+                            let baseVal = $(this).val().trim();
+                            if (!baseVal) return;
+                            if (!baseVal.match(/\d+$/)) {
+                                baseVal = `${baseVal}1`;
+                                $(this).val(baseVal);
+                            }
+                            kodeProduksiInputs.each(function(index) {
+                                if (index === 0) return;
+                                const suffix = index + 1;
+                                $(this).val(`${baseVal.replace(/\d+$/, '')}${suffix}`);
+                            });
+                        });
+
+                    // --- Duration Calculation ---
+                    function calculateDuration(start, end) {
+                        if (!start || !end) return '';
+                        const [startHour, startMin] = start.split(':').map(Number);
+                        const [endHour, endMin] = end.split(':').map(Number);
+                        let startTotal = startHour * 60 + startMin;
+                        let endTotal = endHour * 60 + endMin;
+                        if (endTotal < startTotal) endTotal += 24 * 60;
+                        return endTotal - startTotal;
+                    }
+
+                    $('input[name*="[jam_mulai]"], input[name*="[jam_selesai]"]').on('change', function() {
+                        const td = $(this).closest('td');
+                        let colIndex = td.index();
+                        if (colIndex > 1) colIndex -= 1;
+                        const inputIndex = colIndex;
+                        const jamMulaiInput = $(`input[name="proses_produksi[proofing][jam_mulai][${inputIndex}]"]`);
+                        const jamSelesaiInput = $(`input[name="proses_produksi[proofing][jam_selesai][${inputIndex}]"]`);
+                        const durasiInput = $(`input[name="proses_produksi[proofing][durasi_waktu][${inputIndex}]"]`);
+                        const jamMulai = jamMulaiInput.val();
+                        const jamSelesai = jamSelesaiInput.val();
+                        const durasi = calculateDuration(jamMulai, jamSelesai);
+                        if (durasi !== '') durasiInput.val(durasi);
+                    });
+
+                    // --- Checkbox ✓ ✗ logic ---
+                    $(document).on('change', '.toggle-check', function() {
+                        if ($(this).is(':checked')) {
+                            $(this).val('✓');
+                        } else {
+                            $(this).val('✗');
+                        }
+                    });
+                });
+            </script>
+
         </div>
     </div>
 </div>

@@ -76,7 +76,7 @@
                     <div class="col-md-4">
                         <label class="font-weight-bold">Pukul</label>
                         <input type="time" name="pukul" class="form-control <?= form_error('pukul') ? 'is-invalid' : '' ?>" 
-                        value="<?= set_value('pukul', date('H:00')) ?>" min="01:00" max="23:00" step="3600">
+                        value="<?= set_value('pukul', date('H:00')) ?>" step="3600">
                         <div class="invalid-feedback"><?= form_error('pukul') ?></div>
                     </div>
                 </div>

@@ -387,6 +387,19 @@
             premix: [
                 { nama: 'Premix Gula & Garam', berat: '7.440' }
             ]
+        },
+        'BC CRISPY MIX': {
+            tegu_berat: '329.240',
+            tapioka_berat: '22.700',
+            ragi_berat: '7.320',
+            bread_berat: '0.380',
+            shortening_berat: '2.520',
+            chill_water_berat: '180',
+            premix: [
+                { nama: 'Premix Yellow', berat: '0.070' },
+                { nama: 'Premix Orange', berat: '0.060' },
+                { nama: 'Premix Gula & Garam', berat: '7.440' }
+            ]
         }
     };
 

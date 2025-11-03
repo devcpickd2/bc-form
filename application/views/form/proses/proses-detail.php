@@ -40,7 +40,6 @@ if (is_string($proses_data)) {
 ?>
 
 <div class="container-fluid">
-  <!-- <h1 class="h3 mb-4 text-gray-800">Detail Produksi</h1> -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
@@ -93,6 +92,7 @@ if (is_string($proses_data)) {
             <thead class="thead-light">
               <tr>
                 <th style="width: 20%;">Jenis Parameter</th>
+                <th></th> <!-- Empty header column -->
                 <?php for ($i = 1; $i <= 10; $i++): ?>
                   <th>Input ke-<?= $i ?></th>
                 <?php endfor; ?>
@@ -101,12 +101,13 @@ if (is_string($proses_data)) {
             <tbody>
               <?php foreach ($proses_data as $kategori => $param_list): ?>
                 <tr style="background-color: #f8f9fc; font-weight: bold;">
-                  <td colspan="11"><?= strtoupper(str_replace('_', ' ', $kategori)) ?></td>
+                  <td colspan="12"><?= strtoupper(str_replace('_', ' ', $kategori)) ?></td>
                 </tr>
                 <?php foreach ($param_list as $param => $values): ?>
                   <tr>
                     <td><?= $label_param[$param] ?? $param ?></td>
-                    <?php for ($i = 0; $i < 10; $i++): ?>
+                    <td><?= htmlspecialchars($values[0] ?? '') ?></td> <!-- empty / old input ke-1 -->
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
                       <td><?= htmlspecialchars($values[$i] ?? '') ?></td>
                     <?php endfor; ?>
                   </tr>
@@ -118,21 +119,19 @@ if (is_string($proses_data)) {
       <?php endif; ?>
 
       <?php
-// Ambil data packing
+      // Ambil data packing
       $packing_raw = $proses->proses_packing ?? [];
 
-// Jika string, decode JSON
       if (is_string($packing_raw)) {
         $decoded = json_decode($packing_raw, true);
         $packing_raw = is_array($decoded) ? $decoded : [];
       }
 
-// Pastikan tetap array
       if (!is_array($packing_raw)) {
         $packing_raw = [];
       }
 
-// Label parameter packing
+      // Label parameter packing
       $label_param_packing = [
         'jam_mulai' => 'Jam Mulai',
         'jam_selesai' => 'Jam Selesai',
@@ -156,9 +155,7 @@ if (is_string($proses_data)) {
         'bukti_labelisasi' => 'Bukti Labelisasi'
       ];
 
-// Ambil data kategori pertama (1 kolom saja)
       $packing_data = !empty($packing_raw) ? reset($packing_raw) : [];
-
       ?>
 
       <?php if (!empty($packing_data)): ?>
@@ -195,7 +192,7 @@ if (is_string($proses_data)) {
                     <tr>
                       <td><?= $label_param_packing[$param] ?? $param ?></td>
                       <td>
-                        <?php 
+                        <?php
                         if ($param === 'bukti_labelisasi' && !empty($value)) {
                           $file = is_array($value) ? ($value[0] ?? '') : $value;
                           if ($file && file_exists(FCPATH . 'uploads/bukti_labelisasi/' . $file)) {
@@ -210,64 +207,84 @@ if (is_string($proses_data)) {
                       </td>
                     </tr>
                   <?php endforeach; ?>
-
                 <?php endforeach; ?>
               </tbody>
             </table>
           </div>
         </div>
       <?php endif; ?>
-
-
     </div>
   </div>
-<!-- Verifikasi -->
-<div class="card shadow mb-4">
-  <div class="card-header bg-dark text-white">Verifikasi</div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped">
-        <tbody>
-          <tr><td><strong>Catatan</strong></td><td><?= $proses->catatan; ?></td></tr>
-          <tr><td><strong>QC</strong></td><td><?= $proses->username; ?></td></tr>
-          <tr><td><strong>Produksi</strong></td><td><?= $proses->nama_produksi; ?></td></tr>
-          <tr><td><strong>Status SPV</strong></td><td><?= $proses->status_spv == 1 ? 'Verified' : ($proses->status_spv == 2 ? 'Revision' : 'Created'); ?></td></tr>
-          <tr><td><strong>Catatan SPV</strong></td><td><?= !empty($proses->catatan_spv) ? $proses->catatan_spv : 'Tidak ada'; ?></td></tr>
-        </tbody>
-      </table>
+
+  <!-- Verifikasi -->
+  <div class="card shadow mb-4">
+    <div class="card-header bg-dark text-white">Verifikasi</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <tbody>
+            <tr>
+              <td><strong>Catatan</strong></td>
+              <td><?= $proses->catatan; ?></td>
+            </tr>
+            <tr>
+              <td><strong>QC</strong></td>
+              <td><?= $proses->username; ?></td>
+            </tr>
+            <tr>
+              <td><strong>Produksi</strong></td>
+              <td><?= $proses->nama_produksi; ?></td>
+            </tr>
+            <tr>
+              <td><strong>Status SPV</strong></td>
+              <td><?= $proses->status_spv == 1 ? 'Verified' : ($proses->status_spv == 2 ? 'Revision' : 'Created'); ?></td>
+            </tr>
+            <tr>
+              <td><strong>Catatan SPV</strong></td>
+              <td><?= !empty($proses->catatan_spv) ? $proses->catatan_spv : 'Tidak ada'; ?></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
 </div>
 
 <style>
   .breadcrumb {
     background-color: #2E86C1;
   }
+
   .breadcrumb a {
     color: white !important;
     text-decoration: none;
   }
+
   .table {
     font-size: 14px;
   }
+
   th {
     background-color: #f8f9fc;
   }
-  .table td, .table th {
+
+  .table td,
+  .table th {
     vertical-align: middle;
   }
+
   .card-header {
     font-weight: bold;
     font-size: 16px;
   }
 
-  .table th, .table td {
+  .table th,
+  .table td {
     font-size: 13px;
     padding: 4px 8px;
   }
 
-  .card .row > div {
+  .card .row>div {
     font-size: 14px;
   }
 
