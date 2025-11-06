@@ -53,11 +53,30 @@
                                 <td><?= $val->tahapan; ?></td>
                                 <td><?= $val->kontaminasi; ?></td>
                                 <td>
-                                    <?php if (!empty($val->bukti)): ?>
-                                        <img src="<?= base_url('uploads/' . $val->bukti); ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
-                                    <?php else: ?>
-                                        <p>No image available</p>
-                                    <?php endif; ?>
+                                    <?php
+                                        $bukti = $val->bukti ?? null;
+
+                                        $path1 = FCPATH . 'uploads/' . $bukti;
+                                        $path2 = FCPATH . 'uploads/magnettrap/' . $bukti;
+
+                                        if (!empty($bukti)) {
+                                            if (file_exists($path1)) {
+                                                $img_url = base_url('uploads/' . $bukti);
+                                            } elseif (file_exists($path2)) {
+                                                $img_url = base_url('uploads/magnettrap/' . $bukti);
+                                            } else {
+                                                $img_url = null;
+                                            }
+                                        } else {
+                                            $img_url = null;
+                                        }
+                                        ?>
+
+                                        <?php if ($img_url): ?>
+                                            <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
+                                        <?php else: ?>
+                                            <p>No image available</p>
+                                        <?php endif; ?>
                                 </td>
                                 <td class="text-center">
                                     <?php

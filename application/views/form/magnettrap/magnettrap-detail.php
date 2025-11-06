@@ -47,11 +47,31 @@
                         <tr>
                             <td><b>Bukti Temuan</b></td>
                             <td colspan="6">
-                                <?php if (!empty($magnettrap->bukti)): ?>
-                                    <img src="<?= base_url('uploads/' . $magnettrap->bukti); ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
+                                <?php
+                                $bukti = $magnettrap->bukti ?? null;
+
+                                $path1 = FCPATH . 'uploads/' . $bukti;
+                                $path2 = FCPATH . 'uploads/magnettrap/' . $bukti;
+
+                                if (!empty($bukti)) {
+                                    if (file_exists($path1)) {
+                                        $img_url = base_url('uploads/' . $bukti);
+                                    } elseif (file_exists($path2)) {
+                                        $img_url = base_url('uploads/magnettrap/' . $bukti);
+                                    } else {
+                                        $img_url = null;
+                                    }
+                                } else {
+                                    $img_url = null;
+                                }
+                                ?>
+
+                                <?php if ($img_url): ?>
+                                    <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
                                 <?php else: ?>
                                     <p>Tidak ada gambar</p>
                                 <?php endif; ?>
+
                             </td>
                         </tr>
                         <tr>
