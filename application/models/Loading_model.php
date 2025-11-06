@@ -59,9 +59,11 @@ class Loading_model extends CI_Model {
 	{
 		$produksi_data = $this->session->userdata('produksi_data');
 		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
+
 		$date = $this->input->post('date');
 		$shift = $this->input->post('shift');
 		$no_pol = $this->input->post('no_pol');
@@ -72,146 +74,142 @@ class Loading_model extends CI_Model {
 		$tujuan = $this->input->post('tujuan');
 		$no_segel = $this->input->post('no_segel');
 
-		$list_kondisi = $this->input->post('list_kondisi');
-		$kondisi_mobil_keterangan = $this->input->post('kondisi_mobil_keterangan');
+    // Daftar kondisi mobil (slug => label)
+		$kondisi_mobil_list = [
+			'bersih' => 'Bersih',
+			'bocor' => 'Bocor',
+			'bebas_dari_hama' => 'Bebas dari Hama',
+			'tidak_berdebu' => 'Tidak Berdebu',
+			'tidak_ada_sampah' => 'Tidak ada Sampah',
+			'kering' => 'Kering',
+			'basah' => 'Basah',
+			'tidak_berbau' => 'Tidak Berbau',
+			'tidak_ada_produk_non_halal' => 'Tidak ada produk Non Halal',
+			'tidak_ada_aktivitas_binatang' => 'Tidak ada Aktivitas Binatang'
+		];
 
-// jika null ubah jadi array kosong
-		if (!is_array($list_kondisi)) {
-			$list_kondisi = [];
-		}
-		if (!is_array($kondisi_mobil_keterangan)) {
-			$kondisi_mobil_keterangan = [];
-		}
-
-// baru looping
+    // Ambil data dari form
+		$kondisi_mobil_post = $this->input->post('keterangan_kondisi');
 		$kondisi_mobil = [];
-		for ($i = 0; $i < count($list_kondisi); $i++) {
-			$kondisi_mobil[] = [
-				'list_kondisi' => $list_kondisi[$i],
-				'kondisi_mobil_keterangan' => isset($kondisi_mobil_keterangan[$i]) ? $kondisi_mobil_keterangan[$i] : '',
-			];
+		foreach ($kondisi_mobil_list as $key => $label) {
+			$kondisi_mobil[$key] = $kondisi_mobil_post[$key] ?? '';
 		}
 
-		$nama_produk = $this->input->post('nama_produk');
-		$kondisi_produk = $this->input->post('kondisi_produk');
+    // Loading produk
+		$nama_produk     = $this->input->post('nama_produk');
+		$kondisi_produk  = $this->input->post('kondisi_produk');
 		$kondisi_kemasan = $this->input->post('kondisi_kemasan');
-		$kode_produksi = $this->input->post('kode_produksi');
-		$expired = $this->input->post('expired');
-		$keterangan = $this->input->post('keterangan');
+		$kode_produksi   = $this->input->post('kode_produksi');
+		$expired         = $this->input->post('expired');
+		$keterangan      = $this->input->post('keterangan');
 
 		$loading = [];
-		for ($i = 0; $i < count($nama_produk); $i++) {
-			$loading[] = array(
-				'nama_produk' => $nama_produk[$i],
-				'kondisi_produk' => isset($kondisi_produk[$i]) ? $kondisi_produk[$i] : '',
-				'kondisi_kemasan' => isset($kondisi_kemasan[$i]) ? $kondisi_kemasan[$i] : '',
-				'kode_produksi' => isset($kode_produksi[$i]) ? $kode_produksi[$i] : '',
-				'expired' => isset($expired[$i]) ? $expired[$i] : '',
-				'keterangan' => isset($keterangan[$i]) ? $keterangan[$i] : '',
-			);
+		if (is_array($nama_produk)) {
+			for ($i = 0; $i < count($nama_produk); $i++) {
+				$loading[] = [
+					'nama_produk'     => $nama_produk[$i],
+					'kondisi_produk'  => $kondisi_produk[$i] ?? '',
+					'kondisi_kemasan' => $kondisi_kemasan[$i] ?? '',
+					'kode_produksi'   => $kode_produksi[$i] ?? '',
+					'expired'         => $expired[$i] ?? '',
+					'keterangan'      => $keterangan[$i] ?? '',
+				];
+			}
 		}
 
-		$status_spv = "0";
-		$status_wh = "1";
-
-		$data = array(
-			'uuid' => $uuid,
-			'username' => $username,
-			'plant' => $plant,
-			'date' => $date,
-			'shift' => $shift,
-			'no_pol' => $no_pol,
-			'start_loading' => $start_loading,
+		$data = [
+			'uuid'           => $uuid,
+			'username'       => $username,
+			'plant'          => $plant,
+			'date'           => $date,
+			'shift'          => $shift,
+			'no_pol'         => $no_pol,
+			'start_loading'  => $start_loading,
 			'finish_loading' => $finish_loading,
-			'nama_supir' => $nama_supir,
-			'ekspedisi' => $ekspedisi,
-			'tujuan' => $tujuan,
-			'no_segel' => $no_segel,
-			'kondisi_mobil' => json_encode($kondisi_mobil),
-			'loading' => json_encode($loading),
-			'status_spv' => $status_spv,
-			'nama_wh' => $nama_produksi,
-			'status_wh' => $status_wh
-		);
+			'nama_supir'     => $nama_supir,
+			'ekspedisi'      => $ekspedisi,
+			'tujuan'         => $tujuan,
+			'no_segel'       => $no_segel,
+			'kondisi_mobil'  => json_encode($kondisi_mobil, JSON_UNESCAPED_UNICODE),
+			'loading'        => json_encode($loading, JSON_UNESCAPED_UNICODE),
+			'status_spv'     => "0",
+			'nama_wh'        => $nama_produksi,
+			'status_wh'      => "1"
+		];
 
 		$this->db->insert('loading', $data);
-		return ($this->db->affected_rows() > 0) ? true : false;
+		return $this->db->affected_rows() > 0;
 	}
 
 	public function update($uuid)
 	{
 		$username = $this->session->userdata('username');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
-		$no_pol = $this->input->post('no_pol');
-		$start_loading = $this->input->post('start_loading');
-		$finish_loading = $this->input->post('finish_loading');
-		$nama_supir = $this->input->post('nama_supir');
-		$ekspedisi = $this->input->post('ekspedisi');
-		$tujuan = $this->input->post('tujuan');
-		$no_segel = $this->input->post('no_segel');
+		$old_data = $this->db->get_where('loading', ['uuid' => $uuid])->row_array();
 
-		$list_kondisi = $this->input->post('list_kondisi');
-		$kondisi_mobil_keterangan = $this->input->post('kondisi_mobil_keterangan');
-		$old_data = $this->db->get_where('loading', ['uuid'=>$uuid])->row_array();
+    // Gunakan key slug yang sama seperti insert
+		$kondisi_mobil_list = [
+			'bersih' => 'Bersih',
+			'bocor' => 'Bocor',
+			'bebas_dari_hama' => 'Bebas dari Hama',
+			'tidak_berdebu' => 'Tidak Berdebu',
+			'tidak_ada_sampah' => 'Tidak ada Sampah',
+			'kering' => 'Kering',
+			'basah' => 'Basah',
+			'tidak_berbau' => 'Tidak Berbau',
+			'tidak_ada_produk_non_halal' => 'Tidak ada produk Non Halal',
+			'tidak_ada_aktivitas_binatang' => 'Tidak ada Aktivitas Binatang'
+		];
 
+    // Ambil data dari form
+		$kondisi_mobil_post = $this->input->post('keterangan_kondisi');
 		$kondisi_mobil = [];
-		foreach ($list_kondisi as $i => $b) {
-			$kondisi_mobil[] = [
-				'list_kondisi'   => $b,
-				'kondisi_mobil_keterangan'  => $kondisi_mobil_keterangan[$i],
-			];
+		foreach ($kondisi_mobil_list as $key => $label) {
+			$kondisi_mobil[$key] = $kondisi_mobil_post[$key] ?? '';
 		}
 
-		$nama_produk = $this->input->post('nama_produk');
-		$kondisi_produk = $this->input->post('kondisi_produk');
+    // Loading produk
+		$nama_produk     = $this->input->post('nama_produk');
+		$kondisi_produk  = $this->input->post('kondisi_produk');
 		$kondisi_kemasan = $this->input->post('kondisi_kemasan');
-		$kode_produksi = $this->input->post('kode_produksi');
-		$expired = $this->input->post('expired');
-		$keterangan = $this->input->post('keterangan');
+		$kode_produksi   = $this->input->post('kode_produksi');
+		$expired         = $this->input->post('expired');
+		$keterangan      = $this->input->post('keterangan');
 
 		$loading = [];
-		for ($i = 0; $i < count($nama_produk); $i++) {
-			$loading[] = array(
-				'nama_produk' => $nama_produk[$i],
-				'kondisi_produk' => isset($kondisi_produk[$i]) ? $kondisi_produk[$i] : '',
-				'kondisi_kemasan' => isset($kondisi_kemasan[$i]) ? $kondisi_kemasan[$i] : '',
-				'kode_produksi' => isset($kode_produksi[$i]) ? $kode_produksi[$i] : '',
-				'expired' => isset($expired[$i]) ? $expired[$i] : '',
-				'keterangan' => isset($keterangan[$i]) ? $keterangan[$i] : '',
-			);
+		if (is_array($nama_produk)) {
+			for ($i = 0; $i < count($nama_produk); $i++) {
+				$loading[] = [
+					'nama_produk'     => $nama_produk[$i],
+					'kondisi_produk'  => $kondisi_produk[$i] ?? '',
+					'kondisi_kemasan' => $kondisi_kemasan[$i] ?? '',
+					'kode_produksi'   => $kode_produksi[$i] ?? '',
+					'expired'         => $expired[$i] ?? '',
+					'keterangan'      => $keterangan[$i] ?? '',
+				];
+			}
 		}
 
-		$data = array(
-			'username' => $username,
-			'date' => $date,
-			'shift' => $shift,
-			'no_pol' => $no_pol,
-			'start_loading' => $start_loading,
-			'finish_loading' => $finish_loading,
-			'nama_supir' => $nama_supir,
-			'ekspedisi' => $ekspedisi,
-			'tujuan' => $tujuan,
-			'no_segel' => $no_segel,
-			'kondisi_mobil' => json_encode($kondisi_mobil),
-			'loading' => json_encode($loading)
-		);
+		$data = [
+			'username'       => $username,
+			'date'           => $this->input->post('date'),
+			'shift'          => $this->input->post('shift'),
+			'no_pol'         => $this->input->post('no_pol'),
+			'start_loading'  => $this->input->post('start_loading'),
+			'finish_loading' => $this->input->post('finish_loading'),
+			'nama_supir'     => $this->input->post('nama_supir'),
+			'ekspedisi'      => $this->input->post('ekspedisi'),
+			'tujuan'         => $this->input->post('tujuan'),
+			'no_segel'       => $this->input->post('no_segel'),
+			'kondisi_mobil'  => json_encode($kondisi_mobil, JSON_UNESCAPED_UNICODE),
+			'loading'        => json_encode($loading, JSON_UNESCAPED_UNICODE)
+		];
 
 		$this->db->where('uuid', $uuid);
 		$this->db->update('loading', $data);
-		
+
 		if ($this->db->affected_rows() > 0) {
 			$new_data = $this->db->get_where('loading', ['uuid' => $uuid])->row_array();
-
-        // Catat log activity
-			$this->activity_logger->log_activity(
-				'update',
-				'loading_logs',
-				$uuid,
-				$old_data,
-				$new_data
-			);
-
+			$this->activity_logger->log_activity('update', 'loading_logs', $uuid, $old_data, $new_data);
 			return true;
 		}
 

@@ -156,47 +156,52 @@
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <hr>
-                <div class="form-area" id="form-loading-wrapper">
-                    <label class="form-label font-weight-bold">LOADING</label>
 
-                    <div class="loading-group border p-3 mb-3 rounded bg-light">
-                        <!-- Baris input -->
-                        <div class="form-group row">
-                            <div class="col-md-2">
-                                <label>Nama Produk</label>
-                                <input type="text" name="nama_produk[]" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-2">
-                                <label>Kondisi Produk</label>
-                                <input type="text" name="kondisi_produk[]" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-2">
-                                <label>Kondisi Kemasan</label>
-                                <input type="text" name="kondisi_kemasan[]" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-2">
-                                <label>Kode Produksi</label>
-                                <input type="text" name="kode_produksi[]" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-2">
-                                <label>Expired</label>
-                                <input type="date" name="expired[]" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
-                            </div>
-                            <div class="col-md-2">
-                                <label>Keterangan</label>
-                                <input type="text" name="keterangan[]" class="form-control form-control-sm">
-                            </div>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </form>
+
+
+            <hr>
+            <div class="form-area" id="form-loading-wrapper">
+                <label class="form-label font-weight-bold">LOADING</label>
+
+                <div class="loading-group border p-3 mb-3 rounded bg-light">
+                    <!-- Baris input -->
+                    <div class="form-group row">
+                        <div class="col-md-2">
+                            <label>Nama Produk</label>
+                            <input type="text" name="nama_produk[]" class="form-control form-control-sm">
                         </div>
+                        <div class="col-md-2">
+                            <label>Kondisi Produk</label>
+                            <input type="text" name="kondisi_produk[]" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Kondisi Kemasan</label>
+                            <input type="text" name="kondisi_kemasan[]" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Kode Produksi</label>
+                            <input type="text" name="kode_produksi[]" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Expired</label>
+                            <input type="date" name="expired[]" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Keterangan</label>
+                            <input type="text" name="keterangan[]" class="form-control form-control-sm">
+                        </div>
+                    </div>
 
-                        <!-- Baris tombol Hapus -->
-                        <div class="form-group row">
-                            <div class="col-12 text-right">
-                                <button type="button" class="btn btn-danger btn-sm btn-remove">Hapus</button>
-                            </div>
+                    <!-- Baris tombol Hapus -->
+                    <div class="form-group row">
+                        <div class="col-12 text-right">
+                            <button type="button" class="btn btn-danger btn-sm btn-remove">Hapus</button>
                         </div>
                     </div>
                 </div>
+            </div>
 
 <!-- Tombol Tambah -->
 <button type="button" class="btn btn-primary mt-2" id="add-loading">+ Tambah Produk</button>

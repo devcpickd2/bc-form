@@ -19,17 +19,53 @@ class Produksi extends CI_Controller {
 		}
 	}
 
-	public function index()
+		public function index()
 	{
-		$data = array(
-			'produksi' => $this->produksi_model->get_data_by_plant(),
-			'active_nav' => 'produksi',  
-		);
+		$this->load->library('pagination');
+		$this->load->helper('url');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi', $data);
-		$this->load->view('partials/footer'); 
-	}
+		$plant = $this->session->userdata('plant');
+		$keyword = $this->input->get('keyword');
+
+    // Hitung total data
+		$total_rows = $this->produksi_model->count_all_by_plant($plant, $keyword);
+
+    // Konfigurasi pagination
+		$config['base_url'] = base_url('produksi');
+		$config['total_rows'] = $total_rows;
+		$config['per_page'] = 10;
+    $config['page_query_string'] = TRUE; // ✅ gunakan ?per_page=20&keyword=...
+    $config['reuse_query_string'] = TRUE; // biar keyword tetap ikut saat klik halaman
+
+    // Styling bootstrap
+    $config['full_tag_open'] = '<ul class="pagination justify-content-center">';
+    $config['full_tag_close'] = '</ul>';
+    $config['attributes'] = ['class' => 'page-link'];
+    $config['first_tag_open'] = '<li class="page-item">';
+    $config['first_tag_close'] = '</li>';
+    $config['last_tag_open'] = '<li class="page-item">';
+    $config['last_tag_close'] = '</li>';
+    $config['num_tag_open'] = '<li class="page-item">';
+    $config['num_tag_close'] = '</li>';
+    $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
+    $config['cur_tag_close'] = '</span></li>';
+
+    $this->pagination->initialize($config);
+
+    $page = $this->input->get('per_page'); // ambil dari query string
+    $start = ($page) ? $page : 0;
+
+    $data = [
+    	'produksi' => $this->produksi_model->get_data_by_plant_paginated($plant, $config['per_page'], $start, $keyword),
+    	'pagination' => $this->pagination->create_links(),
+    	'active_nav' => 'produksi',
+    	'keyword' => $keyword
+    ];
+
+    $this->load->view('partials/head', $data);
+    $this->load->view('form/produksi/produksi', $data);
+    $this->load->view('partials/footer');
+}
 
 	public function detail($uuid)
 	{

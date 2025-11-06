@@ -7,7 +7,7 @@ class Magnettrap_model extends CI_Model {
 	
 	public function rules()
 	{
-		return[
+		return [
 			[
 				'field' => 'date',
 				'label' => 'Date',
@@ -17,7 +17,7 @@ class Magnettrap_model extends CI_Model {
 				'field' => 'shift',
 				'label' => 'Shift',
 				'rules' => 'required'
-			], 
+			],
 			[
 				'field' => 'time',
 				'label' => 'Time',
@@ -28,7 +28,7 @@ class Magnettrap_model extends CI_Model {
 				'label' => 'Step of'
 			],
 			[
-				'field' => 'magnet_trap',
+				'field' => 'kontaminasi',
 				'label' => 'Type of Contamination'
 			],
 			[
@@ -59,6 +59,7 @@ class Magnettrap_model extends CI_Model {
 		];
 	}
 
+    // ======================= Insert Data =======================
 	public function insert($file_name)
 	{
 		$produksi_data = $this->session->userdata('produksi_data');
@@ -66,91 +67,68 @@ class Magnettrap_model extends CI_Model {
 		$uuid = Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
-		$time = $this->input->post('time');
-		$tahapan = $this->input->post('tahapan');
-		$kontaminasi = $this->input->post('kontaminasi');
-		$analisis = $this->input->post('analisis');
-		$tindakan = $this->input->post('tindakan');
-		$verifikasi = $this->input->post('verifikasi');
-		$catatan = $this->input->post('catatan');
-		$keterangan = $this->input->post('keterangan');
-		$status_enginer = "1";
-		$status_spv = "0";
 
-		$data = array(
+		$data = [
 			'uuid' => $uuid,
 			'username' => $username,
 			'plant' => $plant,
-			'date' => $date,
-			'shift' => $shift,
-			'time' => $time,
-			'tahapan' => $tahapan,
-			'kontaminasi' => $kontaminasi,
-			'analisis' => $analisis,
-			'tindakan' => $tindakan,
-			'verifikasi' => $verifikasi,
-			'catatan' => $catatan,
-			'keterangan' => $keterangan,
+			'date' => $this->input->post('date'),
+			'shift' => $this->input->post('shift'),
+			'time' => $this->input->post('time'),
+			'tahapan' => $this->input->post('tahapan'),
+			'kontaminasi' => $this->input->post('kontaminasi'),
+			'analisis' => $this->input->post('analisis'),
+			'tindakan' => $this->input->post('tindakan'),
+			'verifikasi' => $this->input->post('verifikasi'),
+			'catatan' => $this->input->post('catatan'),
+			'keterangan' => $this->input->post('keterangan'),
 			'bukti' => $file_name,
-			'status_enginer' => $status_enginer,
+			'status_enginer' => "1",
 			'nama_enginer' => $nama_produksi,
-			'status_spv' => $status_spv,
-		);
+			'status_spv' => "0",
+			'created_at' => date("Y-m-d H:i:s")
+		];
 
-		return ($this->db->insert('magnet_trap', $data)) ? true : false; 
+		return $this->db->insert('magnet_trap', $data);
 	}
 
+    // ======================= Update Data =======================
 	public function update($uuid, $file_name)
 	{
-		$username = $this->session->userdata('username');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
-		$time = $this->input->post('time');
-		$tahapan = $this->input->post('tahapan');
-		$kontaminasi = $this->input->post('kontaminasi');
-		$analisis = $this->input->post('analisis');
-		$tindakan = $this->input->post('tindakan');
-		$verifikasi = $this->input->post('verifikasi');
-		$catatan = $this->input->post('catatan');
-		$keterangan = $this->input->post('keterangan');
+		$old_data = $this->db->get_where('magnet_trap', ['uuid' => $uuid])->row_array();
 
-		$old_data = $this->db->get_where('magnet_trap', ['uuid'=>$uuid])->row_array();
-
-		$data = array(
-			'username' => $username,
-			'date' => $date,
-			'shift' => $shift,
-			'time' => $time,
-			'tahapan' => $tahapan,
-			'kontaminasi' => $kontaminasi,
-			'analisis' => $analisis,
-			'tindakan' => $tindakan,
-			'verifikasi' => $verifikasi,
-			'catatan' => $catatan,
-			'keterangan' => $keterangan,
+		$data = [
+			'username' => $this->session->userdata('username'),
+			'date' => $this->input->post('date'),
+			'shift' => $this->input->post('shift'),
+			'time' => $this->input->post('time'),
+			'tahapan' => $this->input->post('tahapan'),
+			'kontaminasi' => $this->input->post('kontaminasi'),
+			'analisis' => $this->input->post('analisis'),
+			'tindakan' => $this->input->post('tindakan'),
+			'verifikasi' => $this->input->post('verifikasi'),
+			'catatan' => $this->input->post('catatan'),
+			'keterangan' => $this->input->post('keterangan'),
 			'bukti' => $file_name,
 			'modified_at' => date("Y-m-d H:i:s")
-		);
-
+		];
+		
 		$this->db->where('uuid', $uuid);
 		$this->db->update('magnet_trap', $data);
 
-		$new_data = $this->db->get_where('magnet_trap', ['uuid'=>$uuid])->row_array();
-
-		if ($this->db->affected_rows() > 0) {
-            // simpan log ke tabel khusus magnet_trap_logs
+		if (isset($this->activity_logger)) {
+			$old_data = $this->db->get_where('magnet_trap', ['uuid' => $uuid])->row_array();
 			$this->activity_logger->log_activity(
 				'update',
-                'magnet_trap_logs', // nama tabel log khusus magnet_trap
-                $uuid,
-                $old_data,
-                $new_data
-            );
-			return true;
+				'magnet_trap_logs',
+				$uuid,
+				$old_data,
+				$data
+			);
 		}
-		return false;
+
+		return true; 
+
 	}
 
 	public function rules_verifikasi()
@@ -306,7 +284,7 @@ class Magnettrap_model extends CI_Model {
 
 		return false;
 	}
-	
+
 	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
 	{
 		$this->db->select('nama_spv, tgl_update_spv, date, username, shift, nama_enginer, status_enginer, tgl_update_enginer');

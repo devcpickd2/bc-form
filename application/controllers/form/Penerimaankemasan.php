@@ -67,12 +67,12 @@ class Penerimaankemasan extends CI_Controller {
 			$file_name = null;
 			if (isset($_FILES['bukti_coa']) && $_FILES['bukti_coa']['error'] != 4) {
 				$config = array(
-					'upload_path'   => "./uploads/",
+					'upload_path'   => "./uploads/penerimaan_kemasan/",
 					'allowed_types' => "jpg|png|jpeg|pdf",
 					'overwrite'     => TRUE,
-					'max_size'      => 2048000,
-					'encrypt_name'  => TRUE
-				);
+				'max_size'      => 2048, // dalam KB
+				'encrypt_name'  => TRUE
+			);
 				$this->upload->initialize($config);
 
 				if (!$this->upload->do_upload('bukti_coa')) {
@@ -82,6 +82,22 @@ class Penerimaankemasan extends CI_Controller {
 				} else {
 					$data = $this->upload->data();
 					$file_name = $data['file_name'];
+
+				// === Kompres Gambar Jika Bukan PDF ===
+					if ($data['file_ext'] != '.pdf') {
+						$this->load->library('image_lib');
+						$resize_config = [
+							'image_library'  => 'gd2',
+							'source_image'   => './uploads/penerimaan_kemasan/' . $file_name,
+							'maintain_ratio' => TRUE,
+							'quality'        => '70%',
+							'width'          => 800,
+							'height'         => 800,
+						];
+						$this->image_lib->initialize($resize_config);
+						$this->image_lib->resize();
+						$this->image_lib->clear();
+					}
 				}
 			}
 
@@ -91,7 +107,7 @@ class Penerimaankemasan extends CI_Controller {
 				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Penerimaan Kemasan dari Supplier berhasil disimpan');
 				redirect('penerimaankemasan');
 			} else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Penerimaan Kemasan dari Supplier gagal disimpan');
+				$this->session->set_flashdata('error_msg', 'Data gagal disimpan');
 				redirect('penerimaankemasan');
 			}
 		}
@@ -106,6 +122,7 @@ class Penerimaankemasan extends CI_Controller {
 		$this->load->view('partials/footer');
 	}
 
+
 	public function edit($uuid)
 	{
 		$penerimaankemasan = $this->penerimaankemasan_model->get_by_uuid($uuid);
@@ -115,16 +132,15 @@ class Penerimaankemasan extends CI_Controller {
 		if ($this->form_validation->run() == TRUE) {
 
 			$config = array(
-				'upload_path' => "./uploads/",
+				'upload_path'   => "./uploads/penerimaan_kemasan/",
 				'allowed_types' => "jpg|png|jpeg|pdf",
-				'overwrite' => TRUE,
-				'max_size' => "2048000",
-				'encrypt_name' => TRUE
+				'overwrite'     => TRUE,
+				'max_size'      => 2048,
+				'encrypt_name'  => TRUE
 			);
-
 			$this->upload->initialize($config);
 
-        // Cek apakah ada file baru di-upload
+		// Cek apakah ada file baru di-upload
 			if (!empty($_FILES['bukti_coa']['name'])) {
 				if (!$this->upload->do_upload('bukti_coa')) {
 					$error = $this->upload->display_errors();
@@ -133,13 +149,32 @@ class Penerimaankemasan extends CI_Controller {
 				} else {
 					$file_data = $this->upload->data();
 					$file_name = $file_data['file_name'];
+
+				// === Kompres Gambar Jika Bukan PDF ===
+					if ($file_data['file_ext'] != '.pdf') {
+						$this->load->library('image_lib');
+						$resize_config = [
+							'image_library'  => 'gd2',
+							'source_image'   => './uploads/penerimaan_kemasan/' . $file_name,
+							'maintain_ratio' => TRUE,
+							'quality'        => '70%',
+							'width'          => 800,
+							'height'         => 800,
+						];
+						$this->image_lib->initialize($resize_config);
+						$this->image_lib->resize();
+						$this->image_lib->clear();
+					}
+
+				// Hapus file lama jika ada
+					if (!empty($penerimaankemasan->bukti_coa) && file_exists('./uploads/penerimaan_kemasan/' . $penerimaankemasan->bukti_coa)) {
+						unlink('./uploads/penerimaan_kemasan/' . $penerimaankemasan->bukti_coa);
+					}
 				}
 			} else {
-            // Gunakan file lama jika tidak ada upload baru
 				$file_name = $penerimaankemasan->bukti_coa;
 			}
 
-        // Panggil model update
 			$update = $this->penerimaankemasan_model->update($uuid, $file_name);
 
 			if ($update) {
@@ -149,7 +184,6 @@ class Penerimaankemasan extends CI_Controller {
 			}
 			redirect('penerimaankemasan');
 		} else {
-        // Tampilkan error validasi
 			$data = array(
 				'penerimaankemasan' => $penerimaankemasan,
 				'active_nav' => 'penerimaankemasan',
@@ -161,7 +195,6 @@ class Penerimaankemasan extends CI_Controller {
 		$this->load->view('form/penerimaankemasan/penerimaankemasan-edit', $data);
 		$this->load->view('partials/footer');
 	}
-
 
 	public function delete($uuid)
 	{

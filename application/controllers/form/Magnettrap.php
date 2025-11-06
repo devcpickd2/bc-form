@@ -42,11 +42,23 @@ class Magnettrap extends CI_Controller {
 
 	public function file_check($str)
 	{
-		$allowed_mime_types = array('image/jpeg', 'image/png', 'application/pdf');
+		if (!isset($_FILES['bukti']) || $_FILES['bukti']['size'] == 0) {
+			return true;
+		}
+
+		$max_size = 2 * 1024 * 1024;
+		$file_size = $_FILES['bukti']['size'];
 		$mime_type = $_FILES['bukti']['type'];
+
+		$allowed_mime_types = ['image/jpeg', 'image/png', 'application/pdf'];
 
 		if (!in_array($mime_type, $allowed_mime_types)) {
 			$this->form_validation->set_message('file_check', 'File harus berformat JPEG, PNG, atau PDF');
+			return false;
+		}
+
+		if ($file_size > $max_size) {
+			$this->form_validation->set_message('file_check', 'Ukuran file maksimal 2MB');
 			return false;
 		}
 
@@ -59,41 +71,65 @@ class Magnettrap extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			$config = array(
-				'upload_path'   => "./uploads/",
-				'allowed_types' => "jpg|png|jpeg|pdf", 
-				'overwrite'     => TRUE,
-				'max_size'      => 2048000, 
-				'encrypt_name'  => TRUE
-			);
-			$this->upload->initialize($config);
-			if (!$this->upload->do_upload('bukti')) {
-				$error = $this->upload->display_errors();
-				$this->session->set_flashdata('error_msg', 'Upload gagal: ' . $error);
-				redirect('magnettrap/tambah');
-			} else {
+
+			$file_name = null; 
+
+			if (!empty($_FILES['bukti']['name'])) {
+				$config = array(
+					'upload_path'   => "./uploads/magnettrap/",
+					'allowed_types' => "jpg|png|jpeg|pdf",
+					'overwrite'     => FALSE,
+					'max_size'      => 2048,
+					'encrypt_name'  => TRUE
+				);
+
+				$this->load->library(['upload', 'image_lib']);
+				$this->upload->initialize($config);
+
+				if (!$this->upload->do_upload('bukti')) {
+					$error = $this->upload->display_errors();
+					$this->session->set_flashdata('error_msg', 'Upload gagal: ' . $error);
+					redirect('magnettrap/tambah');
+				}
+
 				$data = $this->upload->data();
 				$file_name = $data['file_name'];
 
-				$update = $this->magnettrap_model->insert($file_name);
+                // Kompres gambar jika format image
+				if (in_array($data['file_ext'], ['.jpg', '.jpeg', '.png'])) {
+					$resize_config['image_library']  = 'gd2';
+					$resize_config['source_image']   = $data['full_path'];
+					$resize_config['maintain_ratio'] = TRUE;
+					$resize_config['width']          = 800;
+					$resize_config['height']         = 800;
+					$resize_config['quality']        = '70%';
 
-				if ($update) {
-					$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Magnet Trap berhasil disimpan');
-					redirect('magnettrap');
-				} else {
-					$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Magnet Trap gagal disimpan');
-					redirect('magnettrap');
+					$this->image_lib->initialize($resize_config);
+					if (!$this->image_lib->resize()) {
+						log_message('error', 'Kompresi gagal: ' . $this->image_lib->display_errors());
+					}
+					$this->image_lib->clear();
 				}
 			}
+
+			$insert = $this->magnettrap_model->insert($file_name);
+
+			if ($insert) {
+				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Magnet Trap berhasil disimpan');
+			} else {
+				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Magnet Trap gagal disimpan');
+			}
+
+			redirect('magnettrap');
 		}
 
 		$data = array(
 			'magnettrap' => $this->magnettrap_model->get_data_by_plant(),
-			'active_nav'  => 'magnettrap'
+			'active_nav' => 'magnettrap'
 		);
 
 		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-tambah');
+		$this->load->view('form/magnettrap/magnettrap-tambah', $data);
 		$this->load->view('partials/footer');
 	}
 
@@ -104,38 +140,65 @@ class Magnettrap extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			$config = array(
-				'upload_path' => "./uploads/",
-				'allowed_types' => "jpg|png|jpeg|pdf",
-				'overwrite' => TRUE,
-				'max_size' => "2048000",
-				'encrypt_name' => TRUE
-			);
 
-			$this->upload->initialize($config);
+			$file_name = $magnettrap->bukti; 
 
 			if (!empty($_FILES['bukti']['name'])) {
+				$config = array(
+					'upload_path'   => "./uploads/magnettrap/",
+					'allowed_types' => "jpg|png|jpeg|pdf",
+					'overwrite'     => FALSE,
+					'max_size'      => 2048,
+					'encrypt_name'  => TRUE
+				);
+
+				$this->load->library(['upload', 'image_lib']);
+				$this->upload->initialize($config);
+
 				if (!$this->upload->do_upload('bukti')) {
 					$error = $this->upload->display_errors();
-					$this->session->set_flashdata('error_msg', 'Upload failed: ' . $error);
-					redirect('magnettrap/edit/' . $uuid); 
-				} else {
-					$data = $this->upload->data();
-					$file_name = $data['file_name'];
+					$this->session->set_flashdata('error_msg', 'Upload gagal: ' . $error);
+					redirect('magnettrap/edit/' . $uuid);
 				}
-			} else {
-				$file_name = $magnettrap->bukti;
+
+				$data = $this->upload->data();
+				$file_name = $data['file_name'];
+
+                // Kompres gambar jika format image
+				if (in_array($data['file_ext'], ['.jpg', '.jpeg', '.png'])) {
+					$resize_config['image_library']  = 'gd2';
+					$resize_config['source_image']   = $data['full_path'];
+					$resize_config['maintain_ratio'] = TRUE;
+					$resize_config['width']          = 800;
+					$resize_config['height']         = 800;
+					$resize_config['quality']        = '70%';
+
+					$this->image_lib->initialize($resize_config);
+					if (!$this->image_lib->resize()) {
+						log_message('error', 'Kompresi gagal: ' . $this->image_lib->display_errors());
+					}
+					$this->image_lib->clear();
+				}
+
+                // Hapus file lama
+				$old_path = FCPATH . 'uploads/magnettrap/' . $magnettrap->bukti;
+				if (!empty($magnettrap->bukti) && file_exists($old_path)) {
+					unlink($old_path);
+				}
+
 			}
+
 			$update = $this->magnettrap_model->update($uuid, $file_name);
 
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Magnet Trap berhasil diupdate');
-				redirect('magnettrap');
 			} else {
 				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Magnet Trap gagal diupdate');
-				redirect('magnettrap');
 			}
+
+			redirect('magnettrap');
 		}
+
 		$data = array(
 			'magnettrap' => $magnettrap,
 			'active_nav' => 'magnettrap'
@@ -261,7 +324,7 @@ class Magnettrap extends CI_Controller {
 		}
 
 		$data['magnettrap'] = $magnettrap_data_verif;
-		
+
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
 		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
@@ -403,7 +466,7 @@ class Magnettrap extends CI_Controller {
 		// 		$pdf->SetXY(90, $y_verifikasi + 10);
 		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 		// 	}\
-			
+
 			// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');

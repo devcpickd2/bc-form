@@ -67,10 +67,10 @@ class Seasoning extends CI_Controller {
 			$file_name = null;
 			if (isset($_FILES['bukti_coa']) && $_FILES['bukti_coa']['error'] != 4) {
 				$config = array(
-					'upload_path'   => "./uploads/",
+					'upload_path'   => "./uploads/seasoning/",
 					'allowed_types' => "jpg|png|jpeg|pdf",
 					'overwrite'     => TRUE,
-					'max_size'      => 2048000,
+					'max_size'      => 2048,
 					'encrypt_name'  => TRUE
 				);
 				$this->upload->initialize($config);
@@ -82,6 +82,11 @@ class Seasoning extends CI_Controller {
 				} else {
 					$data = $this->upload->data();
 					$file_name = $data['file_name'];
+
+				// === Kompres gambar jika bukan PDF ===
+					if ($data['is_image']) {
+						$this->_compress_image($data['full_path'], $data['file_type']);
+					}
 				}
 			}
 
@@ -114,10 +119,10 @@ class Seasoning extends CI_Controller {
 
 		if ($this->form_validation->run() == TRUE) {
 			$config = array(
-				'upload_path' => "./uploads/",
+				'upload_path' => "./uploads/seasoning/",
 				'allowed_types' => "jpg|png|jpeg|pdf",
 				'overwrite' => TRUE,
-				'max_size' => "2048000",
+				'max_size' => "2048",
 				'encrypt_name' => TRUE
 			);
 
@@ -126,15 +131,26 @@ class Seasoning extends CI_Controller {
 			if (!empty($_FILES['bukti_coa']['name'])) {
 				if (!$this->upload->do_upload('bukti_coa')) {
 					$error = $this->upload->display_errors();
-					$this->session->set_flashdata('error_msg', 'Upload failed: ' . $error);
+					$this->session->set_flashdata('error_msg', 'Upload gagal: ' . $error);
 					redirect('seasoning/edit/' . $uuid); 
 				} else {
 					$data = $this->upload->data();
 					$file_name = $data['file_name'];
+
+				// === Hapus file lama jika ada ===
+					if (!empty($seasoning->bukti_coa) && file_exists('./uploads/seasoning/' . $seasoning->bukti_coa)) {
+						@unlink('./uploads/seasoning/' . $seasoning->bukti_coa);
+					}
+
+				// === Kompres gambar jika bukan PDF ===
+					if ($data['is_image']) {
+						$this->_compress_image($data['full_path'], $data['file_type']);
+					}
 				}
 			} else {
 				$file_name = $seasoning->bukti_coa;
 			}
+
 			$update = $this->seasoning_model->update($uuid, $file_name);
 
 			if ($update) {
@@ -145,6 +161,7 @@ class Seasoning extends CI_Controller {
 				redirect('seasoning');
 			}
 		}
+
 		$data = array(
 			'seasoning' => $seasoning,
 			'active_nav' => 'seasoning'
@@ -154,6 +171,35 @@ class Seasoning extends CI_Controller {
 		$this->load->view('form/seasoning/seasoning-edit', $data);
 		$this->load->view('partials/footer');
 	}
+
+	private function _compress_image($path, $mime)
+	{
+		if (!file_exists($path)) return false;
+
+		switch ($mime) {
+			case 'image/jpeg': $image = imagecreatefromjpeg($path); break;
+			case 'image/png':  $image = imagecreatefrompng($path); break;
+			case 'image/webp': $image = imagecreatefromwebp($path); break;
+			default: return false;
+		}
+
+		$width  = imagesx($image);
+		$height = imagesy($image);
+
+	// Resize max lebar 1024px
+		$new_width  = min($width, 800);
+		$new_height = ($height / $width) * $new_width;
+
+		$tmp = imagecreatetruecolor($new_width, $new_height);
+		imagecopyresampled($tmp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+
+		imagejpeg($tmp, $path, 70); 
+
+		imagedestroy($image);
+		imagedestroy($tmp);
+		return true;
+	}
+
 
 	public function delete($uuid)
 	{
@@ -172,7 +218,7 @@ class Seasoning extends CI_Controller {
 
 		redirect('seasoning');
 	}
-	
+
 	public function verifikasi()
 	{
 		$data = array(

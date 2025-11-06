@@ -63,14 +63,14 @@ class Pemeriksaanchemical extends CI_Controller {
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-
 			$file_name = null;
+
 			if (isset($_FILES['bukti_coa']) && $_FILES['bukti_coa']['error'] != 4) {
 				$config = array(
-					'upload_path'   => "./uploads/",
+					'upload_path'   => "./uploads/penerimaan_chemical/",
 					'allowed_types' => "jpg|png|jpeg|pdf",
 					'overwrite'     => TRUE,
-					'max_size'      => 2048000,
+					'max_size'      => 2048,
 					'encrypt_name'  => TRUE
 				);
 				$this->upload->initialize($config);
@@ -82,6 +82,11 @@ class Pemeriksaanchemical extends CI_Controller {
 				} else {
 					$data = $this->upload->data();
 					$file_name = $data['file_name'];
+
+				// ==== Kompres Gambar Jika Bukan PDF ====
+					if ($data['is_image']) {
+						$this->_compress_image($data['full_path'], $data['file_type']);
+					}
 				}
 			}
 
@@ -114,10 +119,10 @@ class Pemeriksaanchemical extends CI_Controller {
 
 		if ($this->form_validation->run() == TRUE) {
 			$config = array(
-				'upload_path' => "./uploads/",
+				'upload_path' => "./uploads/penerimaan_chemical/",
 				'allowed_types' => "jpg|png|jpeg|pdf",
 				'overwrite' => TRUE,
-				'max_size' => "2048000",
+				'max_size' => "2048",
 				'encrypt_name' => TRUE
 			);
 
@@ -126,15 +131,21 @@ class Pemeriksaanchemical extends CI_Controller {
 			if (!empty($_FILES['bukti_coa']['name'])) {
 				if (!$this->upload->do_upload('bukti_coa')) {
 					$error = $this->upload->display_errors();
-					$this->session->set_flashdata('error_msg', 'Upload failed: ' . $error);
+					$this->session->set_flashdata('error_msg', 'Upload gagal: ' . $error);
 					redirect('pemeriksaanchemical/edit/' . $uuid); 
 				} else {
 					$data = $this->upload->data();
 					$file_name = $data['file_name'];
+
+				// ==== Kompres Gambar Jika Bukan PDF ====
+					if ($data['is_image']) {
+						$this->_compress_image($data['full_path'], $data['file_type']);
+					}
 				}
 			} else {
 				$file_name = $pemeriksaanchemical->bukti_coa;
 			}
+
 			$update = $this->pemeriksaanchemical_model->update($uuid, $file_name);
 
 			if ($update) {
@@ -145,6 +156,7 @@ class Pemeriksaanchemical extends CI_Controller {
 				redirect('pemeriksaanchemical');
 			}
 		}
+
 		$data = array(
 			'pemeriksaanchemical' => $pemeriksaanchemical,
 			'active_nav' => 'pemeriksaanchemical'
@@ -154,6 +166,35 @@ class Pemeriksaanchemical extends CI_Controller {
 		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical-edit', $data);
 		$this->load->view('partials/footer');
 	}
+
+	private function _compress_image($path, $mime)
+	{
+		if (!file_exists($path)) return false;
+
+		switch ($mime) {
+			case 'image/jpeg': $image = imagecreatefromjpeg($path); break;
+			case 'image/png':  $image = imagecreatefrompng($path); break;
+			case 'image/webp': $image = imagecreatefromwebp($path); break;
+			default: return false;
+		}
+
+		$width  = imagesx($image);
+		$height = imagesy($image);
+
+		$new_width = min($width, 800);
+		$new_height = ($height / $width) * $new_width;
+
+		$tmp = imagecreatetruecolor($new_width, $new_height);
+		imagecopyresampled($tmp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+
+		imagejpeg($tmp, $path, 70);
+
+		imagedestroy($image);
+		imagedestroy($tmp);
+
+		return true;
+	}
+
 
 	public function delete($uuid)
 	{
@@ -172,7 +213,7 @@ class Pemeriksaanchemical extends CI_Controller {
 
 		redirect('pemeriksaanchemical');
 	}
-	
+
 	public function verifikasi()
 	{
 		$data = array(

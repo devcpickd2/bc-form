@@ -55,77 +55,79 @@
                         <div class="invalid-feedback <?= !empty(form_error('kontaminasi')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('kontaminasi') ?>
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-sm-6">
                         <label class="form-label" for="bukti">Update Bukti Temuan</label>
                         <br>
                         <input type="file" name="bukti" id="bukti" class="form-control no-border <?= form_error('bukti') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf" capture="camera">
-                        <?php if (!empty($magnettrap->bukti)): ?>
-                            <a href="<?= base_url('uploads/' . $magnettrap->bukti); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
-                            <br>
-                        <?php endif; ?>
+
+                        <?php if (!empty($magnettrap->bukti) && file_exists(FCPATH . 'uploads/magnettrap/' . $magnettrap->bukti)): ?>
+                        <a href="<?= base_url('uploads/magnettrap/' . $magnettrap->bukti); ?>" target="_blank">Lihat Bukti Sebelumnya</a>
                         <br>
-                        <div class="invalid-feedback <?= form_error('bukti') ? 'd-block' : '' ; ?>">
-                            <?= form_error('bukti') ?>
-                        </div>
+                    <?php endif; ?>
+
+                    <br>
+                    <div class="invalid-feedback <?= form_error('bukti') ? 'd-block' : '' ; ?>">
+                        <?= form_error('bukti') ?>
                     </div>
                 </div>
-                <hr>
-                <div class="row form-group">
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Analisis Temuan</label>
-                        <input type="text" name="analisis" class="form-control <?= form_error('analisis') ? 'invalid' : '' ?> " value="<?= $magnettrap->analisis; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('analisis')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('analisis') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Tindakan Koreksi</label>
-                        <input type="text" name="tindakan" class="form-control <?= form_error('tindakan') ? 'invalid' : '' ?> " value="<?= $magnettrap->tindakan; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('tindakan')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('tindakan') ?>
-                        </div>
+            </div>
+            <hr>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Analisis Temuan</label>
+                    <input type="text" name="analisis" class="form-control <?= form_error('analisis') ? 'invalid' : '' ?> " value="<?= $magnettrap->analisis; ?>">
+                    <div class="invalid-feedback <?= !empty(form_error('analisis')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('analisis') ?>
                     </div>
                 </div>
-                <div class="row form-group">
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Verifikasi</label>
-                        <input type="text" name="verifikasi" class="form-control <?= form_error('verifikasi') ? 'invalid' : '' ?> " value="<?= $magnettrap->verifikasi; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('verifikasi')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('verifikasi') ?>
-                        </div>
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Tindakan Koreksi</label>
+                    <input type="text" name="tindakan" class="form-control <?= form_error('tindakan') ? 'invalid' : '' ?> " value="<?= $magnettrap->tindakan; ?>">
+                    <div class="invalid-feedback <?= !empty(form_error('tindakan')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('tindakan') ?>
                     </div>
                 </div>
-                <hr>
-                <div class="row form-group">
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Keterangan</label>
-                        <textarea class="form-control" name="keterangan"><?= $magnettrap->keterangan; ?></textarea>
-                        <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('keterangan') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Catatan</label>
-                        <textarea class="form-control" name="catatan"><?= $magnettrap->catatan; ?></textarea>
-                        <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('catatan') ?>
-                        </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Verifikasi</label>
+                    <input type="text" name="verifikasi" class="form-control <?= form_error('verifikasi') ? 'invalid' : '' ?> " value="<?= $magnettrap->verifikasi; ?>">
+                    <div class="invalid-feedback <?= !empty(form_error('verifikasi')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('verifikasi') ?>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="btn btn-md btn-success mr-2">
-                            <i class="fa fa-save"></i> Simpan
-                        </button>
-                        <a href="<?= base_url('magnettrap')?>" class="btn btn-md btn-danger">
-                            <i class="fa fa-times"></i> Batal
-                        </a>
+            </div>
+            <hr>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Keterangan</label>
+                    <textarea class="form-control" name="keterangan"><?= $magnettrap->keterangan; ?></textarea>
+                    <div class="invalid-feedback <?= !empty(form_error('keterangan')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('keterangan') ?>
                     </div>
                 </div>
-            </form>
-        </div>
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Catatan</label>
+                    <textarea class="form-control" name="catatan"><?= $magnettrap->catatan; ?></textarea>
+                    <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('catatan') ?>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-md btn-success mr-2">
+                        <i class="fa fa-save"></i> Simpan
+                    </button>
+                    <a href="<?= base_url('magnettrap')?>" class="btn btn-md btn-danger">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
+</div>
 </div>
 </div>
 <style type="text/css">
