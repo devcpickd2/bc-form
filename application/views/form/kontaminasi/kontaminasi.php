@@ -53,11 +53,31 @@
                                 <td><?= $datetime; ?></td>
                                 <td><?= $val->jenis_kontaminasi; ?></td>
                                 <td>
-                                    <?php if (!empty($val->bukti)): ?>
-                                        <img src="<?= base_url('uploads/' . $val->bukti); ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
-                                    <?php else: ?>
-                                        <p>No image available</p>
-                                    <?php endif; ?>
+                                    <?php
+                                $bukti = $val->bukti ?? null;
+
+                                $path1 = FCPATH . 'uploads/' . $bukti;
+                                $path2 = FCPATH . 'uploads/kontaminasi/' . $bukti;
+
+                                if (!empty($bukti)) {
+                                    if (file_exists($path1)) {
+                                        $img_url = base_url('uploads/' . $bukti);
+                                    } elseif (file_exists($path2)) {
+                                        $img_url = base_url('uploads/kontaminasi/' . $bukti);
+                                    } else {
+                                        $img_url = null;
+                                    }
+                                } else {
+                                    $img_url = null;
+                                }
+                                ?>
+
+                                <?php if ($img_url): ?>
+                                    <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
+                                <?php else: ?>
+                                    <p>Tidak ada gambar</p>
+                                <?php endif; ?>
+
                                 </td>
                                 <td><?= $val->nama_produk; ?></td>
                                 <td><?= $val->kode_produksi; ?></td>

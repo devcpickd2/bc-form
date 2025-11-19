@@ -58,11 +58,32 @@
                         <tr>
                             <td colspan="2"><b>Bukti Temuan</b></td>
                             <td colspan="5">
-                                <?php if (!empty($kontaminasi->bukti)): ?>
-                                    <img src="<?= base_url('uploads/' . $kontaminasi->bukti); ?>" style="max-width: 200px; max-height: 180px;">
+                                <?php
+                                $bukti = $kontaminasi->bukti ?? null;
+
+                                $path1 = FCPATH . 'uploads/' . $bukti;
+                                $path2 = FCPATH . 'uploads/kontaminasi/' . $bukti;
+
+                                if (!empty($bukti)) {
+                                    if (file_exists($path1)) {
+                                        $img_url = base_url('uploads/' . $bukti);
+                                    } elseif (file_exists($path2)) {
+                                        $img_url = base_url('uploads/kontaminasi/' . $bukti);
+                                    } else {
+                                        $img_url = null;
+                                    }
+                                } else {
+                                    $img_url = null;
+                                }
+                                ?>
+
+                                <?php if ($img_url): ?>
+                                    <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
                                 <?php else: ?>
-                                    Tidak ada gambar
+                                    <p>Tidak ada gambar</p>
                                 <?php endif; ?>
+
+                                </td>
                             </td>
                         </tr>
                         <tr>
