@@ -113,23 +113,33 @@ class Proses extends CI_Controller
 
 	public function packing($uuid)
 	{
+		// === 1. FORM VALIDATION ===
 		$rules = $this->proses_model->rules_packing();
 		$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
+		if ($this->form_validation->run() === TRUE) {
 			$update = $this->proses_model->update_packing($uuid);
+
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data berhasil diperbarui.');
 			} else {
 				$this->session->set_flashdata('error_msg', 'Gagal memperbarui data.');
 			}
-			redirect('proses');
+
+			return redirect('proses');
 		}
 
-		// Ambil data berdasarkan UUID dari tabel mixing
+
+		// === 2. AMBIL DATA PROSES MIXING ===
 		$proses = $this->proses_model->get_by_uuid($uuid);
 
-		// Decode data proses produksi (data lama)
+		// Stop if not found
+		if (!$proses) {
+			show_404();
+		}
+
+
+		// === 3. DECODE JSON FROM proses_produksi ===
 		$data_produksi = [];
 		if (!empty($proses->proses_produksi)) {
 			$decoded = json_decode($proses->proses_produksi, true);
@@ -138,7 +148,7 @@ class Proses extends CI_Controller
 			}
 		}
 
-		// Decode data proses packing (data baru yang mungkin sudah ada)
+		// === 4. DECODE JSON FROM proses_packing ===
 		$data_packing = [];
 		if (!empty($proses->proses_packing)) {
 			$decoded = json_decode($proses->proses_packing, true);
@@ -147,14 +157,37 @@ class Proses extends CI_Controller
 			}
 		}
 
+
+		// === 5. AMBIL nama_produk (PAKING -> PROSES V1) ===
+		// proses_packing[nama_produk][0] → proses->nama_produk → ""
+		$nama_produk_index1 =
+			$data_packing['nama_produk'][0]
+			?? $data_packing['nama_produk']
+			?? $proses->nama_produk
+			?? '';
+
+
+		// === 6. AMBIL kode_produksi (PACKING -> DOUGH MIXING INDEX 1) ===
+		$kode_produksi_index1 =
+			$data_packing['kode_produksi'][0]
+			?? $data_packing['kode_produksi']
+			?? ($data_produksi['dough_mixing']['kode_produksi'][1] ?? '')
+			?? '';
+
+
+		// === 7. LIST PRODUK ===
 		$produk_list = $this->produk_model->get_all_produk();
 
+
+		// === 8. KIRIM DATA KE VIEW ===
 		$data = [
-			'proses' => $proses,
-			'produk_list' => $produk_list,
-			'data_packing' => $data_packing,
-			'data_produksi' => $data_produksi,
-			'active_nav' => 'proses'
+			'proses'                => $proses,
+			'produk_list'           => $produk_list,
+			'data_produksi'         => $data_produksi,
+			'data_packing'          => $data_packing,
+			'nama_produk_index1'    => $nama_produk_index1,
+			'kode_produksi_index1'  => $kode_produksi_index1,
+			'active_nav'            => 'proses'
 		];
 
 		$this->load->view('partials/head', $data);
