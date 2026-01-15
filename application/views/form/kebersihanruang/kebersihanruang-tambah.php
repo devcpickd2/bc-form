@@ -14,7 +14,7 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('kebersihanruang/tambah');?>" enctype="multipart/form-data">
-                 <div style="display: flex; gap: 20px;">
+                   <div style="display: flex; gap: 20px;">
                     <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 30%; text-align: left; font-family: Arial, sans-serif; font-size: 12px;">
                         <thead style="background-color: #f2f2f2;">
                             <tr>
@@ -728,7 +728,7 @@
 <div id="form-premix-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA PREMIX</label>
     <?php
-    $bagianpremix = ['Ruangan', 'Pintu dan Tirai Plastik', 'Pendingin', 'Lampu+Cover', 'Akrilik', 'Palet', 'Rak Penyimpanan 1', 'Rak Penyimpanan 2', 'Rak Penyimpanan 3', 'Rak Penyimpanan Ragi', 'Mangkok ragi', 'Chiller 1', 'Chiller 2', 'Chiller 3', 'Chiller 4', 'Chiller 5', 'Chiller 6', 'Meja penimbangan', ' Timbangan', 'Scrapper/pisau', 'Gunting', 'Sekop pewarna', 'Box Bahan', 'Tangga kecil stainless'];
+    $bagianpremix = ['Ruangan', 'Pintu dan Tirai Plastik', 'Pendingin', 'Lampu+Cover', 'Akrilik', 'Palet', 'Rak Penyimpanan 1', 'Rak Penyimpanan 2', 'Rak Penyimpanan 3', 'Rak Penyimpanan Ragi', 'Mangkok ragi', 'Chiller 1', 'Chiller 2', 'Chiller 3', 'Chiller 4', 'Chiller 5', 'Chiller 6', 'Meja Penimbangan', 'Meja Timbangan', ' Timbangan', 'Scrapper/pisau', 'Gunting', 'Sekop pewarna', 'Box Bahan', 'Tangga kecil stainless'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianpremix as $indexpremix => $bagian): ?>
@@ -785,7 +785,7 @@
 <div id="form-preparasi-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA PREPARASI</label>
     <?php
-    $bagianpreparasi = ['Ruangan', 'Lampu+Cover', 'Panel listrik', 'Area idle', ' Meja preparasi', 'Trolley', 'Telepon', 'Tempat sampah', 'Alas minyak goreng'];
+    $bagianpreparasi = ['Ruangan', 'Lampu+Cover', 'Panel listrik', 'Area idle', ' Meja preparasi', 'Trolley', 'Telepon', 'Tempat sampah', 'Alas minyak goreng', 'Fly catcher', 'Meja Timbangan'];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianpreparasi as $indexpreparasi => $bagian): ?>
@@ -1013,7 +1013,7 @@
 <div id="form-aging-ruang" class="form-area d-none">
     <label class="form-label font-weight-bold">AREA AGING</label>
     <?php
-    $bagianaging = ['Ruangan', 'Pintu', 'Exhaust Fan', 'Fan Heater', 'Ventilasi udara', 'Panel listrik', 'Lampu&Cover', 'Cooling Rak', 'Cooling Rak',];
+    $bagianaging = ['Ruangan', 'Pintu', 'Exhaust Fan', 'Fan Heater', 'Ventilasi udara', 'Panel listrik', 'Lampu&Cover', 'Cooling Rak', 'Nampan',];
     $kondisi_options = array_merge(['bersih'], range(1, 6));
     ?>
     <?php foreach ($bagianaging as $indexaging => $bagian): ?>
@@ -1655,6 +1655,21 @@ toggleForms();
         document.querySelectorAll('.form-group.row').forEach(function (row) {
             const checkboxes = row.querySelectorAll('.kondisi-checkbox');
 
+        // ===============================
+        // Langsung centang checkbox "bersih" saat load
+            const bersihCheckbox = Array.from(checkboxes).find(cb => cb.value.toLowerCase() === 'bersih');
+            if (bersihCheckbox) {
+                bersihCheckbox.checked = true;
+            // Disable checkbox lain karena "bersih" dicentang
+                checkboxes.forEach(function (cb) {
+                    if (cb.value.toLowerCase() !== 'bersih') {
+                        cb.checked = false;
+                        cb.disabled = true;
+                    }
+                });
+            }
+        // ===============================
+
             checkboxes.forEach(function (checkbox) {
                 checkbox.addEventListener('change', function () {
                     const value = checkbox.value.toLowerCase();
@@ -1674,7 +1689,6 @@ toggleForms();
                         });
                     } else if (value !== 'bersih') {
                     // Jika checkbox selain "bersih" dicentang, uncheck dan disable "bersih"
-                        const bersihCheckbox = Array.from(checkboxes).find(cb => cb.value === 'bersih');
                         if (checkbox.checked) {
                             bersihCheckbox.checked = false;
                             bersihCheckbox.disabled = true;
@@ -1691,4 +1705,3 @@ toggleForms();
         });
     });
 </script>
-

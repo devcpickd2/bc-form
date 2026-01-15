@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Pembuatanlarutan extends CI_Controller {
+class Pembuatanlarutan extends MY_Controller {
 
 	public function __construct()
 	{
@@ -22,29 +22,25 @@ class Pembuatanlarutan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_data_by_plant(),
-			'active_nav' => 'pembuatanlarutan', 
+			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pembuatanlarutan/pembuatanlarutan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pembuatanlarutan'; 
+		$this->render('form/pembuatanlarutan/pembuatanlarutan', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_by_uuid($uuid),
-			'active_nav' => 'pembuatanlarutan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pembuatanlarutan/pembuatanlarutan-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pembuatanlarutan'; 
+		$this->render('form/pembuatanlarutan/pembuatanlarutan-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->pembuatanlarutan_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -59,14 +55,9 @@ class Pembuatanlarutan extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'pembuatanlarutan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pembuatanlarutan/pembuatanlarutan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pembuatanlarutan'; 
+		$this->render('form/pembuatanlarutan/pembuatanlarutan-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -87,11 +78,10 @@ class Pembuatanlarutan extends CI_Controller {
 
 		$data = array(
 			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_by_uuid($uuid),
-			'active_nav' => 'pembuatanlarutan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pembuatanlarutan/pembuatanlarutan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pembuatanlarutan'; 
+		$this->render('form/pembuatanlarutan/pembuatanlarutan-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -115,15 +105,12 @@ class Pembuatanlarutan extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-pembuatanlarutan', 
+			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pembuatanlarutan/pembuatanlarutan-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pembuatanlarutan'; 
+		$this->render('form/pembuatanlarutan/pembuatanlarutan-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -144,11 +131,10 @@ class Pembuatanlarutan extends CI_Controller {
 
 		$data = array(
 			'pembuatanlarutan' => $this->pembuatanlarutan_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-pembuatanlarutan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pembuatanlarutan/pembuatanlarutan-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pembuatanlarutan'; 
+		$this->render('form/pembuatanlarutan/pembuatanlarutan-status', $data);
 	}
 
 	public function cetak()

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Peralatan extends CI_Controller {
+class Peralatan extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,18 +18,15 @@ class Peralatan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'peralatan' => $this->peralatan_model->get_data_by_plant(),
-			'active_nav' => 'peralatan', 
+			'peralatan' => $this->peralatan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('peralatan/peralatan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'peralatan'; 
+		$this->render('peralatan/peralatan', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->peralatan_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -44,14 +41,9 @@ class Peralatan extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'peralatan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('peralatan/peralatan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'peralatan'; 
+		$this->render('peralatan/peralatan-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -70,12 +62,10 @@ class Peralatan extends CI_Controller {
 			}
 		}
 
-		$data = array('peralatan' => $this->peralatan_model->get_by_uuid($uuid),
-			'active_nav' => 'peralatan');
+		$data = array('peralatan' => $this->peralatan_model->get_by_uuid($uuid));
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('peralatan/peralatan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'peralatan'; 
+		$this->render('peralatan/peralatan-edit', $data);
 	}
 
 	public function delete($uuid)

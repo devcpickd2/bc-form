@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Pengemasan extends CI_Controller {
+class Pengemasan extends MY_Controller {
 
 	public function __construct()
 	{
@@ -22,29 +22,25 @@ class Pengemasan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pengemasan' => $this->pengemasan_model->get_data_by_plant(),
-			'active_nav' => 'pengemasan', 
+			'pengemasan' => $this->pengemasan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pengemasan'; 
+		$this->render('form/pengemasan/pengemasan', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'pengemasan' => $this->pengemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'pengemasan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pengemasan'; 
+		$this->render('form/pengemasan/pengemasan-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->pengemasan_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -59,14 +55,9 @@ class Pengemasan extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'pengemasan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pengemasan'; 
+		$this->render('form/pengemasan/pengemasan-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -87,11 +78,10 @@ class Pengemasan extends CI_Controller {
 
 		$data = array(
 			'pengemasan' => $this->pengemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'pengemasan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pengemasan'; 
+		$this->render('form/pengemasan/pengemasan-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -115,13 +105,11 @@ class Pengemasan extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'pengemasan' => $this->pengemasan_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-pengemasan', 
+			'pengemasan' => $this->pengemasan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pengemasan'; 
+		$this->render('form/pengemasan/pengemasan-verifikasi', $data);
 	}
 
 
@@ -144,51 +132,50 @@ class Pengemasan extends CI_Controller {
 
 		$data = array(
 			'pengemasan' => $this->pengemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-pengemasan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'pengemasan' => $this->pengemasan_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-pengemasan', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pengemasan'; 
+		$this->render('form/pengemasan/pengemasan-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'pengemasan' => $this->pengemasan_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-pengemasan', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->pengemasan_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/pengemasan/pengemasan-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->pengemasan_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->pengemasan_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Proses Pengemasan berhasil di Update');
-				redirect('pengemasan/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Proses Pengemasan gagal di Update');
-				redirect('pengemasan/diketahui');
-			}
-		}
+	// 		$update = $this->pengemasan_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Proses Pengemasan berhasil di Update');
+	// 			redirect('pengemasan/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Proses Pengemasan gagal di Update');
+	// 			redirect('pengemasan/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'pengemasan' => $this->pengemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-pengemasan');
+	// 	$data = array(
+	// 		'pengemasan' => $this->pengemasan_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-pengemasan');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pengemasan/pengemasan-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/pengemasan/pengemasan-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

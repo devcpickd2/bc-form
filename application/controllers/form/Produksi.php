@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Produksi extends CI_Controller {
+class Produksi extends MY_Controller {
 
 	public function __construct()
 	{
@@ -19,7 +19,7 @@ class Produksi extends CI_Controller {
 		}
 	}
 
-		public function index()
+	public function index()
 	{
 		$this->load->library('pagination');
 		$this->load->helper('url');
@@ -34,48 +34,45 @@ class Produksi extends CI_Controller {
 		$config['base_url'] = base_url('produksi');
 		$config['total_rows'] = $total_rows;
 		$config['per_page'] = 10;
-    $config['page_query_string'] = TRUE; // ✅ gunakan ?per_page=20&keyword=...
-    $config['reuse_query_string'] = TRUE; // biar keyword tetap ikut saat klik halaman
+		$config['page_query_string'] = TRUE; 
+		$config['reuse_query_string'] = TRUE; 
 
     // Styling bootstrap
-    $config['full_tag_open'] = '<ul class="pagination justify-content-center">';
-    $config['full_tag_close'] = '</ul>';
-    $config['attributes'] = ['class' => 'page-link'];
-    $config['first_tag_open'] = '<li class="page-item">';
-    $config['first_tag_close'] = '</li>';
-    $config['last_tag_open'] = '<li class="page-item">';
-    $config['last_tag_close'] = '</li>';
-    $config['num_tag_open'] = '<li class="page-item">';
-    $config['num_tag_close'] = '</li>';
-    $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
-    $config['cur_tag_close'] = '</span></li>';
+		$config['full_tag_open'] = '<ul class="pagination justify-content-center">';
+		$config['full_tag_close'] = '</ul>';
+		$config['attributes'] = ['class' => 'page-link'];
+		$config['first_tag_open'] = '<li class="page-item">';
+		$config['first_tag_close'] = '</li>';
+		$config['last_tag_open'] = '<li class="page-item">';
+		$config['last_tag_close'] = '</li>';
+		$config['num_tag_open'] = '<li class="page-item">';
+		$config['num_tag_close'] = '</li>';
+		$config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
+		$config['cur_tag_close'] = '</span></li>';
 
-    $this->pagination->initialize($config);
+		$this->pagination->initialize($config);
 
-    $page = $this->input->get('per_page'); // ambil dari query string
-    $start = ($page) ? $page : 0;
+		$page = $this->input->get('per_page'); 
+		$start = ($page) ? $page : 0;
 
-    $data = [
-    	'produksi' => $this->produksi_model->get_data_by_plant_paginated($plant, $config['per_page'], $start, $keyword),
-    	'pagination' => $this->pagination->create_links(),
-    	'active_nav' => 'produksi',
-    	'keyword' => $keyword
-    ];
+		$data = [
+			'produksi' => $this->produksi_model->get_data_by_plant_paginated($plant, $config['per_page'], $start, $keyword),
+			'pagination' => $this->pagination->create_links(),
+			'keyword' => $keyword
+		];
 
-    $this->load->view('partials/head', $data);
-    $this->load->view('form/produksi/produksi', $data);
-    $this->load->view('partials/footer');
-}
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi', $data);
+	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-detail', $data);
 	}
 
 	public function tambah()
@@ -101,14 +98,12 @@ class Produksi extends CI_Controller {
 		// $produk_list = $this->produk_model->get_all_produk();
 
 		$data = array(
-			'active_nav' => 'produksi',
 			'kode_produksi_terakhir' => $kode_produksi_terakhir,
 			'produk_list' => $produk_list
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-tambah', $data);
 	}
 
 	public function file_check_kode($str)
@@ -128,9 +123,9 @@ class Produksi extends CI_Controller {
 			}
 		}
 
-    // Jika tidak ada file diunggah, anggap valid
 		return true;
 	}
+
 	public function file_check_kondisi($str)
 	{
 		if (!empty($_FILES['gambar_kondisi_kemasan']['name'])) {
@@ -168,12 +163,12 @@ class Produksi extends CI_Controller {
 			}
 		}
 
-		$data = array('produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi');
+		$data = array(
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -212,13 +207,11 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-bahan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-bahan', $data);
 	}
 
 	public function mixing($uuid)
@@ -239,13 +232,11 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-mixing', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-mixing', $data);
 	}
 
 	public function fermentasi($uuid)
@@ -266,13 +257,11 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-fermentasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-fermentasi', $data);
 	}
 
 	public function baking($uuid)
@@ -293,13 +282,11 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-baking', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-baking', $data);
 	}
 
 	public function stalling($uuid)
@@ -320,13 +307,11 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-stalling', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-stalling', $data);
 	}
 
 	// public function grinding($uuid)
@@ -374,13 +359,11 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-drying', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-drying', $data);
 	}
 
 	public function packing($uuid)
@@ -401,27 +384,22 @@ class Produksi extends CI_Controller {
 		}
 
 		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'produksi'
+			'produksi' => $this->produksi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-packing', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produksi'; 
+		$this->render('form/produksi/produksi-packing', $data);
 	}
 
 	public function verifikasi()
 	{
 		$data = array(
-			'produksi' => $this->produksi_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-produksi', 
+			'produksi' => $this->produksi_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-produksi'; 
+		$this->render('form/produksi/produksi-verifikasi', $data);
 	}
-
 
 	public function status($uuid) 
 	{
@@ -442,51 +420,50 @@ class Produksi extends CI_Controller {
 
 		$data = array(
 			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-produksi');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'produksi' => $this->produksi_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-produksi', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-produksi'; 
+		$this->render('form/produksi/produksi-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'produksi' => $this->produksi_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-produksi', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->produksi_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/produksi/produksi-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
 
-			$update = $this->produksi_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Verifikasi Produksi berhasil di Update');
-				redirect('produksi/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Verifikasi Produksi gagal di Update');
-				redirect('produksi/diketahui');
-			}
-		}
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->produksi_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$data = array(
-			'produksi' => $this->produksi_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-produksi');
+	// 	if ($this->form_validation->run() == TRUE) {
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/produksi/produksi-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 		$update = $this->produksi_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Verifikasi Produksi berhasil di Update');
+	// 			redirect('produksi/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Verifikasi Produksi gagal di Update');
+	// 			redirect('produksi/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'produksi' => $this->produksi_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-produksi');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/produksi/produksi-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -514,7 +491,7 @@ class Produksi extends CI_Controller {
 		$this->load->model('pegawai_model');
 		$nama_qc = $this->pegawai_model->get_nama_lengkap($data['produksi']->username);
 		$nama_prod = $this->pegawai_model->get_nama_lengkap($data['produksi']->nama_produksi);
-		$nama_spv = $this->pegawai_model->get_nama_lengkap($data['produksi']->nama_spv);
+		$nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['produksi']->nama_spv);
 
 		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
@@ -1180,6 +1157,9 @@ class Produksi extends CI_Controller {
 				$pdf->Cell(40, 4, '', 1, 0, 'C'); 
 			}
 
+			$pdf->SetFont('times', 'I', 7);
+			$pdf->Cell(330, 5, 'QB 06/00', 0, 1, 'R'); 
+
 			$pdf->Ln();
 			$pdf->SetFont('times', '', 7);
 			$tanggal_update = $data['produksi']->tgl_update;
@@ -1211,52 +1191,95 @@ class Produksi extends CI_Controller {
 				}
 			}
 
-			$y_after_keterangan = $pdf->GetY();
+			// $y_after_keterangan = $pdf->GetY();
+
+			$y_ttd   = $pdf->GetY() + 6;
+			$qr_size = 15;
+
+			$qc_usernames  = [];
+			$qc_created_at = null;
+
+			foreach ($produksi_data as $item) {
+				if (!empty($item->username)) {
+					$qc_usernames[] = $item->username;
+				}
+
+				if (!$qc_created_at && !empty($item->created_at)) {
+					$qc_created_at = $item->created_at;
+				}
+			}
+
+			$qc_usernames = array_unique($qc_usernames);
+
+			$nama_qc = [];
+			foreach ($qc_usernames as $username) {
+				$nama = $this->pegawai_model->get_nama_lengkap($username);
+				if (!empty($nama)) {
+					$nama_qc[] = $nama;
+				}
+			}
+
+			$qc_nama_text = !empty($nama_qc)
+			? implode(', ', array_unique($nama_qc))
+			: '-';
+
+			$qc_tanggal = $qc_created_at
+			? (new DateTime($qc_created_at))->format('d-m-Y | H:i')
+			: '-';
+
+			$qr_qc_text = "Dibuat secara digital oleh,\n"
+			. $qc_nama_text . "\n"
+			. "QC Inspector\n"
+			. $qc_tanggal;
+
+			$qr_produksi_text = null;
+
+			if (!empty($data['produksi']->nama_produksi) && !empty($data['produksi']->tgl_update_prod)) {
+				$prod_tanggal = (new DateTime($data['produksi']->tgl_update_prod ?? $data['produksi']->tgl_update_prod))
+				->format('d-m-Y | H:i');
+
+				$qr_produksi_text = "Diketahui secara digital oleh,\n"
+				. $data['produksi']->nama_produksi . "\n"
+				. "Foreman/Forelady Produksi\n"
+				. $prod_tanggal;
+			}
+
+			$spv_tanggal = !empty($data['produksi']->tgl_update)
+			? (new DateTime($data['produksi']->tgl_update))->format('d-m-Y | H:i')
+			: '-';
+
+			$qr_spv_text = "Disetujui secara digital oleh,\n"
+			. ($nama_lengkap_spv ?: $data['produksi']->nama_spv) . "\n"
+			. "Supervisor QC Bread Crumb\n"
+			. $spv_tanggal;
 
 			if ($status_verifikasi) {
 				$pdf->SetFont('times', '', 8);
-				$pdf->SetTextColor(0, 0, 0);
-				$y_verifikasi = $y_after_keterangan;
-
-				$pdf->SetXY(25, $y_verifikasi + 5);
-				$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-
-				$pdf->SetXY(25, $y_verifikasi + 10);
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->Cell(35, 5, $nama_qc, 0, 1, 'C');
-				$pdf->SetFont('times', '', 8);
-				$pdf->Cell(67, 5, 'QC Inspector', 0, 0, 'C');
-
-				$pdf->SetXY(90, $y_verifikasi + 5);
-				$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-
-				if (!empty($data['produksi']->nama_produksi)) {
-					$pdf->SetFont('times', 'U', 8);
-					$pdf->SetXY(90, $y_verifikasi + 10);
-					$pdf->Cell(35, 5, $nama_prod, 0, 1, 'C');
-
-					$pdf->SetFont('times', '', 8);
-					$pdf->SetXY(90, $y_verifikasi + 15);
-					$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$pdf->SetXY(20, $y_ttd);
+				$pdf->Cell(45, 5, 'Dibuat Oleh,', 0, 0, 'C');
+				$pdf->SetXY(85, $y_ttd);
+				$pdf->Cell(45, 5, 'Diketahui Oleh,', 0, 0, 'C');
+				$pdf->SetXY(150, $y_ttd);
+				$pdf->Cell(45, 5, 'Disetujui Oleh,', 0, 1, 'C');
+				$pdf->write2DBarcode($qr_qc_text, 'QRCODE,L', 35,$y_ttd + 5, $qr_size, $qr_size, null, 'N');
+				if ($qr_produksi_text) {
+					$pdf->write2DBarcode($qr_produksi_text, 'QRCODE,L', 100, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
 				}
-
-				$pdf->SetXY(150, $y_verifikasi + 5);
-				$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-
-				$qr_text = "Diverifikasi secara digital oleh,\n"
-				. $nama_spv . "\n"
-				. "SPV QC Bread Crumb\n"
-				. $update_tanggal;
-
-				$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
-				$pdf->SetXY(150, $y_verifikasi + 24);
-				$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+				$pdf->write2DBarcode($qr_spv_text, 'QRCODE,L', 165, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+				$pdf->SetXY(20, $y_ttd + 20);
+				$pdf->Cell(45, 5, 'QC Inspector', 0, 0, 'C');
+				$pdf->SetXY(85, $y_ttd + 20);
+				$pdf->Cell(45, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+				$pdf->SetXY(150, $y_ttd + 20);
+				$pdf->Cell(45, 5, 'Supervisor QC', 0, 1, 'C');
 			} else {
-				$pdf->SetTextColor(255, 0, 0); 
 				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(100, $y_after_keterangan);
-				$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+				$pdf->SetTextColor(255, 0, 0);
+				$pdf->SetXY(80, $y_ttd);
+				$pdf->Cell(80, 6, 'Data Belum Diverifikasi', 0, 1, 'C');
+				$pdf->SetTextColor(0, 0, 0);
 			}
+
 			$pdf->SetTextColor(0, 0, 0);
 			$pdf->setPrintFooter(false);
 		}

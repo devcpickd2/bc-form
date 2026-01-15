@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Loading extends CI_Controller {
+class Loading extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,29 +23,25 @@ class Loading extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'loading' => $this->loading_model->get_data_by_plant(),
-			'active_nav' => 'loading', 
+			'loading' => $this->loading_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'loading'; 
+		$this->render('form/loading/loading', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'loading' => $this->loading_model->get_by_uuid($uuid),
-			'active_nav' => 'loading');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'loading'; 
+		$this->render('form/loading/loading-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->loading_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -60,14 +56,9 @@ class Loading extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'loading');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'loading'; 
+		$this->render('form/loading/loading-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -88,13 +79,11 @@ class Loading extends CI_Controller {
 
 		$data = [
 			'loading' => $this->loading_model->get_by_uuid($uuid),
-			'bagian_list' => $this->loading_model->get_bagian_by_uuid($uuid),
-			'active_nav' => 'loading'
+			'bagian_list' => $this->loading_model->get_bagian_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'loading'; 
+		$this->render('form/loading/loading-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -122,11 +111,9 @@ class Loading extends CI_Controller {
 			'active_nav' => 'verifikasi-loading', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-loading'; 
+		$this->render('form/loading/loading-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -149,49 +136,48 @@ class Loading extends CI_Controller {
 			'loading' => $this->loading_model->get_by_uuid($uuid),
 			'active_nav' => 'verifikasi-loading');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-loading'; 
+		$this->render('form/loading/loading-status', $data);
 	}
 
-	public function diketahui()
-	{
-		$data = array(
-			'loading' => $this->loading_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-loading', 
-		);
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'loading' => $this->loading_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-loading', 
+	// 	);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-diketahui', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/loading/loading-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 
-	public function statuswh($uuid)
-	{
-		$rules = $this->loading_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// public function statuswh($uuid)
+	// {
+	// 	$rules = $this->loading_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->loading_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Loading Produk berhasil di Update');
-				redirect('loading/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Loading Produk gagal di Update');
-				redirect('loading/diketahui');
-			}
-		}
+	// 		$update = $this->loading_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Loading Produk berhasil di Update');
+	// 			redirect('loading/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Loading Produk gagal di Update');
+	// 			redirect('loading/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'loading' => $this->loading_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-loading');
+	// 	$data = array(
+	// 		'loading' => $this->loading_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-loading');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/loading/loading-statuswh', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/loading/loading-statuswh', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -398,6 +384,10 @@ class Loading extends CI_Controller {
 				}
 			}
 		}
+
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(190, 5, 'QW 05/00', 0, 1, 'R'); 
+
 		$y_last = $pdf->GetY();
 		$y_last += 1; 
 

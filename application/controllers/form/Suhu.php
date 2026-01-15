@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Suhu extends CI_Controller {
+class Suhu extends MY_Controller {
 
 	public function __construct()
 	{
@@ -34,24 +34,21 @@ class Suhu extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'suhu' => $this->suhu_model->get_suhu_by_plant(),
-			'active_nav' => 'suhu', 
+			'suhu' => $this->suhu_model->get_suhu_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'suhu'; 
+		$this->render('form/suhu/suhu', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'suhu' => $this->suhu_model->get_by_uuid($uuid),
-			'active_nav' => 'suhu');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'suhu'; 
+		$this->render('form/suhu/suhu-detail', $data);
 	}
 
 	public function tambah()
@@ -83,13 +80,11 @@ class Suhu extends CI_Controller {
 		$plant_name = isset($plant_map[$plant_uuid]) ? $plant_map[$plant_uuid] : 'Unknown';
 
 		$data = array(
-			'active_nav' => 'suhu',
 			'plant' => $plant_name
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'suhu'; 
+		$this->render('form/suhu/suhu-tambah', $data);
 	}
 
 	public function edit($uuid)
@@ -111,11 +106,10 @@ class Suhu extends CI_Controller {
 
 		$data = array(
 			'suhu' => $this->suhu_model->get_by_uuid($uuid),
-			'active_nav' => 'suhu');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'suhu'; 
+		$this->render('form/suhu/suhu-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -139,15 +133,12 @@ class Suhu extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'suhu' => $this->suhu_model->get_suhu_by_plant(),
-			'active_nav' => 'verifikasi-suhu', 
+			'suhu' => $this->suhu_model->get_suhu_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-suhu'; 
+		$this->render('form/suhu/suhu-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -168,51 +159,50 @@ class Suhu extends CI_Controller {
 
 		$data = array(
 			'suhu' => $this->suhu_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-suhu');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'suhu' => $this->suhu_model->get_suhu_by_plant(),
-			'active_nav' => 'diketahui-suhu', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-suhu'; 
+		$this->render('form/suhu/suhu-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'suhu' => $this->suhu_model->get_suhu_by_plant(),
+	// 		'active_nav' => 'diketahui-suhu', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->suhu_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/suhu/suhu-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->suhu_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Suhu Ruang berhasil di Update');
-				redirect('suhu/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Suhu Ruang gagal di Update');
-				redirect('suhu/diketahui');
-			}
-		}
 
-		$data = array(
-			'suhu' => $this->suhu_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-suhu');
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->suhu_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/suhu/suhu-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	if ($this->form_validation->run() == TRUE) {
+
+	// 		$update = $this->suhu_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Suhu Ruang berhasil di Update');
+	// 			redirect('suhu/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Suhu Ruang gagal di Update');
+	// 			redirect('suhu/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'suhu' => $this->suhu_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-suhu');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/suhu/suhu-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -330,6 +320,9 @@ class Suhu extends CI_Controller {
 			$pdf->Ln();
 		}
 
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(190, 5, 'QB 10/00', 0, 1, 'R'); 
+
 		$pdf->SetY($pdf->GetY() + 2); 
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
@@ -352,42 +345,138 @@ class Suhu extends CI_Controller {
 		$pdf->SetFont('times', '', 8);
 		$pdf->SetTextColor(0, 0, 0);
 
-		if ($status_verifikasi) {
-			$y_verifikasi = $y_after_keterangan;
-			$pdf->SetXY(25, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8); 
-			$pdf->Cell(35, 5, $data['suhu']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8); 
-			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+		// if ($status_verifikasi) {
+		// 	$y_verifikasi = $y_after_keterangan;
+		// 	$pdf->SetXY(25, $y_verifikasi + 5);
+		// 	$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
+		// 	if (!empty($data['suhu']->nama_lengkap_qc)) {
+		// 		$update_tanggal_qc = !empty($data['suhu']->created_at)
+		// 		? (new DateTime($data['suhu']->created_at))->format('d-m-Y | H:i')
+		// 		: date('d-m-Y | H:i'); 
 
-			$pdf->SetXY(90, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-			if ($data['suhu']->status_produksi == 1 && !empty($data['suhu']->nama_produksi)) {
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->Cell(35, 5, $data['suhu']->nama_produksi, 0, 0, 'C');
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 14);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
-			} else {
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 		$qr_text_qc = "Dibuat secara digital oleh,\n" .
+		// 		$data['suhu']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+		// 		$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 35, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(25, $y_verifikasi + 24);
+		// 		$pdf->Cell(35, 5, 'QC Inspector', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(25, $y_verifikasi + 10);
+		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+		// 	// Diketahui oleh (Produksi)
+		// 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// 	$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// 	if ($data['suhu']->status_produksi == 1 && !empty($data['suhu']->nama_produksi)) {
+		// 		$update_tanggal_produksi = (new DateTime($data['suhu']->tgl_update_produksi))->format('d-m-Y | H:i');
+		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['suhu']->nama_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// 		$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// 	} else {
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// 	}
+
+		// 	$pdf->SetXY(150, $y_verifikasi + 5);
+		// 	$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
+		// 	$update_tanggal = (new DateTime($data['suhu']->tgl_update_spv))->format('d-m-Y | H:i');
+		// 	$qr_text = "Diverifikasi secara digital oleh,\n" . $data['suhu']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
+		// 	$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 	$pdf->SetXY(150, $y_verifikasi + 24);
+		// 	$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+		// } else {
+		// 	$pdf->SetTextColor(255, 0, 0); 
+		// 	$pdf->SetFont('times', '', 8);
+		// 	$pdf->SetXY(100, $y_after_keterangan);
+		// 	$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+		// }
+
+		$y_ttd   = $pdf->GetY() + 6;
+		$qr_size = 15;
+
+		$qc_usernames  = [];
+		$qc_created_at = null;
+
+		foreach ($suhu_data as $item) {
+			if (!empty($item->username)) {
+				$qc_usernames[] = $item->username;
 			}
 
-			$pdf->SetXY(150, $y_verifikasi + 5);
-			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-			$update_tanggal = (new DateTime($data['suhu']->tgl_update_spv))->format('d-m-Y | H:i');
-			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['suhu']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
-			$pdf->SetXY(150, $y_verifikasi + 24);
-			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
-		} else {
-			$pdf->SetTextColor(255, 0, 0); 
+			if (!$qc_created_at && !empty($item->created_at)) {
+				$qc_created_at = $item->created_at;
+			}
+		}
+
+		$qc_usernames = array_unique($qc_usernames);
+
+		$qc_nama_lengkap = [];
+		foreach ($qc_usernames as $username) {
+			$nama = $this->pegawai_model->get_nama_lengkap($username);
+			if (!empty($nama)) {
+				$qc_nama_lengkap[] = $nama;
+			}
+		}
+
+		$qc_nama_text = !empty($qc_nama_lengkap)
+		? implode(', ', array_unique($qc_nama_lengkap))
+		: '-';
+
+		$qc_tanggal = $qc_created_at
+		? (new DateTime($qc_created_at))->format('d-m-Y | H:i')
+		: '-';
+
+		$qr_qc_text = "Dibuat secara digital oleh,\n"
+		. $qc_nama_text . "\n"
+		. "QC Inspector\n"
+		. $qc_tanggal;
+
+		$qr_produksi_text = null;
+
+		if (!empty($data['suhu']->nama_lengkap_produksi) && !empty($data['suhu']->tgl_update_produksi)) {
+			$prod_tanggal = (new DateTime($data['suhu']->tgl_update_produksi ?? $data['suhu']->tgl_update_produksi))
+			->format('d-m-Y | H:i');
+
+			$qr_produksi_text = "Diketahui secara digital oleh,\n"
+			. $data['suhu']->nama_lengkap_produksi . "\n"
+			. "Foreman/Forelady Produksi\n"
+			. $prod_tanggal;
+		}
+
+		$spv_tanggal = !empty($data['suhu']->tgl_update_spv)
+		? (new DateTime($data['suhu']->tgl_update_spv))->format('d-m-Y | H:i')
+		: '-';
+
+		$qr_spv_text = "Disetujui secara digital oleh,\n"
+		. $data['suhu']->nama_lengkap_spv . "\n"
+		. "Supervisor QC Bread Crumb\n"
+		. $spv_tanggal;
+
+		if ($status_verifikasi) {
 			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(100, $y_after_keterangan);
-			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetXY(20, $y_ttd);
+			$pdf->Cell(45, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd);
+			$pdf->Cell(45, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			$pdf->SetXY(150, $y_ttd);
+			$pdf->Cell(45, 5, 'Disetujui Oleh,', 0, 1, 'C');
+			$pdf->write2DBarcode($qr_qc_text, 'QRCODE,L', 35,$y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			if ($qr_produksi_text) {
+				$pdf->write2DBarcode($qr_produksi_text, 'QRCODE,L', 100, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			}
+			$pdf->write2DBarcode($qr_spv_text, 'QRCODE,L', 165, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			$pdf->SetXY(20, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'QC Inspector', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			$pdf->SetXY(150, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'Supervisor QC', 0, 1, 'C');
+		} else {
+			$pdf->SetFont('times', '', 8);
+			$pdf->SetTextColor(255, 0, 0);
+			$pdf->SetXY(80, $y_ttd);
+			$pdf->Cell(80, 6, 'Data Belum Diverifikasi', 0, 1, 'C');
+			$pdf->SetTextColor(0, 0, 0);
 		}
 
 		$pdf->setPrintFooter(false);

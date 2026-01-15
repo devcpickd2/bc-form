@@ -221,9 +221,28 @@ class Suhu_model extends CI_Model {
 
 	public function get_suhu_by_plant()
 	{
-		$this->db->order_by('date', 'DESC');
 		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('suhu', ['plant' => $plant])->result();
+
+		$this->db->select('*');
+		$this->db->from('suhu');
+		$this->db->where('plant', $plant);
+
+    // Urut tanggal terbaru dulu
+		$this->db->order_by('date', 'DESC');
+
+    // Urut shift perhari: Shift 2 → Shift 1 → Shift 3
+		$this->db->order_by("
+			CASE
+			WHEN TIME(pukul) >= '15:00:00' AND TIME(pukul) < '23:00:00' THEN 1  -- Shift 2
+			WHEN TIME(pukul) >= '07:00:00' AND TIME(pukul) < '15:00:00' THEN 2  -- Shift 1
+			WHEN TIME(pukul) >= '23:00:00' OR TIME(pukul) < '07:00:00' THEN 3   -- Shift 3
+			END
+			", '', false);
+
+    // Urut jam kronologis di dalam shift
+		$this->db->order_by('pukul', 'DESC');
+
+		return $this->db->get()->result();
 	}
 
 	public function delete_by_uuid($uuid)

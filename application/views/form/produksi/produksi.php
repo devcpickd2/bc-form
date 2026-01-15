@@ -104,7 +104,7 @@
                             <td class="text-center">
                                 <a href="<?= base_url('produksi/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm shadow" title="Edit">Edit</a>
                                 <a href="<?= base_url('produksi/detail/'.$val->uuid);?>" class="btn btn-success btn-sm shadow" title="Detail">Detail</a>
-                                <a href="<?= base_url('produksi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a>
+                                <!-- <a href="<?= base_url('produksi/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a> -->
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -107,9 +107,9 @@
                                     <a href="<?= base_url('sensori/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
                                         <span class="text">Detail</span>
                                     </a>
-                                    <a href="<?= base_url('sensori/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                   <!--  <a href="<?= base_url('sensori/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
                                         <span class="text">Delete</span>
-                                    </a>
+                                    </a> -->
                                 </td>
                             </tr>
                         <?php } ?>

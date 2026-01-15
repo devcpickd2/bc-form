@@ -26,68 +26,58 @@
                     <i class="fas fa-plus fa-sm text-white-50"></i> Tambah
                 </a>
             </div>
-            <hr>
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th width="20px" class="text-center">No</th>
-                            <th>Tanggal</th>
-                            <th>Nama Larutan</th>
-                            <th>No. Lot</th>
-                            <th>Best Before</th>
-                            <th>Supervisor</th>
-                            <th class="text-center">Action</th>
+                            <th width="50" class="text-center">No</th>
+                            <th>Bulan</th>
+                            <th>Tahun</th>
+                            <th width="300" class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php 
+                        <?php
                         $no = 1;
-                        foreach($reagen as $val) {
-                            $datetime = new datetime($val->date);
-                            $datetime = $datetime->format('d-m-Y');
-
-                            $expired = new datetime($val->best_before);
-                            $expired = $expired->format('d-m-Y');
-                            ?>
-                            <tr>
-                                <td class="text-center"><?= $no; ?></td>
-                                <td><?= $datetime; ?></td>
-                                <td><?= $val->nama_larutan; ?></td>
-                                <td><?= $val->no_lot; ?></td>
-                                <td><?= $expired; ?></td>
-                                <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('reagen/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Edit</span>
-                                    </a>
-                                    <a href="<?= base_url('reagen/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
-                                        <span class="text">Detail</span>
-                                    </a>
-                                    <a href="<?= base_url('reagen/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <span class="text">Delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php 
-                            $no++;
-                        }
+                        $nama_bulan = [
+                            1=>'Januari', 2=>'Februari', 3=>'Maret',
+                            4=>'April', 5=>'Mei', 6=>'Juni',
+                            7=>'Juli', 8=>'Agustus', 9=>'September',
+                            10=>'Oktober', 11=>'November', 12=>'Desember'
+                        ];
                         ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+
+                        <?php foreach ($bulan_tahun as $row): ?>
+                            <tr>
+                                <td class="text-center"><?= $no++ ?></td>
+                                <td><?= $nama_bulan[$row->bulan] ?></td>
+                                <td><?= $row->tahun ?></td>
+                                <td class="text-center">
+
+                                    <a href="<?= base_url('reagen/detail/'.$row->bulan.'/'.$row->tahun) ?>"
+                                       class="btn btn-success btn-sm">
+                                       Detail
+                                   </a>
+
+                                <!--    <a href="<?= base_url('reagen/edit_bulan/'.$row->bulan.'/'.$row->tahun) ?>"
+                                       class="btn btn-warning btn-sm">
+                                       Edit
+                                   </a>
+
+                                   <a href="<?= base_url('reagen/delete_bulan/'.$row->bulan.'/'.$row->tahun) ?>"
+                                       onclick="return confirm('Yakin hapus semua data bulan ini?')"
+                                       class="btn btn-danger btn-sm">
+                                       Delete
+                                   </a> -->
+
+                               </td>
+                           </tr>
+                       <?php endforeach ?>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+   </div>
 </div>
 </div>
 

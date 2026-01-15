@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Material extends CI_Controller {
+class Material extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,18 +18,15 @@ class Material extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'material' => $this->material_model->get_all(),
-			'active_nav' => 'material', 
+			'material' => $this->material_model->get_all()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('material/material', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'material'; 
+		$this->render('material/material', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->material_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -44,14 +41,9 @@ class Material extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'material');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('material/material-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'material'; 
+		$this->render('material/material-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -70,12 +62,10 @@ class Material extends CI_Controller {
 			}
 		}
 
-		$data = array('material' => $this->material_model->get_by_uuid($uuid),
-			'active_nav' => 'material');
+		$data = array('material' => $this->material_model->get_by_uuid($uuid));
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('material/material-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'material'; 
+		$this->render('material/material-edit', $data);
 	}
 
 	public function delete($uuid)

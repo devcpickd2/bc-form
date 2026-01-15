@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Gosong extends CI_Controller {
+class Gosong extends MY_Controller {
 
 	public function __construct()
 	{
@@ -19,24 +19,21 @@ class Gosong extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'gosong' => $this->gosong_model->get_data_by_plant(),
-			'active_nav' => 'gosong', 
+			'gosong' => $this->gosong_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'gosong'; 
+		$this->render('form/gosong/gosong', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'gosong' => $this->gosong_model->get_by_uuid($uuid),
-			'active_nav' => 'gosong');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'gosong'; 
+		$this->render('form/gosong/gosong-detail', $data);
 	}
 
 	public function tambah()
@@ -56,12 +53,8 @@ class Gosong extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'gosong');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'gosong'; 
+		$this->render('form/gosong/gosong-tambah');
 	}
 
 	public function edit($uuid)
@@ -94,12 +87,10 @@ class Gosong extends CI_Controller {
 			'gosong' => $gosong,
 			'shift_number' => $shift_number,
 			'shift_group'  => $shift_group,
-			'active_nav' => 'gosong'
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'gosong'; 
+		$this->render('form/gosong/gosong-edit', $data);
 	}
 
 	public function delete($uuid = null)
@@ -124,13 +115,11 @@ class Gosong extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'gosong' => $this->gosong_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-gosong', 
+			'gosong' => $this->gosong_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-gosong'; 
+		$this->render('form/gosong/gosong-verifikasi', $data);
 	}
 
 
@@ -153,52 +142,50 @@ class Gosong extends CI_Controller {
 
 		$data = array(
 			'gosong' => $this->gosong_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-gosong');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-
-	public function diketahui()
-	{
-		$data = array(
-			'gosong' => $this->gosong_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-gosong', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-gosong'; 
+		$this->render('form/gosong/gosong-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'gosong' => $this->gosong_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-gosong', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->gosong_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/gosong/gosong-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
 
-			$update = $this->gosong_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Roti Gosong berhasil di Update');
-				redirect('gosong/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Roti Gosong gagal di Update');
-				redirect('gosong/diketahui');
-			}
-		}
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->gosong_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$data = array(
-			'gosong' => $this->gosong_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-gosong');
+	// 	if ($this->form_validation->run() == TRUE) {
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/gosong/gosong-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 		$update = $this->gosong_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Roti Gosong berhasil di Update');
+	// 			redirect('gosong/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Roti Gosong gagal di Update');
+	// 			redirect('gosong/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'gosong' => $this->gosong_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-gosong');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/gosong/gosong-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

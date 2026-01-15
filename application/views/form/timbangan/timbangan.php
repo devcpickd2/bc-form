@@ -93,13 +93,13 @@
                                 ?>
                             </td>
                             <td class="text-center">
-                                <a href="<?= base_url('timbangan/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="<?= base_url('timbangan/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm">Update</a>
                                 <a href="<?= base_url('timbangan/detail/'.$val->uuid);?>" class="btn btn-success btn-sm">Detail</a>
-                                <a href="<?= base_url('timbangan/delete/'.$val->uuid);?>" 
+                               <!--  <a href="<?= base_url('timbangan/delete/'.$val->uuid);?>" 
                                  class="btn btn-danger btn-sm"
                                  onclick="return confirm('Yakin ingin menghapus data ini?')">
                                  Delete
-                             </a>
+                             </a> -->
                          </td>
                      </tr>
                  <?php } ?>

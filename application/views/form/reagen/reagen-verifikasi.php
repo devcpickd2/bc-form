@@ -1,92 +1,81 @@
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-2 text-gray-800">Daftar Verifikasi Penggunaan Reagen Klorin</h1>
-    </div>
+    <h1 class="h3 mb-3 text-gray-800">Verifikasi Penggunaan Reagen Klorin</h1>
 
     <?php if($this->session->flashdata('success_msg')): ?>
-        <div class="alert alert-success text-center">
-            <i class="fas fa-check"></i>
-            <?= $this->session->flashdata('success_msg') ?>
-        </div>
-        <br>
+        <div class="alert alert-success text-center"><?= $this->session->flashdata('success_msg') ?></div>
     <?php endif ?>
 
     <?php if($this->session->flashdata('error_msg')): ?>
-        <div class="alert alert-danger text-center">
-            <i class="fas fa-check"></i>
-            <?= $this->session->flashdata('error_msg') ?>
-        </div>
-        <br>
-    <?php endif ?> 
+        <div class="alert alert-danger text-center"><?= $this->session->flashdata('error_msg') ?></div>
+    <?php endif ?>
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="GET" action="<?= base_url('reagen/cetak') ?>" class="form-inline mb-3">
-                <label for="bulan" class="mr-2">Pilih Bulan :</label>
-                <input type="month" name="bulan" id="bulan" class="form-control mr-2" required>
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-file-pdf"></i> Export PDF
-                </button>
-            </form>
-            <hr>
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-bordered">
+                    <thead class="text-center">
                         <tr>
-                            <th width="20px" class="text-center">No</th>
-                            <th>Tanggal</th>
-                            <th>Nama Larutan</th>
-                            <th>No. Lot</th>
-                            <th>Best Before</th>
-                            <th>Last Updated</th>
-                            <th>Last Verified</th>
-                            <th>SPV</th>
-                            <th class="text-center">Action</th>
+                            <th>No</th>
+                            <th>Bulan</th>
+                            <th>Tahun</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
                         $no = 1;
-                        foreach($reagen as $val) {
-                            $datetime = new datetime($val->date);
-                            $datetime = $datetime->format('d-m-Y');
-
-                            $expired = new datetime($val->best_before);
-                            $expired = $expired->format('d-m-Y');
-                            ?>
+                        $nama_bulan = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+                        foreach($bulan_tahun as $row): ?>
                             <tr>
-                                <td class="text-center"><?= $no; ?></td>
-                                <td><?= $datetime; ?></td>
-                                <td><?= $val->nama_larutan; ?></td>
-                                <td><?= $val->no_lot; ?></td>
-                                <td><?= $expired; ?></td>
-                                <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
-                                <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
+                                <td class="text-center"><?= $no++ ?></td>
+                                <td><?= $nama_bulan[$row->bulan] ?></td>
+                                <td><?= $row->tahun ?></td>
                                 <td class="text-center">
-                                    <?php
-                                    if ($val->status_spv == 0) {
-                                        echo '<span style="color: #99a3a4; font-weight: bold;">Created</span>';
-                                    } elseif ($val->status_spv == 1) {
-                                        echo '<span style="color: #28b463; font-weight: bold;">Verified</span>';
-                                    } elseif ($val->status_spv == 2) {
-                                        echo '<span style="color: red; font-weight: bold;">Revision</span>';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('reagen/status/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Verifikasi</span>
-                                    </a>
+                                    <a href="<?= base_url('reagen/status/'.$row->bulan.'/'.$row->tahun) ?>" class="btn btn-info btn-sm">Detail</a>
+
+                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#verifikasiModal" data-bulan="<?= $row->bulan ?>" data-tahun="<?= $row->tahun ?>">Verifikasi</button>
+
+                                    <a href="<?= base_url('reagen/cetak/'.$row->bulan.'/'.$row->tahun) ?>" class="btn btn-danger btn-sm">PDF</a>
                                 </td>
                             </tr>
-                            <?php 
-                            $no++;
-                        }
-                        ?>
+                        <?php endforeach ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal konfirmasi verifikasi -->
+<div class="modal fade" id="verifikasiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form id="verifikasiForm" method="post" action="">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Verifikasi</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    Apakah yakin ingin verifikasi semua data bulan <span id="modalBulan"></span> tahun <span id="modalTahun"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Ya, Verifikasi</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+</div>
+
+<script>
+    $('#verifikasiModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); 
+        var bulan = button.data('bulan');
+        var tahun = button.data('tahun');
+        var modal = $(this);
+        modal.find('#modalBulan').text(bulan);
+        modal.find('#modalTahun').text(tahun);
+        modal.find('#verifikasiForm').attr('action', '<?= base_url("reagen/verifikasi/") ?>' + bulan + '/' + tahun);
+    });
+</script>

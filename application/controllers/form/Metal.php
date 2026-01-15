@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Metal extends CI_Controller {
+class Metal extends MY_Controller {
 
 	public function __construct()
 	{
@@ -14,6 +14,7 @@ class Metal extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('auth_model'); 
 		$this->load->model('metal_model');
+		$this->load->model('pegawai_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
 		}
@@ -22,29 +23,25 @@ class Metal extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'metal' => $this->metal_model->get_data_by_plant(),
-			'active_nav' => 'metal', 
+			'metal' => $this->metal_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'metal'; 
+		$this->render('form/metal/metal', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'metal' => $this->metal_model->get_by_uuid($uuid),
-			'active_nav' => 'metal');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'metal'; 
+		$this->render('form/metal/metal-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->metal_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -59,12 +56,8 @@ class Metal extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'metal');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-tambah');
-		$this->load->view('partials/footer'); 
+		$this->active_nav = 'metal'; 
+		$this->render('form/metal/metal-tambah');
 	}
 
 	public function edit($uuid)
@@ -86,65 +79,64 @@ class Metal extends CI_Controller {
 
 		$data = array(
 			'metal' => $this->metal_model->get_by_uuid($uuid),
-			'active_nav' => 'metal');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'metal'; 
+		$this->render('form/metal/metal-edit', $data);
 	}
 
-	public function edit2($uuid)
-	{
-		$rules = $this->metal_model->rules_update2();
-		$this->form_validation->set_rules($rules);
+	// public function edit2($uuid)
+	// {
+	// 	$rules = $this->metal_model->rules_update2();
+	// 	$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->metal_model->update2($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Metal Detector berhasil di Update');
-				redirect('metal');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Metal Detector gagal di Update');
-				redirect('metal');
-			}
-		}
+	// 	if ($this->form_validation->run() == TRUE) {
 
-		$data = array(
-			'metal' => $this->metal_model->get_by_uuid($uuid),
-			'active_nav' => 'metal');
+	// 		$update = $this->metal_model->update2($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Metal Detector berhasil di Update');
+	// 			redirect('metal');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Metal Detector gagal di Update');
+	// 			redirect('metal');
+	// 		}
+	// 	}
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-edit2', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$data = array(
+	// 		'metal' => $this->metal_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'metal');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/metal/metal-edit2', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 	
 
-	public function edit3($uuid)
-	{
-		$rules = $this->metal_model->rules_update3();
-		$this->form_validation->set_rules($rules);
+	// public function edit3($uuid)
+	// {
+	// 	$rules = $this->metal_model->rules_update3();
+	// 	$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->metal_model->update3($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Metal Detector berhasil di Update');
-				redirect('metal');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Metal Detector gagal di Update');
-				redirect('metal');
-			}
-		}
+	// 	if ($this->form_validation->run() == TRUE) {
 
-		$data = array(
-			'metal' => $this->metal_model->get_by_uuid($uuid),
-			'active_nav' => 'metal');
+	// 		$update = $this->metal_model->update3($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Metal Detector berhasil di Update');
+	// 			redirect('metal');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Metal Detector gagal di Update');
+	// 			redirect('metal');
+	// 		}
+	// 	}
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-edit3', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$data = array(
+	// 		'metal' => $this->metal_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'metal');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/metal/metal-edit3', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function delete($uuid)
 	{
@@ -167,15 +159,12 @@ class Metal extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'metal' => $this->metal_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-metal', 
+			'metal' => $this->metal_model->get_data_by_plant(), 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-metal'; 
+		$this->render('form/metal/metal-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -196,51 +185,50 @@ class Metal extends CI_Controller {
 
 		$data = array(
 			'metal' => $this->metal_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-metal');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'metal' => $this->metal_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-metal', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-metal'; 
+		$this->render('form/metal/metal-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'metal' => $this->metal_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-metal', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->metal_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/metal/metal-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->metal_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Metal Detector berhasil di Update');
-				redirect('metal/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Metal Detector gagal di Update');
-				redirect('metal/diketahui');
-			}
-		}
 
-		$data = array(
-			'metal' => $this->metal_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-metal');
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->metal_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/metal/metal-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	if ($this->form_validation->run() == TRUE) {
+
+	// 		$update = $this->metal_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Metal Detector berhasil di Update');
+	// 			redirect('metal/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Metal Detector gagal di Update');
+	// 			redirect('metal/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'metal' => $this->metal_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-metal');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/metal/metal-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -362,6 +350,8 @@ class Metal extends CI_Controller {
 			$pdf->Ln();
 		}
 
+		$pdf->SetFont('times', 'I', 8);
+		$pdf->Cell(190, 5, 'QB 07/00', 0, 1, 'R');
 		$this->load->model('Pegawai_model');
 
 		$nama_lengkap_qc = $this->Pegawai_model->get_nama_lengkap($data['metal']->username_1);
@@ -410,71 +400,217 @@ class Metal extends CI_Controller {
 			}
 		}
 
-		$y_after_keterangan = $pdf->GetY() + 2;
+// 		$y_after_keterangan = $pdf->GetY() + 5;
+// // ===== ANTI PAGE BREAK UNTUK AREA TTD =====
+// 		$signature_height = 45;
 
-		if ($status_verifikasi) {
-			$pdf->SetFont('times', '', 8);
-			$pdf->SetTextColor(0, 0, 0);
-			$y_verifikasi = $y_after_keterangan;
+// 		$pdf->startTransaction();
+// 		$start_y = $pdf->GetY();
+// 		$page_height = $pdf->getPageHeight() - 15; 
 
-	// Dibuat oleh (QC)
-			$pdf->SetXY(25, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
+// 		if (($start_y + $signature_height) > $page_height) {
+// 			$pdf->rollbackTransaction(true);
+// 			$pdf->AddPage();
+// 		} else {
+// 			$pdf->commitTransaction();
+// 		}
 
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8);
-			$pdf->Cell(35, 5, $nama_lengkap_qc, 0, 1, 'C');
 
-			$pdf->SetFont('times', '', 8);
-			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+// 		if ($status_verifikasi) {
+// 			$pdf->SetFont('times', '', 8);
+// 			$pdf->SetTextColor(0, 0, 0);
+// 			$y_verifikasi = $pdf->GetY();
 
-	// Diketahui oleh (Produksi) - tanpa barcode
-			$pdf->SetXY(90, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 
-			if (!empty($data['metal']->nama_produksi_metal)) {
-				$update_tanggal_prod = (new DateTime($data['metal']->tgl_update_produksi_metal))->format('d-m-Y | H:i');
-				$nama_lengkap_produksi = $data['metal']->nama_produksi_metal;
+// 	// Dibuat oleh (QC)
+// 			$pdf->SetXY(25, $y_verifikasi + 5);
+// 			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
 
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(35, 5, $nama_lengkap_produksi, 0, 1, 'C');
+// 			$pdf->SetXY(25, $y_verifikasi + 10);
+// 			$pdf->SetFont('times', 'U', 8);
+// 			$pdf->Cell(35, 5, $nama_lengkap_qc, 0, 1, 'C');
 
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 15);
-				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+// 			$pdf->SetFont('times', '', 8);
+// 			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
 
-				// $pdf->SetXY(90, $y_verifikasi + 20);
-				// $pdf->Cell(35, 5, $update_tanggal_prod, 0, 0, 'C');
-			} else {
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
-			}
+// 	// Diketahui oleh (Produksi) - tanpa barcode
+// 			$pdf->SetXY(90, $y_verifikasi + 5);
+// 			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
 
-	// Disetujui oleh (Supervisor QC) - tetap pakai QR
-			$pdf->SetXY(150, $y_verifikasi + 5);
-			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
+// 			if (!empty($data['metal']->nama_produksi_metal)) {
+// 				$update_tanggal_prod = (new DateTime($data['metal']->tgl_update_produksi_metal))->format('d-m-Y | H:i');
+// 				$nama_lengkap_produksi = $data['metal']->nama_produksi_metal;
 
-			$qr_text = "Diverifikasi secara digital oleh,\n"
-			. $nama_lengkap_spv . "\n"
-			. "SPV QC Bread Crumb\n"
-			. $update_tanggal;
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
+// 				$pdf->SetFont('times', 'U', 8);
+// 				$pdf->SetXY(90, $y_verifikasi + 10);
+// 				$pdf->Cell(35, 5, $nama_lengkap_produksi, 0, 1, 'C');
 
-			$pdf->SetXY(150, $y_verifikasi + 24);
-			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
-		} else {
-			$pdf->SetTextColor(255, 0, 0); 
-			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(100, $y_after_keterangan);
-			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
-		}
+// 				$pdf->SetFont('times', '', 8);
+// 				$pdf->SetXY(90, $y_verifikasi + 15);
+// 				$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
 
-		$pdf->setPrintFooter(false);
-		$filename = "Metal Detector_{$formatted_date2}.pdf";
-		$pdf->Output($filename, 'I');
+// 				// $pdf->SetXY(90, $y_verifikasi + 20);
+// 				// $pdf->Cell(35, 5, $update_tanggal_prod, 0, 0, 'C');
+// 			} else {
+// 				$pdf->SetFont('times', '', 8);
+// 				$pdf->SetXY(90, $y_verifikasi + 10);
+// 				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
+// 			}
 
-	}
+// 	// Disetujui oleh (Supervisor QC) - tetap pakai QR
+// 			$pdf->SetXY(150, $y_verifikasi + 5);
+// 			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
+
+// 			$qr_text = "Diverifikasi secara digital oleh,\n"
+// 			. $nama_lengkap_spv . "\n"
+// 			. "SPV QC Bread Crumb\n"
+// 			. $update_tanggal;
+// 			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
+
+// 			$pdf->SetXY(150, $y_verifikasi + 24);
+// 			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+// 		} else {
+// 			$pdf->SetTextColor(255, 0, 0); 
+// 			$pdf->SetFont('times', '', 8);
+// 			$pdf->SetXY(100, $y_after_keterangan);
+// 			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+// 		}
+
+		$y_after_keterangan = $pdf->GetY() + 5;
+
+/* ===============================
+   ANTI PAGE BREAK UNTUK TTD
+   ================================ */
+   $signature_height = 45;
+   $pdf->startTransaction();
+   $start_y = $pdf->GetY();
+   $page_height = $pdf->getPageHeight() - 15;
+
+   if (($start_y + $signature_height) > $page_height) {
+   	$pdf->rollbackTransaction(true);
+   	$pdf->AddPage();
+   } else {
+   	$pdf->commitTransaction();
+   }
+
+   if ($status_verifikasi) {
+
+    /* ===============================
+       1️⃣ QC (MULTI USER)
+       ================================ */
+       $qc_usernames  = [];
+       $qc_created_at = null;
+
+       foreach ($metal_data as $item) {
+       	if (!empty($item->username_1)) {
+       		$qc_usernames[] = $item->username_1;
+       	}
+
+       	if (!$qc_created_at && !empty($item->created_at)) {
+       		$qc_created_at = $item->created_at;
+       	}
+       }
+
+       $qc_usernames = array_unique($qc_usernames);
+
+       $qc_nama_lengkap = [];
+       foreach ($qc_usernames as $username) {
+       	$nama = $this->pegawai_model->get_nama_lengkap($username);
+       	if (!empty($nama)) {
+       		$qc_nama_lengkap[] = $nama;
+       	}
+       }
+
+       $qc_nama_text = !empty($qc_nama_lengkap)
+       ? implode(', ', $qc_nama_lengkap)
+       : '-';
+
+       $qc_tanggal = $qc_created_at
+       ? (new DateTime($qc_created_at))->format('d-m-Y | H:i')
+       : '-';
+
+       $qr_qc_text = "Dibuat secara digital oleh,\n"
+       . $qc_nama_text . "\n"
+       . "QC Inspector\n"
+       . $qc_tanggal;
+
+
+    /* ===============================
+       2️⃣ PRODUKSI
+       ================================ */
+       $prod_tanggal = !empty($data['metal']->tgl_update_produksi_metal)
+       ? (new DateTime($data['metal']->tgl_update_produksi_metal))->format('d-m-Y | H:i')
+       : '-';
+
+       $nama_lengkap_prod = !empty($data['metal']->nama_produksi_metal)
+       ? $this->pegawai_model->get_nama_lengkap($data['metal']->nama_produksi_metal)
+       : '-';
+
+       $qr_prod_text = "Diketahui secara digital oleh,\n"
+       . ($nama_lengkap_prod ?: $data['metal']->nama_produksi_metal) . "\n"
+       . "Foreman / Forelady Produksi\n"
+       . $prod_tanggal;
+
+
+    /* ===============================
+       3️⃣ SPV
+       ================================ */
+       $spv_tanggal = !empty($data['metal']->tgl_update_spv_metal)
+       ? (new DateTime($data['metal']->tgl_update_spv_metal))->format('d-m-Y | H:i')
+       : '-';
+
+       $nama_lengkap_spv = !empty($data['metal']->nama_spv_metal)
+       ? $this->pegawai_model->get_nama_lengkap($data['metal']->nama_spv_metal)
+       : '-';
+
+       $qr_spv_text = "Disetujui secara digital oleh,\n"
+       . ($nama_lengkap_spv ?: $data['metal']->nama_spv_metal) . "\n"
+       . "Supervisor QC Bread Crumb\n"
+       . $spv_tanggal;
+
+
+    /* ===============================
+       CETAK QR & LABEL
+       ================================ */
+       $y = $pdf->GetY() + 5;
+       $qr_size = 15;
+
+       $pdf->SetFont('times', '', 8);
+       $pdf->SetTextColor(0,0,0);
+
+    // Label
+       $pdf->SetXY(20, $y);
+       $pdf->Cell(45,5,'Dibuat Oleh,',0,0,'C');
+       $pdf->SetXY(85, $y);
+       $pdf->Cell(45,5,'Diketahui Oleh,',0,0,'C');
+       $pdf->SetXY(150, $y);
+       $pdf->Cell(45,5,'Disetujui Oleh,',0,1,'C');
+
+    // QR
+       $pdf->write2DBarcode($qr_qc_text,'QRCODE,L',35,$y+5,$qr_size,$qr_size,null,'N');
+       $pdf->write2DBarcode($qr_prod_text,'QRCODE,L',100,$y+5,$qr_size,$qr_size,null,'N');
+       $pdf->write2DBarcode($qr_spv_text,'QRCODE,L',165,$y+5,$qr_size,$qr_size,null,'N');
+
+    // Jabatan
+       $pdf->SetXY(20,$y+22);
+       $pdf->Cell(45,5,'QC Inspector',0,0,'C');
+       $pdf->SetXY(85,$y+22);
+       $pdf->Cell(45,5,'Foreman / Forelady',0,0,'C');
+       $pdf->SetXY(150,$y+22);
+       $pdf->Cell(45,5,'Supervisor QC',0,1,'C');
+
+   } else {
+   	$pdf->SetTextColor(255,0,0);
+   	$pdf->SetFont('times','',8);
+   	$pdf->SetXY(100,$y_after_keterangan);
+   	$pdf->Cell(80,5,'Data Belum Diverifikasi',0,0,'C');
+   	$pdf->SetTextColor(0,0,0);
+   }
+
+   $pdf->setPrintFooter(false);
+   $filename = "Metal Detector_{$formatted_date2}.pdf";
+   $pdf->Output($filename, 'I');
+
+}
 }
 

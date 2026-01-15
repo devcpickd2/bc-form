@@ -51,7 +51,7 @@
                         <div class="invalid-feedback <?= !empty(form_error('tahapan')) ? 'd-block' : '' ; ?> ">
                             <?= form_error('tahapan') ?>
                         </div>
-                    </div> 
+                    </div>  
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-6">

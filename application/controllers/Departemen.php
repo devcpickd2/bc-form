@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Departemen extends CI_Controller {
+class Departemen extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,18 +18,15 @@ class Departemen extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'departemen' => $this->departemen_model->get_all(),
-			'active_nav' => 'departemen', 
+			'departemen' => $this->departemen_model->get_all() 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('departemen/departemen', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'departemen'; 
+		$this->render('departemen/departemen', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->departemen_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -44,12 +41,8 @@ class Departemen extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'departemen');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('departemen/departemen-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'departemen'; 
+		$this->render('departemen/departemen-tambah');
 	}
 
 

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Alatqc extends CI_Controller {
+class Alatqc extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,18 +18,15 @@ class Alatqc extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'alatqc' => $this->alatqc_model->get_all(),
-			'active_nav' => 'alatqc', 
+			'alatqc' => $this->alatqc_model->get_all()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('alatqc/alatqc', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'alatqc'; 
+		$this->render('alatqc/alatqc', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->alatqc_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -44,14 +41,9 @@ class Alatqc extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'alatqc');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('alatqc/alatqc-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'alatqc'; 
+		$this->render('alatqc/alatqc-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -70,12 +62,12 @@ class Alatqc extends CI_Controller {
 			}
 		}
 
-		$data = array('alatqc' => $this->alatqc_model->get_by_uuid($uuid),
-			'active_nav' => 'alatqc');
+		$data = array(
+			'alatqc' => $this->alatqc_model->get_by_uuid($uuid)
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('alatqc/alatqc-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'alatqc'; 
+		$this->render('alatqc/alatqc-edit', $data);
 	}
 
 	public function delete($uuid)

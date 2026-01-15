@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Pecahbelah extends CI_Controller {
+class Pecahbelah extends MY_Controller {
 
 	public function __construct()
 	{
@@ -24,24 +24,21 @@ class Pecahbelah extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pecahbelah' => $this->pecahbelah_model->get_data_by_plant(),
-			'active_nav' => 'pecahbelah', 
+			'pecahbelah' => $this->pecahbelah_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid),
-			'active_nav' => 'pecahbelah');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah-detail', $data);
 	}
 
 	public function tambah()
@@ -61,16 +58,12 @@ class Pecahbelah extends CI_Controller {
 		}
 
 		$data = [
-			'active_nav' => 'pecahbelah',
 			'benda_list' => $this->bendapecah_model->get_all_benda()
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah-tambah', $data);
 	}
-
-
 
 	public function edit($uuid)
 	{
@@ -90,13 +83,11 @@ class Pecahbelah extends CI_Controller {
 		}
 
 		$data = [
-			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid),
-			'active_nav' => 'pecahbelah'
+			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah-edit', $data);
 	}
 
 	public function check($uuid)
@@ -116,13 +107,11 @@ class Pecahbelah extends CI_Controller {
 		}
 
 		$data = [
-			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid),
-			'active_nav' => 'pecahbelah'
+			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-check', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah-check', $data);
 	}
 
 	public function delete($uuid)
@@ -146,15 +135,12 @@ class Pecahbelah extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'pecahbelah' => $this->pecahbelah_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-pecahbelah', 
+			'pecahbelah' => $this->pecahbelah_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -175,51 +161,49 @@ class Pecahbelah extends CI_Controller {
 
 		$data = array(
 			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-pecahbelah');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'pecahbelah' => $this->pecahbelah_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-pecahbelah', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pecahbelah'; 
+		$this->render('form/pecahbelah/pecahbelah-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'pecahbelah' => $this->pecahbelah_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-pecahbelah', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->pecahbelah_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/pecahbelah/pecahbelah-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->pecahbelah_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->pecahbelah_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Benda Mudah Pecah berhasil di Update');
-				redirect('pecahbelah/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Benda Mudah Pecah gagal di Update');
-				redirect('pecahbelah/diketahui');
-			}
-		}
+	// 		$update = $this->pecahbelah_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Benda Mudah Pecah berhasil di Update');
+	// 			redirect('pecahbelah/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Benda Mudah Pecah gagal di Update');
+	// 			redirect('pecahbelah/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-pecahbelah');
+	// 	$data = array(
+	// 		'pecahbelah' => $this->pecahbelah_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-pecahbelah');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pecahbelah/pecahbelah-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/pecahbelah/pecahbelah-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

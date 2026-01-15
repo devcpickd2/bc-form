@@ -91,13 +91,13 @@
                             ?>
                         </td>
                         <td class="text-center">
-                            <a href="<?= base_url('thermometer/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="<?= base_url('thermometer/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm">Update</a>
                             <a href="<?= base_url('thermometer/detail/'.$val->uuid);?>" class="btn btn-success btn-sm">Detail</a>
-                            <a href="<?= base_url('thermometer/delete/'.$val->uuid);?>" 
+                           <!--  <a href="<?= base_url('thermometer/delete/'.$val->uuid);?>" 
                              class="btn btn-danger btn-sm"
                              onclick="return confirm('Yakin ingin menghapus data ini?')">
                              Delete
-                         </a>
+                         </a> -->
                      </td>
                  </tr>
              <?php } ?>

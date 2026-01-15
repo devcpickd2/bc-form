@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Penerimaankemasan extends CI_Controller {
+class Penerimaankemasan extends MY_Controller {
 
 	public function __construct() 
 	{
@@ -23,24 +23,21 @@ class Penerimaankemasan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant(),
-			'active_nav' => 'penerimaankemasan', 
+			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan', $data); 
-		$this->load->view('partials/footer');
+		$this->active_nav = 'penerimaankemasan'; 
+		$this->render('form/penerimaankemasan/penerimaankemasan', $data);
 	} 
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'penerimaankemasan' => $this->penerimaankemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'penerimaankemasan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'penerimaankemasan'; 
+		$this->render('form/penerimaankemasan/penerimaankemasan-detail', $data);
 	}
 
 	public function file_check($str)
@@ -113,15 +110,12 @@ class Penerimaankemasan extends CI_Controller {
 		}
 
 		$data = array(
-			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant(),
-			'active_nav'  => 'penerimaankemasan'
+			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'penerimaankemasan'; 
+		$this->render('form/penerimaankemasan/penerimaankemasan-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -186,14 +180,12 @@ class Penerimaankemasan extends CI_Controller {
 		} else {
 			$data = array(
 				'penerimaankemasan' => $penerimaankemasan,
-				'active_nav' => 'penerimaankemasan',
 				'validation_errors' => validation_errors()
 			);
 		}
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'penerimaankemasan'; 
+		$this->render('form/penerimaankemasan/penerimaankemasan-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -217,15 +209,12 @@ class Penerimaankemasan extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-penerimaankemasan', 
+			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-penerimaankemasan'; 
+		$this->render('form/penerimaankemasan/penerimaankemasan-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -246,51 +235,50 @@ class Penerimaankemasan extends CI_Controller {
 
 		$data = array(
 			'penerimaankemasan' => $this->penerimaankemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-penerimaankemasan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-penerimaankemasan', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-penerimaankemasan'; 
+		$this->render('form/penerimaankemasan/penerimaankemasan-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'penerimaankemasan' => $this->penerimaankemasan_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-penerimaankemasan', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->penerimaankemasan_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/penerimaankemasan/penerimaankemasan-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->penerimaankemasan_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->penerimaankemasan_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Penerimaan Kemasan dari Supplier berhasil di Update');
-				redirect('penerimaankemasan/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Penerimaan Kemasan dari Supplier gagal di Update');
-				redirect('penerimaankemasan/diketahui');
-			}
-		}
+	// 		$update = $this->penerimaankemasan_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Penerimaan Kemasan dari Supplier berhasil di Update');
+	// 			redirect('penerimaankemasan/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Penerimaan Kemasan dari Supplier gagal di Update');
+	// 			redirect('penerimaankemasan/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'penerimaankemasan' => $this->penerimaankemasan_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-penerimaankemasan');
+	// 	$data = array(
+	// 		'penerimaankemasan' => $this->penerimaankemasan_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-penerimaankemasan');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/penerimaankemasan/penerimaankemasan-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/penerimaankemasan/penerimaankemasan-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -466,6 +454,8 @@ class Penerimaankemasan extends CI_Controller {
 			$no++;
 		}
 
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(330, 5, 'QW 03/00', 0, 1, 'R'); 
 
 		$pdf->SetY($pdf->GetY() + 3); 
 		$pdf->SetFont('dejavusans', '', 6);

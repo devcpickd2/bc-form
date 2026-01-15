@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Retain extends CI_Controller {
+class Retain extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,24 +23,21 @@ class Retain extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'retain' => $this->retain_model->get_data_by_plant(),
-			'active_nav' => 'retain', 
+			'retain' => $this->retain_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'retain'; 
+		$this->render('form/retain/retain', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'retain' => $this->retain_model->get_retain_with_plant($uuid),
-			'active_nav' => 'retain');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'retain'; 
+		$this->render('form/retain/retain-detail', $data);
 	}
 
 	public function tambah()
@@ -60,16 +57,9 @@ class Retain extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'retain', 
-			// 'plant' => $this->plant_model->get_all()
-		);
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'retain'; 
+		$this->render('form/retain/retain-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -89,13 +79,8 @@ class Retain extends CI_Controller {
 		}
 
 		$data = array(
-			'retain' => $this->retain_model->get_by_uuid($uuid),
-			// 'plant' => $this->plant_model->get_data_by_plant(),
-			'active_nav' => 'retain');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-edit', $data);
-		$this->load->view('partials/footer');
+			'retain' => $this->retain_model->get_by_uuid($uuid)
+		);
 	}
 
 	public function delete($uuid)
@@ -119,15 +104,12 @@ class Retain extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'retain' => $this->retain_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-retain', 
+			'retain' => $this->retain_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-retain'; 
+		$this->render('form/retain/retain-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -148,66 +130,65 @@ class Retain extends CI_Controller {
 
 		$data = array(
 			'retain' => $this->retain_model->get_retain_with_plant($uuid),
-			'active_nav' => 'verifikasi-retain');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'retain' => $this->retain_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-retain', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-retain'; 
+		$this->render('form/retain/retain-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'retain' => $this->retain_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-retain', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->retain_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/retain/retain-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->retain_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Retain Sample Report berhasil di Update');
-				redirect('retain/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Retain Sample Report gagal di Update');
-				redirect('retain/diketahui');
-			}
-		}
 
-		$data = array(
-			'retain' => $this->retain_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-retain');
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->retain_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/retain/retain-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	if ($this->form_validation->run() == TRUE) {
+	
+	// 		$update = $this->retain_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Retain Sample Report berhasil di Update');
+	// 			redirect('retain/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Retain Sample Report gagal di Update');
+	// 			redirect('retain/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'retain' => $this->retain_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-retain');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/retain/retain-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
-{
-    $selected_items = $this->input->post('checkbox');
+	{
+		$selected_items = $this->input->post('checkbox');
 
-    if (empty($selected_items)) {
-        show_error('Tidak ada item yang dipilih', 404);
-    }
+		if (empty($selected_items)) {
+			show_error('Tidak ada item yang dipilih', 404);
+		}
 
-    $retain_data = $this->retain_model->get_by_uuid_retain($selected_items);
-    $retain_data_verif = $this->retain_model->get_by_uuid_retain_verif($selected_items);
+		$retain_data = $this->retain_model->get_by_uuid_retain($selected_items);
+		$retain_data_verif = $this->retain_model->get_by_uuid_retain_verif($selected_items);
 
-    if (empty($retain_data_verif)) {
-        show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-    }
+		if (empty($retain_data_verif)) {
+			show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
+		}
 
     $data['retain'] = $retain_data_verif[0]; // ambil salah satu sebagai header
 
@@ -222,7 +203,7 @@ class Retain extends CI_Controller {
     // Logo
     $logo_path = FCPATH . 'assets/img/logo.jpg';
     if (file_exists($logo_path)) {
-        $pdf->Image($logo_path, 10, 10, 35);
+    	$pdf->Image($logo_path, 10, 10, 35);
     }
 
     $pdf->Ln(10);
@@ -268,19 +249,22 @@ class Retain extends CI_Controller {
     $pdf->SetFont('times', '', 9);
     $no = 1;
     foreach ($retain_data_verif as $item) {
-        if (!empty($item->description)) {
-            $desc_array = json_decode($item->description, true);
-            foreach ($desc_array as $row) {
-                $bb = !empty($row['best_before']) ? (new DateTime($row['best_before']))->format('d-m-Y') : '-';
-                $pdf->Cell(10, 6, $no++, 1, 0, 'C');
-                $pdf->Cell(40, 6, $row['nama_produk'] ?? '-', 1, 0, 'L');
-                $pdf->Cell(40, 6, $row['kode_produksi'] ?? '-', 1, 0, 'L');
-                $pdf->Cell(30, 6, $bb, 1, 0, 'C');
-                $pdf->Cell(30, 6, $row['quantity'] ?? '-', 1, 0, 'C');
-                $pdf->Cell(35, 6, $row['remarks'] ?? '-', 1, 1, 'L');
-            }
-        }
+    	if (!empty($item->description)) {
+    		$desc_array = json_decode($item->description, true);
+    		foreach ($desc_array as $row) {
+    			$bb = !empty($row['best_before']) ? (new DateTime($row['best_before']))->format('d-m-Y') : '-';
+    			$pdf->Cell(10, 6, $no++, 1, 0, 'C');
+    			$pdf->Cell(40, 6, $row['nama_produk'] ?? '-', 1, 0, 'L');
+    			$pdf->Cell(40, 6, $row['kode_produksi'] ?? '-', 1, 0, 'L');
+    			$pdf->Cell(30, 6, $bb, 1, 0, 'C');
+    			$pdf->Cell(30, 6, $row['quantity'] ?? '-', 1, 0, 'C');
+    			$pdf->Cell(35, 6, $row['remarks'] ?? '-', 1, 1, 'L');
+    		}
+    	}
     }
+
+    $pdf->SetFont('times', 'I', 7);
+    $pdf->Cell(190, 5, 'QB 12/00', 0, 1, 'R'); 
 
     // Catatan
     $this->load->model('pegawai_model');
@@ -291,46 +275,88 @@ class Retain extends CI_Controller {
     $pdf->SetFont('times', '', 7);
     $pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
     foreach ($retain_data as $item) {
-        if (!empty($item->catatan)) {
-            $pdf->Cell(8, 0, '', 0, 0, 'L');
-            $pdf->Cell(200, 0, ' - ' . $item->catatan, 0, 1, 'L');
-        }
+    	if (!empty($item->catatan)) {
+    		$pdf->Cell(8, 0, '', 0, 0, 'L');
+    		$pdf->Cell(200, 0, ' - ' . $item->catatan, 0, 1, 'L');
+    	}
     }
 
     $y = $pdf->GetY();
     $status_verifikasi = true;
     foreach ($retain_data as $item) {
-        if ($item->status_spv != '1') {
-            $status_verifikasi = false;
-            break;
-        }
+    	if ($item->status_spv != '1') {
+    		$status_verifikasi = false;
+    		break;
+    	}
     }
+
+    $y_ttd   = $pdf->GetY() + 6;
+    $qr_size = 15;
+
+    $qc_usernames  = [];
+    $qc_created_at = null;
+
+    foreach ($retain_data as $item) {
+    	if (!empty($item->username)) {
+    		$qc_usernames[] = $item->username;
+    	}
+
+    	if (!$qc_created_at && !empty($item->created_at)) {
+    		$qc_created_at = $item->created_at;
+    	}
+    }
+
+    $qc_usernames = array_unique($qc_usernames);
+
+    $qc_nama_lengkap = [];
+    foreach ($qc_usernames as $username) {
+    	$nama = $this->pegawai_model->get_nama_lengkap($username);
+    	if (!empty($nama)) {
+    		$qc_nama_lengkap[] = $nama;
+    	}
+    }
+
+    $qc_nama_text = !empty($qc_nama_lengkap)
+    ? implode(', ', array_unique($qc_nama_lengkap))
+    : '-';
+
+    $qc_tanggal = $qc_created_at
+    ? (new DateTime($qc_created_at))->format('d-m-Y | H:i')
+    : '-';
+
+    $qr_qc_text = "Dibuat secara digital oleh,\n"
+    . $qc_nama_text . "\n"
+    . "QC Inspector\n"
+    . $qc_tanggal;
+
+    $spv_tanggal = !empty($data['retain_data']->tgl_update_spv)
+    ? (new DateTime($data['retain']->tgl_update_spv))->format('d-m-Y | H:i')
+    : '-';
+
+    $qr_spv_text = "Disetujui secara digital oleh,\n"
+    . $data['retain']->nama_lengkap_spv . "\n"
+    . "Supervisor QC Bread Crumb\n"
+    . $spv_tanggal;
 
     if ($status_verifikasi) {
-        $pdf->SetFont('times', '', 8);
-        $pdf->SetXY(50, $y + 5);
-        $pdf->Cell(49, 5, 'Dibuat Oleh,', 0, 0, 'C');
-        $pdf->SetXY(50, $y + 10);
-        $pdf->SetFont('times', 'U', 8);
-        $pdf->Cell(49, 5, $data['retain']->nama_lengkap_qc, 0, 1, 'C');
-        $pdf->SetXY(50, $y + 15);
-        $pdf->SetFont('times', '', 8);
-        $pdf->Cell(50, 5, 'QC Inspector', 0, 0, 'C');
-
-        $pdf->SetXY(120, $y + 5);
-        $pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-        $update_tanggal = (new DateTime($data['retain']->tgl_update_spv))->format('d-m-Y | H:i');
-        $qr_text = "Diverifikasi secara digital oleh,\n" . $data['retain']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-        $pdf->write2DBarcode($qr_text, 'QRCODE,L', 137, $y + 10, 15, 15, null, 'N');
-        $pdf->SetXY(120, $y + 24);
-        $pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+    	$pdf->SetFont('times', '', 8);
+    	$pdf->SetXY(20, $y_ttd);
+    	$pdf->Cell(45, 5, 'Dibuat Oleh,', 0, 0, 'C');
+    	$pdf->SetXY(85, $y_ttd);
+    	$pdf->Cell(175, 5, 'Disetujui Oleh,', 0, 1, 'C');
+    	$pdf->write2DBarcode($qr_qc_text, 'QRCODE,L', 35,$y_ttd + 5, $qr_size, $qr_size, null, 'N');
+    	$pdf->write2DBarcode($qr_spv_text, 'QRCODE,L', 165, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+    	$pdf->SetXY(20, $y_ttd + 20);
+    	$pdf->Cell(45, 5, 'QC Inspector', 0, 0, 'C');
+    	$pdf->SetXY(85, $y_ttd + 20);
+    	$pdf->Cell(175, 5, 'Supervisor QC', 0, 1, 'C');
     } else {
-        $pdf->SetTextColor(255, 0, 0);
-        $pdf->SetFont('times', '', 8);
-        $pdf->SetXY(100, $y);
-        $pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+    	$pdf->SetFont('times', '', 8);
+    	$pdf->SetTextColor(255, 0, 0);
+    	$pdf->SetXY(80, $y_ttd);
+    	$pdf->Cell(80, 6, 'Data Belum Diverifikasi', 0, 1, 'C');
+    	$pdf->SetTextColor(0, 0, 0);
     }
-
     $pdf->setPrintFooter(false);
     $filename = "Retain Sample Report_" . date('d-m-Y') . ".pdf";
     $pdf->Output($filename, 'I');

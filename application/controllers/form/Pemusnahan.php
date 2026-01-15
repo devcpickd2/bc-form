@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Pemusnahan extends CI_Controller {
+class Pemusnahan extends MY_Controller {
 
 	public function __construct()
 	{
@@ -22,24 +22,21 @@ class Pemusnahan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pemusnahan' => $this->pemusnahan_model->get_data_by_plant(),
-			'active_nav' => 'pemusnahan', 
+			'pemusnahan' => $this->pemusnahan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemusnahan'; 
+		$this->render('form/pemusnahan/pemusnahan', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'pemusnahan' => $this->pemusnahan_model->get_by_uuid($uuid),
-			'active_nav' => 'pemusnahan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemusnahan'; 
+		$this->render('form/pemusnahan/pemusnahan-detail', $data);
 	}
 
 	public function tambah()
@@ -59,14 +56,9 @@ class Pemusnahan extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'pemusnahan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemusnahan'; 
+		$this->render('form/pemusnahan/pemusnahan-tambah', $data);
 	}
-
 
 	public function edit($uuid)
 	{
@@ -87,11 +79,10 @@ class Pemusnahan extends CI_Controller {
 
 		$data = array(
 			'pemusnahan' => $this->pemusnahan_model->get_by_uuid($uuid),
-			'active_nav' => 'pemusnahan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemusnahan'; 
+		$this->render('form/pemusnahan/pemusnahan-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -115,15 +106,12 @@ class Pemusnahan extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'pemusnahan' => $this->pemusnahan_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-pemusnahan', 
+			'pemusnahan' => $this->pemusnahan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pemusnahan'; 
+		$this->render('form/pemusnahan/pemusnahan-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -144,51 +132,50 @@ class Pemusnahan extends CI_Controller {
 
 		$data = array(
 			'pemusnahan' => $this->pemusnahan_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-pemusnahan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'pemusnahan' => $this->pemusnahan_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-pemusnahan', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pemusnahan'; 
+		$this->render('form/pemusnahan/pemusnahan-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'pemusnahan' => $this->pemusnahan_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-pemusnahan', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->pemusnahan_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/pemusnahan/pemusnahan-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->pemusnahan_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->pemusnahan_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemusnahan Produk berhasil di Update');
-				redirect('pemusnahan/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemusnahan Produk gagal di Update');
-				redirect('pemusnahan/diketahui');
-			}
-		}
+	// 		$update = $this->pemusnahan_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemusnahan Produk berhasil di Update');
+	// 			redirect('pemusnahan/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemusnahan Produk gagal di Update');
+	// 			redirect('pemusnahan/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'pemusnahan' => $this->pemusnahan_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-pemusnahan');
+	// 	$data = array(
+	// 		'pemusnahan' => $this->pemusnahan_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-pemusnahan');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemusnahan/pemusnahan-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/pemusnahan/pemusnahan-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -267,6 +254,9 @@ class Pemusnahan extends CI_Controller {
 			$no++;
 		}
 
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(315, 5, 'QB 14/00', 0, 1, 'R'); 
+
 		$this->load->model('pegawai_model');
 		$data['pemusnahan']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['pemusnahan']->username);
 		$data['pemusnahan']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['pemusnahan']->nama_spv);
@@ -283,33 +273,72 @@ class Pemusnahan extends CI_Controller {
 		$pdf->SetFont('times', '', 9);
 		$pdf->SetTextColor(0, 0, 0);
 
+$y_ttd   = $pdf->GetY() + 6;
+		$qr_size = 15;
+
+		$qc_usernames  = [];
+		$qc_created_at = null;
+
+		foreach ($pemusnahan_data as $item) {
+			if (!empty($item->username)) {
+				$qc_usernames[] = $item->username;
+			}
+
+			if (!$qc_created_at && !empty($item->created_at)) {
+				$qc_created_at = $item->created_at;
+			}
+		}
+
+		$qc_usernames = array_unique($qc_usernames);
+
+		$qc_nama_lengkap = [];
+		foreach ($qc_usernames as $username) {
+			$nama = $this->pegawai_model->get_nama_lengkap($username);
+			if (!empty($nama)) {
+				$qc_nama_lengkap[] = $nama;
+			}
+		}
+
+		$qc_nama_text = !empty($qc_nama_lengkap)
+		? implode(', ', array_unique($qc_nama_lengkap))
+		: '-';
+
+		$qc_tanggal = $qc_created_at
+		? (new DateTime($qc_created_at))->format('d-m-Y | H:i')
+		: '-';
+
+		$qr_qc_text = "Dibuat secara digital oleh,\n"
+		. $qc_nama_text . "\n"
+		. "QC Inspector\n"
+		. $qc_tanggal;
+
+		$spv_tanggal = !empty($data['pemusnahan']->tgl_update_spv)
+		? (new DateTime($data['pemusnahan']->tgl_update_spv))->format('d-m-Y | H:i')
+		: '-';
+
+		$qr_spv_text = "Disetujui secara digital oleh,\n"
+		. $data['pemusnahan']->nama_lengkap_spv . "\n"
+		. "Supervisor QC Bread Crumb\n"
+		. $spv_tanggal;
+
 		if ($status_verifikasi) {
-			$y_verifikasi = $y_after_keterangan;
-
-	// Dibuat oleh (QC)
-			$pdf->SetXY(60, $y_verifikasi + 5);
-			$pdf->Cell(50, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(60, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 9);
-			$pdf->Cell(50, 5, $data['pemusnahan']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 9); 
-			$pdf->SetXY(60, $y_verifikasi + 15);
-			$pdf->Cell(50, 5, 'QC Inspector', 0, 0, 'C');
-
-	// Disetujui oleh (SPV)
-			$update_tanggal = (new DateTime($data['pemusnahan']->tgl_update_spv))->format('d-m-Y | H:i');
-			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['pemusnahan']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-			$pdf->SetXY(160, $y_verifikasi + 5);
-			$pdf->Cell(150, 5, 'Disetujui Oleh,', 0, 0, 'C');
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 227, $y_verifikasi + 10, 16, 16, null, 'N');
-			$pdf->SetXY(160, $y_verifikasi + 26);
-			$pdf->Cell(150, 5, 'Supervisor QC', 0, 0, 'C');
-
+			$pdf->SetFont('times', '', 8);
+			$pdf->SetXY(20, $y_ttd);
+			$pdf->Cell(85, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd);
+			$pdf->Cell(310, 5, 'Disetujui Oleh,', 0, 1, 'C');
+			$pdf->write2DBarcode($qr_qc_text, 'QRCODE,L', 55,$y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			$pdf->write2DBarcode($qr_spv_text, 'QRCODE,L', 232, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			$pdf->SetXY(20, $y_ttd + 20);
+			$pdf->Cell(85, 5, 'QC Inspector', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd + 20);
+			$pdf->Cell(310, 5, 'Supervisor QC', 0, 1, 'C');
 		} else {
-			$pdf->SetTextColor(255, 0, 0); 
-			$pdf->SetFont('times', '', 9);
-			$pdf->SetXY(200, $y_after_keterangan);
-			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetFont('times', '', 8);
+			$pdf->SetTextColor(255, 0, 0);
+			$pdf->SetXY(80, $y_ttd);
+			$pdf->Cell(80, 6, 'Data Belum Diverifikasi', 0, 1, 'C');
+			$pdf->SetTextColor(0, 0, 0);
 		}
 
 		$pdf->setPrintFooter(false);

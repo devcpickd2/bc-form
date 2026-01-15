@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Inventaris extends CI_Controller {
+class Inventaris extends MY_Controller {
 
 	public function __construct()
 	{
@@ -25,23 +25,20 @@ class Inventaris extends CI_Controller {
 	{
 		$data = array(
 			'inventaris' => $this->inventaris_model->get_data_by_plant(),
-			'active_nav' => 'inventaris', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'inventaris'; 
+		$this->render('form/inventaris/inventaris', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'inventaris' => $this->inventaris_model->get_by_uuid($uuid),
-			'active_nav' => 'inventaris');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'inventaris'; 
+		$this->render('form/inventaris/inventaris-detail', $data);
 	}
 
 	public function tambah()
@@ -61,13 +58,11 @@ class Inventaris extends CI_Controller {
 		}
 
 		$data = array(
-			'active_nav' => 'inventaris',
 			'alat_list' => $this->alatqc_model->get_all()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'inventaris'; 
+		$this->render('form/inventaris/inventaris-tambah', $data);
 	}
 
 	public function edit($uuid)
@@ -89,12 +84,10 @@ class Inventaris extends CI_Controller {
 
 		$data = [
 			'inventaris' => $this->inventaris_model->get_by_uuid($uuid),
-			'active_nav' => 'inventaris'
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'inventaris'; 
+		$this->render('form/inventaris/inventaris-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -142,26 +135,22 @@ class Inventaris extends CI_Controller {
 
     // If validation fails or it's the first request, load the data
 		$data = [
-			'inventaris' => $this->inventaris_model->get_by_uuid($uuid),
-			'active_nav' => 'inventaris'
+			'inventaris' => $this->inventaris_model->get_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-check', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'inventaris'; 
+		$this->render('form/inventaris/inventaris-check', $data);
 	}
 
 
 	public function verifikasi()
 	{
 		$data = array(
-			'inventaris' => $this->inventaris_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-inventaris', 
+			'inventaris' => $this->inventaris_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-inventaris'; 
+		$this->render('form/inventaris/inventaris-verifikasi', $data);
 	}
 
 
@@ -184,11 +173,10 @@ class Inventaris extends CI_Controller {
 
 		$data = array(
 			'inventaris' => $this->inventaris_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-inventaris');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/inventaris/inventaris-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-inventaris'; 
+		$this->render('form/inventaris/inventaris-status', $data);
 	}
 
 	public function cetak()

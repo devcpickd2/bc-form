@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Produk extends CI_Controller {
+class Produk extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,13 +18,11 @@ class Produk extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'produk' => $this->produk_model->get_produk_by_plant(),
-			'active_nav' => 'produk', 
+			'produk' => $this->produk_model->get_produk_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('produk/produk', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produk'; 
+		$this->render('produk/produk', $data);
 	} 
 
 	public function tambah()
@@ -44,14 +42,9 @@ class Produk extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'produk');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('produk/produk-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produk'; 
+		$this->render('produk/produksi-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -70,12 +63,10 @@ class Produk extends CI_Controller {
 			}
 		}
 
-		$data = array('produk' => $this->produk_model->get_by_uuid($uuid),
-			'active_nav' => 'produk');
+		$data = array('produk' => $this->produk_model->get_by_uuid($uuid));
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('produk/produk-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'produk'; 
+		$this->render('produk/produk-edit');
 	}
 
 	public function delete($uuid)

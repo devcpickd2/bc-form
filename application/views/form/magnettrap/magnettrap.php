@@ -36,6 +36,7 @@
                             <th>Tahapan</th>
                             <th>Jenis Kontaminasi</th>
                             <th>Bukti</th>
+                            <th>Keterangan</th>
                             <th>Supervisor</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -54,30 +55,31 @@
                                 <td><?= $val->kontaminasi; ?></td>
                                 <td>
                                     <?php
-                                        $bukti = $val->bukti ?? null;
+                                    $bukti = $val->bukti ?? null;
 
-                                        $path1 = FCPATH . 'uploads/' . $bukti;
-                                        $path2 = FCPATH . 'uploads/magnettrap/' . $bukti;
+                                    $path1 = FCPATH . 'uploads/' . $bukti;
+                                    $path2 = FCPATH . 'uploads/magnettrap/' . $bukti;
 
-                                        if (!empty($bukti)) {
-                                            if (file_exists($path1)) {
-                                                $img_url = base_url('uploads/' . $bukti);
-                                            } elseif (file_exists($path2)) {
-                                                $img_url = base_url('uploads/magnettrap/' . $bukti);
-                                            } else {
-                                                $img_url = null;
-                                            }
+                                    if (!empty($bukti)) {
+                                        if (file_exists($path1)) {
+                                            $img_url = base_url('uploads/' . $bukti);
+                                        } elseif (file_exists($path2)) {
+                                            $img_url = base_url('uploads/magnettrap/' . $bukti);
                                         } else {
                                             $img_url = null;
                                         }
-                                        ?>
+                                    } else {
+                                        $img_url = null;
+                                    }
+                                    ?>
 
-                                        <?php if ($img_url): ?>
-                                            <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
-                                        <?php else: ?>
-                                            <p>No image available</p>
-                                        <?php endif; ?>
+                                    <?php if ($img_url): ?>
+                                        <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
+                                    <?php else: ?>
+                                        <p>No image available</p>
+                                    <?php endif; ?>
                                 </td>
+                                <td><?= $val->keterangan; ?></td>
                                 <td class="text-center">
                                     <?php
                                     if ($val->status_spv == 0) {
@@ -91,14 +93,14 @@
                                 </td>
                                 <td class="text-center">
                                     <a href="<?= base_url('magnettrap/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split">
-                                        <span class="text">Edit</span>
+                                        <span class="text">Update</span>
                                     </a>
                                     <a href="<?= base_url('magnettrap/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split">
                                         <span class="text">Detail</span>
                                     </a>
-                                    <a href="<?= base_url('magnettrap/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                   <!--  <a href="<?= base_url('magnettrap/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split" onclick="return confirm('Yakin ingin menghapus data ini?')">
                                         <span class="text">Delete</span>
-                                    </a>
+                                    </a> -->
                                 </td>
                             </tr>
                             <?php 

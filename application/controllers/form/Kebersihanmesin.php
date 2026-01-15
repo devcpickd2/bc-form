@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Kebersihanmesin extends CI_Controller {
+class Kebersihanmesin extends MY_Controller {
 
 	public function __construct()
 	{
@@ -19,29 +19,25 @@ class Kebersihanmesin extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'kebersihanmesin' => $this->kebersihanmesin_model->get_data_by_plant(),
-			'active_nav' => 'kebersihanmesin', 
+			'kebersihanmesin' => $this->kebersihanmesin_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'kebersihanmesin'; 
+		$this->render('form/kebersihanmesin/kebersihanmesin', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid),
-			'active_nav' => 'kebersihanmesin');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'kebersihanmesin'; 
+		$this->render('form/kebersihanmesin/kebersihanmesin-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->kebersihanmesin_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -56,12 +52,8 @@ class Kebersihanmesin extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'kebersihanmesin');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'kebersihanmesin'; 
+		$this->render('form/kebersihanmesin/kebersihanmesin-tambah');
 	}
 
 	public function edit($uuid)
@@ -82,13 +74,11 @@ class Kebersihanmesin extends CI_Controller {
 		}
 
 		$data = [
-			'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid),
-			'active_nav' => 'kebersihanmesin'
+			'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'kebersihanmesin'; 
+		$this->render('form/kebersihanmesin/kebersihanmesin-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -112,13 +102,11 @@ class Kebersihanmesin extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'kebersihanmesin' => $this->kebersihanmesin_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-kebersihanmesin', 
+			'kebersihanmesin' => $this->kebersihanmesin_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-kebersihanmesin'; 
+		$this->render('form/kebersihanmesin/kebersihanmesin-verifikasi', $data);
 	}
 
 	public function status($uuid)
@@ -138,52 +126,50 @@ class Kebersihanmesin extends CI_Controller {
 		}
 
 		$data = array(
-			'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-kebersihanmesin'
+			'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-kebersihanmesin'; 
+		$this->render('form/kebersihanmesin/kebersihanmesin-status', $data);
 	}
 
-	public function diketahui()
-	{
-		$data = array(
-			'kebersihanmesin' => $this->kebersihanmesin_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-kebersihanmesin', 
-		);
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'kebersihanmesin' => $this->kebersihanmesin_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-kebersihanmesin', 
+	// 	);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-diketahui', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/kebersihanmesin/kebersihanmesin-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->kebersihanmesin_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->kebersihanmesin_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
-			$update = $this->kebersihanmesin_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Kebersihan dan Sanitasi setelah Perbaikan Mesin berhasil di Update');
-				redirect('kebersihanmesin/diketahui');
-			} else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Kebersihan dan Sanitasi setelah Perbaikan Mesin gagal di Update');
-				redirect('kebersihanmesin/diketahui');
-			}
-		}
+	// 	if ($this->form_validation->run() == TRUE) {
+	// 		$update = $this->kebersihanmesin_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Kebersihan dan Sanitasi setelah Perbaikan Mesin berhasil di Update');
+	// 			redirect('kebersihanmesin/diketahui');
+	// 		} else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Kebersihan dan Sanitasi setelah Perbaikan Mesin gagal di Update');
+	// 			redirect('kebersihanmesin/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-kebersihanmesin'
-		);
+	// 	$data = array(
+	// 		'kebersihanmesin' => $this->kebersihanmesin_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-kebersihanmesin'
+	// 	);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/kebersihanmesin/kebersihanmesin-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/kebersihanmesin/kebersihanmesin-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

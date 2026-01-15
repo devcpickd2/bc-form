@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Falserejection extends CI_Controller {
+class Falserejection extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,24 +18,21 @@ class Falserejection extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'falserejection' => $this->falserejection_model->get_data_by_plant(),
-			'active_nav' => 'falserejection', 
+			'falserejection' => $this->falserejection_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'falserejection'; 
+		$this->render('form/falserejection/falserejection', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'falserejection' => $this->falserejection_model->get_by_uuid($uuid),
-			'active_nav' => 'falserejection');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'falserejection'; 
+		$this->render('form/falserejection/falserejection-detail', $data);
 	}
 
 	public function edit($uuid)
@@ -57,23 +54,20 @@ class Falserejection extends CI_Controller {
 
 		$data = array(
 			'falserejection' => $this->falserejection_model->get_by_uuid($uuid),
-			'active_nav' => 'falserejection');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'falserejection'; 
+		$this->render('form/falserejection/falserejection-edit', $data);
 	}
 
 	public function verifikasi()
 	{
 		$data = array(
 			'falserejection' => $this->falserejection_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-falserejection', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-falserejection'; 
+		$this->render('form/falserejection/falserejection-verifikasi', $data);
 	}
 
 
@@ -96,51 +90,50 @@ class Falserejection extends CI_Controller {
 
 		$data = array(
 			'falserejection' => $this->falserejection_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-falserejection');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'falserejection' => $this->falserejection_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-falserejection', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-falserejection'; 
+		$this->render('form/falserejection/falserejection-status', $data);
 	}
 
+		// public function diketahui()
+		// {
+		// 	$data = array(
+		// 		'falserejection' => $this->falserejection_model->get_data_by_plant(),
+		// 		'active_nav' => 'diketahui-falserejection', 
+		// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->falserejection_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+		// 	$this->load->view('partials/head', $data);
+		// 	$this->load->view('form/falserejection/falserejection-diketahui', $data);
+		// 	$this->load->view('partials/footer');
+		// }
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->falserejection_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status False Rejection berhasil di Update');
-				redirect('falserejection/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status False Rejection gagal di Update');
-				redirect('falserejection/diketahui');
-			}
-		}
 
-		$data = array(
-			'falserejection' => $this->falserejection_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-falserejection');
+		// public function statusprod($uuid)
+		// {
+		// 	$rules = $this->falserejection_model->rules_diketahui();
+		// 	$this->form_validation->set_rules($rules);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/falserejection/falserejection-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+		// 	if ($this->form_validation->run() == TRUE) {
+
+		// 		$update = $this->falserejection_model->diketahui_update($uuid);
+		// 		if ($update) {
+		// 			$this->session->set_flashdata('success_msg', 'Status False Rejection berhasil di Update');
+		// 			redirect('falserejection/diketahui');
+		// 		}else {
+		// 			$this->session->set_flashdata('error_msg', 'Status False Rejection gagal di Update');
+		// 			redirect('falserejection/diketahui');
+		// 		}
+		// 	}
+
+		// 	$data = array(
+		// 		'falserejection' => $this->falserejection_model->get_by_uuid($uuid),
+		// 		'active_nav' => 'diketahui-falserejection');
+
+		// 	$this->load->view('partials/head', $data);
+		// 	$this->load->view('form/falserejection/falserejection-statusprod', $data);
+		// 	$this->load->view('partials/footer');
+		// }
 
 	public function cetak()
 	{
@@ -224,6 +217,10 @@ class Falserejection extends CI_Controller {
 			$pdf->Cell(25, 6, $falserejection->username_2, 1, 0, 'C');
 			$pdf->Ln();
 		}
+
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(330, 5, 'QB 13/00', 0, 1, 'R'); 
+
 // Ambil nama lengkap dari model
 		$this->load->model('pegawai_model');
 		$nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['falserejection']->username_2);

@@ -103,7 +103,7 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('analisis/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                    <a href="<?= base_url('analisis/edit/'.$val->uuid);?>" class="btn btn-warning btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Update">
                                         <i class="fas fa-edit fa-lg"></i>
                                     </a>
                                     <a href="<?= base_url('analisis/analis/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Analisis">
@@ -115,9 +115,9 @@
                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Detail">
                                     <i class="fas fa-info-circle fa-lg"></i>
                                 </button>
-                                <a href="<?= base_url('analisis/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                              <!--   <a href="<?= base_url('analisis/delete/'.$val->uuid);?>" class="btn btn-danger btn-sm me-1 rounded-circle shadow" onclick="return confirm('Yakin ingin menghapus data ini?')">
                                    <i class="fas fa-trash fa-lg"></i>
-                               </a>
+                               </a> -->
                            </td>
                        </tr>
                        <?php 

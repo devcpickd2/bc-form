@@ -64,11 +64,11 @@
                                 </td>
                                 <td class="text-center">
                                     <a href="<?= base_url('falserejection/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
-                                    <span class="text">Edit</span>
+                                    <span class="text">Update</span>
                                 </a>
-                                <a href="<?= base_url('falserejection/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
+                               <!--  <a href="<?= base_url('falserejection/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
                                     <span class="text">Detail</span>
-                                </a>
+                                </a> -->
                             </td>
                         </tr>
                         <?php 

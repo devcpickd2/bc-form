@@ -28,9 +28,9 @@
                             <th width="20px" class="text-center">No</th>
                             <th>Tanggal</th>
                             <th>Jenis Kontaminasi</th>
+                            <th>Bukti</th>
                             <th>Produk</th>
                             <th>Kode Produksi</th>
-                            <th>Last Updated</th>
                             <th>Last Verified</th>
                             <th>SPV</th>
                             <th class="text-center">Action</th>
@@ -47,9 +47,35 @@
                                 <td class="text-center"><?= $no; ?></td>
                                 <td><?= $datetime; ?></td>
                                 <td><?= $val->jenis_kontaminasi; ?></td>
+                                <td>
+                                    <?php
+                                    $bukti = $val->bukti ?? null;
+
+                                    $path1 = FCPATH . 'uploads/' . $bukti;
+                                    $path2 = FCPATH . 'uploads/kontaminasi/' . $bukti;
+
+                                    if (!empty($bukti)) {
+                                        if (file_exists($path1)) {
+                                            $img_url = base_url('uploads/' . $bukti);
+                                        } elseif (file_exists($path2)) {
+                                            $img_url = base_url('uploads/kontaminasi/' . $bukti);
+                                        } else {
+                                            $img_url = null;
+                                        }
+                                    } else {
+                                        $img_url = null;
+                                    }
+                                    ?>
+
+                                    <?php if ($img_url): ?>
+                                        <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
+                                    <?php else: ?>
+                                        <p>Tidak ada gambar</p>
+                                    <?php endif; ?>
+
+                                </td>
                                 <td><?= $val->nama_produk; ?></td>
                                 <td><?= $val->kode_produksi; ?></td>
-                                <td><?= date('H:i - d m Y', strtotime($val->modified_at)); ?></td>
                                 <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)); ?></td>
                                 <td class="text-center">
                                     <?php

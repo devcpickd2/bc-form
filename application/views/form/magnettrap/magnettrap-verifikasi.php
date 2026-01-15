@@ -28,7 +28,7 @@
                             <th>Tahapan</th>
                             <th>Jenis Kontaminasi</th>
                             <th>Bukti</th>
-                            <th>Last Updated</th>
+                            <th>Keterangan</th>
                             <th>Last Verified</th>
                             <th>SPV</th>
                             <th class="text-center">Action</th>
@@ -47,31 +47,31 @@
                                 <td><?= $val->kontaminasi ?></td>
                                 <td>
                                     <?php
-                                        $bukti = $val->bukti ?? null;
+                                    $bukti = $val->bukti ?? null;
 
-                                        $path1 = FCPATH . 'uploads/' . $bukti;
-                                        $path2 = FCPATH . 'uploads/magnettrap/' . $bukti;
+                                    $path1 = FCPATH . 'uploads/' . $bukti;
+                                    $path2 = FCPATH . 'uploads/magnettrap/' . $bukti;
 
-                                        if (!empty($bukti)) {
-                                            if (file_exists($path1)) {
-                                                $img_url = base_url('uploads/' . $bukti);
-                                            } elseif (file_exists($path2)) {
-                                                $img_url = base_url('uploads/magnettrap/' . $bukti);
-                                            } else {
-                                                $img_url = null;
-                                            }
+                                    if (!empty($bukti)) {
+                                        if (file_exists($path1)) {
+                                            $img_url = base_url('uploads/' . $bukti);
+                                        } elseif (file_exists($path2)) {
+                                            $img_url = base_url('uploads/magnettrap/' . $bukti);
                                         } else {
                                             $img_url = null;
                                         }
-                                        ?>
+                                    } else {
+                                        $img_url = null;
+                                    }
+                                    ?>
 
-                                        <?php if ($img_url): ?>
-                                            <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
-                                        <?php else: ?>
-                                            <p>No image available</p>
-                                        <?php endif; ?>
+                                    <?php if ($img_url): ?>
+                                        <img src="<?= $img_url; ?>" alt="Bukti Temuan" style="max-width: 150px; max-height: 100px;">
+                                    <?php else: ?>
+                                        <p>No image available</p>
+                                    <?php endif; ?>
                                 </td>
-                                <td><?= date('H:i - d m Y', strtotime($val->modified_at)) ?></td>
+                                <td><?= $val->keterangan; ?></td>
                                 <td><?= date('H:i - d m Y', strtotime($val->tgl_update_spv)) ?></td>
                                 <td class="text-center">
                                     <?php
@@ -98,24 +98,24 @@
             <br><hr>
             <div class="form-group">
                 <form action="<?= base_url('magnettrap/cetak') ?>" method="post" class="form-inline">
-                <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
-                <input type="date" name="tanggal" class="form-control mr-2" required>
+                    <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
+                    <input type="date" name="tanggal" class="form-control mr-2" required>
 
-                <label for="shift" class="mr-2 font-weight-bold">Shift:</label>
-                <select name="shift" class="form-control mr-2" required>
-                    <option value="">-- Pilih Shift --</option>
-                    <option value="1">Shift 1</option>
-                    <option value="2">Shift 2</option>
-                    <option value="3">Shift 3</option>
-                </select>
+                    <label for="shift" class="mr-2 font-weight-bold">Shift:</label>
+                    <select name="shift" class="form-control mr-2" required>
+                        <option value="">-- Pilih Shift --</option>
+                        <option value="1">Shift 1</option>
+                        <option value="2">Shift 2</option>
+                        <option value="3">Shift 3</option>
+                    </select>
 
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
-            </form>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </div>
 </div>
 

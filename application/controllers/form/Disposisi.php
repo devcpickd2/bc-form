@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Disposisi extends CI_Controller {
+class Disposisi extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,29 +23,25 @@ class Disposisi extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'disposisi' => $this->disposisi_model->get_data_by_plant(),
-			'active_nav' => 'disposisi', 
+			'disposisi' => $this->disposisi_model->get_data_by_plant() 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'disposisi'; 
+		$this->render('form/disposisi/disposisi', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'disposisi' => $this->disposisi_model->get_by_uuid($uuid),
-			'active_nav' => 'disposisi');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'disposisi'; 
+		$this->render('form/disposisi/disposisi-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->disposisi_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -60,14 +56,9 @@ class Disposisi extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'disposisi');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'disposisi'; 
+		$this->render('form/disposisi/disposisi-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -87,13 +78,11 @@ class Disposisi extends CI_Controller {
 		}
 
 		$data = [
-			'disposisi' => $this->disposisi_model->get_by_uuid($uuid),
-			'active_nav' => 'disposisi'
+			'disposisi' => $this->disposisi_model->get_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'disposisi'; 
+		$this->render('form/disposisi/disposisi-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -118,14 +107,11 @@ class Disposisi extends CI_Controller {
 	{
 		$data = array(
 			'disposisi' => $this->disposisi_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-disposisi', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-disposisi'; 
+		$this->render('form/disposisi/disposisi-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -146,51 +132,49 @@ class Disposisi extends CI_Controller {
 
 		$data = array(
 			'disposisi' => $this->disposisi_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-disposisi');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'disposisi' => $this->disposisi_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-disposisi', 
 		);
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-disposisi'; 
+		$this->render('form/disposisi/disposisi-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'disposisi' => $this->disposisi_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-disposisi', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->disposisi_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/disposisi/disposisi-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->disposisi_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->disposisi_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Disposisi Produk dan Prosedur berhasil di Update');
-				redirect('disposisi/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Disposisi Produk dan Prosedur gagal di Update');
-				redirect('disposisi/diketahui');
-			}
-		}
+	// 		$update = $this->disposisi_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Disposisi Produk dan Prosedur berhasil di Update');
+	// 			redirect('disposisi/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Disposisi Produk dan Prosedur gagal di Update');
+	// 			redirect('disposisi/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'disposisi' => $this->disposisi_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-disposisi');
+	// 	$data = array(
+	// 		'disposisi' => $this->disposisi_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-disposisi');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/disposisi/disposisi-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/disposisi/disposisi-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

@@ -1,9 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Proses extends CI_Controller
+class Proses extends MY_Controller
 {
-
 	public function __construct()
 	{
 		parent::__construct();
@@ -21,13 +20,11 @@ class Proses extends CI_Controller
 	public function index()
 	{
 		$data = array(
-			'proses' => $this->proses_model->get_data_by_plant(),
-			'active_nav' => 'proses',
+			'proses' => $this->proses_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'proses'; 
+		$this->render('form/proses/proses', $data);
 	}
 
 	public function detail($uuid)
@@ -39,13 +36,11 @@ class Proses extends CI_Controller
 		}
 
 		$data = array(
-			'proses' => $proses,
-			'active_nav' => 'proses'
+			'proses' => $proses
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'proses'; 
+		$this->render('form/proses/proses-detail', $data);
 	}
 
 	public function tambah()
@@ -71,14 +66,12 @@ class Proses extends CI_Controller
 		$produk_list = $this->produk_model->get_all_produk_by_plant($plant);
 
 		$data = array(
-			'active_nav' => 'proses',
 			'kode_produksi_terakhir' => $kode_produksi_terakhir,
 			'produk_list' => $produk_list
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'proses'; 
+		$this->render('form/proses/proses-tambah', $data);
 	}
 
 	public function edit($uuid)
@@ -102,18 +95,15 @@ class Proses extends CI_Controller
 
 		$data = array(
 			'proses' => $this->proses_model->get_by_uuid($uuid),
-			'produk_list' => $produk_list,
-			'active_nav' => 'proses'
+			'produk_list' => $produk_list
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'proses'; 
+		$this->render('form/proses/proses-edit', $data);
 	}
 
 	public function packing($uuid)
 	{
-		// === 1. FORM VALIDATION ===
 		$rules = $this->proses_model->rules_packing();
 		$this->form_validation->set_rules($rules);
 
@@ -161,18 +151,18 @@ class Proses extends CI_Controller
 		// === 5. AMBIL nama_produk (PAKING -> PROSES V1) ===
 		// proses_packing[nama_produk][0] → proses->nama_produk → ""
 		$nama_produk_index1 =
-			$data_packing['nama_produk'][0]
-			?? $data_packing['nama_produk']
-			?? $proses->nama_produk
-			?? '';
+		$data_packing['nama_produk'][0]
+		?? $data_packing['nama_produk']
+		?? $proses->nama_produk
+		?? '';
 
 
 		// === 6. AMBIL kode_produksi (PACKING -> DOUGH MIXING INDEX 1) ===
 		$kode_produksi_index1 =
-			$data_packing['kode_produksi'][0]
-			?? $data_packing['kode_produksi']
-			?? ($data_produksi['dough_mixing']['kode_produksi'][1] ?? '')
-			?? '';
+		$data_packing['kode_produksi'][0]
+		?? $data_packing['kode_produksi']
+		?? ($data_produksi['dough_mixing']['kode_produksi'][1] ?? '')
+		?? '';
 
 
 		// === 7. LIST PRODUK ===
@@ -186,13 +176,11 @@ class Proses extends CI_Controller
 			'data_produksi'         => $data_produksi,
 			'data_packing'          => $data_packing,
 			'nama_produk_index1'    => $nama_produk_index1,
-			'kode_produksi_index1'  => $kode_produksi_index1,
-			'active_nav'            => 'proses'
+			'kode_produksi_index1'  => $kode_produksi_index1
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses-packing', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'proses'; 
+		$this->render('form/proses/proses-packing', $data);
 	}
 
 	public function delete($uuid)
@@ -216,15 +204,12 @@ class Proses extends CI_Controller
 	public function verifikasi()
 	{
 		$data = array(
-			'proses' => $this->proses_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-proses',
+			'proses' => $this->proses_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-proses'; 
+		$this->render('form/proses/proses-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -244,13 +229,11 @@ class Proses extends CI_Controller
 		}
 
 		$data = array(
-			'proses' => $this->proses_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-proses'
+			'proses' => $this->proses_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/proses/proses-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-proses'; 
+		$this->render('form/proses/proses-status', $data);
 	}
 
 	// public function cetak()
@@ -758,11 +741,11 @@ class Proses extends CI_Controller
 			$pdf->Cell(55, 5, 'Dibuat Oleh,', 0, 0, 'C');
 			if (!empty($data['proses']->nama_lengkap_qc)) {
 				$update_tanggal_qc = !empty($data['proses']->created_at)
-					? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
-					: date('d-m-Y | H:i');
+				? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
+				: date('d-m-Y | H:i');
 
 				$qr_text_qc = "Dibuat secara digital oleh,\n" .
-					$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+				$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
 				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 65, $y_verifikasi + 10, 15, 15, null, 'N');
 				$pdf->SetXY(45, $y_verifikasi + 24);
 				$pdf->Cell(55, 5, 'QC Inspector', 0, 0, 'C');
@@ -1046,11 +1029,11 @@ class Proses extends CI_Controller
 			$pdf->Cell(55, 5, 'Dibuat Oleh,', 0, 0, 'C');
 			if (!empty($data['proses']->nama_lengkap_qc)) {
 				$update_tanggal_qc = !empty($data['proses']->created_at)
-					? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
-					: date('d-m-Y | H:i');
+				? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
+				: date('d-m-Y | H:i');
 
 				$qr_text_qc = "Dibuat secara digital oleh,\n" .
-					$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+				$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
 				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 65, $y_verifikasi + 10, 15, 15, null, 'N');
 				$pdf->SetXY(45, $y_verifikasi + 24);
 				$pdf->Cell(55, 5, 'QC Inspector', 0, 0, 'C');

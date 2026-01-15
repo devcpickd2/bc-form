@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Analisis extends CI_Controller {
+class Analisis extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,24 +23,21 @@ class Analisis extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'analisis' => $this->analisis_model->get_data_by_plant(),
-			'active_nav' => 'analisis', 
+			'analisis' => $this->analisis_model->get_data_by_plant(), 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'analisis'; 
+		$this->render('form/analisis/analisis', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'analisis' => $this->analisis_model->get_by_uuid($uuid),
-			'active_nav' => 'analisis');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'analisis'; 
+		$this->render('form/analisis/analisis-detail', $data);
 	}
 
 	public function tambah()
@@ -60,12 +57,8 @@ class Analisis extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'analisis');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'analisis'; 
+		$this->render('form/analisis/analisis-tambah');
 	}
 
 
@@ -88,13 +81,11 @@ class Analisis extends CI_Controller {
 
 		$data = [
 			'analisis' => $this->analisis_model->get_by_uuid($uuid),
-			'bagian_list' => $this->analisis_model->get_bagian_by_uuid($uuid),
-			'active_nav' => 'analisis'
+			'bagian_list' => $this->analisis_model->get_bagian_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'analisis'; 
+		$this->render('form/analisis/analisis-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -134,13 +125,11 @@ class Analisis extends CI_Controller {
 
 		$data = [
 			'analisis' => $this->analisis_model->get_by_uuid($uuid), 
-			'larutan' => $this->analisis_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-analisis',
+			'larutan' => $this->analisis_model->get_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-analis', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'analisis'; 
+		$this->render('form/analisis/analisis-analis', $data);
 	}
 
 	public function check_analisis($analisis)
@@ -173,13 +162,11 @@ class Analisis extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'analisis' => $this->analisis_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-analisis', 
+			'analisis' => $this->analisis_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-analisis'; 
+		$this->render('form/analisis/analisis-verifikasi', $data);
 	}
 
 
@@ -202,62 +189,59 @@ class Analisis extends CI_Controller {
 
 		$data = array(
 			'analisis' => $this->analisis_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-analisis');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'analisis' => $this->analisis_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-analisis', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-analisis'; 
+		$this->render('form/analisis/analisis-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'analisis' => $this->analisis_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-analisis', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->analisis_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/analisis/analisis-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
 
-			$update = $this->analisis_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Permohonan Analisis Sampel Laboratorium berhasil di Update');
-				redirect('analisis/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Permohonan Analisis Sampel Laboratorium gagal di Update');
-				redirect('analisis/diketahui');
-			}
-		}
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->analisis_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$data = array(
-			'analisis' => $this->analisis_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-analisis');
+	// 	if ($this->form_validation->run() == TRUE) {
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 		$update = $this->analisis_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Permohonan Analisis Sampel Laboratorium berhasil di Update');
+	// 			redirect('analisis/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Permohonan Analisis Sampel Laboratorium gagal di Update');
+	// 			redirect('analisis/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'analisis' => $this->analisis_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-analisis');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/analisis/analisis-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function diterima()
 	{
 		$data = array(
 			'analisis' => $this->analisis_model->get_data_by_plant(),
-			'active_nav' => 'diterima-analisis', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-diterima', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'diterima-analisis'; 
+		$this->render('form/analisis/analisis-diterima', $data);
 	}
 
 
@@ -280,13 +264,11 @@ class Analisis extends CI_Controller {
 
 		$data = array(
 			'analisis' => $this->analisis_model->get_by_uuid($uuid),
-			'active_nav' => 'diterima-analisis');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/analisis/analisis-statuslab', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'diterima-analisis'; 
+		$this->render('form/analisis/analisis-statuslab', $data);
 	}
-
 
 	public function cetak()
 	{
@@ -418,6 +400,9 @@ class Analisis extends CI_Controller {
 			$pdf->Cell(25, 5, implode(', ', $analisis3), 1, 0, 'C');
 			$pdf->Ln();
 		}
+
+		// $pdf->SetFont('times', 'I', 7);
+		// $pdf->Cell(190, 5, 'QW 18/00', 0, 1, 'R'); 
 
 		$pdf->SetY($pdf->GetY() + 3); 
 		$pdf->SetFont('dejavusans', '', 6);

@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Pemeriksaanpengiriman extends CI_Controller {
+class Pemeriksaanpengiriman extends MY_Controller {
 
 	public function __construct()
 	{
@@ -22,29 +22,25 @@ class Pemeriksaanpengiriman extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_data_by_plant(),
-			'active_nav' => 'pemeriksaanpengiriman', 
+			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanpengiriman/pemeriksaanpengiriman', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanpengiriman'; 
+		$this->render('form/pemeriksaanpengiriman/pemeriksaanpengiriman', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_by_uuid($uuid),
-			'active_nav' => 'pemeriksaanpengiriman');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanpengiriman/pemeriksaanpengiriman-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanpengiriman'; 
+		$this->render('form/pemeriksaanpengiriman/pemeriksaanpengiriman-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->pemeriksaanpengiriman_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -59,14 +55,9 @@ class Pemeriksaanpengiriman extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'pemeriksaanpengiriman');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanpengiriman/pemeriksaanpengiriman-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanpengiriman'; 
+		$this->render('form/pemeriksaanpengiriman/pemeriksaanpengiriman-tambah', $data);
 	}
-
 
 	public function edit($uuid)
 	{
@@ -87,11 +78,10 @@ class Pemeriksaanpengiriman extends CI_Controller {
 
 		$data = array(
 			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_by_uuid($uuid),
-			'active_nav' => 'pemeriksaanpengiriman');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanpengiriman/pemeriksaanpengiriman-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanpengiriman'; 
+		$this->render('form/pemeriksaanpengiriman/pemeriksaanpengiriman-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -115,13 +105,11 @@ class Pemeriksaanpengiriman extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-pemeriksaanpengiriman', 
+			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanpengiriman/pemeriksaanpengiriman-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pemeriksaanpengiriman'; 
+		$this->render('form/pemeriksaanpengiriman/pemeriksaanpengiriman-verifikasi', $data);
 	}
 
 
@@ -144,11 +132,10 @@ class Pemeriksaanpengiriman extends CI_Controller {
 
 		$data = array(
 			'pemeriksaanpengiriman' => $this->pemeriksaanpengiriman_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-pemeriksaanpengiriman');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanpengiriman/pemeriksaanpengiriman-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pemeriksaanpengiriman'; 
+		$this->render('form/pemeriksaanpengiriman/pemeriksaanpengiriman-status', $data);
 	}
 
 	public function cetak()
@@ -250,6 +237,9 @@ class Pemeriksaanpengiriman extends CI_Controller {
 			$pdf->Ln();
 			$no++;
 		}
+
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(330, 5, 'QW 02/00', 0, 1, 'R'); 
 
 		$this->load->model('pegawai_model');
 		$data['pemeriksaanpengiriman']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['pemeriksaanpengiriman']->username);

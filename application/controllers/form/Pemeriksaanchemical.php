@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Pemeriksaanchemical extends CI_Controller {
+class Pemeriksaanchemical extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,24 +23,21 @@ class Pemeriksaanchemical extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_data_by_plant(),
-			'active_nav' => 'pemeriksaanchemical', 
+			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanchemical'; 
+		$this->render('form/pemeriksaanchemical/pemeriksaanchemical', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_by_uuid($uuid),
-			'active_nav' => 'pemeriksaanchemical');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanchemical'; 
+		$this->render('form/pemeriksaanchemical/pemeriksaanchemical-detail', $data);
 	}
 
 	public function file_check($str)
@@ -102,13 +99,11 @@ class Pemeriksaanchemical extends CI_Controller {
 		}
 
 		$data = array(
-			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_data_by_plant(),
-			'active_nav'  => 'pemeriksaanchemical'
+			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanchemical'; 
+		$this->render('form/pemeriksaanchemical/pemeriksaanchemical-tambah', $data);
 	}
 
 	public function edit($uuid)
@@ -158,13 +153,11 @@ class Pemeriksaanchemical extends CI_Controller {
 		}
 
 		$data = array(
-			'pemeriksaanchemical' => $pemeriksaanchemical,
-			'active_nav' => 'pemeriksaanchemical'
+			'pemeriksaanchemical' => $pemeriksaanchemical
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pemeriksaanchemical'; 
+		$this->render('form/pemeriksaanchemical/pemeriksaanchemical-edit', $data);
 	}
 
 	private function _compress_image($path, $mime)
@@ -195,7 +188,6 @@ class Pemeriksaanchemical extends CI_Controller {
 		return true;
 	}
 
-
 	public function delete($uuid)
 	{
 		if (!$uuid) {
@@ -217,15 +209,12 @@ class Pemeriksaanchemical extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-pemeriksaanchemical', 
+			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pemeriksaanchemical'; 
+		$this->render('form/pemeriksaanchemical/pemeriksaanchemical-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -246,11 +235,10 @@ class Pemeriksaanchemical extends CI_Controller {
 
 		$data = array(
 			'pemeriksaanchemical' => $this->pemeriksaanchemical_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-pemeriksaanchemical');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/pemeriksaanchemical/pemeriksaanchemical-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-pemeriksaanchemical'; 
+		$this->render('form/pemeriksaanchemical/pemeriksaanchemical-status', $data);
 	}
 
 	public function cetak()
@@ -422,6 +410,8 @@ class Pemeriksaanchemical extends CI_Controller {
 			$no++;
 		}
 
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(330, 5, 'QW 04/00', 0, 1, 'R'); 
 
 		$this->load->model('pegawai_model');
 		$data['pemeriksaanchemical']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['pemeriksaanchemical']->username);

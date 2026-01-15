@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Pegawai extends CI_Controller {
+class Pegawai extends MY_Controller {
 
 	public function __construct()
 	{
@@ -20,15 +20,12 @@ class Pegawai extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'pegawai' => $this->pegawai_model->get_data_by_plant(),
-			'active_nav' => 'pegawai', 
+			'pegawai' => $this->pegawai_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('pegawai/pegawai', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pegawai'; 
+		$this->render('pegawai/pegawai', $data);
 	}
-
 
 	public function tambah()
 	{
@@ -49,13 +46,11 @@ class Pegawai extends CI_Controller {
 
 		$data = array(
 			'departemen' => $this->departemen_model->get_all(),
-			'plant' => $this->plant_model->get_all(),
-			'active_nav' => 'pegawai', 
+			'plant' => $this->plant_model->get_all()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('pegawai/pegawai-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pegawai'; 
+		$this->render('pegawai/pegawai-tambah');
 	}
 
 	public function edit($uuid)
@@ -108,13 +103,11 @@ class Pegawai extends CI_Controller {
 		$data = array(
 			'pegawai' => $this->pegawai_model->get_by_uuid($uuid),
 			'departemen' => $this->departemen_model->get_all(),
-			'plant' => $this->plant_model->get_all(),
-			'active_nav' => 'pegawai' 
+			'plant' => $this->plant_model->get_all()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('pegawai/pegawai-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'pegawai'; 
+		$this->render('pegawai/pegawai-edit', $data);
 	}
 
 	public function delete($uuid) 

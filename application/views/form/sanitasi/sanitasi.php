@@ -101,14 +101,14 @@
                             <!-- Aksi -->
                             <td class="text-center">
                                 <a href="<?= base_url('sanitasi/edit/'.$val->uuid);?>" class="btn btn-warning btn-icon-split mb-1">
-                                    <span class="text">Edit</span>
+                                    <span class="text">Update</span>
                                 </a>
                                 <a href="<?= base_url('sanitasi/detail/'.$val->uuid);?>" class="btn btn-success btn-icon-split mb-1">
                                     <span class="text">Detail</span>
                                 </a>
-                                <a href="<?= base_url('sanitasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                <!-- <a href="<?= base_url('sanitasi/delete/'.$val->uuid);?>" class="btn btn-danger btn-icon-split mb-1" onclick="return confirm('Yakin ingin menghapus data ini?')">
                                     <span class="text">Delete</span>
-                                </a>                            
+                                </a>  -->                           
                             </td>
                         </tr>
                     <?php } ?>

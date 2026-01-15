@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Ketidaksesuaian extends CI_Controller {
+class Ketidaksesuaian extends MY_Controller {
 
 	public function __construct()
 	{
@@ -22,29 +22,25 @@ class Ketidaksesuaian extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_data_by_plant(),
-			'active_nav' => 'ketidaksesuaian', 
+			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'ketidaksesuaian'; 
+		$this->render('form/ketidaksesuaian/ketidaksesuaian', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_by_uuid($uuid),
-			'active_nav' => 'ketidaksesuaian');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'ketidaksesuaian'; 
+		$this->render('form/ketidaksesuaian/ketidaksesuaian-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->ketidaksesuaian_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -59,14 +55,9 @@ class Ketidaksesuaian extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'ketidaksesuaian');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'ketidaksesuaian'; 
+		$this->render('form/ketidaksesuaian/ketidaksesuaian-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -86,12 +77,11 @@ class Ketidaksesuaian extends CI_Controller {
 		}
 
 		$data = array(
-			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_by_uuid($uuid),
-			'active_nav' => 'ketidaksesuaian');
+			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_by_uuid($uuid)
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'ketidaksesuaian'; 
+		$this->render('form/ketidaksesuaian/ketidaksesuaian-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -115,15 +105,12 @@ class Ketidaksesuaian extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-ketidaksesuaian', 
+			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-ketidaksesuaian'; 
+		$this->render('form/ketidaksesuaian/ketidaksesuaian-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -144,51 +131,50 @@ class Ketidaksesuaian extends CI_Controller {
 
 		$data = array(
 			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-ketidaksesuaian');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-ketidaksesuaian', 
 		);
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-diketahui', $data);
-		$this->load->view('partials/footer');
+		
+		$this->active_nav = 'ketidaksesuaian'; 
+		$this->render('form/ketidaksesuaian/ketidaksesuaian-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'ketidaksesuaian' => $this->ketidaksesuaian_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-ketidaksesuaian', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->ketidaksesuaian_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/ketidaksesuaian/ketidaksesuaian-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->ketidaksesuaian_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Ketidaksesuaian Produk berhasil di Update');
-				redirect('ketidaksesuaian/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Ketidaksesuaian Produk gagal di Update');
-				redirect('ketidaksesuaian/diketahui');
-			}
-		}
 
-		$data = array(
-			'ketidaksesuaian' => $this->ketidaksesuaian_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-ketidaksesuaian');
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->ketidaksesuaian_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/ketidaksesuaian/ketidaksesuaian-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	if ($this->form_validation->run() == TRUE) {
+
+	// 		$update = $this->ketidaksesuaian_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Ketidaksesuaian Produk berhasil di Update');
+	// 			redirect('ketidaksesuaian/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Ketidaksesuaian Produk gagal di Update');
+	// 			redirect('ketidaksesuaian/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'ketidaksesuaian' => $this->ketidaksesuaian_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-ketidaksesuaian');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/ketidaksesuaian/ketidaksesuaian-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -305,6 +291,9 @@ class Ketidaksesuaian extends CI_Controller {
 			$no++;
 		}
 
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(190, 5, 'QB 17/00', 0, 1, 'R'); 
+
 		$pdf->SetY($pdf->GetY() + 3); 
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(10, 3, 'Catatan : ', 0, 1, 'L');
@@ -332,69 +321,156 @@ class Ketidaksesuaian extends CI_Controller {
 		$pdf->SetFont('times', '', 8);
 		$pdf->SetTextColor(0, 0, 0);
 
-		if ($status_verifikasi) {
-			$y_verifikasi = $y_after_keterangan;
+		// if ($status_verifikasi) {
+		// 	$y_verifikasi = $y_after_keterangan;
 
-		// Dibuat oleh (QC)
-			$pdf->SetXY(25, $y_verifikasi + 5);
-			$pdf->Cell(95, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8); 
-			$pdf->Cell(95, 5, $data['ketidaksesuaian']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8); 
-			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
+		// // Dibuat oleh (QC)
+		// 	$pdf->SetXY(25, $y_verifikasi + 5);
+		// 	$pdf->Cell(95, 5, 'Dibuat Oleh,', 0, 0, 'C');
+		// 	$pdf->SetXY(25, $y_verifikasi + 10);
+		// 	$pdf->SetFont('times', 'U', 8); 
+		// 	$pdf->Cell(95, 5, $data['ketidaksesuaian']->nama_lengkap_qc, 0, 1, 'C');
+		// 	$pdf->SetFont('times', '', 8); 
+		// 	$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// // Diketahui oleh (Produksi)
+		// // // Diketahui oleh (Produksi)
+		// // 	$pdf->SetXY(90, $y_verifikasi + 5);
+		// // 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+		// // 	if ($data['ketidaksesuaian']->status_produksi == 1 && !empty($data['ketidaksesuaian']->nama_produksi)) {
+		// // 		$update_tanggal_produksi = (new DateTime($data['ketidaksesuaian']->tgl_update_produksi))->format('d-m-Y | H:i');
+		// // 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['ketidaksesuaian']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
+		// // 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
+		// // 		$pdf->SetXY(90, $y_verifikasi + 24);
+		// // 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+		// // 	} else {
+		// // 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// // 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		// // 	}
+
+		// 	// Diketahui oleh (Produksi) - tanpa barcode
 		// 	$pdf->SetXY(90, $y_verifikasi + 5);
 		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
+
 		// 	if ($data['ketidaksesuaian']->status_produksi == 1 && !empty($data['ketidaksesuaian']->nama_produksi)) {
 		// 		$update_tanggal_produksi = (new DateTime($data['ketidaksesuaian']->tgl_update_produksi))->format('d-m-Y | H:i');
-		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['ketidaksesuaian']->nama_lengkap_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 		$pdf->SetXY(90, $y_verifikasi + 24);
-		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+
+		// 		$pdf->SetFont('times', 'U', 8);
+		// 		$pdf->SetXY(90, $y_verifikasi + 10);
+		// 		$pdf->Cell(135, 5, $data['ketidaksesuaian']->nama_produksi, 0, 1, 'C');
+
+		// 		$pdf->SetFont('times', '', 8);
+		// 		$pdf->SetXY(90, $y_verifikasi + 15);
+		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+
+		// 		// $pdf->SetXY(90, $y_verifikasi + 20);
+		// 		// $pdf->Cell(135, 5, $update_tanggal_produksi, 0, 0, 'C');
 		// 	} else {
+		// 		$pdf->SetFont('times', '', 8);
 		// 		$pdf->SetXY(90, $y_verifikasi + 10);
 		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
 		// 	}
 
-			// Diketahui oleh (Produksi) - tanpa barcode
-			$pdf->SetXY(90, $y_verifikasi + 5);
-			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
 
-			if ($data['ketidaksesuaian']->status_produksi == 1 && !empty($data['ketidaksesuaian']->nama_produksi)) {
-				$update_tanggal_produksi = (new DateTime($data['ketidaksesuaian']->tgl_update_produksi))->format('d-m-Y | H:i');
+		// // Disetujui oleh (SPV)
+		// 	$pdf->SetXY(150, $y_verifikasi + 5);
+		// 	$pdf->Cell(189, 5, 'Disetujui Oleh,', 0, 0, 'C');
+		// 	$update_tanggal = (new DateTime($data['ketidaksesuaian']->tgl_update_spv))->format('d-m-Y | H:i');
+		// 	$qr_text = "Diverifikasi secara digital oleh,\n" . $data['ketidaksesuaian']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
+		// 	$pdf->write2DBarcode($qr_text, 'QRCODE,L', 237, $y_verifikasi + 10, 15, 15, null, 'N');
+		// 	$pdf->SetXY(170, $y_verifikasi + 24);
+		// 	$pdf->Cell(149, 5, 'Supervisor QC', 0, 0, 'C');
+		// } else {
+		// 	$pdf->SetTextColor(255, 0, 0); 
+		// 	$pdf->SetFont('times', '', 8);
+		// 	$pdf->SetXY(200, $y_after_keterangan);
+		// 	$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+		// }
 
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(135, 5, $data['ketidaksesuaian']->nama_produksi, 0, 1, 'C');
+		$y_ttd   = $pdf->GetY() + 6;
+		$qr_size = 15;
 
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 15);
-				$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
+		$qc_usernames  = [];
+		$qc_created_at = null;
 
-				// $pdf->SetXY(90, $y_verifikasi + 20);
-				// $pdf->Cell(135, 5, $update_tanggal_produksi, 0, 0, 'C');
-			} else {
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_verifikasi + 10);
-				$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
+		foreach ($ketidaksesuaian_data as $item) {
+			if (!empty($item->username)) {
+				$qc_usernames[] = $item->username;
 			}
 
+			if (!$qc_created_at && !empty($item->created_at)) {
+				$qc_created_at = $item->created_at;
+			}
+		}
 
-		// Disetujui oleh (SPV)
-			$pdf->SetXY(150, $y_verifikasi + 5);
-			$pdf->Cell(189, 5, 'Disetujui Oleh,', 0, 0, 'C');
-			$update_tanggal = (new DateTime($data['ketidaksesuaian']->tgl_update_spv))->format('d-m-Y | H:i');
-			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['ketidaksesuaian']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 237, $y_verifikasi + 10, 15, 15, null, 'N');
-			$pdf->SetXY(170, $y_verifikasi + 24);
-			$pdf->Cell(149, 5, 'Supervisor QC', 0, 0, 'C');
-		} else {
-			$pdf->SetTextColor(255, 0, 0); 
+		$qc_usernames = array_unique($qc_usernames);
+
+		$qc_nama_lengkap = [];
+		foreach ($qc_usernames as $username) {
+			$nama = $this->pegawai_model->get_nama_lengkap($username);
+			if (!empty($nama)) {
+				$qc_nama_lengkap[] = $nama;
+			}
+		}
+
+		$qc_nama_text = !empty($qc_nama_lengkap)
+		? implode(', ', array_unique($qc_nama_lengkap))
+		: '-';
+
+		$qc_tanggal = $qc_created_at
+		? (new DateTime($qc_created_at))->format('d-m-Y | H:i')
+		: '-';
+
+		$qr_qc_text = "Dibuat secara digital oleh,\n"
+		. $qc_nama_text . "\n"
+		. "QC Inspector\n"
+		. $qc_tanggal;
+
+		$qr_produksi_text = null;
+
+		if (!empty($data['ketidaksesuaian']->nama_lengkap_produksi) && !empty($data['ketidaksesuaian']->tgl_update_produksi)) {
+			$prod_tanggal = (new DateTime($data['ketidaksesuaian']->tgl_update_produksi ?? $data['ketidaksesuaian']->tgl_update_produksi))
+			->format('d-m-Y | H:i');
+
+			$qr_produksi_text = "Diketahui secara digital oleh,\n"
+			. $data['ketidaksesuaian']->nama_lengkap_produksi . "\n"
+			. "Foreman/Forelady Produksi\n"
+			. $prod_tanggal;
+		}
+
+		$spv_tanggal = !empty($data['ketidaksesuaian']->tgl_update_spv)
+		? (new DateTime($data['ketidaksesuaian']->tgl_update_spv))->format('d-m-Y | H:i')
+		: '-';
+
+		$qr_spv_text = "Disetujui secara digital oleh,\n"
+		. $data['ketidaksesuaian']->nama_lengkap_spv . "\n"
+		. "Supervisor QC Bread Crumb\n"
+		. $spv_tanggal;
+
+		if ($status_verifikasi) {
 			$pdf->SetFont('times', '', 8);
-			$pdf->SetXY(200, $y_after_keterangan);
-			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetXY(20, $y_ttd);
+			$pdf->Cell(45, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd);
+			$pdf->Cell(45, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			$pdf->SetXY(150, $y_ttd);
+			$pdf->Cell(45, 5, 'Disetujui Oleh,', 0, 1, 'C');
+			$pdf->write2DBarcode($qr_qc_text, 'QRCODE,L', 35,$y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			if ($qr_produksi_text) {
+				$pdf->write2DBarcode($qr_produksi_text, 'QRCODE,L', 100, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			}
+			$pdf->write2DBarcode($qr_spv_text, 'QRCODE,L', 165, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			$pdf->SetXY(20, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'QC Inspector', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			$pdf->SetXY(150, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'Supervisor QC', 0, 1, 'C');
+		} else {
+			$pdf->SetFont('times', '', 8);
+			$pdf->SetTextColor(255, 0, 0);
+			$pdf->SetXY(80, $y_ttd);
+			$pdf->Cell(80, 6, 'Data Belum Diverifikasi', 0, 1, 'C');
+			$pdf->SetTextColor(0, 0, 0);
 		}
 		
 

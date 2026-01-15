@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Plant extends CI_Controller {
+class Plant extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,13 +18,11 @@ class Plant extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'plant' => $this->plant_model->get_all(),
-			'active_nav' => 'plant', 
+			'plant' => $this->plant_model->get_all()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('plant/plant', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'plant'; 
+		$this->render('plant/plant', $data);
 	}
 
 	public function tambah()
@@ -44,14 +42,9 @@ class Plant extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'plant');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('plant/plant-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'plant'; 
+		$this->render('plant/plant-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -70,12 +63,10 @@ class Plant extends CI_Controller {
 			}
 		}
 
-		$data = array('plant' => $this->plant_model->get_by_uuid($uuid),
-			'active_nav' => 'plant');
+		$data = array('plant' => $this->plant_model->get_by_uuid($uuid));
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('plant/plant-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'plant'; 
+		$this->render('plant/plant-edit', $data);
 	}
 
 	public function delete($uuid)

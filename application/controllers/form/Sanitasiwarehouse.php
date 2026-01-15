@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Sanitasiwarehouse extends CI_Controller {
+class Sanitasiwarehouse extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,24 +23,21 @@ class Sanitasiwarehouse extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_data_by_plant(),
-			'active_nav' => 'sanitasiwarehouse', 
+			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasiwarehouse'; 
+		$this->render('form/sanitasiwarehouse/sanitasiwarehouse', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_by_uuid($uuid),
-			'active_nav' => 'sanitasiwarehouse');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasiwarehouse'; 
+		$this->render('form/sanitasiwarehouse/sanitasiwarehouse-detail', $data);
 	}
 
 	public function tambah()
@@ -60,12 +57,8 @@ class Sanitasiwarehouse extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'sanitasiwarehouse');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasiwarehouse'; 
+		$this->render('form/sanitasiwarehouse/sanitasiwarehouse-tambah');
 	}
 
 
@@ -88,13 +81,11 @@ class Sanitasiwarehouse extends CI_Controller {
 
 		$data = [
 			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_by_uuid($uuid),
-			'bagian_list' => $this->sanitasiwarehouse_model->get_bagian_by_uuid($uuid),
-			'active_nav' => 'sanitasiwarehouse'
+			'bagian_list' => $this->sanitasiwarehouse_model->get_bagian_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasiwarehouse'; 
+		$this->render('form/sanitasiwarehouse/sanitasiwarehouse-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -118,15 +109,12 @@ class Sanitasiwarehouse extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-sanitasiwarehouse', 
+			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-sanitasiwarehouse'; 
+		$this->render('form/sanitasiwarehouse/sanitasiwarehouse-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -147,51 +135,50 @@ class Sanitasiwarehouse extends CI_Controller {
 
 		$data = array(
 			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-sanitasiwarehouse');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-sanitasiwarehouse', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-sanitasiwarehouse'; 
+		$this->render('form/sanitasiwarehouse/sanitasiwarehouse-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-sanitasiwarehouse', 
+	// 	);
 
-	public function statuswh($uuid)
-	{
-		$rules = $this->sanitasiwarehouse_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+
+	// public function statuswh($uuid)
+	// {
+	// 	$rules = $this->sanitasiwarehouse_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->sanitasiwarehouse_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Sanitasi Warehouse berhasil di Update');
-				redirect('sanitasiwarehouse/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Sanitasi Warehouse gagal di Update');
-				redirect('sanitasiwarehouse/diketahui');
-			}
-		}
+	// 		$update = $this->sanitasiwarehouse_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Sanitasi Warehouse berhasil di Update');
+	// 			redirect('sanitasiwarehouse/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Sanitasi Warehouse gagal di Update');
+	// 			redirect('sanitasiwarehouse/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-sanitasiwarehouse');
+	// 	$data = array(
+	// 		'sanitasiwarehouse' => $this->sanitasiwarehouse_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-sanitasiwarehouse');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-statuswh', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/sanitasiwarehouse/sanitasiwarehouse-statuswh', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
@@ -312,6 +299,9 @@ class Sanitasiwarehouse extends CI_Controller {
 				$pdf->Cell(195, 0, '', 1, 1, 'C');
 			}
 		}
+
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(190, 5, 'QW 01/00', 0, 1, 'R'); 
 
 		$y_last = $pdf->GetY();
 		$y_last += 5; 

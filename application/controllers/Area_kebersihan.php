@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Area_kebersihan extends CI_Controller {
+class Area_kebersihan extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,18 +18,15 @@ class Area_kebersihan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'area_kebersihan' => $this->area_kebersihan_model->get_data_by_plant(),
-			'active_nav' => 'area_kebersihan', 
+			'area_kebersihan' => $this->area_kebersihan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('area_kebersihan/area_kebersihan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'area_kebersihan'; 
+		$this->render('area_kebersihan/area_kebersihan', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->area_kebersihan_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -44,14 +41,9 @@ class Area_kebersihan extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'area_kebersihan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('area_kebersihan/area_kebersihan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'area_kebersihan'; 
+		$this->render('area_kebersihan/area_kebersihan-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -70,12 +62,12 @@ class Area_kebersihan extends CI_Controller {
 			}
 		}
 
-		$data = array('area_kebersihan' => $this->area_kebersihan_model->get_by_uuid($uuid),
-			'active_nav' => 'area_kebersihan');
+		$data = array(
+			'area_kebersihan' => $this->area_kebersihan_model->get_by_uuid($uuid),
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('area_kebersihan/area_kebersihan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'area_kebersihan'; 
+		$this->render('area_kebersihan/area_kebersihan-edit', $data);
 	}
 
 	public function delete($uuid)

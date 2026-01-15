@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Magnettrap extends CI_Controller {
+class Magnettrap extends MY_Controller {
 
 	public function __construct()
 	{
@@ -19,24 +19,21 @@ class Magnettrap extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'magnettrap' => $this->magnettrap_model->get_data_by_plant(),
-			'active_nav' => 'magnettrap', 
+			'magnettrap' => $this->magnettrap_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'magnettrap'; 
+		$this->render('form/magnettrap/magnettrap', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'magnettrap' => $this->magnettrap_model->get_by_uuid($uuid),
-			'active_nav' => 'magnettrap');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'magnettrap'; 
+		$this->render('form/magnettrap/magnettrap-detail', $data);
 	}
 
 
@@ -124,13 +121,10 @@ class Magnettrap extends CI_Controller {
 		}
 
 		$data = array(
-			'magnettrap' => $this->magnettrap_model->get_data_by_plant(),
-			'active_nav' => 'magnettrap'
+			'magnettrap' => $this->magnettrap_model->get_data_by_plant()
 		);
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-tambah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'magnettrap'; 
+		$this->render('form/magnettrap/magnettrap-tambah', $data);
 	}
 
 	public function edit($uuid)
@@ -200,13 +194,11 @@ class Magnettrap extends CI_Controller {
 		}
 
 		$data = array(
-			'magnettrap' => $magnettrap,
-			'active_nav' => 'magnettrap'
+			'magnettrap' => $magnettrap
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'magnettrap'; 
+		$this->render('form/magnettrap/magnettrap-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -230,13 +222,11 @@ class Magnettrap extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'magnettrap' => $this->magnettrap_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-magnettrap', 
+			'magnettrap' => $this->magnettrap_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-magnettrap'; 
+		$this->render('form/magnettrap/magnettrap-verifikasi', $data);
 	}
 
 	public function status($uuid)
@@ -256,52 +246,50 @@ class Magnettrap extends CI_Controller {
 		}
 
 		$data = array(
-			'magnettrap' => $this->magnettrap_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-magnettrap'
+			'magnettrap' => $this->magnettrap_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-status', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-magnettrap'; 
+		$this->render('form/magnettrap/magnettrap-status', $data);
 	}
 
-	public function diketahui()
-	{
-		$data = array(
-			'magnettrap' => $this->magnettrap_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-magnettrap', 
-		);
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'magnettrap' => $this->magnettrap_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-magnettrap', 
+	// 	);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-diketahui', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/magnettrap/magnettrap-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-	public function statuseng($uuid)
-	{
-		$rules = $this->magnettrap_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// public function statuseng($uuid)
+	// {
+	// 	$rules = $this->magnettrap_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
-			$update = $this->magnettrap_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Magnet Trap berhasil di Update');
-				redirect('magnettrap/diketahui');
-			} else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Magnet Trap gagal di Update');
-				redirect('magnettrap/diketahui');
-			}
-		}
+	// 	if ($this->form_validation->run() == TRUE) {
+	// 		$update = $this->magnettrap_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Magnet Trap berhasil di Update');
+	// 			redirect('magnettrap/diketahui');
+	// 		} else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Magnet Trap gagal di Update');
+	// 			redirect('magnettrap/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'magnettrap' => $this->magnettrap_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-magnettrap'
-		);
+	// 	$data = array(
+	// 		'magnettrap' => $this->magnettrap_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-magnettrap'
+	// 	);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/magnettrap/magnettrap-statuseng', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/magnettrap/magnettrap-statuseng', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

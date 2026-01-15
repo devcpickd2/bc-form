@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Larutan extends CI_Controller {
+class Larutan extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,29 +23,25 @@ class Larutan extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'larutan' => $this->larutan_model->get_data_by_plant(),
-			'active_nav' => 'larutan', 
+			'larutan' => $this->larutan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'larutan'; 
+		$this->render('form/larutan/larutan', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'larutan' => $this->larutan_model->get_by_uuid($uuid),
-			'active_nav' => 'larutan');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'larutan'; 
+		$this->render('form/larutan/larutan-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->larutan_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -60,14 +56,9 @@ class Larutan extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'larutan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'larutan'; 
+		$this->render('form/larutan/larutan-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -88,13 +79,11 @@ class Larutan extends CI_Controller {
 
 		$data = [
 			'larutan' => $this->larutan_model->get_by_uuid($uuid),
-			'bagian_list' => $this->larutan_model->get_bagian_by_uuid($uuid),
-			'active_nav' => 'larutan'
+			'bagian_list' => $this->larutan_model->get_bagian_by_uuid($uuid)
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'larutan'; 
+		$this->render('form/larutan/larutan-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -118,15 +107,12 @@ class Larutan extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'larutan' => $this->larutan_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-larutan', 
+			'larutan' => $this->larutan_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-larutan'; 
+		$this->render('form/larutan/larutan-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -147,51 +133,50 @@ class Larutan extends CI_Controller {
 
 		$data = array(
 			'larutan' => $this->larutan_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-larutan');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'larutan' => $this->larutan_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-larutan', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-larutan'; 
+		$this->render('form/larutan/larutan-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'larutan' => $this->larutan_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-larutan', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->larutan_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/larutan/larutan-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
+
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->larutan_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
 			
-			$update = $this->larutan_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Verifikasi Pembuatan Larutan Cleaning dan Sanitasi berhasil di Update');
-				redirect('larutan/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Verifikasi Pembuatan Larutan Cleaning dan Sanitasi gagal di Update');
-				redirect('larutan/diketahui');
-			}
-		}
+	// 		$update = $this->larutan_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Verifikasi Pembuatan Larutan Cleaning dan Sanitasi berhasil di Update');
+	// 			redirect('larutan/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Verifikasi Pembuatan Larutan Cleaning dan Sanitasi gagal di Update');
+	// 			redirect('larutan/diketahui');
+	// 		}
+	// 	}
 
-		$data = array(
-			'larutan' => $this->larutan_model->get_by_uuid($uuid),
-			'active_nav' => 'diketahui-larutan');
+	// 	$data = array(
+	// 		'larutan' => $this->larutan_model->get_by_uuid($uuid),
+	// 		'active_nav' => 'diketahui-larutan');
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/larutan/larutan-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/larutan/larutan-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{

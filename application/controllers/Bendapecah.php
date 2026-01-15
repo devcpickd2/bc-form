@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Bendapecah extends CI_Controller {
+class Bendapecah extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,18 +18,15 @@ class Bendapecah extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'bendapecah' => $this->bendapecah_model->get_all(),
-			'active_nav' => 'bendapecah', 
+			'bendapecah' => $this->bendapecah_model->get_all() 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('bendapecah/bendapecah', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'bendapecah'; 
+		$this->render('bendapecah/bendapecah', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->bendapecah_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -44,12 +41,8 @@ class Bendapecah extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'bendapecah');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('bendapecah/bendapecah-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'bendapecah'; 
+		$this->render('bendapecah/bendapecah-tambah');
 	}
 
 	// public function tambah()
@@ -97,12 +90,12 @@ class Bendapecah extends CI_Controller {
 			}
 		}
 
-		$data = array('bendapecah' => $this->bendapecah_model->get_by_uuid($uuid),
-			'active_nav' => 'bendapecah');
+		$data = array(
+			'bendapecah' => $this->bendapecah_model->get_by_uuid($uuid),
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('bendapecah/bendapecah-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'bendapecah'; 
+		$this->render('bendapecah/bendapecah-edit', $data);
 	}
 
 	public function delete($uuid)

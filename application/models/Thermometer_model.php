@@ -314,7 +314,7 @@ class Thermometer_model extends CI_Model {
 
 	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
 	{
-		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, tgl_update_produksi, status_produksi');
+		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, tgl_update_produksi, status_produksi, created_at');
 		$this->db->where('DATE(date)', $tanggal);
 
 		if (!empty($plant)) {

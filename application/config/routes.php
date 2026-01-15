@@ -395,6 +395,7 @@ $route['kebersihanruang/diketahui'] = 'form/kebersihanruang/diketahui';
 $route['kebersihanruang/statusprod/(:any)'] = 'form/kebersihanruang/statusprod/$1';
 $route['kebersihanruang/delete/(:any)'] = 'form/kebersihanruang/delete/$1';
 $route['kebersihanruang/logs'] = 'form/kebersihanruang_logs/index';
+$route['kebersihanruang/export_excel'] = 'form/kebersihanruang/export_excel';
 
 $route['sanitasiwarehouse'] = 'form/sanitasiwarehouse';
 $route['sanitasiwarehouse/tambah'] = 'form/sanitasiwarehouse/tambah';
@@ -470,13 +471,18 @@ $route['sensori/logs'] = 'form/sensori_logs/index';
 
 $route['reagen'] = 'form/reagen';
 $route['reagen/tambah'] = 'form/reagen/tambah';
-$route['reagen/detail/(:any)'] = 'form/reagen/detail/$1';
+$route['reagen/detail/(:num)/(:num)'] = 'form/reagen/detail/$1/$2';
 $route['reagen/edit/(:any)'] = 'form/reagen/edit/$1';
-$route['reagen/verifikasi'] = 'form/reagen/verifikasi';
-$route['reagen/status/(:any)'] = 'form/reagen/status/$1';
-$route['reagen/cetak'] = 'form/reagen/cetak';
+$route['reagen/update/(:any)'] = 'form/reagen/update/$1';
 $route['reagen/delete/(:any)'] = 'form/reagen/delete/$1';
 $route['reagen/logs'] = 'form/reagen_logs/index';
+$route['reagen/detail_bulan/(:num)/(:num)'] = 'form/reagen/detail_bulan/$1/$2';
+$route['reagen/edit_bulan/(:num)/(:num)']   = 'form/reagen/edit_bulan/$1/$2';
+$route['reagen/delete_bulan/(:num)/(:num)'] = 'form/reagen/delete_bulan/$1/$2';
+$route['reagen/verifikasi'] = 'form/reagen/verifikasi';
+$route['reagen/status/(:num)/(:num)']   = 'form/reagen/status/$1/$2';
+$route['reagen/verifikasi/(:num)/(:num)'] = 'form/reagen/verifikasi_bulan/$1/$2';
+$route['reagen/cetak/(:num)/(:num)']   = 'form/reagen/cetak/$1/$2';
 
 $route['residu'] = 'form/residu';
 $route['residu/tambah'] = 'form/residu/tambah';

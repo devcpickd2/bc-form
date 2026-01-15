@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Home extends CI_Controller {
+class Home extends MY_Controller {
 
 	public function __construct()
 	{
@@ -164,9 +164,8 @@ class Home extends CI_Controller {
 			'bulk_density_min_kode' => $bd_min_kode,
 		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('home/home', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'home'; 
+		$this->render('home/home', $data);
 	}
 
 	public function set_produksi_data()

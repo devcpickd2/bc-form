@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
-class Sanitasi extends CI_Controller {
+class Sanitasi extends MY_Controller {
 
 	public function __construct()
 	{
@@ -23,24 +23,21 @@ class Sanitasi extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_data_by_plant(),
-			'active_nav' => 'sanitasi', 
+			'sanitasi' => $this->sanitasi_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasi'; 
+		$this->render('form/sanitasi/sanitasi', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'sanitasi' => $this->sanitasi_model->get_by_uuid($uuid),
-			'active_nav' => 'sanitasi');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasi'; 
+		$this->render('form/sanitasi/sanitasi-detail', $data);
 	}
 
 	public function tambah()
@@ -60,13 +57,8 @@ class Sanitasi extends CI_Controller {
 			redirect('sanitasi');
 		}
 
-		$data = array(
-			'active_nav' => 'sanitasi'
-		);
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasi'; 
+		$this->render('form/sanitasi/sanitasi-tambah');
 	}
 
 	public function edit($uuid)
@@ -87,13 +79,11 @@ class Sanitasi extends CI_Controller {
 		}
 
 		$data = array(
-			'sanitasi'   => $this->sanitasi_model->get_by_uuid($uuid),
-			'active_nav' => 'sanitasi'
+			'sanitasi'   => $this->sanitasi_model->get_by_uuid($uuid)
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'sanitasi'; 
+		$this->render('form/sanitasi/sanitasi-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -114,19 +104,15 @@ class Sanitasi extends CI_Controller {
 		redirect('sanitasi');
 	}
 	
-	
 	public function verifikasi()
 	{
 		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-sanitasi', 
+			'sanitasi' => $this->sanitasi_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-sanitasi'; 
+		$this->render('form/sanitasi/sanitasi-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -147,68 +133,70 @@ class Sanitasi extends CI_Controller {
 
 		$data = array(
 			'sanitasi' => $this->sanitasi_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-sanitasi');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-status', $data);
-		$this->load->view('partials/footer');
-	}
-
-	public function diketahui()
-	{
-		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_data_by_plant(),
-			'active_nav' => 'diketahui-sanitasi', 
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-diketahui', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-sanitasi'; 
+		$this->render('form/sanitasi/sanitasi-status', $data);
 	}
 
+	// public function diketahui()
+	// {
+	// 	$data = array(
+	// 		'sanitasi' => $this->sanitasi_model->get_data_by_plant(),
+	// 		'active_nav' => 'diketahui-sanitasi', 
+	// 	);
 
-	public function statusprod($uuid)
-	{
-		$rules = $this->sanitasi_model->rules_diketahui();
-		$this->form_validation->set_rules($rules);
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/sanitasi/sanitasi-diketahui', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->sanitasi_model->diketahui_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Sanitasi berhasil di Update');
-				redirect('sanitasi/diketahui');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Sanitasi gagal di Update');
-				redirect('sanitasi/diketahui');
-			}
-		}
 
-		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_by_uuid($uuid), 
-			'active_nav' => 'diketahui-sanitasi');
+	// public function statusprod($uuid)
+	// {
+	// 	$rules = $this->sanitasi_model->rules_diketahui();
+	// 	$this->form_validation->set_rules($rules);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/sanitasi/sanitasi-statusprod', $data);
-		$this->load->view('partials/footer');
-	}
+	// 	if ($this->form_validation->run() == TRUE) {
+	
+	// 		$update = $this->sanitasi_model->diketahui_update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Status Pemeriksaan Sanitasi berhasil di Update');
+	// 			redirect('sanitasi/diketahui');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Status Pemeriksaan Sanitasi gagal di Update');
+	// 			redirect('sanitasi/diketahui');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'sanitasi' => $this->sanitasi_model->get_by_uuid($uuid), 
+	// 		'active_nav' => 'diketahui-sanitasi');
+
+	// 	$this->load->view('partials/head', $data);
+	// 	$this->load->view('form/sanitasi/sanitasi-statusprod', $data);
+	// 	$this->load->view('partials/footer');
+	// }
 
 	public function cetak()
 	{
 		$date = $this->input->post('date');
-		$date = date('Y-m-d', strtotime($date));
 		if (empty($date)) {
 			show_error('Tanggal belum dipilih', 404);
 		}
+
+		$date = date('Y-m-d', strtotime($date));
 
 		$plant = $this->session->userdata('plant');
 		if (empty($plant)) {
 			show_error('Plant tidak ditemukan di session.', 403);
 		}
+
 		$sanitasi_data = $this->sanitasi_model->get_by_date($date, $plant);
 		if (empty($sanitasi_data)) {
 			show_error('Data tidak ditemukan untuk tanggal ini atau bukan milik plant Anda.', 404);
 		}
+
 		$this->load->model('pegawai_model');
 		$nama_qc   = $this->pegawai_model->get_nama_lengkap($sanitasi_data[0]->username);
 		$nama_prod = $sanitasi_data[0]->nama_produksi;
@@ -220,9 +208,10 @@ class Sanitasi extends CI_Controller {
 		$pdf->setPrintHeader(false);
 		$pdf->SetMargins(10, 14, 10);
 		$pdf->AddPage();
+
 		$pdf->SetFont('times', 'B', 12);
 
-    // Tambahkan logo jika ada
+    // Tambahkan logo
 		$logo_path = FCPATH . 'assets/img/logo.jpg';
 		if (file_exists($logo_path)) {
 			$pdf->Image($logo_path, 10, 10, 38);
@@ -233,9 +222,9 @@ class Sanitasi extends CI_Controller {
 		$pdf->MultiCell(0, 5, 'PEMERIKSAAN SANITASI', 0, 'C');
 		$pdf->Ln(4);
 
-		$datetime         = new DateTime($date);
-		$formatted_date   = $datetime->format('l, d F Y');
-		$formatted_date2  = $datetime->format('d F Y');
+		$datetime        = new DateTime($date);
+		$formatted_date  = $datetime->format('l, d F Y');
+		$formatted_date2 = $datetime->format('d F Y');
 
 		$pdf->SetFont('times', '', 9);
 		$pdf->SetX(10);
@@ -249,7 +238,7 @@ class Sanitasi extends CI_Controller {
 		$pdf->Cell(15, 10, 'Pukul', 1, 0, 'C');
 		$pdf->Cell(30, 10, 'Area', 1, 0, 'C');
 		$pdf->Cell(50, 5, 'Kadar Klorin (ppm)', 1, 0, 'C');
-		$pdf->Cell(20, 10, 'Suhu Air', 1, 0, 'C');
+		$pdf->Cell(20, 10, 'sanitasi Air', 1, 0, 'C');
 		$pdf->Cell(37, 10, 'Keterangan', 1, 0, 'C');
 		$pdf->Cell(40, 10, 'Tindakan Koreksi', 1, 0, 'C');
 		$pdf->Cell(10, 5, '', 0, 1, 'C');
@@ -273,12 +262,15 @@ class Sanitasi extends CI_Controller {
 					$pdf->Cell(30, 5, $sanitasi->sub_area ?? '-', 1, 0, 'L');
 					$pdf->Cell(25, 5, $sanitasi->standar ?? '-', 1, 0, 'C');
 					$pdf->Cell(25, 5, $sanitasi->aktual ?? '-', 1, 0, 'C');
-					$pdf->Cell(20, 5, $sanitasi->suhu_air ?? '-', 1, 0, 'C');
+					$pdf->Cell(20, 5, $sanitasi->sanitasi_air ?? '-', 1, 0, 'C');
 					$pdf->Cell(37, 5, $sanitasi->keterangan ?? '-', 1, 0, 'C');
 					$pdf->Cell(40, 5, $sanitasi->tindakan ?? '-', 1, 1, 'C');
 				}
 			}
 		}
+
+		$pdf->SetFont('times', 'I', 7);
+		$pdf->Cell(190, 5, 'QB 04/00', 0, 1, 'R');
 
     // Catatan
 		$pdf->Ln(2);
@@ -289,62 +281,83 @@ class Sanitasi extends CI_Controller {
 			}
 		}
 
-    // Tanda Tangan + QR Code
-		$y_now = $pdf->GetY() + 5;
-		$status_spv_oke = true;
+    // Tanda tangan & QR Code
+		$y_ttd = $pdf->GetY() + 6;
+		$qr_size = 15;
+
+    // Cek status verifikasi
+		$status_verifikasi = true;
 		foreach ($sanitasi_data as $item) {
 			if ($item->status_spv != '1') {
-				$status_spv_oke = false;
+				$status_verifikasi = false;
 				break;
 			}
 		}
 
-		if ($status_spv_oke) {
+    // QC
+		$qc_usernames = [];
+		$qc_created_at = null;
+		foreach ($sanitasi_data as $item) {
+			if (!empty($item->username)) $qc_usernames[] = $item->username;
+			if (!$qc_created_at && !empty($item->created_at)) $qc_created_at = $item->created_at;
+		}
+		$qc_usernames = array_unique($qc_usernames);
+
+		$qc_nama_lengkap = [];
+		foreach ($qc_usernames as $username) {
+			$nama = $this->pegawai_model->get_nama_lengkap($username);
+			if (!empty($nama)) $qc_nama_lengkap[] = $nama;
+		}
+		$qc_nama_text = !empty($qc_nama_lengkap) ? implode(', ', array_unique($qc_nama_lengkap)) : '-';
+		$qc_tanggal = $qc_created_at ? (new DateTime($qc_created_at))->format('d-m-Y | H:i') : '-';
+		$qr_qc_text = "Dibuat secara digital oleh,\n$qc_nama_text\nQC Inspector\n$qc_tanggal";
+
+    // Produksi
+		$qr_produksi_text = null;
+		if (!empty($nama_prod) && !empty($sanitasi_data[0]->tgl_update_produksi)) {
+			$prod_tanggal = (new DateTime($sanitasi_data[0]->tgl_update_produksi))->format('d-m-Y | H:i');
+			$qr_produksi_text = "Diketahui secara digital oleh,\n$nama_prod\nForeman/Forelady Produksi\n$prod_tanggal";
+		}
+
+    // SPV
+		$spv_tanggal = !empty($sanitasi_data[0]->tgl_update_spv)
+		? (new DateTime($sanitasi_data[0]->tgl_update_spv))->format('d-m-Y | H:i')
+		: '-';
+		$qr_spv_text = "Disetujui secara digital oleh,\n$nama_spv\nSupervisor QC Bread Crumb\n$spv_tanggal";
+
+    // Cetak tanda tangan & QR Code
+		if ($status_verifikasi) {
 			$pdf->SetFont('times', '', 8);
+			$pdf->SetXY(20, $y_ttd);
+			$pdf->Cell(45, 5, 'Dibuat Oleh,', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd);
+			$pdf->Cell(45, 5, 'Diketahui Oleh,', 0, 0, 'C');
+			$pdf->SetXY(150, $y_ttd);
+			$pdf->Cell(45, 5, 'Disetujui Oleh,', 0, 1, 'C');
 
-        // Dibuat oleh
-			$pdf->SetXY(25, $y_now);
-			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_now + 10);
-			$pdf->SetFont('times', 'U', 8);
-			$pdf->Cell(35, 5, $nama_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8);
-			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+			$pdf->write2DBarcode($qr_qc_text, 'QRCODE,L', 35, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			if ($qr_produksi_text) $pdf->write2DBarcode($qr_produksi_text, 'QRCODE,L', 100, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
+			$pdf->write2DBarcode($qr_spv_text, 'QRCODE,L', 165, $y_ttd + 5, $qr_size, $qr_size, null, 'N');
 
-        // Diketahui oleh
-			$pdf->SetXY(90, $y_now);
-			$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-			if (!empty($sanitasi_data[0]->tgl_update_produksi) && $sanitasi_data[0]->status_produksi == 1) {
-				$pdf->SetXY(90, $y_now + 10);
-				$pdf->SetFont('times', 'U', 8);
-				$pdf->Cell(35, 5, $nama_prod, 0, 1, 'C');
-				$pdf->SetFont('times', '', 8);
-				$pdf->SetXY(90, $y_now + 15);
-				$pdf->Cell(35, 5, 'Foreman Produksi', 0, 0, 'C');
-			} else {
-				$pdf->SetXY(90, $y_now + 10);
-				$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
-			}
-
-
-        // Disetujui oleh
-			$pdf->SetXY(150, $y_now);
-			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-			$qr_text_spv = "Diverifikasi secara digital oleh,\n" . $nama_spv . "\nSPV QC\n" . (new DateTime($sanitasi_data[0]->tgl_update_spv))->format('d-m-Y | H:i');
-			$pdf->write2DBarcode($qr_text_spv, 'QRCODE,L', 167, $y_now + 5, 15, 15, null, 'N');
-			$pdf->SetXY(150, $y_now + 20);
-			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+			$pdf->SetXY(20, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'QC Inspector', 0, 0, 'C');
+			$pdf->SetXY(85, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
+			$pdf->SetXY(150, $y_ttd + 20);
+			$pdf->Cell(45, 5, 'Supervisor QC', 0, 1, 'C');
 		} else {
 			$pdf->SetFont('times', '', 8);
 			$pdf->SetTextColor(255, 0, 0);
-			$pdf->SetXY(100, $y_now);
-			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
+			$pdf->SetXY(80, $y_ttd);
+			$pdf->Cell(80, 6, 'Data Belum Diverifikasi', 0, 1, 'C');
+			$pdf->SetTextColor(0, 0, 0);
 		}
 
     // Output PDF
 		$filename = "Sanitasi_{$formatted_date2}.pdf";
 		$pdf->Output($filename, 'I');
 	}
+
 
 
 

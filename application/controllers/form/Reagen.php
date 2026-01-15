@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Reagen extends CI_Controller {
+class Reagen extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,29 +18,27 @@ class Reagen extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'reagen' => $this->reagen_model->get_data_by_plant(),
-			'active_nav' => 'reagen', 
+			'bulan_tahun' => $this->reagen_model->get_bulan_tahun_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/reagen/reagen', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'reagen'; 
+		$this->render('form/reagen/reagen', $data);
 	}
 
-	public function detail($uuid)
+	public function detail($bulan, $tahun)
 	{
-		$data = array(
-			'reagen' => $this->reagen_model->get_by_uuid($uuid),
-			'active_nav' => 'reagen');
+		$data = [
+			'reagen'     => $this->reagen_model->get_by_bulan_tahun($bulan, $tahun),
+			'bulan'      => $bulan,
+			'tahun'      => $tahun
+		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/reagen/reagen-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'reagen'; 
+		$this->render('form/reagen/reagen-detail', $data);
 	}
 
 	public function tambah()
 	{
-
 		$rules = $this->reagen_model->rules();
 		$this->form_validation->set_rules($rules);
 
@@ -49,46 +47,70 @@ class Reagen extends CI_Controller {
 			if ($insert) {
 				$this->session->set_flashdata('success_msg', 'Data Verifikasi Penggunaan Reagen Klorin berhasil di simpan');
 				redirect('reagen');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Verifikasi Penggunaan Reagen Klorin gagal di simpan');
 				redirect('reagen');
 			}
 		}
 
+    // AMBIL NO LOT TERAKHIR
+		$last_lot = $this->db
+		->select('no_lot')
+		->from('reagen')
+		->where('no_lot IS NOT NULL')
+		->order_by('id', 'DESC')
+		->limit(1)
+		->get()
+		->row();
+
 		$data = array(
-			'active_nav' => 'reagen');
+			'last_no_lot' => $last_lot->no_lot ?? '' 
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/reagen/reagen-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'reagen'; 
+		$this->render('form/reagen/reagen-tambah', $data);
 	}
-
 
 	public function edit($uuid)
 	{
 		$rules = $this->reagen_model->rules();
 		$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
-			
+		if ($this->form_validation->run() === TRUE) {
+
 			$update = $this->reagen_model->update($uuid);
+
+            // ambil konteks halaman asal
+			$bulan = $this->input->post('redirect_bulan');
+			$tahun = $this->input->post('redirect_tahun');
+
 			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Verifikasi Penggunaan Reagen Klorin berhasil di Update');
-				redirect('reagen');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Verifikasi Penggunaan Reagen Klorin gagal di Update');
+				$this->session->set_flashdata(
+					'success_msg',
+					'Data Verifikasi Penggunaan Reagen Klorin berhasil di Update'
+				);
+			} else {
+				$this->session->set_flashdata(
+					'error_msg',
+					'Data Verifikasi Penggunaan Reagen Klorin gagal di Update'
+				);
+			}
+
+            // 🔥 BALIK KE DETAIL PER BULAN
+			if ($bulan && $tahun) {
+				redirect('reagen/detail/' . $bulan . '/' . $tahun);
+			} else {
 				redirect('reagen');
 			}
 		}
 
-		$data = array(
-			'reagen' => $this->reagen_model->get_by_uuid($uuid),
-			'no_lot_list' => $this->reagen_model->get_all_no_lot(),
-			'active_nav' => 'reagen');
+        // load form edit jika validasi gagal / pertama buka
+		$data = [
+			'reagen' => $this->reagen_model->get_by_uuid($uuid)
+		];
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/reagen/reagen-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'reagen'; 
+		$this->render('form/reagen/reagen-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -98,6 +120,10 @@ class Reagen extends CI_Controller {
 			redirect('reagen');
 		}
 
+    // ambil konteks halaman asal dari GET parameter
+		$bulan = $this->input->get('bulan');
+		$tahun = $this->input->get('tahun');
+
 		$deleted = $this->reagen_model->delete_by_uuid($uuid);
 
 		if ($deleted) {
@@ -106,64 +132,67 @@ class Reagen extends CI_Controller {
 			$this->session->set_flashdata('error_msg', 'Gagal menghapus data.');
 		}
 
-		redirect('reagen');
+    // redirect kembali ke halaman asal
+		if ($bulan && $tahun) {
+			redirect('reagen/detail/' . $bulan . '/' . $tahun);
+		} else {
+			redirect('reagen');
+		}
 	}
 
 	public function verifikasi()
 	{
-		$data = array(
-			'reagen' => $this->reagen_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-reagen', 
-		);
+		$bulan_tahun = $this->reagen_model->get_bulan_tahun_by_plant();
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/reagen/reagen-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$data = [
+			'bulan_tahun' => $bulan_tahun
+		];
+
+		$this->active_nav = 'verifikasi-reagen'; 
+		$this->render('form/reagen/reagen-verifikasi', $data);
 	}
 
-
-	public function status($uuid)
+	public function verifikasi_bulan($bulan, $tahun)
 	{
-		$rules = $this->reagen_model->rules_verifikasi();
-		$this->form_validation->set_rules($rules);
+		$update = $this->reagen_model->verifikasi_bulan($bulan, $tahun);
 
-		if ($this->form_validation->run() == TRUE) {
-			
-			$update = $this->reagen_model->verifikasi_update($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Status Verifikasi Penggunaan Reagen Klorin berhasil di Update');
-				redirect('reagen/verifikasi');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Status Verifikasi Penggunaan Reagen Klorin gagal di Update');
-				redirect('reagen/verifikasi');
-			}
+		if($update){
+			$this->session->set_flashdata('success_msg', 'Semua data bulan ' . $bulan . ' / ' . $tahun . ' berhasil diverifikasi');
+		} else {
+			$this->session->set_flashdata('error_msg', 'Verifikasi gagal.');
 		}
 
-		$data = array(
-			'reagen' => $this->reagen_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-reagen');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/reagen/reagen-status', $data);
-		$this->load->view('partials/footer');
+		redirect('reagen/verifikasi');
 	}
 
-	public function cetak()
+	public function status($bulan, $tahun)
 	{
-		$bulan = $this->input->get('bulan');
+		$reagen = $this->reagen_model->get_by_bulan_tahun($bulan, $tahun);
 
-		if (empty($bulan)) {
-			show_error('Tidak ada bulan yang dipilih', 404);
+		$data = [
+			'reagen' => $reagen,
+			'bulan'  => $bulan,
+			'tahun'  => $tahun
+		];
+
+		$this->active_nav = 'verifikasi-reagen'; 
+		$this->render('form/reagen/reagen-status', $data);
+	}
+
+	public function cetak($bulan = null, $tahun = null)
+	{
+    // Pastikan parameter valid
+		if (!$bulan || !$tahun) {
+			show_error('Bulan atau tahun tidak valid', 404);
 		}
 
-		[$tahun, $bln] = explode('-', $bulan);
-		$start_date = "$tahun-$bln-01";
+		$start_date = "$tahun-$bulan-01";
 		$end_date = date("Y-m-t", strtotime($start_date)); 
-
 		$plant = $this->session->userdata('plant');
 
-		$reagen_data = $this->reagen_model->get_by_month($start_date, $end_date, $plant); 
-		$reagen_data_verif = $this->reagen_model-> get_last_verif_by_month($start_date, $end_date, $plant); 
+    // Ambil data seperti versi lama, tapi sesuai bulan & tahun dari URL
+		$reagen_data = $this->reagen_model->get_by_month($start_date, $end_date, $plant);
+		$reagen_data_verif = $this->reagen_model->get_last_verif_by_month($start_date, $end_date, $plant);
 
 		if (!$reagen_data || !$reagen_data_verif) {
 			show_error('Data tidak ditemukan, Pilih bulan yang ingin dicetak', 404);
@@ -190,7 +219,7 @@ class Reagen extends CI_Controller {
 		$pdf->MultiCell(0, 5, 'VERIFIKASI PENGGUNAAN REAGEN KLORIN', 0, 'C');
 
 		$pdf->SetFont('times', '', 9);
-		$pdf->MultiCell(0, 3, 'Bulan : ' . date('F', strtotime($start_date)), 0, 'L');
+		$pdf->MultiCell(0, 3, 'Bulan : ' . date('F', strtotime($start_date)) . ' ' . $tahun, 0, 'L');
 
 		$pdf->Ln(1);
 		$pdf->SetFont('times', '', 8);
@@ -208,8 +237,7 @@ class Reagen extends CI_Controller {
 		$pdf->Cell(20, 5, 'Buka Botol', 0, 0, 'C');   
 		$pdf->Cell(30, 5, 'Larutan (mL)', 0, 0, 'C');  
 		$pdf->Cell(30, 5, 'Larutan (mL)', 0, 0, 'C');    
-		$pdf->Cell(20, 5, 'Nama', 1, 0, 'C'); 
-		$pdf->Cell(20, 5, 'Paraf', 1, 0, 'C');
+		$pdf->Cell(40, 5, 'Nama', 1, 0, 'C'); 
 		$pdf->Cell(0, 0, '', 0, 0, 'C');
 		$pdf->Cell(25, 5, '', 0, 1, 'C');
 
@@ -225,8 +253,7 @@ class Reagen extends CI_Controller {
 			$pdf->Cell(20, 5, $open, 1, 0, 'C');
 			$pdf->Cell(30, 5, $reagen->volume_penggunaan, 1, 0, 'C');
 			$pdf->Cell(30, 5, $reagen->volume_akhir, 1, 0, 'C');
-			$pdf->Cell(20, 5, $reagen->username, 1, 0, 'C');
-			$pdf->Cell(20, 5, "", 1, 0, 'C');
+			$pdf->Cell(40, 5, $reagen->username, 1, 0, 'C');
 			$pdf->Ln();
 		}
 
@@ -259,21 +286,44 @@ class Reagen extends CI_Controller {
 		if ($status_verifikasi) {
 			$y_verifikasi = $y_after_keterangan;
 
-			$pdf->SetXY(25, $y_verifikasi + 5);
-			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-			$pdf->SetXY(25, $y_verifikasi + 10);
-			$pdf->SetFont('times', 'U', 8); 
-			$pdf->Cell(35, 5, $data['reagen']->nama_lengkap_qc, 0, 1, 'C');
-			$pdf->SetFont('times', '', 8); 
-			$pdf->Cell(65, 5, 'QC Inspector', 0, 0, 'C');
+			$qc_usernames = array_unique(array_column($reagen_data, 'username'));
+			$this->load->model('pegawai_model');
+			$qc_nama_list = [];
+			foreach ($qc_usernames as $username) {
+    // Ambil nama lengkap QC
+				$nama = $this->pegawai_model->get_nama_lengkap($username);
 
-			$pdf->SetXY(150, $y_verifikasi + 5);
+    // Ambil entry pertama dari QC ini
+				$entry = current(array_filter($reagen_data, fn($r) => $r->username === $username));
+				$tanggal = (new DateTime($entry->created_at))->format('d-m-Y | H:i');
+
+    // Gabungkan nama dan tanggal
+				$qc_nama_list[] = "$nama - $tanggal";
+			}
+
+			$qr_text_qc = "Diverifikasi oleh QC:\n" . implode("\n", $qc_nama_list);
+
+
+    // QR QC kiri bawah
+			$x_qc = 25;
+			$y_qc = $y_verifikasi + 5;
+			$pdf->SetXY($x_qc, $y_qc);
+			$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 1, 'C');
+			$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', $x_qc, $y_qc + 5, 35, 15, null, 'N');
+			$pdf->SetXY($x_qc, $y_qc + 20);
+			$pdf->Cell(35, 5, 'QC Inspector', 0, 0, 'C');
+
+    // QR Supervisor kanan bawah
+			$x_spv = 150;
+			$pdf->SetXY($x_spv, $y_verifikasi + 5);
 			$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
+
 			$update_tanggal = (new DateTime($data['reagen']->tgl_update_spv))->format('d-m-Y | H:i');
-			$qr_text = "Diverifikasi secara digital oleh,\n" . $data['reagen']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-			$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
-			$pdf->SetXY(150, $y_verifikasi + 24);
+			$qr_text_spv = "Diverifikasi secara digital oleh,\n" . $data['reagen']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
+			$pdf->write2DBarcode($qr_text_spv, 'QRCODE,L', $x_spv, $y_verifikasi + 10, 48, 15, null, 'N');
+			$pdf->SetXY($x_spv, $y_verifikasi + 24);
 			$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
+
 		} else {
 			$pdf->SetTextColor(255, 0, 0); 
 			$pdf->SetFont('times', '', 8);

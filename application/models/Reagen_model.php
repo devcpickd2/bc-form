@@ -40,7 +40,7 @@ class Reagen_model extends CI_Model {
 			],
 			[
 				'field' => 'volume_akhir',
-				'label' => 'Last Volume',
+				'label' => 'Last Volume', 
 				'rules' => 'required'
 			],
 			[
@@ -294,4 +294,46 @@ class Reagen_model extends CI_Model {
 		return $query->result_array(); 
 	}
 
+	public function get_bulan_tahun_by_plant()
+	{
+		$this->db->select('MONTH(date) as bulan, YEAR(date) as tahun');
+		$this->db->from('reagen');
+		$this->db->where('plant', $this->session->userdata('plant'));
+		$this->db->group_by(['MONTH(date)', 'YEAR(date)']);
+		$this->db->order_by('YEAR(date)', 'ASC');
+		$this->db->order_by('MONTH(date)', 'ASC');
+
+		return $this->db->get()->result();
+	}
+
+	public function detail_bulan($bulan, $tahun)
+	{
+		$data['reagen'] = $this->db
+		->where('MONTH(date)', $bulan)
+		->where('YEAR(date)', $tahun)
+		->get('reagen')
+		->result();
+
+		$this->load->view('form/reagen/detail_bulan', $data);
+	}
+
+	public function get_by_bulan_tahun($bulan, $tahun)
+	{
+		$this->db->from('reagen');
+		$this->db->where('MONTH(date)', $bulan);
+		$this->db->where('YEAR(date)', $tahun);
+		$this->db->where('plant', $this->session->userdata('plant'));
+		$this->db->order_by('date', 'ASC');
+
+		return $this->db->get()->result();
+	}
+
+	public function verifikasi_bulan($bulan, $tahun)
+	{
+		$data = ['status_spv' => 1, 'tgl_update_spv' => date('Y-m-d H:i:s')];
+		$this->db->where('MONTH(date)', $bulan);
+		$this->db->where('YEAR(date)', $tahun);
+		$this->db->where('plant', $this->session->userdata('plant'));
+		return $this->db->update('reagen', $data);
+	}
 }

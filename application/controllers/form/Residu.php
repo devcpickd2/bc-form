@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Residu extends CI_Controller {
+class Residu extends MY_Controller {
 
 	public function __construct()
 	{
@@ -18,24 +18,21 @@ class Residu extends CI_Controller {
 	public function index()
 	{
 		$data = array(
-			'residu' => $this->residu_model->get_data_by_plant(),
-			'active_nav' => 'residu', 
+			'residu' => $this->residu_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/residu/residu', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'residu'; 
+		$this->render('form/residu/residu', $data);
 	}
 
 	public function detail($uuid)
 	{
 		$data = array(
 			'residu' => $this->residu_model->get_by_uuid($uuid),
-			'active_nav' => 'residu');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/residu/residu-detail', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'residu'; 
+		$this->render('form/residu/residu-detail', $data);
 	}
 
 	public function tambah()
@@ -55,14 +52,9 @@ class Residu extends CI_Controller {
 			}
 		}
 
-		$data = array(
-			'active_nav' => 'residu');
-
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/residu/residu-tambah');
-		$this->load->view('partials/footer');
+		$this->active_nav = 'residu'; 
+		$this->render('form/residu/residu-tambah');
 	}
-
 
 	public function edit($uuid)
 	{
@@ -83,11 +75,10 @@ class Residu extends CI_Controller {
 
 		$data = array(
 			'residu' => $this->residu_model->get_by_uuid($uuid),
-			'active_nav' => 'residu');
+		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/residu/residu-edit', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'residu'; 
+		$this->render('form/residu/residu-edit', $data);
 	}
 
 	public function delete($uuid)
@@ -111,15 +102,12 @@ class Residu extends CI_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'residu' => $this->residu_model->get_data_by_plant(),
-			'active_nav' => 'verifikasi-residu', 
+			'residu' => $this->residu_model->get_data_by_plant()
 		);
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/residu/residu-verifikasi', $data);
-		$this->load->view('partials/footer');
+		$this->active_nav = 'verifikasi-residu'; 
+		$this->render('form/residu/residu-verifikasi', $data);
 	}
-
 
 	public function status($uuid)
 	{
@@ -139,12 +127,12 @@ class Residu extends CI_Controller {
 		}
 
 		$data = array(
-			'residu' => $this->residu_model->get_by_uuid($uuid),
-			'active_nav' => 'verifikasi-residu');
+			'residu' => $this->residu_model->get_by_uuid($uuid)
+		  );
 
-		$this->load->view('partials/head', $data);
-		$this->load->view('form/residu/residu-status', $data);
-		$this->load->view('partials/footer');
+
+		$this->active_nav = 'verifikasi-residu'; 
+		$this->render('form/residu/residu-status', $data);
 	} 
 
 	public function cetak()
