@@ -113,6 +113,20 @@
                     </button>
                 </form>
             </div>
+
+            <hr>
+
+            <div class="form-group mt-3">
+                <form action="<?= base_url('kontaminasi/export_excel') ?>" method="post" class="form-inline">
+                    <label for="bulan" class="mr-2 font-weight-bold">Export Excel Bulanan:</label>
+                    <input type="month" name="bulan" class="form-control mr-2" required>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>

@@ -59,49 +59,37 @@
                             <div class="invalid-feedback"><?= form_error('shift') ?></div>
                         </div>
                     </div>
-                 <!--    <div class="form-group row">
-                     <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Kode Thermometer</label>
-                        <input type="text" name="kode_thermo" class="form-control <?= form_error('kode_thermo') ? 'invalid' : '' ?> " value="<?= set_value('kode_thermo'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('kode_thermo')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('kode_thermo') ?>
-                        </div>
-                    </div> 
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Model</label>
-                        <input type="text" name="model" class="form-control <?= form_error('model') ? 'invalid' : '' ?> " value="<?= set_value('model'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('model')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('model') ?>
-                        </div>
-                    </div> 
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Area</label>
-                        <input type="text" name="area" class="form-control <?= form_error('area') ? 'invalid' : '' ?> " value="<?= set_value('area'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('area')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('area') ?>
-                        </div> 
-                    </div> 
-                </div> -->
-                <hr>
-                <div class="form-area" id="form-thermometer-wrapper">
-                    <label class="form-label font-weight-bold mb-2">Hasil Pemeriksaan</label>
+                    <hr>
+                    <div class="form-area" id="form-thermometer-wrapper">
+                        <label class="form-label font-weight-bold mb-2">Hasil Pemeriksaan</label>
 
-                    <div class="thermometer-group border p-3 mb-3 rounded bg-light" data-index="0">
-                        <div class="form-row d-flex flex-wrap align-items-end">
-                            
-                            <div class="col-auto mb-2">
-                                <label class="small mb-1">Kode Thermometer</label>
-                                <input type="text" name="kode_thermo[]" class="form-control form-control-sm">
+                        <div class="thermometer-group border p-3 mb-3 rounded bg-light" data-index="0">
+                            <div class="form-row d-flex flex-wrap align-items-end">
+
+                                <div class="col-auto mb-2">
+                                    <label class="small mb-1">Kode Thermometer</label>
+                                    <select name="kode_thermo[]" class="form-control form-control-sm kode-thermo">
+                                        <option value="" disabled selected>Pilih Kode Thermometer</option>
+                                        <?php foreach($list_thermo as $lt): ?>
+                                            <option 
+                                            value="<?= $lt->kode_thermometer ?>"
+                                            data-model="<?= $lt->model ?>"
+                                            data-area="<?= $lt->area ?>"
+                                            >
+                                            <?= $lt->kode_thermometer ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="col-auto mb-2">
                                 <label class="small mb-1">Model</label>
-                                <input type="text" name="model[]" class="form-control form-control-sm">
+                                <input type="text" name="model[]" class="form-control form-control-sm model" readonly>
                             </div>
 
                             <div class="col-auto mb-2">
                                 <label class="small mb-1">Area</label>
-                                <input type="text" name="area[]" class="form-control form-control-sm">
+                                <input type="text" name="area[]" class="form-control form-control-sm area">
                             </div>
 
                             <div class="col-auto mb-2">
@@ -170,31 +158,32 @@
         background-color: #2E86C1;
     }
 </style>
+
 <script>
     $(document).ready(function () {
-        let index = 1;
 
+    // =============================
+    // TAMBAH BARIS
+    // =============================
         $('#add-thermometer').click(function () {
-            const newGroup = $('.thermometer-group').first().clone();
-            newGroup.attr('data-index', index);
 
-        // Reset input
-            newGroup.find('input[type="text"], input[type="number"]').val('');
-            newGroup.find('input[type="radio"]').prop('checked', false);
+            let newGroup = $('.thermometer-group').first().clone();
 
-        // Reset select native (tanpa Select2)
+        // Reset semua input
+            newGroup.find('input[type="text"], input[type="number"], input[type="time"]').val('');
+            newGroup.find('textarea').val('');
             newGroup.find('select').val('');
 
-        // Update name radio button berdasarkan index
-            newGroup.find('input[type="radio"]').each(function () {
-                const baseName = $(this).attr('name').split('[')[0];
-                $(this).attr('name', baseName + '[' + index + ']');
-            });
+        // Kosongkan auto fill
+            newGroup.find('.model').val('');
+            newGroup.find('.area').val('');
 
             $('#form-thermometer-wrapper').append(newGroup);
-            index++;
         });
 
+    // =============================
+    // HAPUS BARIS
+    // =============================
         $(document).on('click', '.btn-remove', function () {
             if ($('.thermometer-group').length > 1) {
                 $(this).closest('.thermometer-group').remove();
@@ -202,5 +191,22 @@
                 alert("Minimal satu baris harus ada.");
             }
         });
+
+
+    // =============================
+    // AUTO FILL MODEL & AREA
+    // =============================
+        $(document).on('change', '.kode-thermo', function () {
+
+            let selected = $(this).find(':selected');
+            let model = selected.data('model');
+            let area  = selected.data('area');
+
+            let parent = $(this).closest('.thermometer-group');
+
+            parent.find('.model').val(model ? model : '');
+            parent.find('.area').val(area ? area : '');
+        });
+
     });
 </script>

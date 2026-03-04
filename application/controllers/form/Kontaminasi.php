@@ -1,5 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Legend;
+use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
+use Mpdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class Kontaminasi extends MY_Controller {
 
@@ -372,78 +385,79 @@ public function cetak()
 
 	foreach ($kontaminasi_data as $k) {
 
-		$startX = $pdf->GetX();
-		$startY = $pdf->GetY();
+		$rowHeight = 20;
 
     // Pukul
 		$pdf->MultiCell(15, $rowHeight, date('H:i', strtotime($k->time)), 1, 'C', false, 0);
 
-    // Jenis
+    // Jenis Kontaminasi
 		$pdf->MultiCell(30, $rowHeight, $k->jenis_kontaminasi, 1, 'L', false, 0);
 
     // Bukti (gambar)
 		$xImage = $pdf->GetX();
 		$yImage = $pdf->GetY();
+    $pdf->Cell(30, $rowHeight, '', 1, 0, 'C'); // border sel
 
-		$pdf->Cell(30, $rowHeight, '', 1, 0);
+    $image_path = FCPATH . 'uploads/kontaminasi/' . $k->bukti;
+    if (file_exists($image_path)) {
+        $pdf->Image($image_path, $xImage + 1, $yImage + 1, 28, 18); // atur ukuran supaya muat sel
+     }
 
-		$image_path = FCPATH . 'uploads/kontaminasi/' . $k->bukti;
-		if (file_exists($image_path)) {
-			$pdf->Image($image_path, $xImage + 2, $yImage + 2, 26, 16);
-		}
-
-    // Produk
-		$pdf->MultiCell(50, $rowHeight, $k->nama_produk . "\n" . $k->kode_produksi, 1, 'C', false, 0);
+    // Nama Produk / Kode Produksi
+     $pdf->MultiCell(50, $rowHeight, $k->nama_produk . "\n" . $k->kode_produksi, 1, 'C', false, 0);
 
     // Tahapan
-		$pdf->MultiCell(35, $rowHeight, $k->tahapan, 1, 'C', false, 0);
+     $pdf->MultiCell(35, $rowHeight, $k->tahapan, 1, 'C', false, 0);
 
-    // Analisis
-		$pdf->MultiCell(45, $rowHeight, $k->analisis, 1, 'C', false, 0);
+    // Analisis Temuan
+     $pdf->MultiCell(45, $rowHeight, $k->analisis, 1, 'C', false, 0);
 
-    // Tindakan
-		$pdf->MultiCell(45, $rowHeight, $k->tindakan, 1, 'C', false, 0);
+    // Tindakan Koreksi
+     $pdf->MultiCell(45, $rowHeight, $k->tindakan, 1, 'C', false, 0);
 
     // Keterangan
-		$pdf->MultiCell(40, $rowHeight, $k->keterangan ?: '-', 1, 'C', false, 0);
+     $pdf->MultiCell(40, $rowHeight, $k->keterangan ?: '-', 1, 'C', false, 0);
 
-    // QC & Prod
-		$pdf->MultiCell(15, $rowHeight, $k->username, 1, 'C', false, 0);
-		$pdf->MultiCell(15, $rowHeight, $k->nama_produksi, 1, 'C', false, 1);
-	}
+    // QC
+     $pdf->MultiCell(15, $rowHeight, $k->username, 1, 'C', false, 0);
 
-	$pdf->SetFont('times', 'I', 7);
-	$pdf->Cell(315, 5, 'QB 09/00', 0, 1, 'R'); 
+    // Produksi
+    $pdf->MultiCell(15, $rowHeight, $k->nama_produksi, 1, 'C', false, 1); // pindah baris
+ }
 
-	$this->load->model('Pegawai_model');
-	$nama_lengkap_qc   = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->username);
-	$nama_lengkap_prod = $data['kontaminasi']->nama_produksi;
-	$nama_lengkap_spv  = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->nama_spv);
 
-	$tanggal_update = $data['kontaminasi']->tgl_update_spv;
-	$update_tanggal = (new DateTime($tanggal_update))->format('d-m-Y | H:i');
+ $pdf->SetFont('times', 'I', 7);
+ $pdf->Cell(315, 5, 'QB 09/00', 0, 1, 'R'); 
 
-	$tanggal_update_prod = $data['kontaminasi']->tgl_update_produksi;
-	$update_tanggal_prod = (new DateTime($tanggal_update_prod))->format('d-m-Y | H:i');
+ $this->load->model('Pegawai_model');
+ $nama_lengkap_qc   = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->username);
+ $nama_lengkap_prod = $data['kontaminasi']->nama_produksi;
+ $nama_lengkap_spv  = $this->Pegawai_model->get_nama_lengkap($data['kontaminasi']->nama_spv);
 
-	$status_verifikasi = true;
-	foreach ($kontaminasi_data as $item) {
-		if ($item->status_spv != '1') {
-			$status_verifikasi = false;
-			break;
-		}
-	}
+ $tanggal_update = $data['kontaminasi']->tgl_update_spv;
+ $update_tanggal = (new DateTime($tanggal_update))->format('d-m-Y | H:i');
 
-	$y_setelah_tabel = $pdf->GetY() + 3;
-	$pdf->SetFont('times', '', 9);
-	$pdf->SetXY(20, $y_setelah_tabel); 
-	$pdf->Cell(100, 3, 'Catatan : ', 0, 1, 'L');
-	foreach ($kontaminasi_data as $item) {
-		if (!empty($item->catatan)) {
-			$pdf->Cell(12, 0, '', 0, 0, 'L'); 
-			$pdf->Cell(180, 0, ' - ' . $item->catatan, 0, 1, 'L');
-		}
-	}
+ $tanggal_update_prod = $data['kontaminasi']->tgl_update_produksi;
+ $update_tanggal_prod = (new DateTime($tanggal_update_prod))->format('d-m-Y | H:i');
+
+ $status_verifikasi = true;
+ foreach ($kontaminasi_data as $item) {
+ 	if ($item->status_spv != '1') {
+ 		$status_verifikasi = false;
+ 		break;
+ 	}
+ }
+
+ $y_setelah_tabel = $pdf->GetY() + 3;
+ $pdf->SetFont('times', '', 9);
+ $pdf->SetXY(20, $y_setelah_tabel); 
+ $pdf->Cell(100, 3, 'Catatan : ', 0, 1, 'L');
+ foreach ($kontaminasi_data as $item) {
+ 	if (!empty($item->catatan)) {
+ 		$pdf->Cell(12, 0, '', 0, 0, 'L'); 
+ 		$pdf->Cell(180, 0, ' - ' . $item->catatan, 0, 1, 'L');
+ 	}
+ }
 
 	// $y_after_keterangan = $pdf->GetY() + 5;
 	// if ($status_verifikasi) {
@@ -498,11 +512,11 @@ public function cetak()
 	// 	$pdf->Cell(60, 4, 'Data Belum Diverifikasi', 0, 0, 'C');
 	// }
 
-	$pdf->SetFont('times', '', 9);
-	$pdf->SetTextColor(0, 0, 0);
+ $pdf->SetFont('times', '', 9);
+ $pdf->SetTextColor(0, 0, 0);
 
-	$y_ttd   = $pdf->GetY() + 6;
-	$qr_size = 15;
+ $y_ttd   = $pdf->GetY() + 6;
+ $qr_size = 15;
 
 /* ===========================
    QC MULTI USER
@@ -609,5 +623,169 @@ public function cetak()
    $filename = "Kontaminasi Benda Asing_{$formatted_date2}.pdf";
    $pdf->Output($filename, 'I');
 }
+
+public function export_excel()
+{
+	require_once(APPPATH . 'libraries/phpqrcode.php');
+
+	$this->load->model('Pegawai_model');
+
+	$bulan = $this->input->post('bulan');
+	if (empty($bulan)) {
+		show_error('Bulan tidak dipilih', 404);
+	}
+
+	[$tahun, $bulanAngka] = explode('-', $bulan);
+	$plant = $this->session->userdata('plant');
+
+	$allData = $this->kontaminasi_model->get_by_month($tahun, $bulanAngka, $plant);
+
+	if (empty($allData)) {
+		show_error('Data tidak ditemukan', 404);
+	}
+
+	$filePath = FCPATH . 'assets/excel/Kontaminasi Benda Asing.xlsx';
+	$spreadsheet = IOFactory::load($filePath);
+	$sheet = $spreadsheet->getActiveSheet();
+
+	// ================= HEADER =================
+	$namaBulan = [
+		'01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April',
+		'05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus',
+		'09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'
+	];
+	$sheet->setCellValue('A6', 'Bulan : ' . $namaBulan[$bulanAngka] . ' ' . $tahun);
+
+	usort($allData, fn($a, $b) => strtotime($a->created_at) <=> strtotime($b->created_at));
+
+	// ================= ISI DATA =================
+	$startingRow = 11;
+	$shiftArray = [];
+	$catatanArr = [];
+
+	foreach ($allData as $data) {
+
+		if (!empty($data->shift) && !in_array($data->shift, $shiftArray)) {
+			$shiftArray[] = $data->shift;
+		}
+
+		$sheet->getRowDimension($startingRow)->setRowHeight(80);
+
+	// ================= ISI CELL =================
+		$sheet->setCellValue(
+			'A'.$startingRow,
+			date('d/m/Y', strtotime($data->date)) . ' / ' . date('H:i', strtotime($data->time))
+		);
+
+		$sheet->setCellValue('B'.$startingRow, $data->jenis_kontaminasi);
+		$sheet->setCellValue('D'.$startingRow, $data->nama_produk.' / '.$data->kode_produksi);
+		$sheet->setCellValue('E'.$startingRow, $data->tahapan);
+		$sheet->setCellValue('F'.$startingRow, $data->analisis);
+		$sheet->setCellValue('G'.$startingRow, $data->tindakan);
+		$sheet->setCellValue('H'.$startingRow, $data->keterangan);
+		$sheet->setCellValue('I'.$startingRow, $data->username);
+		$sheet->setCellValue('J'.$startingRow, $data->nama_produksi);
+
+	// ================= WRAP TEXT & ALIGN =================
+		$sheet->getStyle("A{$startingRow}:J{$startingRow}")
+		->getAlignment()
+		->setWrapText(true)
+		->setVertical(Alignment::VERTICAL_CENTER);
+
+	// ================= BORDER =================
+		$sheet->getStyle("A{$startingRow}:J{$startingRow}")
+		->getBorders()
+		->getAllBorders()
+		->setBorderStyle(Border::BORDER_THIN);
+
+	// ================= GAMBAR =================
+		if (!empty($data->bukti) && file_exists('./uploads/kontaminasi/'.$data->bukti)) {
+			$drawing = new Drawing();
+			$drawing->setPath('./uploads/kontaminasi/'.$data->bukti);
+			$drawing->setHeight(70);
+			$drawing->setCoordinates('C'.$startingRow);
+			$drawing->setWorksheet($sheet);
+		}
+
+		if (!empty($data->catatan)) {
+			$catatanArr[] = $data->catatan;
+		}
+
+		$startingRow++;
+	}
+
+
+	$sheet->setCellValue('D6', 'Shift : '.implode(', ', $shiftArray));
+
+	// ================= TTD =================
+	$ttdTitleRow = $startingRow + 3;
+	$ttdDataRow  = $ttdTitleRow + 1;
+
+	$sheet->setCellValue("B{$ttdTitleRow}", 'Dibuat Oleh,');
+	$sheet->setCellValue("E{$ttdTitleRow}", 'Diketahui Oleh,');
+	$sheet->setCellValue("H{$ttdTitleRow}", 'Disetujui Oleh,');
+
+	$sheet->mergeCells("B{$ttdTitleRow}:D{$ttdTitleRow}");
+	$sheet->mergeCells("E{$ttdTitleRow}:G{$ttdTitleRow}");
+	$sheet->mergeCells("H{$ttdTitleRow}:J{$ttdTitleRow}");
+
+	$sheet->getRowDimension($ttdDataRow)->setRowHeight(80);
+
+	// ================= DATA QR =================
+	$status_spv = $allData[0]->status_spv ?? 0;
+
+	$qc_users = array_unique(array_column($allData, 'username'));
+	$qc_names = [];
+	foreach ($qc_users as $u) {
+		$nama = $this->Pegawai_model->get_nama_lengkap($u);
+		if ($nama) $qc_names[] = $nama;
+	}
+
+	$qc_date  = !empty($allData[0]->created_at)
+	? date('d-m-Y | H:i', strtotime($allData[0]->created_at)) : '-';
+
+	$prod_date = !empty($allData[0]->tgl_update_produksi)
+	? date('d-m-Y | H:i', strtotime($allData[0]->tgl_update_produksi)) : '-';
+
+	$spv_date = !empty($allData[0]->tgl_update_spv)
+	? date('d-m-Y | H:i', strtotime($allData[0]->tgl_update_spv)) : '-';
+
+	$qrTexts = [
+		'B' => "Dibuat secara digital oleh\n".implode(', ', $qc_names)."\nQC Inspector\n".$qc_date,
+		'E' => "Diketahui secara digital oleh\nForeman / Forelady Produksi\n".$prod_date,
+		'H' => "Disetujui secara digital oleh\nSupervisor QC\n".$spv_date
+	];
+
+	if ($status_spv == 1) {
+
+		foreach ($qrTexts as $col => $text) {
+			$tmp = sys_get_temp_dir().'/qr_'.uniqid().'.png';
+			QRcode::png($text, $tmp, QR_ECLEVEL_H, 4);
+ 
+			$draw = new Drawing();
+			$draw->setPath($tmp);
+			$draw->setCoordinates($col.$ttdDataRow);
+			$draw->setHeight(80);
+			$draw->setWorksheet($sheet);
+		}
+
+	} else {
+
+		$sheet->setCellValue("B{$ttdDataRow}", "Data belum terverifikasi");
+		$sheet->mergeCells("B{$ttdDataRow}:J{$ttdDataRow}");
+		$sheet->getStyle("B{$ttdDataRow}")->getFont()->setBold(true)->getColor()->setRGB('FF0000');
+		$sheet->getStyle("B{$ttdDataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+	}
+
+	// ================= OUTPUT =================
+	$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+	header("Content-Disposition: attachment; filename=Kontaminasi_Benda_Asing_{$bulan}.xlsx");
+	header('Cache-Control: max-age=0');
+	$writer->save('php://output');
+	exit;
+}
+
+
 }
 

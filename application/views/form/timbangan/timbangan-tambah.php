@@ -14,68 +14,29 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <form class="user" method="post" action="<?= base_url('timbangan/tambah');?>" enctype="multipart/form-data">
-                 <?php
-                 $produksi_data = $this->session->userdata('produksi_data');
-                 $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
-                 $shift_sess = $produksi_data['shift'] ?? '';
-                 ?>
-                 <div class="form-group row">
-                   <div class="col-md-4">
-                    <label class="font-weight-bold">Tanggal</label>
-                    <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
-                    value="<?= set_value('date', $tanggal_sess) ?>">
-                    <div class="invalid-feedback"><?= form_error('date') ?></div>
+                   <?php
+                   $produksi_data = $this->session->userdata('produksi_data');
+                   $tanggal_sess = $produksi_data['tanggal'] ?? date('Y-m-d');
+                   $shift_sess = $produksi_data['shift'] ?? '';
+                   ?>
+                   <div class="form-group row">
+                     <div class="col-md-4">
+                        <label class="font-weight-bold">Tanggal</label>
+                        <input type="date" name="date" class="form-control <?= form_error('date') ? 'is-invalid' : '' ?>"
+                        value="<?= set_value('date', $tanggal_sess) ?>">
+                        <div class="invalid-feedback"><?= form_error('date') ?></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Shift</label>
+                        <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
+                            <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
+                            <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
+                            <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
+                            <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
+                        </select>
+                        <div class="invalid-feedback"><?= form_error('shift') ?></div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="font-weight-bold">Shift</label>
-                    <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
-                        <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
-                        <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
-                        <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
-                        <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
-                    </select>
-                    <div class="invalid-feedback"><?= form_error('shift') ?></div>
-                </div>
-            </div>
-<!--                 <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Kode Timbangan</label>
-                        <input type="text" name="kode_timbangan" class="form-control <?= form_error('kode_timbangan') ? 'invalid' : '' ?> " value="<?= set_value('kode_timbangan'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('kode_timbangan')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('kode_timbangan') ?>
-                        </div>
-                    </div> 
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Kapasitas</label>
-                        <input type="text" name="kapasitas" class="form-control <?= form_error('kapasitas') ? 'invalid' : '' ?> " value="<?= set_value('kapasitas'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('kapasitas')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('kapasitas') ?>
-                        </div>
-                    </div> 
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Model</label>
-                        <input type="text" name="model" class="form-control <?= form_error('model') ? 'invalid' : '' ?> " value="<?= set_value('model'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('model')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('model') ?>
-                        </div>
-                    </div> 
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Lokasi</label>
-                        <input type="text" name="lokasi" class="form-control <?= form_error('lokasi') ? 'invalid' : '' ?> " value="<?= set_value('lokasi'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('lokasi')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('lokasi') ?>
-                        </div>
-                    </div> 
-                    <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Standar Berat (g)</label>
-                        <input type="text" name="peneraan_standar" class="form-control <?= form_error('peneraan_standar') ? 'invalid' : '' ?> " value="<?= set_value('peneraan_standar'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('peneraan_standar')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('peneraan_standar') ?>
-                        </div>
-                    </div> 
-                </div> -->
                 <hr>
                 <div class="form-area" id="form-timbangan-wrapper">
                     <label class="form-label font-weight-bold">Hasil Pemeriksaan</label>
@@ -84,19 +45,29 @@
                         <div class="form-group row align-items-end">
                             <div class="col-sm-2">
                                 <label>Kode Timbangan</label>
-                                <input type="text" name="kode_timbangan[]" class="form-control">
+                                <select name="kode_timbangan[]" class="form-control kode-timbangan">
+                                    <option value="" disabled selected>Pilih Kode</option>
+                                    <?php foreach($list_timbangan as $lt): ?>
+                                        <option value="<?= $lt->kode_timbangan ?>"
+                                            data-kapasitas="<?= $lt->kapasitas ?>"
+                                            data-model="<?= $lt->model ?>"
+                                            data-lokasi="<?= $lt->lokasi ?>">
+                                            <?= $lt->kode_timbangan ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             <div class="col-sm-1">
                                 <label>Kapasitas</label>
-                                <input type="text" name="kapasitas[]" class="form-control">
+                                <input type="text" name="kapasitas[]" class="form-control kapasitas" readonly>
                             </div>
                             <div class="col-sm-2">
                                 <label>Model</label>
-                                <input type="text" name="model[]" class="form-control">
+                                <input type="text" name="model[]" class="form-control model" readonly>
                             </div>
                             <div class="col-sm-2">
                                 <label>Lokasi</label>
-                                <input type="text" name="lokasi[]" class="form-control">
+                                <input type="text" name="lokasi[]" class="form-control lokasi">
                             </div>
                             <div class="col-sm-1">
                                 <label>Standar (g)</label>
@@ -159,29 +130,21 @@
 
 <script>
     $(document).ready(function () {
-        let index = 1;
 
+    // ✅ Tambah Baris
         $('#add-timbangan').click(function () {
-            const newGroup = $('.timbangan-group').first().clone();
-            newGroup.attr('data-index', index);
 
-        // Reset input
-            newGroup.find('input[type="text"], input[type="number"]').val('');
-            newGroup.find('input[type="radio"]').prop('checked', false);
+            let newGroup = $('.timbangan-group').first().clone();
 
-        // Reset select native (tanpa Select2)
+        // Reset semua input & select
+            newGroup.find('input').val('');
             newGroup.find('select').val('');
 
-        // Update name radio button berdasarkan index
-            newGroup.find('input[type="radio"]').each(function () {
-                const baseName = $(this).attr('name').split('[')[0];
-                $(this).attr('name', baseName + '[' + index + ']');
-            });
-
+        // Append ke wrapper
             $('#form-timbangan-wrapper').append(newGroup);
-            index++;
         });
 
+    // ✅ Hapus Baris
         $(document).on('click', '.btn-remove', function () {
             if ($('.timbangan-group').length > 1) {
                 $(this).closest('.timbangan-group').remove();
@@ -189,5 +152,23 @@
                 alert("Minimal satu baris harus ada.");
             }
         });
+
+    // ✅ Auto isi data dari master
+        $(document).on('change', '.kode-timbangan', function () {
+
+            let selected = $(this).find(':selected');
+
+            let kapasitas = selected.data('kapasitas') || '';
+            let model     = selected.data('model') || '';
+            let lokasi    = selected.data('lokasi') || '';
+
+            let parent = $(this).closest('.timbangan-group');
+
+            parent.find('input[name="kapasitas[]"]').val(kapasitas);
+            parent.find('input[name="model[]"]').val(model);
+            parent.find('input[name="lokasi[]"]').val(lokasi);
+
+        });
+
     });
 </script>

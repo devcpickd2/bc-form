@@ -42,7 +42,7 @@
                     'Ruang Mixing' => ['suhu' => '25 - 35', 'rh' => ''],
                     'Area Baking' => ['suhu' => '25 - 35', 'rh' => ''],
                     'Area Cutting & Grinding' => ['suhu' => '25 - 35', 'rh' => ''],
-                    'Ruang Aging' => ['suhu' => '35 - 45', 'rh' => ''],
+                    'Ruang Aging' => ['suhu' => '35 - 45', 'rh' => '50 - 70'],
                     'Area Packing' => ['suhu' => '25 - 35', 'rh' => '']
                 ]
             ];
@@ -86,13 +86,13 @@
                 <div class="form-group row align-items-end mb-3">
                     <input type="hidden" name="lokasi[<?= $i ?>][nama_lokasi]" value="<?= $nama_lokasi ?>">
 
-                    <div class="col-md-<?= $standar['rh'] ? '4 offset-md-1' : '10 offset-md-1' ?>">
+                    <div class="col-md-<?= $standar['rh'] ? '5 offset-md-1' : '10 offset-md-1' ?>">
                         <label class="font-weight-bold"><?= $nama_lokasi ?> - Suhu <small>(<?= $standar['suhu'] ?> °C)</small></label>
                         <input type="text" name="lokasi[<?= $i ?>][suhu]" class="form-control" value="<?= set_value("lokasi[$i][suhu]", $nilai['suhu']) ?>">
                     </div>
 
                     <?php if ($standar['rh']): ?>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <label class="font-weight-bold"><?= $nama_lokasi ?> - RH <small>(<?= $standar['rh'] ?> %)</small></label>
                             <input type="text" name="lokasi[<?= $i ?>][rh]" class="form-control" value="<?= set_value("lokasi[$i][rh]", $nilai['rh']) ?>">
                         </div>

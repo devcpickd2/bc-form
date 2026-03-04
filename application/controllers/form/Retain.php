@@ -27,7 +27,7 @@ class Retain extends MY_Controller {
 		);
 
 		$this->active_nav = 'retain'; 
-		$this->render('form/retain/retain', $data);
+		$this->render('form/retain/retain', $data); 
 	}
 
 	public function detail($uuid)
@@ -81,6 +81,7 @@ class Retain extends MY_Controller {
 		$data = array(
 			'retain' => $this->retain_model->get_by_uuid($uuid)
 		);
+		$this->render('form/retain/retain-edit', $data);
 	}
 
 	public function delete($uuid)

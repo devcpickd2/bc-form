@@ -1,4 +1,10 @@
 <?php
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Gosong extends MY_Controller {
@@ -148,45 +154,6 @@ class Gosong extends MY_Controller {
 		$this->render('form/gosong/gosong-status', $data);
 	}
 
-	// public function diketahui()
-	// {
-	// 	$data = array(
-	// 		'gosong' => $this->gosong_model->get_data_by_plant(),
-	// 		'active_nav' => 'diketahui-gosong', 
-	// 	);
-
-	// 	$this->load->view('partials/head', $data);
-	// 	$this->load->view('form/gosong/gosong-diketahui', $data);
-	// 	$this->load->view('partials/footer');
-	// }
-
-
-	// public function statusprod($uuid)
-	// {
-	// 	$rules = $this->gosong_model->rules_diketahui();
-	// 	$this->form_validation->set_rules($rules);
-
-	// 	if ($this->form_validation->run() == TRUE) {
-
-	// 		$update = $this->gosong_model->diketahui_update($uuid);
-	// 		if ($update) {
-	// 			$this->session->set_flashdata('success_msg', 'Status Roti Gosong berhasil di Update');
-	// 			redirect('gosong/diketahui');
-	// 		}else {
-	// 			$this->session->set_flashdata('error_msg', 'Status Roti Gosong gagal di Update');
-	// 			redirect('gosong/diketahui');
-	// 		}
-	// 	}
-
-	// 	$data = array(
-	// 		'gosong' => $this->gosong_model->get_by_uuid($uuid),
-	// 		'active_nav' => 'diketahui-gosong');
-
-	// 	$this->load->view('partials/head', $data);
-	// 	$this->load->view('form/gosong/gosong-statusprod', $data);
-	// 	$this->load->view('partials/footer');
-	// }
-
 	public function cetak()
 	{
 		$tanggal = $this->input->post('tanggal');  
@@ -314,6 +281,109 @@ class Gosong extends MY_Controller {
 		$filename = "gosong_{$currentDate}.pdf";
 		$pdf->Output($filename, 'I');
 	}
+
+	public function export_excel()
+	{
+		$this->load->model('gosong_model');
+
+		$bulan = $this->input->post('bulan');
+		if (!$bulan) show_error('Bulan tidak dipilih', 404);
+
+		[$tahun, $bulanAngka] = explode('-', $bulan);
+		$plant = $this->session->userdata('plant');
+
+		$dataGosong = $this->gosong_model->get_by_month($tahun, $bulanAngka, $plant);
+		if (!$dataGosong) show_error('Data kosong', 404);
+
+		$template = FCPATH.'assets/excel/Roti Gosong Update.xlsx';
+		if (!file_exists($template)) {
+			show_error('Template Excel tidak ditemukan', 404);
+		}
+
+		$spreadsheet = IOFactory::load($template);
+		$sheet = $spreadsheet->getActiveSheet();
+
+	// ================== JUDUL BULAN ==================
+		$namaBulan = [
+			'01'=>'JANUARI','02'=>'FEBRUARI','03'=>'MARET','04'=>'APRIL',
+			'05'=>'MEI','06'=>'JUNI','07'=>'JULI','08'=>'AGUSTUS',
+			'09'=>'SEPTEMBER','10'=>'OKTOBER','11'=>'NOVEMBER','12'=>'DESEMBER'
+		];
+
+		$judul = "{$namaBulan[$bulanAngka]} {$tahun}";
+		// $sheet->mergeCells('A4:CN4');
+		$sheet->setCellValue('A4', $judul);
+		$sheet->getStyle('A4')->getFont()->setBold(true);
+		$sheet->getStyle('A4')->getAlignment()
+		->setHorizontal(Alignment::HORIZONTAL_CENTER)
+		->setVertical(Alignment::VERTICAL_CENTER);
+
+	// ================== TANGGAL UNIQUE ==================
+		$tanggalList = [];
+		foreach ($dataGosong as $d) {
+			$tanggalList[$d->date] = true;
+		}
+		$tanggalList = array_keys($tanggalList);
+		sort($tanggalList);
+
+	// ================== HEADER TANGGAL ==================
+	$startColIndex = 3; // kolom C
+
+	foreach ($tanggalList as $tgl) {
+
+		$colStart = Coordinate::stringFromColumnIndex($startColIndex);
+		$colEnd   = Coordinate::stringFromColumnIndex($startColIndex + 2);
+
+		// tanggal (HANYA ANGKA TANGGAL)
+		$sheet->mergeCells("{$colStart}8:{$colEnd}8");
+		$sheet->setCellValue("{$colStart}8", date('d', strtotime($tgl)));
+		$sheet->getStyle("{$colStart}8")->getAlignment()
+		->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+		// shift huruf
+		$sheet->setCellValue("{$colStart}9", 'A');
+		$sheet->setCellValue(Coordinate::stringFromColumnIndex($startColIndex + 1).'9', 'B');
+		$sheet->setCellValue(Coordinate::stringFromColumnIndex($startColIndex + 2).'9', 'C');
+
+		$startColIndex += 3;
+	}
+
+	// ================== SHIFT ANGKA ==================
+	for ($i = 1; $i <= 3; $i++) {
+		$sheet->setCellValue('B'.(9 + $i), $i);
+	}
+
+	// ================== ISI DATA ==================
+	foreach ($dataGosong as $d) {
+
+		$shiftAngka = (int) substr($d->shift, 0, 1); // 1,2,3
+		$shiftHuruf = substr($d->shift, 1, 1);      // A,B,C
+
+		$row = 9 + $shiftAngka;
+
+		$tglIndex = array_search($d->date, $tanggalList);
+		if ($tglIndex === false) continue;
+
+		$baseCol = 3 + ($tglIndex * 3);
+		$offset  = ['A'=>0,'B'=>1,'C'=>2];
+
+		if (!isset($offset[$shiftHuruf])) continue;
+
+		$col = Coordinate::stringFromColumnIndex($baseCol + $offset[$shiftHuruf]);
+		$sheet->setCellValue($col.$row, $d->total_berat);
+	}
+
+	// ================== OUTPUT ==================
+	ob_end_clean();
+
+	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+	header("Content-Disposition: attachment; filename=Roti_Gosong_{$bulan}.xlsx");
+	header('Cache-Control: max-age=0');
+
+	$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+	$writer->save('php://output');
+	exit;
+}
 
 
 }

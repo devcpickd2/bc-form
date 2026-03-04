@@ -10,113 +10,125 @@ class Kebersihanruang_model extends CI_Model {
 	public function rules()
 	{
 		return [
+
 			[
 				'field' => 'date',
-				'label' => 'Date',
+				'label' => 'Tanggal',
 				'rules' => 'required'
 			],
+
 			[
 				'field' => 'shift',
-				'label' => 'Shift'
-			],
-			[
-				'field' => 'lokasi',
-				'label' => 'Location',
+				'label' => 'Shift',
 				'rules' => 'required'
 			],
+
+			[
+				'field' => 'lokasi',
+				'label' => 'Lokasi',
+				'rules' => 'required'
+			],
+
 			[
 				'field' => 'bagian[]',
-				'label' => 'Part'
+				'label' => 'Bagian',
+				'rules' => 'required'
 			],
-			[
-				'field' => 'kondisi[]',
-				'label' => 'Condition'
-			],
-			[
-				'field' => 'problem[]',
-				'label' => 'Problem'
-			],
-			[
-				'field' => 'tindakan[]',
-				'label' => 'Corrective Action'
-			]
 		];
 	}
 
 	public function insert()
 	{
-
 		$produksi_data = $this->session->userdata('produksi_data');
 		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 
-		$uuid = Uuid::uuid4()->toString();
+		$uuid     = \Ramsey\Uuid\Uuid::uuid4()->toString();
 		$username = $this->session->userdata('username');
-		$plant = $this->session->userdata('plant');
-		$date = $this->input->post('date');
-		$shift = $this->input->post('shift');
+		$plant    = $this->session->userdata('plant');
+
+		$date   = $this->input->post('date');
+		$shift  = $this->input->post('shift');
 		$lokasi = $this->input->post('lokasi');
 
-		$bagian = $this->input->post('bagian');
-		$kondisi = $this->input->post('kondisi');
-		$problem = $this->input->post('problem');
-		$tindakan = $this->input->post('tindakan');
+		$bagian   = $this->input->post('bagian') ?? [];
+		$kondisi  = $this->input->post('kondisi') ?? [];
+		$problem  = $this->input->post('problem') ?? [];
+		$tindakan = $this->input->post('tindakan') ?? [];
 
 		$detail = [];
-		for ($i = 0; $i < count($bagian); $i++) {
+
+		foreach ($bagian as $index => $nama_bagian) {
+
+			if (!isset($kondisi[$index])) {
+				return false; 
+			}
+
 			$detail[] = [
-				'bagian' => $bagian[$i],
-				'kondisi' => isset($kondisi[$i]) ? $kondisi[$i] : '',
-				'problem' => isset($problem[$i]) ? $problem[$i] : '',
-				'tindakan' => isset($tindakan[$i]) ? $tindakan[$i] : '',
+				'bagian'   => $nama_bagian,
+				'kondisi'  => is_array($kondisi[$index]) 
+				? implode(',', $kondisi[$index]) 
+				: $kondisi[$index],
+				'problem'  => $problem[$index]  ?? '',
+				'tindakan' => $tindakan[$index] ?? '',
 			];
 		}
 
-		$status_spv = "0";
-		$status_produksi = "1";
-
-		$data = array(
-			'uuid' => $uuid,
-			'username' => $username,
-			'plant' => $plant,
-			'date' => $date,
-			'shift' => $shift,
-			'lokasi' => $lokasi,
-			'detail' => json_encode($detail), 
-			'status_produksi' => $status_produksi,
-			'nama_produksi' => $nama_produksi,
-			'status_spv' => $status_spv,
-			'created_at' => date("Y-m-d H:i:s"),
-			'modified_at' => date("Y-m-d H:i:s")
-		);
+		$data = [
+			'uuid'             => $uuid,
+			'username'         => $username,
+			'plant'            => $plant,
+			'date'             => $date,
+			'shift'            => $shift,
+			'lokasi'           => $lokasi,
+			'detail'           => json_encode($detail),
+			'status_produksi'  => 1,
+			'status_spv'       => 0,
+			'nama_produksi'    => $nama_produksi,
+			'created_at'       => date("Y-m-d H:i:s"),
+			'modified_at'      => date("Y-m-d H:i:s"),
+		];
 
 		$this->db->insert('kebersihan_ruang', $data);
-		return ($this->db->affected_rows() > 0) ? true : false;
-	}
 
+		return ($this->db->affected_rows() > 0);
+	}
 
 	public function update($uuid)
 	{
-    // Ambil data detail dari form
-		$bagian    = $this->input->post('bagian');
-		$kondisi   = $this->input->post('kondisi');
-		$problem   = $this->input->post('problem');
-		$tindakan  = $this->input->post('tindakan');
-		$old_data = $this->db->get_where('kebersihan_ruang', ['uuid'=>$uuid])->row_array();
+		$bagian    = $this->input->post('bagian') ?? [];
+		$kondisi   = $this->input->post('kondisi') ?? [];
+		$problem   = $this->input->post('problem') ?? [];
+		$tindakan  = $this->input->post('tindakan') ?? [];
+
+		$old_data = $this->db
+		->get_where('kebersihan_ruang', ['uuid'=>$uuid])
+		->row_array();
+
 		$detail = [];
+
 		foreach ($bagian as $i => $b) {
+
 			$detail[] = [
 				'bagian'   => $b,
-				'kondisi'  => $kondisi[$i],
-				'problem'  => $problem[$i],
-				'tindakan' => $tindakan[$i],
+
+            // ✅ PERBAIKAN PENTING DI SINI
+				'kondisi'  => isset($kondisi[$i]) 
+				? (is_array($kondisi[$i]) 
+					? implode(',', $kondisi[$i]) 
+					: $kondisi[$i])
+				: 'bersih',
+
+				'problem'  => $problem[$i] ?? '',
+				'tindakan' => $tindakan[$i] ?? '',
 			];
 		}
 
 		$updateData = [
-			'date'       => $this->input->post('date'),
-			'shift'      => $this->input->post('shift'),
-			'username'      => $this->session->userdata('username'),
-			'detail'     => json_encode($detail),
+			'date'        => $this->input->post('date'),
+			'shift'       => $this->input->post('shift'),
+			'lokasi'      => $this->input->post('lokasi'), 
+			'username'    => $this->session->userdata('username'),
+			'detail'      => json_encode($detail),
 			'modified_at' => date('Y-m-d H:i:s'),
 		];
 
@@ -124,9 +136,11 @@ class Kebersihanruang_model extends CI_Model {
 		$this->db->update('kebersihan_ruang', $updateData);
 
 		if ($this->db->affected_rows() > 0) {
-			$new_data = $this->db->get_where('kebersihan_ruang', ['uuid' => $uuid])->row_array();
 
-        // Catat log activity
+			$new_data = $this->db
+			->get_where('kebersihan_ruang', ['uuid' => $uuid])
+			->row_array();
+
 			$this->activity_logger->log_activity(
 				'update',
 				'kebersihan_ruang_logs',
@@ -306,7 +320,7 @@ class Kebersihanruang_model extends CI_Model {
 
 		return false;
 	}
-	
+
 	public function get_last_verif_by_date($tanggal, $plant = null, $shift = null)
 	{
 		$this->db->select('nama_spv, tgl_update_spv, username, date, shift, nama_produksi, status_produksi, tgl_update_produksi');
@@ -326,6 +340,5 @@ class Kebersihanruang_model extends CI_Model {
 
 		return $query->row();
 	}
-
 
 }

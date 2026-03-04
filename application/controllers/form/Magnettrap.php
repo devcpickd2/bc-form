@@ -1,5 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Magnettrap extends MY_Controller {
 
@@ -441,20 +444,6 @@ class Magnettrap extends MY_Controller {
 			$pdf->SetFont('times', '', 8); 
 			$pdf->Cell(112, 5, 'QC Inspector', 0, 0, 'C');
 
-		// // Diketahui oleh (Produksi)
-		// 	$pdf->SetXY(90, $y_verifikasi + 5);
-		// 	$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
-		// 	if ($data['magnettrap']->status_enginer == 1 && !empty($data['magnettrap']->nama_enginer)) {
-		// 		$update_tanggal_enginer = (new DateTime($data['magnettrap']->tgl_update_enginer))->format('d-m-Y | H:i');
-		// 		$qr_text_enginer = "Diketahui secara digital oleh,\n" . $data['magnettrap']->nama_lengkap_enginer . "\nForeman/Forelady Produksi\n" . $update_tanggal_enginer;
-		// 		$pdf->write2DBarcode($qr_text_enginer, 'QRCODE,L', 150, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 		$pdf->SetXY(90, $y_verifikasi + 24);
-		// 		$pdf->Cell(135, 5, 'Foreman/Forelady Engineering', 0, 0, 'C');
-		// 	} else {
-		// 		$pdf->SetXY(90, $y_verifikasi + 10);
-		// 		$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
-		// 	}\
-
 			// Diketahui oleh (Produksi) - tanpa barcode
 			$pdf->SetXY(90, $y_verifikasi + 5);
 			$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
@@ -500,5 +489,145 @@ class Magnettrap extends MY_Controller {
 		$pdf->Output($filename, 'I');
 
 	}
+
+	public function export_excel()
+	{
+		$this->load->model('magnettrap_model');
+
+		$bulan = $this->input->post('bulan');
+		if (!$bulan) show_error('Bulan tidak dipilih', 404);
+
+		[$tahun, $bulanAngka] = explode('-', $bulan);
+		$plant = $this->session->userdata('plant');
+
+		$data = $this->magnettrap_model->get_by_month($tahun, $bulanAngka, $plant);
+		if (!$data) show_error('Data kosong', 404);
+
+		$template = FCPATH.'assets/excel/Pemeriksaan Magnet.xlsx';
+		if (!file_exists($template)) {
+			show_error('Template Excel tidak ditemukan', 404);
+		}
+
+		$spreadsheet = IOFactory::load($template);
+		$sheet = $spreadsheet->getActiveSheet();
+
+    // ================= JUDUL =================
+		$namaBulan = [
+			'01'=>'JANUARI','02'=>'FEBRUARI','03'=>'MARET','04'=>'APRIL',
+			'05'=>'MEI','06'=>'JUNI','07'=>'JULI','08'=>'AGUSTUS',
+			'09'=>'SEPTEMBER','10'=>'OKTOBER','11'=>'NOVEMBER','12'=>'DESEMBER'
+		];
+
+		$sheet->setCellValue('A3', "{$namaBulan[$bulanAngka]} {$tahun}");
+		$sheet->getStyle('A3')->getFont()->setBold(true);
+
+    // ================= TAHAPAN UNIQUE =================
+		$tahapanList = [];
+		foreach ($data as $d) {
+			$tahapanList[$d->tahapan] = true;
+		}
+		$tahapanList = array_keys($tahapanList);
+
+		$rowStart = 6;
+		foreach ($tahapanList as $i => $t) {
+			$sheet->setCellValue('A'.($rowStart + $i), $t);
+		}
+
+    // ================= TANGGAL UNIQUE =================
+		$tanggalList = [];
+		foreach ($data as $d) {
+			$tanggalList[$d->date] = true;
+		}
+		$tanggalList = array_keys($tanggalList);
+		sort($tanggalList);
+
+    // ================= HEADER TANGGAL =================
+    $colIndex = 2; // kolom B
+
+    foreach ($tanggalList as $tgl) {
+    	$colStart = Coordinate::stringFromColumnIndex($colIndex);
+    	$colEnd   = Coordinate::stringFromColumnIndex($colIndex + 2);
+
+    	$sheet->mergeCells("{$colStart}4:{$colEnd}4");
+    	$sheet->setCellValue("{$colStart}4", date('d', strtotime($tgl)));
+    	$sheet->getStyle("{$colStart}4")->getAlignment()
+    	->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+    	$colIndex += 3;
+    }
+
+    // ================= ISI DATA =================
+    foreach ($data as $d) {
+
+    	$row = $rowStart + array_search($d->tahapan, $tahapanList);
+
+    	$tglIndex = array_search($d->date, $tanggalList);
+    	if ($tglIndex === false) continue;
+
+        $shiftAngka = (int) substr($d->shift, 0, 1); // 1–3
+        $col = 2 + ($tglIndex * 3) + ($shiftAngka - 1);
+        $colLetter = Coordinate::stringFromColumnIndex($col);
+
+        $val = preg_replace('/[^0-9,\.]/', '', $d->keterangan);
+        $val = str_replace(',', '.', $val);
+        $val = floatval($val);
+
+        $sheet->setCellValue($colLetter.$row, $val);
+    }
+
+    // ================= POSISI FIX =================
+    $totalRow  = 10;   // TOTAL KOLOM HARUS DI BARIS 10
+    $colTotal  = 'BM'; // TOTAL PER BARIS
+    $colPersen = 'BN'; // TOTAL PERSENTASE
+
+    // ================= TOTAL KOLOM (BARIS 10) =================
+    foreach ($tanggalList as $i => $tgl) {
+    	for ($s = 0; $s < 3; $s++) {
+
+    		$col = 2 + ($i * 3) + $s;
+    		$colL = Coordinate::stringFromColumnIndex($col);
+
+    		$sheet->setCellValue(
+    			$colL.$totalRow,
+    			"=SUM({$colL}{$rowStart}:{$colL}".($totalRow - 1).")"
+    		);
+    	}
+    }
+
+    // ================= TOTAL PER BARIS & PERSENTASE =================
+    $lastDataCol = Coordinate::stringFromColumnIndex(1 + count($tanggalList) * 3);
+
+    for ($i = 0; $i < count($tahapanList); $i++) {
+    	$r = $rowStart + $i;
+
+    // TOTAL PER BARIS → BM
+    	$sheet->setCellValue(
+    		"BM{$r}",
+    		"=SUM(B{$r}:{$lastDataCol}{$r})"
+    	);
+
+    // PERSENTASE → BN (1.14 / 100 = 0.0114)
+    	$sheet->setCellValue(
+    		"BN{$r}",
+    		"=BM{$r}/100"
+    	);
+
+    // FORMAT NUMBER BIASA (BUKAN %)
+    	$sheet->getStyle("BN{$r}")
+    	->getNumberFormat()
+    	->setFormatCode('0.0000');
+    }
+
+    // ================= OUTPUT =================
+    ob_end_clean();
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header("Content-Disposition: attachment; filename=Magnet_Trap_{$bulan}.xlsx");
+    header('Cache-Control: max-age=0');
+
+    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $writer->save('php://output');
+    exit;
+}
+
 }
 

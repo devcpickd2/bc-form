@@ -56,14 +56,14 @@
             <?php if ($tipe_user == 0): ?>
                 <hr class="sidebar-divider">
                 <div class="sidebar-heading">MASTER DATA</div>
-                <li class="nav-item <?= $active_nav == 'data_master' | $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' ?'active':'';?>">
+                <li class="nav-item <?= $active_nav == 'data_master' | $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' | $active_nav == 'list_thermometer' | $active_nav == 'list_timbangan' | $active_nav == 'list_kebersihan' ?'active':'';?>">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDataMaster"
                     aria-expanded="true" aria-controls="collapseDataMaster">
                     <i class="fas fa-briefcase"></i>
                     <span>Data Master</span>
                 </a>
 
-                <div id="collapseDataMaster" class="collapse <?= $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' ?'show':'';?>" aria-labelledby="headingDataMaster" data-parent="#accordionSidebar">
+                <div id="collapseDataMaster" class="collapse <?= $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' | $active_nav == 'list_thermometer' | $active_nav == 'list_timbangan' | $active_nav == 'list_kebersihan' ?'show':'';?>" aria-labelledby="headingDataMaster" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <!-- <a class="collapse-item <?= $active_nav == 'pegawai' ?'active':'';?>" href="<?= base_url('pegawai')?>">Pegawai</a>
                         <a class="collapse-item <?= $active_nav == 'departemen' ?'active':'';?>" href="<?= base_url('departemen')?>">Departemen</a>
@@ -74,6 +74,9 @@
                         <a class="collapse-item <?= $active_nav == 'bendapecah' ?'active':'';?>" href="<?= base_url('bendapecah')?>">Benda Pecah Belah</a>
                         <a class="collapse-item <?= $active_nav == 'peralatan' ?'active':'';?>" href="<?= base_url('peralatan')?>">Peralatan Kebersihan</a>
                         <a class="collapse-item <?= $active_nav == 'area_kebersihan' ?'active':'';?>" href="<?= base_url('area_kebersihan')?>">Area Kebersihan</a>
+                        <a class="collapse-item <?= $active_nav == 'list_thermometer' ?'active':'';?>" href="<?= base_url('list_thermometer')?>">List Thermometer</a>
+                        <a class="collapse-item <?= $active_nav == 'list_timbangan' ?'active':'';?>" href="<?= base_url('list_timbangan')?>">List Timbangan</a>
+                        <a class="collapse-item <?= $active_nav == 'list_kebersihan' ?'active':'';?>" href="<?= base_url('list_kebersihan')?>">List Kebersihan Ruang</a>
                     </div>
                 </div>
             </li>

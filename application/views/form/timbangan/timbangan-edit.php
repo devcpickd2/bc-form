@@ -32,45 +32,7 @@
                             <div class="invalid-feedback <?= !empty(form_error('shift')) ? 'd-block' : '' ; ?> "><?= form_error('shift') ?></div>
                         </div>
                     </div>
-<!--                     <div class="form-group row">
-                        <div class="col-sm-4">
-                            <label class="form-label font-weight-bold">Kode Timbangan</label>
-                            <input type="text" name="kode_timbangan" class="form-control <?= form_error('kode_timbangan') ? 'invalid' : '' ?> " value="<?= $timbangan->kode_timbangan; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('kode_timbangan')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('kode_timbangan') ?>
-                            </div>
-                        </div> 
-                        <div class="col-sm-4">
-                            <label class="form-label font-weight-bold">Kapasitas</label>
-                            <input type="text" name="kapasitas" class="form-control <?= form_error('kapasitas') ? 'invalid' : '' ?> " value="<?= $timbangan->kapasitas; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('kapasitas')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('kapasitas') ?>
-                            </div>
-                        </div> 
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">
-                            <label class="form-label font-weight-bold">Model</label>
-                            <input type="text" name="model" class="form-control <?= form_error('model') ? 'invalid' : '' ?> " value="<?= $timbangan->model; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('model')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('model') ?>
-                            </div>
-                        </div> 
-                        <div class="col-sm-4">
-                            <label class="form-label font-weight-bold">Lokasi</label>
-                            <input type="text" name="lokasi" class="form-control <?= form_error('lokasi') ? 'invalid' : '' ?> " value="<?= $timbangan->lokasi; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('lokasi')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('lokasi') ?>
-                            </div>
-                        </div> 
-                        <div class="col-sm-4">
-                            <label class="form-label font-weight-bold">Standar</label>
-                            <input type="text" name="peneraan_standar" class="form-control <?= form_error('peneraan_standar') ? 'invalid' : '' ?> " value="<?= $timbangan->peneraan_standar; ?>">
-                            <div class="invalid-feedback <?= !empty(form_error('peneraan_standar')) ? 'd-block' : '' ; ?> ">
-                                <?= form_error('peneraan_standar') ?>
-                            </div>
-                        </div> 
-                    </div> -->
+
                     <div class="form-area" id="form-timbangan-wrapper">
                         <label class="form-label font-weight-bold">Hasil Pemeriksaan</label>
 
@@ -95,19 +57,33 @@
                                 <div class="form-group row align-items-end">
                                     <div class="col-sm-2">
                                         <label>Kode Timbangan</label>
-                                        <input type="text" name="kode_timbangan[]" class="form-control" value="<?= htmlspecialchars($kode_timbangan) ?>">
+                                        <select name="kode_timbangan[]" class="form-control kode-timbangan">
+                                            <option value="" disabled selected>Pilih Kode</option>
+                                            <?php foreach($list_timbangan as $lt): ?>
+                                                <option value="<?= $lt->kode_timbangan ?>"
+                                                    data-kapasitas="<?= $lt->kapasitas ?>"
+                                                    data-model="<?= $lt->model ?>"
+                                                    data-lokasi="<?= $lt->lokasi ?>"
+                                                    <?= $kode_timbangan == $lt->kode_timbangan ? 'selected' : '' ?>>
+                                                    <?= $lt->kode_timbangan ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                     <div class="col-sm-1">
                                         <label>Kapasitas</label>
-                                        <input type="text" name="kapasitas[]" class="form-control" value="<?= htmlspecialchars($kapasitas) ?>">
+                                        <input type="text" name="kapasitas[]" class="form-control" 
+                                        value="<?= htmlspecialchars($kapasitas) ?>" readonly>
                                     </div>
                                     <div class="col-sm-2">
                                         <label>Model</label>
-                                        <input type="text" name="model[]" class="form-control" value="<?= htmlspecialchars($model) ?>">
+                                        <input type="text" name="model[]" class="form-control" 
+                                        value="<?= htmlspecialchars($model) ?>" readonly>
                                     </div>
                                     <div class="col-sm-2">
                                         <label>Lokasi</label>
-                                        <input type="text" name="lokasi[]" class="form-control" value="<?= htmlspecialchars($lokasi) ?>">
+                                        <input type="text" name="lokasi[]" class="form-control" 
+                                        value="<?= htmlspecialchars($lokasi) ?>">
                                     </div>
                                     <div class="col-sm-1">
                                         <label>Standar (g)</label>
@@ -168,54 +144,44 @@
         background-color: #2E86C1;
     }
 </style>
-
 <script>
     $(document).ready(function () {
-    let index = $('.timbangan-group').length;  // Mulai dengan indeks sesuai jumlah grup yang ada
 
-    $('#add-timbangan').click(function () {
-        const newGroup = $('.timbangan-group').first().clone(); // Clone grup pertama
-        newGroup.attr('data-index', index);  // Set data-index dengan index baru
+    // Tambah baris
+        $('#add-timbangan').click(function () {
 
-        // Reset input fields (jumlah, keterangan, kondisi_awal)
-        newGroup.find('input[type="text"], input[type="number"]').val('');  // Reset jumlah dan keterangan
-        newGroup.find('input[type="radio"]').prop('checked', false);  // Reset kondisi_awal (tidak ada yang tercentang)
+            let newGroup = $('.timbangan-group').first().clone();
 
-        // Reset select (nama alat)
-        newGroup.find('select').val(''); // Set select ke nilai kosong
+            newGroup.find('input').val('');
+            newGroup.find('select').val('');
 
-        // Update name dan id untuk radio buttons, select, dan inputs sesuai index
-        newGroup.find('input[type="radio"]').each(function () {
-            const baseName = $(this).attr('name').split('[')[0];  // Ambil bagian sebelum [
-            $(this).attr('name', baseName + '[' + index + ']');  // Update name radio button
-
-            const newId = $(this).attr('id').split('_')[0] + '_' + index;  // Update ID
-            $(this).attr('id', newId);
-            $(this).next('label').attr('for', newId);  // Update for label
+            $('#form-timbangan-wrapper').append(newGroup);
         });
 
-        // Update select name sesuai index
-        newGroup.find('select').each(function() {
-            const baseName = $(this).attr('name').split('[')[0];
-            $(this).attr('name', baseName + '[' + index + ']');
+    // Hapus baris
+        $(document).on('click', '.btn-remove', function () {
+            if ($('.timbangan-group').length > 1) {
+                $(this).closest('.timbangan-group').remove();
+            } else {
+                alert("Minimal satu baris harus ada.");
+            }
         });
 
-        // Tambahkan grup baru ke dalam form
-        $('#form-timbangan-wrapper').append(newGroup);
+    // Auto isi dari master
+        $(document).on('change', '.kode-timbangan', function () {
 
-        index++;  // Tingkatkan indeks untuk grup berikutnya
+            let selected = $(this).find(':selected');
+
+            let kapasitas = selected.data('kapasitas') || '';
+            let model     = selected.data('model') || '';
+            let lokasi    = selected.data('lokasi') || '';
+
+            let parent = $(this).closest('.timbangan-group');
+
+            parent.find('input[name="kapasitas[]"]').val(kapasitas);
+            parent.find('input[name="model[]"]').val(model);
+            parent.find('input[name="lokasi[]"]').val(lokasi);
+        });
+
     });
-
-    // Hapus grup timbangan yang sudah ada
-    $(document).on('click', '.btn-remove', function () {
-        if ($('.timbangan-group').length > 1) {
-            $(this).closest('.timbangan-group').remove();
-            // Update index setelah grup dihapus
-            index = $('.timbangan-group').length;
-        } else {
-            alert("Minimal satu baris harus ada.");
-        }
-    });
-});
-
 </script>

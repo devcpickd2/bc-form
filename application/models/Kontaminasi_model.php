@@ -369,5 +369,25 @@ class Kontaminasi_model extends CI_Model {
 		return $query->row();
 	}
 
+	// public function get_by_month($tahun, $bulan, $plant = null)
+	// {
+	// 	$this->db->where('YEAR(date)', $tahun);
+	// 	$this->db->where('MONTH(date)', $bulan);
+
+	// 	if (!empty($plant)) {
+	// 		$this->db->where('plant', $plant);
+	// 	}
+
+	// 	return $this->db->get('kontaminasi')->result();
+	// }
+
+	public function get_by_month($tahun, $bulan, $plant)
+	{
+		$this->db->where('YEAR(date)', $tahun);
+		$this->db->where('MONTH(date)', $bulan);
+		$this->db->where('plant', $plant);
+
+		return $this->db->get('kontaminasi')->result();
+	}
 
 }

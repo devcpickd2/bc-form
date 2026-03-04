@@ -53,24 +53,38 @@ class Reagen extends MY_Controller {
 			}
 		}
 
-    // AMBIL NO LOT TERAKHIR
+		$plant = $this->session->userdata('plant');
+
+    // AMBIL NO LOT TERAKHIR BERDASARKAN PLANT
 		$last_lot = $this->db
 		->select('no_lot')
 		->from('reagen')
 		->where('no_lot IS NOT NULL')
+		->where('plant', $plant)
+		->order_by('id', 'DESC')
+		->limit(1)
+		->get()
+		->row();
+
+    // AMBIL VOLUME AKHIR TERAKHIR BERDASARKAN PLANT
+		$last_volume = $this->db
+		->select('volume_akhir')
+		->from('reagen')
+		->where('volume_akhir IS NOT NULL')
+		->where('plant', $plant)
 		->order_by('id', 'DESC')
 		->limit(1)
 		->get()
 		->row();
 
 		$data = array(
-			'last_no_lot' => $last_lot->no_lot ?? '' 
+			'last_no_lot' => $last_lot->no_lot ?? '',
+			'last_volume' => $last_volume->volume_akhir ?? 0
 		);
 
-		$this->active_nav = 'reagen'; 
+		$this->active_nav = 'reagen';
 		$this->render('form/reagen/reagen-tambah', $data);
 	}
-
 	public function edit($uuid)
 	{
 		$rules = $this->reagen_model->rules();

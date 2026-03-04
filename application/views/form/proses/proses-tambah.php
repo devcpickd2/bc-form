@@ -240,19 +240,31 @@
             <script>
                 $(document).ready(function() {
                     // --- Autofill Jenis Produk ---
+
                     $('#select_nama_produk').change(function() {
-                        const selectedProduk = $(this).val().trim().toLowerCase();
+                        const selectedProdukRaw = $(this).val();
+                        const selectedProduk = selectedProdukRaw.trim().toLowerCase();
                         const jenisProdukInputs = $('input[name^="proses_produksi[dough_mixing][nama_produk]"]');
+
                         jenisProdukInputs.val('');
 
                         if (selectedProduk === 'bc orange sintetis') {
                             jenisProdukInputs.each(function() {
                                 $(this).val('BC Orange');
                             });
+
                         } else if (selectedProduk.includes('bc mix')) {
                             jenisProdukInputs.each(function(index) {
-                                if (index < 7) $(this).val('BC Yellow');
-                                else $(this).val('BC Orange');
+                                if (index < 7) {
+                                    $(this).val('BC Yellow');
+                                } else {
+                                    $(this).val('BC Orange');
+                                }
+                            });
+
+                        } else {
+                            jenisProdukInputs.each(function() {
+                                $(this).val(selectedProdukRaw);
                             });
                         }
                     });
@@ -331,3 +343,4 @@
         background-color: #2E86C1;
     }
 </style>
+

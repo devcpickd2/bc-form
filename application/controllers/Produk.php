@@ -43,7 +43,7 @@ class Produk extends MY_Controller {
 		}
 
 		$this->active_nav = 'produk'; 
-		$this->render('produk/produksi-tambah');
+		$this->render('produk/produk-tambah'); 
 	}
 
 	public function edit($uuid)
@@ -63,10 +63,12 @@ class Produk extends MY_Controller {
 			}
 		}
 
-		$data = array('produk' => $this->produk_model->get_by_uuid($uuid));
+		$data = array(
+			'produk' => $this->produk_model->get_by_uuid($uuid)
+		);
 
 		$this->active_nav = 'produk'; 
-		$this->render('produk/produk-edit');
+		$this->render('produk/produk-edit', $data);
 	}
 
 	public function delete($uuid)

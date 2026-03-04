@@ -267,6 +267,13 @@ class Suhu_model extends CI_Model {
 		return !empty($result) ? $result[0] : null;
 	}
 
+	public function get_by_date_verif_excel($tanggal)
+	{
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->order_by('pukul', 'ASC');
+		return $this->db->get('suhu')->result();
+	}
+
 	public function get_by_date_and_plant($tanggal, $plant)
 	{
 		if ($plant === '651ac623-5e48-44cc-b2f6-5d622603f53c') {

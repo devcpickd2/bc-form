@@ -86,22 +86,42 @@
 				</table>
 			</div>
 			<hr>
+			<?php
+			$plant_uuid = $this->session->userdata('plant');
+			?>
+
 			<form action="<?= base_url('suhu/cetak') ?>" method="post" target="_blank" class="form-inline mb-3">
 				<div class="form-group mr-3">
 					<label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
 					<input type="date" name="tanggal" id="tanggal" class="form-control" required>
 				</div>
 
+				<!-- PDF (SEMUA PLANT BOLEH) -->
 				<button type="submit" class="btn btn-success mr-2">
 					<i class="fas fa-print"></i> Cetak PDF
 				</button>
 
-				<button type="submit" formaction="<?= base_url('suhu/export-excel') ?>" class="btn btn-primary">
+				<!-- EXCEL CIKANDE -->
+				<?php if ($plant_uuid === '651ac623-5e48-44cc-b2f6-5d622603f53c'): ?>
+					<button type="submit"
+					formaction="<?= base_url('suhu/export-excel') ?>"
+					class="btn btn-primary mr-2">
 					<i class="fas fa-file-excel"></i> Export Excel
 				</button>
-			</form>
-		</div>
-	</div>
+			<?php endif; ?>
+
+			<!-- EXCEL SALATIGA -->
+			<?php if ($plant_uuid === '1eb341e0-1ec4-4484-ba8f-32d23352b84d'): ?>
+				<button type="submit"
+				formaction="<?= base_url('suhu/export-excel-salatiga') ?>"
+				class="btn btn-primary">
+				<i class="fas fa-file-excel"></i> Export Excel
+			</button>
+		<?php endif; ?>
+	</form>
+
+</div>
+</div>
 </div>
 </div>
 

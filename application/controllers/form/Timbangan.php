@@ -14,6 +14,7 @@ class Timbangan extends MY_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('auth_model'); 
 		$this->load->model('timbangan_model');
+		$this->load->model('list_timbangan_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
 		}
@@ -39,46 +40,104 @@ class Timbangan extends MY_Controller {
 		$this->render('form/timbangan/timbangan-detail', $data);
 	}
 
+	// public function tambah()
+	// {
+	// 	$rules = $this->timbangan_model->rules();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
+	// 		$insert = $this->timbangan_model->insert();
+	// 		if ($insert) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Timbangan berhasil di simpan');
+	// 			redirect('timbangan');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Timbangan gagal di simpan');
+	// 			redirect('timbangan');
+	// 		}
+	// 	}
+
+	// 	$this->active_nav = 'timbangan'; 
+	// 	$this->render('form/timbangan/timbangan-tambah');
+	// }
+
 	public function tambah()
 	{
+		$data['list_timbangan'] = $this->list_timbangan_model->get_by_plant();
+
 		$rules = $this->timbangan_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
+
 			$insert = $this->timbangan_model->insert();
+
 			if ($insert) {
 				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Timbangan berhasil di simpan');
-				redirect('timbangan');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Timbangan gagal di simpan');
-				redirect('timbangan');
 			}
+
+			redirect('timbangan');
 		}
 
 		$this->active_nav = 'timbangan'; 
-		$this->render('form/timbangan/timbangan-tambah');
+		$this->render('form/timbangan/timbangan-tambah', $data);
 	}
+
+	// public function edit($uuid)
+	// {
+	// 	$rules = $this->timbangan_model->rules();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
+	
+	// 		$update = $this->timbangan_model->update($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Timbangan berhasil di Update');
+	// 			redirect('timbangan');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Timbangan gagal di Update');
+	// 			redirect('timbangan');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'timbangan' => $this->timbangan_model->get_by_uuid($uuid),
+	// 	);
+
+	// 	$this->active_nav = 'timbangan'; 
+	// 	$this->render('form/timbangan/timbangan-edit', $data);
+	// }
 
 	public function edit($uuid)
 	{
+    // Ambil list master
+		$data['list_timbangan'] = $this->db
+		->order_by('kode_timbangan', 'ASC')
+		->get('list_timbangan')
+		->result();
+
+		$data['timbangan'] = $this->timbangan_model->get_by_uuid($uuid);
+
+		if (!$data['timbangan']) {
+			show_404();
+		}
+
 		$rules = $this->timbangan_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
-			
+
 			$update = $this->timbangan_model->update($uuid);
+
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Timbangan berhasil di Update');
-				redirect('timbangan');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Timbangan gagal di Update');
-				redirect('timbangan');
 			}
-		}
 
-		$data = array(
-			'timbangan' => $this->timbangan_model->get_by_uuid($uuid),
-		);
+			redirect('timbangan');
+		}
 
 		$this->active_nav = 'timbangan'; 
 		$this->render('form/timbangan/timbangan-edit', $data);

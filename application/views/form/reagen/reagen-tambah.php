@@ -36,7 +36,7 @@
                     <div class="form-group row">
                         <div class="col-sm-4">
                             <label class="form-label font-weight-bold">No. Lot</label>
-                            <input
+                            <input 
                             type="text"
                             name="no_lot"
                             class="form-control <?= form_error('no_lot') ? 'invalid' : '' ?>"
@@ -79,10 +79,30 @@
                                 <?= form_error('volume_penggunaan') ?>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                       <!--  <div class="col-sm-4">
                             <label class="form-label font-weight-bold">Volume Akhir Larutan (mL)</label>
                             <input type="text" name="volume_akhir" class="form-control <?= form_error('volume_akhir') ? 'invalid' : '' ?> " value="<?= set_value('volume_akhir'); ?>">
                             <div class="invalid-feedback <?= !empty(form_error('volume_akhir')) ? 'd-block' : '' ; ?> ">
+                                <?= form_error('volume_akhir') ?>
+                            </div>
+                        </div> -->
+                        <div class="col-sm-4">
+                            <label class="form-label font-weight-bold">Volume Akhir Larutan (mL)</label>
+                            <input 
+                            type="text" 
+                            id="volume_akhir"
+                            name="volume_akhir" 
+                            class="form-control <?= form_error('volume_akhir') ? 'invalid' : '' ?>" 
+                            value="<?= set_value('volume_akhir'); ?>"
+                            readonly
+                            >
+
+                            <small class="text-muted">
+                                Volume terakhir sebelumnya: 
+                                <strong id="last_volume_text"><?= $last_volume ?? 0 ?></strong> mL
+                            </small>
+
+                            <div class="invalid-feedback <?= !empty(form_error('volume_akhir')) ? 'd-block' : '' ; ?>">
                                 <?= form_error('volume_akhir') ?>
                             </div>
                         </div>
@@ -117,3 +137,30 @@
         background-color: #2E86C1;
     }
 </style>
+
+<script>
+    $(document).ready(function(){
+
+        let lastVolume = parseFloat("<?= $last_volume ?? 0 ?>");
+
+        $('input[name="volume_penggunaan"]').on('input', function(){
+
+            let penggunaan = parseFloat($(this).val());
+
+            if (!isNaN(penggunaan)) {
+
+                let volumeAkhir = lastVolume - penggunaan;
+
+                if(volumeAkhir < 0){
+                    volumeAkhir = 0;
+                }
+
+                $('#volume_akhir').val(volumeAkhir.toFixed(2));
+            } else {
+                $('#volume_akhir').val('');
+            }
+
+        });
+
+    });
+</script>

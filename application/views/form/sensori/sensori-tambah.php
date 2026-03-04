@@ -159,4 +159,50 @@
             }
         });
     });
+
+    $(document).on('input', 'input[name="kode_produksi[]"]', function() {
+
+        let kode = $(this).val().trim().toUpperCase();
+        if (kode.length < 4) return;
+
+    // Ambil 4 karakter pertama
+        kode = kode.substring(0,4);
+
+        const yearCode = kode[0];   
+        const monthCode = kode[1];   
+        const dayCode = kode.substring(2,4); 
+
+    // ===== TAHUN (P = 2025) =====
+        const baseYear = 2025;
+        const productionYear = baseYear + 
+        (yearCode.charCodeAt(0) - 'P'.charCodeAt(0));
+
+    // ===== BULAN (A = 1) =====
+        const productionMonth = 
+        monthCode.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+
+    // ===== TANGGAL =====
+        const productionDay = parseInt(dayCode);
+
+        if (isNaN(productionDay) || productionMonth < 1 || productionMonth > 12) return;
+
+        const productionDate = new Date(
+            productionYear, 
+            productionMonth - 1, 
+            productionDay
+            );
+
+        if (isNaN(productionDate)) return;
+
+        productionDate.setMonth(productionDate.getMonth() + 6);
+
+        const yyyy = productionDate.getFullYear();
+        const mm = String(productionDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(productionDate.getDate()).padStart(2, '0');
+
+        const bestBefore = `${yyyy}-${mm}-${dd}`;
+
+        const group = $(this).closest('.sensori-group');
+        group.find('input[name="best_before[]"]').val(bestBefore);
+    });
 </script>

@@ -242,17 +242,17 @@ class Proses_model extends CI_Model
 
 					switch ($mime) {
 						case 'image/jpeg':
-							$image = imagecreatefromjpeg($tmp_name);
-							break;
+						$image = imagecreatefromjpeg($tmp_name);
+						break;
 						case 'image/png':
-							$image = imagecreatefrompng($tmp_name);
-							break;
+						$image = imagecreatefrompng($tmp_name);
+						break;
 						case 'image/webp':
-							$image = imagecreatefromwebp($tmp_name);
-							break;
+						$image = imagecreatefromwebp($tmp_name);
+						break;
 						default:
-							$image = null;
-							break;
+						$image = null;
+						break;
 					}
 
 					if ($image) {
@@ -276,7 +276,7 @@ class Proses_model extends CI_Model
 						$old_json = json_decode($old_data['proses_packing'], true);
 						if (isset($old_json[$col]['pemeriksaan_finished_product']['bukti_labelisasi'][0])) {
 							$proses_packing[$col]['pemeriksaan_finished_product']['bukti_labelisasi'][0] =
-								$old_json[$col]['pemeriksaan_finished_product']['bukti_labelisasi'][0];
+							$old_json[$col]['pemeriksaan_finished_product']['bukti_labelisasi'][0];
 						}
 					}
 				}
@@ -424,7 +424,7 @@ class Proses_model extends CI_Model
 			return false;
 		}
 
-		$this->db->select('nama_spv, tgl_update, date, shift, date_stall, nama_produk, shift_pack, catatan, status_spv, username, premix, nama_produksi, tgl_update_prod, status_produksi');
+		$this->db->select('nama_spv, tgl_update, date, shift, date_stall, nama_produk, shift_pack, catatan, status_spv, username, premix, nama_produksi, tgl_update_prod, status_produksi, proses_produksi, proses_packing');
 		$this->db->where('DATE(date)', $tanggal);
 		$this->db->where('shift', $shift);
 		$this->db->order_by('tgl_update', 'DESC');
@@ -436,6 +436,43 @@ class Proses_model extends CI_Model
 		return $query->row();
 	}
 
+	public function get_by_tanggal_shift_verif_excel($tanggal, $shift)
+	{
+		if (empty($tanggal) || empty($shift)) {
+			return [];
+		}
+
+		$this->db->select('
+			nama_spv,
+			tgl_update,
+			date,
+			shift,
+			date_stall,
+			nama_produk,
+			shift_pack,
+			catatan,
+			status_spv,
+			username,
+			premix,
+			nama_produksi,
+			tgl_update_prod,
+			status_produksi,
+			proses_produksi,
+			proses_packing
+			');
+
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('shift', $shift);
+		$this->db->order_by('tgl_update', 'DESC');
+
+		$query = $this->db->get('mixing');
+
+		log_message('error', 'EXPORT QUERY: ' . $this->db->last_query());
+		log_message('error', 'EXPORT TOTAL: ' . $query->num_rows());
+
+    // ✅ WAJIB RESULT()
+		return $query->result();
+	}
 
 	public function get_latest_today()
 	{

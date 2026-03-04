@@ -1,5 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Proses extends MY_Controller
 {
@@ -12,6 +19,7 @@ class Proses extends MY_Controller
 		$this->load->model('proses_model');
 		$this->load->model('packing_model');
 		$this->load->model('produk_model');
+		$this->load->model('pegawai_model');
 		if (!$this->auth_model->current_user()) {
 			redirect('login');
 		}
@@ -235,153 +243,6 @@ class Proses extends MY_Controller
 		$this->active_nav = 'verifikasi-proses'; 
 		$this->render('form/proses/proses-status', $data);
 	}
-
-	// public function cetak()
-	// {
-	// 	$selected_items = $this->input->post('checkbox');
-
-	// 	if (empty($selected_items)) {
-	// 		show_error('Tidak ada item yang dipilih', 404);
-	// 	}
-
-	// 	$proses_data = $this->proses_model->get_by_uuid_proses($selected_items);
-	// 	$proses_data_verif = $this->proses_model->get_by_uuid_proses_verif($selected_items);
-
-	// 	if (empty($proses_data) || empty($proses_data_verif)) {
-	// 		show_error('Data tidak ditemukan, Pilih data yang ingin dicetak', 404);
-	// 	}
-
-	// 	$data['proses'] = $proses_data_verif;
-
-	// 	$this->load->model('pegawai_model');
-
-	// 	$data['proses']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['proses']->username);
-	// 	$data['proses']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['proses']->nama_spv);
-	// 	$data['proses']->nama_lengkap_produksi = $data['proses']->nama_produksi;
-
-	// 	require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
-
-	// 	$pdf = new TCPDF('L', PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
-	// 	$pdf->setPrintHeader(false);
-	// 	$pdf->SetMargins(9, 10, 8);
-	// 	$pdf->AddPage();
-	// 	$pdf->SetFont('times', 'B', 13);
-
-	// 	$logo_path = FCPATH . 'assets/img/logo.jpg';
-	// 	if (file_exists($logo_path)) {
-	// 		$pdf->Image($logo_path, 10, 10, 35);
-	// 	}
-
-	// 	$pdf->Write(11, "\n");
-	// 	$pdf->MultiCell(0, 5, 'VERIFIKASI PROSES PRODUKSI', 0, 'C');
-	// 	$pdf->Ln(5);
-
-	// 	setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
-	// 	$tanggal = $data['proses']->date;
-	// 	$date = new DateTime($tanggal);
-	// 	$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
-	// 	$formatted_date2 = strftime('%d %B %Y', $date->getTimestamp());
-
-	// 	$pdf->SetFont('times', '', 10);
-	// 	$pdf->SetX(12);
-	// 	$pdf->Write(0, 'Tanggal: ' . $formatted_date);
-	// 	$pdf->SetX($pdf->GetX() + 10);
-	// 	$pdf->Write(0, 'Shift: ' . $data['proses']->shift);
-	// 	$pdf->Ln(5);
-
-	// 	$pdf->SetFont('times', '', 9);
-	// 	$pdf->SetX(12);
-	// 	$pdf->Cell(45, 6, 'Jenis Produk', 1, 0, 'L');
-
-	// 	$dataCount = count($proses_data);
-	// 	$emptyColumns = 10 - $dataCount;
-	// 	foreach ($proses_data as $item) {
-	// 		$pdf->Cell(28, 6, $item->nama_produk, 1, 0, 'C');
-	// 	}
-	// 	for ($i = 0; $i < $emptyColumns; $i++) {
-	// 		$pdf->Cell(28, 6, '', 1, 0, 'C');
-	// 	}
-
-	// 	$pdf->Ln(5);
-	// 	$pdf->SetY($pdf->GetY() + 5);
-	// 	$pdf->SetFont('dejavusans', '', 7);
-	// 	$pdf->MultiCell(0, 7, "✓ : Ok\n✗ : Tidak Ok", 0, 'L');
-
-	// // Catatan
-	// 	$pdf->Ln(2);
-	// 	$pdf->Cell(5, 3, 'Catatan : ', 0, 1, 'L');
-	// 	foreach ($proses_data as $item) {
-	// 		if (!empty($item->catatan)) {
-	// 			$pdf->Cell(13, 0, ' - ' . $item->catatan, 0, 1, 'L');
-	// 		}
-	// 	}
-
-	// 	$y_after_keterangan = $pdf->GetY() + 2;
-	// 	$status_verifikasi = true;
-	// 	foreach ($proses_data as $item) {
-	// 		if (!isset($item->status_spv) || $item->status_spv != '1') {
-	// 			$status_verifikasi = false;
-	// 			break;
-	// 		}
-	// 	}
-
-	// 	$pdf->SetFont('times', '', 9);
-	// 	$pdf->SetTextColor(0, 0, 0);
-
-	// 	if ($status_verifikasi) {
-	// 		$y_verifikasi = $y_after_keterangan;
-
-	// 	// Dibuat Oleh
-	// 		$pdf->SetXY(25, $y_verifikasi + 5);
-	// 		$pdf->Cell(95, 5, 'Dibuat Oleh,', 0, 0, 'C');
-
-	// 		$pdf->SetXY(25, $y_verifikasi + 10);
-	// 		$pdf->SetFont('times', 'U', 9);
-	// 		$pdf->Cell(95, 5, $data['proses']->nama_lengkap_qc, 0, 1, 'C');
-
-	// 		$pdf->SetFont('times', '', 9);
-	// 		$pdf->Cell(127, 5, 'QC Inspector', 0, 0, 'C');
-
-	// 	// Diketahui Oleh
-	// 		$pdf->SetXY(90, $y_verifikasi + 5);
-	// 		$pdf->Cell(135, 5, 'Diketahui Oleh,', 0, 0, 'C');
-
-	// 		if (property_exists($data['proses'], 'status_produksi') && $data['proses']->status_produksi == 1 && !empty($data['proses']->nama_produksi)) {
-	// 			$update_tanggal_produksi = (new DateTime($data['proses']->tgl_update_prod))->format('d-m-Y | H:i');
-
-	// 			$pdf->SetFont('times', 'U',9);
-	// 			$pdf->SetXY(90, $y_verifikasi + 10);
-	// 			$pdf->Cell(135, 5, $data['proses']->nama_produksi, 0, 1, 'C');
-
-	// 			$pdf->SetFont('times', '', 9);
-	// 			$pdf->SetXY(90, $y_verifikasi + 15);
-	// 			$pdf->Cell(135, 5, 'Foreman/Forelady Produksi', 0, 1, 'C');
-	// 		} else {
-	// 			$pdf->SetFont('times', '', 9);
-	// 			$pdf->SetXY(90, $y_verifikasi + 10);
-	// 			$pdf->Cell(135, 5, 'Belum Diverifikasi', 0, 0, 'C');
-	// 		}
-
-	// 	// Disetujui Oleh
-	// 		$pdf->SetXY(150, $y_verifikasi + 5);
-	// 		$pdf->Cell(189, 5, 'Disetujui Oleh,', 0, 0, 'C');
-	// 		$update_tanggal = (new DateTime($data['proses']->tgl_update))->format('d-m-Y | H:i');
-
-	// 		$qr_text = "Diverifikasi secara digital oleh,\n" . $data['proses']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-	// 		$pdf->write2DBarcode($qr_text, 'QRCODE,L', 237, $y_verifikasi + 10, 15, 15, null, 'N');
-	// 		$pdf->SetXY(170, $y_verifikasi + 24);
-	// 		$pdf->Cell(149, 5, 'Supervisor QC', 0, 0, 'C');
-	// 	} else {
-	// 		$pdf->SetTextColor(255, 0, 0);
-	// 		$pdf->SetFont('times', '', 9);
-	// 		$pdf->SetXY(200, $y_after_keterangan);
-	// 		$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
-	// 	}
-
-	// 	$pdf->setPrintFooter(false);
-	// 	$filename = "Verifikasi proses_{$formatted_date2}.pdf";
-	// 	$pdf->Output($filename, 'I');
-	// }
 
 	public function cetak()
 	{
@@ -1001,7 +862,6 @@ class Proses extends MY_Controller
 			$pdf->Ln();
 		}
 
-		// === CATATAN & QR ===
 		$pdf->Ln(2);
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(10, 5, 'Catatan :', 0, 1, 'L');
@@ -1069,4 +929,273 @@ class Proses extends MY_Controller
 			$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
 		}
 	}
+
+	public function export_excel()
+	{
+		ini_set('memory_limit', '1024M');
+		set_time_limit(0);
+
+		$tanggal = $this->input->post('tanggal');
+		$shift   = $this->input->post('shift');
+
+		if (!$tanggal || !$shift) {
+			show_error('Tanggal atau Shift tidak dipilih', 404);
+		}
+
+		$rawData = $this->proses_model
+		->get_by_tanggal_shift_verif_excel($tanggal, $shift);
+
+		if (empty($rawData)) {
+			show_error('Data tidak ditemukan', 404);
+		}
+
+		/* ================= LOAD TEMPLATE ================= */
+
+		$reader = IOFactory::createReader('Xlsx');
+		$reader->setReadDataOnly(false);
+
+		$spreadsheet = $reader->load(
+			FCPATH . 'assets/excel/Verifikasi Proses Produksi.xlsx'
+		);
+
+		$sheetProduksi = $spreadsheet->getSheet(0);
+		$sheetPacking  = $spreadsheet->getSheet(1);
+
+		/* ================= FORMAT TANGGAL ================= */
+
+		$hariIndonesia  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+		$bulanIndonesia = ['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+		$dt = new DateTime($tanggal);
+
+		$tanggalFormatted =
+		$hariIndonesia[(int)$dt->format('w')] . ', ' .
+		$dt->format('d') . ' ' .
+		$bulanIndonesia[(int)$dt->format('m')] . ' ' .
+		$dt->format('Y');
+
+/* ==================================================
+   =============== PRODUKSI =========================
+   ================================================== */
+
+// ================= HEADER GLOBAL (HANYA SEKALI) =================
+   $sheetProduksi->setCellValue('D8', $tanggalFormatted);
+   $sheetProduksi->setCellValue('D10', ($rawData[0]->nama_produk ?? ''));
+
+// ================= TEMPLATE HANYA AREA TABEL =================
+   $templateStartRow = 13; 
+   $templateEndRow   = 27; 
+   $templateHeight   = $templateEndRow - $templateStartRow + 1;
+
+   $startCol = 'A';
+   $endCol   = 'Z';
+
+   $startColIndex = Coordinate::columnIndexFromString('H');
+
+   foreach ($rawData as $i => $rowData) {
+
+   	$rowOffset = $i * $templateHeight;
+
+   	if ($i > 0) {
+
+   		$insertRow = $templateStartRow + $rowOffset;
+
+        // Insert block kosong untuk tabel baru
+   		$sheetProduksi->insertNewRowBefore($insertRow, $templateHeight);
+
+        // COPY VALUE + STYLE PER CELL (AGAR BORDER & WARNA IKUT)
+   		for ($r = 0; $r < $templateHeight; $r++) {
+
+   			for ($c = Coordinate::columnIndexFromString($startCol);
+   				$c <= Coordinate::columnIndexFromString($endCol);
+   				$c++) {
+
+   				$colLetter = Coordinate::stringFromColumnIndex($c);
+
+   				$sourceCell = $colLetter . ($templateStartRow + $r);
+   				$targetCell = $colLetter . ($insertRow + $r);
+
+                // Copy value
+   				$sheetProduksi->setCellValue(
+   					$targetCell,
+   					$sheetProduksi->getCell($sourceCell)->getValue()
+   				);
+
+                // Copy full style (border, fill, font, alignment)
+   				$sheetProduksi->duplicateStyle(
+   					$sheetProduksi->getStyle($sourceCell),
+   					$targetCell
+   				);
+   			}
+   		}
+
+        // COPY MERGE DI AREA TABEL SAJA
+   		foreach ($sheetProduksi->getMergeCells() as $mergeRange) {
+
+   			if (preg_match('/([A-Z]+)(\d+):([A-Z]+)(\d+)/', $mergeRange, $match)) {
+
+   				$mergeStartRow = (int)$match[2];
+   				$mergeEndRow   = (int)$match[4];
+
+   				if ($mergeStartRow >= $templateStartRow &&
+   					$mergeEndRow   <= $templateEndRow) {
+
+   					$newRange = preg_replace_callback(
+   						'/\d+/',
+   						function($m) use ($rowOffset) {
+   							return $m[0] + $rowOffset;
+   						},
+   						$mergeRange
+   					);
+
+   					$sheetProduksi->mergeCells($newRange);
+   				}
+   			}
+   		}
+   	}
+
+    // ================= ISI DATA PRODUKSI =================
+
+   	$produksi = json_decode($rowData->proses_produksi, true);
+   	if (!is_array($produksi)) continue;
+
+   	$kodeProduksi = $produksi['dough_mixing']['kode_produksi'] ?? [];
+   	if (empty($kodeProduksi)) continue;
+
+   	$paramMap = [
+   		15 => ['kondisi_rm','chill_water'],
+   		16 => ['mixing','suhu_adonan'],
+   		19 => ['proofing','suhu_aktual'],
+   		20 => ['proofing','rh_aktual'],
+   		21 => ['proofing','durasi_waktu'],
+   		25 => ['hasil_baking','suhu_produk'],
+   	];
+
+   	$currentColIndex = $startColIndex;
+   	$filledCols = [];
+
+   	foreach ($kodeProduksi as $k => $kode) {
+
+   		if ($k == 0 || empty($kode)) continue;
+
+   		$colLetter = Coordinate::stringFromColumnIndex($currentColIndex);
+
+   		$sheetProduksi->setCellValueExplicit(
+   			$colLetter.(13 + $rowOffset),
+   			$kode,
+   			\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+   		);
+
+   		foreach ($paramMap as $row => $map) {
+
+   			$value = $produksi[$map[0]][$map[1]][$k-1] ?? null;
+
+   			if ($value !== null && $value !== '') {
+   				$sheetProduksi->setCellValue(
+   					$colLetter.($row + $rowOffset),
+   					$value
+   				);
+   			}
+   		}
+
+   		$filledCols[] = $currentColIndex;
+   		$currentColIndex++;
+   	}
+
+   	if (empty($filledCols)) continue;
+
+   	$lastFilledCol = end($filledCols);
+
+   	$avgCol = Coordinate::stringFromColumnIndex($lastFilledCol + 1);
+   	$minCol = Coordinate::stringFromColumnIndex($lastFilledCol + 2);
+   	$maxCol = Coordinate::stringFromColumnIndex($lastFilledCol + 3);
+
+   	$startDataCol = Coordinate::stringFromColumnIndex($startColIndex);
+   	$endDataCol   = Coordinate::stringFromColumnIndex($lastFilledCol);
+
+   	foreach (array_keys($paramMap) as $row) {
+
+   		$range = "{$startDataCol}".($row+$rowOffset).
+   		":{$endDataCol}".($row+$rowOffset);
+
+   		$sheetProduksi->setCellValue(
+   			$avgCol.($row+$rowOffset),
+   			"=IFERROR(AVERAGE($range),\"\")"
+   		);
+   		$sheetProduksi->setCellValue(
+   			$minCol.($row+$rowOffset),
+   			"=IFERROR(MIN($range),\"\")"
+   		);
+   		$sheetProduksi->setCellValue(
+   			$maxCol.($row+$rowOffset),
+   			"=IFERROR(MAX($range),\"\")"
+   		);
+   	}
+   }
+    /* ==================================================
+       =============== PACKING ==========================
+       ================================================== */
+
+       $sheetPacking->setCellValue('D8', $tanggalFormatted);
+       $sheetPacking->setCellValue('D10',($rawData[0]->nama_produk ?? ''));
+
+       $startColIndex   = Coordinate::columnIndexFromString('H');
+       $currentColIndex = $startColIndex;
+
+       foreach ($rawData as $rowData) {
+
+       	$packing = json_decode($rowData->proses_packing, true);
+       	if (empty($packing[0])) continue;
+
+       	$p = $packing[0];
+       	$kode = $p['pemeriksaan_finished_product']['kode_produksi'][0] ?? '';
+
+       	if (empty($kode)) continue;
+
+       	$colLetter = Coordinate::stringFromColumnIndex($currentColIndex);
+
+       	$sheetPacking->setCellValueExplicit(
+       		$colLetter.'14',
+       		$kode,
+       		DataType::TYPE_STRING
+       	);
+
+       	$mapSheet2 = [
+       		16 => $p['stalling_aging']['lama_aging'][0] ?? '',
+       		19 => $p['stalling_aging']['kadar_air'][0] ?? '',
+       		20 => ($p['drying']['suhu_setting'][0] ?? '') . '/' .
+       		($p['drying']['suhu_aktual'][0] ?? ''),
+       		21 => $p['drying']['dryer_speed'][0] ?? '',
+       		24 => $p['pemeriksaan_finished_product']['suhu_sebelum_packing'][0] ?? '',
+       		25 => $p['pemeriksaan_finished_product']['kadar_air_produk'][0] ?? '',
+       		26 => $p['pemeriksaan_finished_product']['bulk_density'][0] ?? '',
+       		27 => $p['pemeriksaan_finished_product']['net_weight'][0] ?? '',
+       		29 => $p['pemeriksaan_finished_product']['kondisi_kemasan'][0] ?? '',
+       		30 => $p['pemeriksaan_finished_product']['ketepatan_labelisasi'][0] ?? '',
+       	];
+
+       	foreach ($mapSheet2 as $row => $value) {
+       		if ($value !== '') {
+       			$sheetPacking->setCellValue($colLetter.$row, $value);
+       		}
+       	}
+
+       	$currentColIndex++;
+       }
+
+       /* ================= OUTPUT ================= */
+
+       gc_collect_cycles();
+
+       $filename = "Verifikasi_Produksi_{$tanggal}_Shift{$shift}.xlsx";
+
+       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       header('Content-Disposition: attachment; filename="'.$filename.'"');
+       header('Cache-Control: max-age=0');
+
+       $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+       $writer->setPreCalculateFormulas(false);
+       $writer->save('php://output');
+       exit;
+   }
 }

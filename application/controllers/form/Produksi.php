@@ -366,6 +366,31 @@ class Produksi extends MY_Controller {
 		$this->render('form/produksi/produksi-drying', $data);
 	}
 
+	// public function packing($uuid)
+	// {
+	// 	$rules = $this->produksi_model->rules_packing();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
+
+	// 		$update = $this->produksi_model->pack($uuid);
+	// 		if ($update) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
+	// 			redirect('produksi');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Verifikasi Produksi gagal di Update');
+	// 			redirect('produksi');
+	// 		}
+	// 	}
+
+	// 	$data = array(
+	// 		'produksi' => $this->produksi_model->get_by_uuid($uuid)
+	// 	);
+
+	// 	$this->active_nav = 'produksi'; 
+	// 	$this->render('form/produksi/produksi-packing', $data);
+	// }
+
 	public function packing($uuid)
 	{
 		$rules = $this->produksi_model->rules_packing();
@@ -373,25 +398,35 @@ class Produksi extends MY_Controller {
 
 		if ($this->form_validation->run() == TRUE) {
 
-			$update = $this->produksi_model->pack($uuid);
-			if ($update) {
-				$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
-				redirect('produksi');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Verifikasi Produksi gagal di Update');
-				redirect('produksi');
+			$result = $this->produksi_model->pack($uuid);
+
+        // ✅ Jika upload gagal
+			if (!$result['status']) {
+
+				$data = [
+					'produksi' => $this->produksi_model->get_by_uuid($uuid),
+					'upload_error' => $result['error']
+				];
+
+				$this->active_nav = 'produksi';
+				return $this->render('form/produksi/produksi-packing', $data);
 			}
+
+        // ✅ Jika sukses
+			$this->session->set_flashdata('success_msg', 'Data Verifikasi Produksi berhasil di Update');
+			redirect('produksi');
 		}
 
-		$data = array(
+    // ✅ Jika validasi form gagal
+		$data = [
 			'produksi' => $this->produksi_model->get_by_uuid($uuid)
-		);
+		];
 
-		$this->active_nav = 'produksi'; 
+		$this->active_nav = 'produksi';
 		$this->render('form/produksi/produksi-packing', $data);
 	}
 
-	public function verifikasi()
+	public function verifikasi() 
 	{
 		$data = array(
 			'produksi' => $this->produksi_model->get_data_by_plant()

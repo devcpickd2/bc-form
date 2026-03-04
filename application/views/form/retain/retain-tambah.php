@@ -16,7 +16,10 @@
                     <div class="form-group row">
                         <div class="col-sm-6">
                             <label class="form-label font-weight-bold">Tanggal</label>
-                            <input type="date" name="date" class="form-control <?= form_error('date') ? 'invalid' : '' ?> " value="<?= date("Y-m-d") ?>">
+                            <input type="date" 
+                            name="date" 
+                            class="form-control <?= form_error('date') ? 'invalid' : '' ?>" 
+                            value="<?= date('Y-m-d') ?>">
                             <div class="invalid-feedback <?= !empty(form_error('date')) ? 'd-block' : '' ?> ">
                                 <?= form_error('date') ?>
                             </div>
@@ -31,7 +34,7 @@
                         ?>
 
                         <div class="col-sm-6">
-                            <label class="form-label font-weight-bold">Plant</label>
+                            <label class="form-label font-weight-bold">Plant</label> 
                             <input type="text" class="form-control" value="<?= $plant_name ?>" readonly>
                             <input type="hidden" name="plant" value="<?= $plant_uuid ?>">
                         </div>
@@ -166,4 +169,54 @@
             entry.remove();
         }
     });
+
+    document.addEventListener('input', function(e) {
+
+        if (e.target.name.includes('[kode_produksi]')) {
+
+            const kodeInput = e.target;
+            let kode = kodeInput.value.trim().toUpperCase();
+
+            if (kode.length < 4) return;
+
+        // Ambil 4 karakter paling depan
+            kode = kode.substring(0, 4);
+
+            const yearCode = kode[0];
+            const monthCode = kode[1];
+            const dayCode = kode.substring(2, 4);
+
+        // ===== TAHUN =====
+        const baseYear = 2025; // P = 2025
+        const productionYear = baseYear + (yearCode.charCodeAt(0) - 'P'.charCodeAt(0));
+
+        // ===== BULAN =====
+        const productionMonth = monthCode.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+
+        // ===== TANGGAL =====
+        const productionDay = parseInt(dayCode);
+
+        if (isNaN(productionDay) || productionMonth < 1 || productionMonth > 12) return;
+
+        const productionDate = new Date(productionYear, productionMonth - 1, productionDay);
+
+        if (isNaN(productionDate)) return;
+
+        // ✅ BEST BEFORE +6 BULAN
+        productionDate.setMonth(productionDate.getMonth() + 6);
+
+        const yyyy = productionDate.getFullYear();
+        const mm = String(productionDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(productionDate.getDate()).padStart(2, '0');
+
+        const bestBefore = `${yyyy}-${mm}-${dd}`;
+
+        const row = kodeInput.closest('.description-entry');
+        const bbInput = row.querySelector('input[name*="[best_before]"]');
+
+        if (bbInput) {
+            bbInput.value = bestBefore;
+        }
+    }
+});
 </script>

@@ -126,6 +126,7 @@ $route['proses/verifikasi'] = 'form/proses/verifikasi';
 $route['proses/status/(:any)'] = 'form/proses/status/$1';
 $route['proses/delete/(:any)'] = 'form/proses/delete/$1';
 $route['proses/logs'] = 'form/proses_logs/index';
+$route['proses/export_excel'] = 'form/proses/export_excel';
 
 $route['metal'] = 'form/metal';
 $route['metal/tambah'] = 'form/metal/tambah';
@@ -164,6 +165,7 @@ $route['kontaminasi/diketahui'] = 'form/kontaminasi/diketahui';
 $route['kontaminasi/statusprod/(:any)'] = 'form/kontaminasi/statusprod/$1';
 $route['kontaminasi/delete/(:any)'] = 'form/kontaminasi/delete/$1';
 $route['kontaminasi/logs'] = 'form/kontaminasi_logs/index';
+$route['kontaminasi/export_excel'] = 'form/kontaminasi/export_excel';
 
 $route['kekuatanmagnet'] = 'form/kekuatanmagnet';
 $route['kekuatanmagnet/tambah'] = 'form/kekuatanmagnet/tambah';
@@ -444,6 +446,7 @@ $route['magnettrap/diketahui'] = 'form/magnettrap/diketahui';
 $route['magnettrap/statuseng/(:any)'] = 'form/magnettrap/statuseng/$1';
 $route['magnettrap/delete/(:any)'] = 'form/magnettrap/delete/$1';
 $route['magnettrap/logs'] = 'form/magnettrap_logs/index';
+$route['magnettrap/export_excel'] = 'form/magnettrap/export_excel';
 
 $route['kebersihanmesin'] = 'form/kebersihanmesin';
 $route['kebersihanmesin/tambah'] = 'form/kebersihanmesin/tambah';
@@ -557,6 +560,7 @@ $route['suhu/diketahui'] = 'form/suhu/diketahui';
 $route['suhu/statusprod/(:any)'] = 'form/suhu/statusprod/$1';
 $route['suhu/delete/(:any)'] = 'form/suhu/delete/$1';
 $route['suhu/export-excel'] = 'form/suhu/export_excel';
+$route['suhu/export-excel-salatiga'] = 'form/suhu/export_excel_salatiga';
 $route['suhu/logs'] = 'form/suhu_logs/index';
 
 $route['gosong'] = 'form/gosong';
@@ -571,3 +575,4 @@ $route['gosong/statusprod/(:any)'] = 'form/gosong/statusprod/$1';
 $route['gosong/delete/(:any)'] = 'form/gosong/delete/$1';
 $route['gosong/export-excel'] = 'form/gosong/export_excel';
 $route['gosong/logs'] = 'form/gosong_logs/index';
+$route['gosong/export_excel'] = 'form/gosong/export_excel';

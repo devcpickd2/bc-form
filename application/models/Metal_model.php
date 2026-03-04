@@ -561,5 +561,20 @@ class Metal_model extends CI_Model {
 		return $query->row();
 	}
 
+	public function get_last_by_plant($plant_uuid)
+	{
+		if (empty($plant_uuid)) {
+			return null;
+		}
+
+		return $this->db
+		->where('plant', $plant_uuid)
+		->order_by('date_metal', 'DESC')
+		->order_by('time', 'DESC')
+		->limit(1)
+		->get('metal')
+		->row();
+	}
+
 
 }

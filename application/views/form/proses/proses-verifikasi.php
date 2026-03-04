@@ -100,14 +100,53 @@
                                 <option value="3">Shift 3</option>
                             </select>
                         </div>
-                        <div class="col-md-3 align-self-end">
+                        <div class="col-md-6 align-self-end">
                             <button type="submit" class="btn btn-success">
                                 <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
                             </button>
-                        </div>
+                            <button type="button" class="btn btn-primary" id="btn_export_excel">
+                                <i class="fas fa-file-excel fa-sm text-white-50"></i> Export Excel
+                            </button>
+                        </div> 
                     </div>
                 </form>
             </div>
+
+            <script>
+    // Tombol Export Excel
+                document.getElementById('btn_export_excel').addEventListener('click', function() {
+        // Ambil data tanggal & shift
+                    const tanggal = document.getElementById('tanggal').value;
+                    const shift = document.getElementById('shift').value;
+
+                    if (!tanggal || !shift) {
+                        alert('Tanggal dan Shift harus dipilih terlebih dahulu!');
+                        return;
+                    }
+
+        // Redirect ke export_excel controller dengan data POST
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '<?= base_url("proses/export_excel") ?>';
+
+                    const inputTanggal = document.createElement('input');
+                    inputTanggal.type = 'hidden';
+                    inputTanggal.name = 'tanggal';
+                    inputTanggal.value = tanggal;
+
+                    const inputShift = document.createElement('input');
+                    inputShift.type = 'hidden';
+                    inputShift.name = 'shift';
+                    inputShift.value = shift;
+
+                    form.appendChild(inputTanggal);
+                    form.appendChild(inputShift);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            </script>
+
         </div>
     </div>
 

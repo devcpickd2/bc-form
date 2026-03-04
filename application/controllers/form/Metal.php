@@ -40,24 +40,55 @@ class Metal extends MY_Controller {
 		$this->render('form/metal/metal-detail', $data);
 	}
 
+	// public function tambah()
+	// {
+	// 	$rules = $this->metal_model->rules();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
+	// 		$insert = $this->metal_model->insert();
+	// 		if ($insert) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Metal Detector berhasil di simpan');
+	// 			redirect('metal');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Metal Detector gagal di simpan');
+	// 			redirect('metal');
+	// 		}
+	// 	}
+
+	// 	$this->active_nav = 'metal'; 
+	// 	$this->render('form/metal/metal-tambah');
+	// }
+
 	public function tambah()
 	{
+		$plant_uuid = $this->session->userdata('plant');
+
+    // Ambil data terakhir berdasarkan plant
+		$data['last_metal'] = $this->metal_model->get_last_by_plant($plant_uuid);
+
 		$rules = $this->metal_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
+
 			$insert = $this->metal_model->insert();
+
 			if ($insert) {
-				$this->session->set_flashdata('success_msg', 'Data Pemeriksaan Metal Detector berhasil di simpan');
+				$this->session->set_flashdata('success_msg', 
+					'Data Pemeriksaan Metal Detector berhasil di simpan'
+				);
 				redirect('metal');
-			}else {
-				$this->session->set_flashdata('error_msg', 'Data Pemeriksaan Metal Detector gagal di simpan');
+			} else {
+				$this->session->set_flashdata('error_msg', 
+					'Data Pemeriksaan Metal Detector gagal di simpan'
+				);
 				redirect('metal');
 			}
 		}
 
-		$this->active_nav = 'metal'; 
-		$this->render('form/metal/metal-tambah');
+		$this->active_nav = 'metal';
+		$this->render('form/metal/metal-tambah', $data);
 	}
 
 	public function edit($uuid)
@@ -65,7 +96,7 @@ class Metal extends MY_Controller {
 		$rules = $this->metal_model->rules_update();
 		$this->form_validation->set_rules($rules);
 
-		if ($this->form_validation->run() == TRUE) {
+		if ($this->form_validation->run() == TRUE) { 
 			
 			$update = $this->metal_model->update($uuid);
 			if ($update) {
@@ -599,18 +630,18 @@ class Metal extends MY_Controller {
        $pdf->SetXY(150,$y+22);
        $pdf->Cell(45,5,'Supervisor QC',0,1,'C');
 
-   } else {
-   	$pdf->SetTextColor(255,0,0);
-   	$pdf->SetFont('times','',8);
-   	$pdf->SetXY(100,$y_after_keterangan);
-   	$pdf->Cell(80,5,'Data Belum Diverifikasi',0,0,'C');
-   	$pdf->SetTextColor(0,0,0);
-   }
+    } else {
+    	$pdf->SetTextColor(255,0,0);
+    	$pdf->SetFont('times','',8);
+    	$pdf->SetXY(100,$y_after_keterangan);
+    	$pdf->Cell(80,5,'Data Belum Diverifikasi',0,0,'C');
+    	$pdf->SetTextColor(0,0,0);
+    }
 
-   $pdf->setPrintFooter(false);
-   $filename = "Metal Detector_{$formatted_date2}.pdf";
-   $pdf->Output($filename, 'I');
+    $pdf->setPrintFooter(false);
+    $filename = "Metal Detector_{$formatted_date2}.pdf";
+    $pdf->Output($filename, 'I');
 
-}
+ }
 }
 

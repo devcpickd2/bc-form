@@ -810,367 +810,408 @@ class Produksi_model extends CI_Model {
 	public function pack($uuid)
 	{
 		$username = $this->session->userdata('username');
-		$old_data = $this->db->get_where('mixing', ['uuid' => $uuid])->row();
-		$old_data2 = $this->db->get_where('mixing', ['uuid' => $uuid])->row_array();
+		$old_data  = $this->db->get_where('mixing', ['uuid' => $uuid])->row();
+		// $old_data2 = $this->db->get_where('mixing', ['uuid' => $uuid])->row_array();
+		$old_data2 = $old_data;
 
-    // === Upload Config ===
-		$config['upload_path']   = './uploads/';
-		$config['allowed_types'] = 'jpg|jpeg|png|gif|pdf';
-		$config['overwrite']     = true;
-		$config['max_size']      = 2048;
-		$this->load->library('upload', $config);
+		$upload_error = null;
 
-    // === Upload & Kompres Gambar Kode Kemasan ===
+    // === Base Upload Config ===
+		$config = [
+			'upload_path'   => './uploads/',
+			'allowed_types' => 'jpg|jpeg|png|pdf',
+			'max_size'      => 2048, 
+			'encrypt_name'  => TRUE
+		];
+
+		$this->load->library('upload');
+
+    // ===============================
+    // UPLOAD GAMBAR KODE KEMASAN
+    // ===============================
 		$gambar_kode_kemasan = $old_data->gambar_kode_kemasan;
+
 		if (!empty($_FILES['gambar_kode_kemasan']['name'])) {
-			$config['file_name'] = 'gambar_kode_kemasan' . time();
+
 			$this->upload->initialize($config);
 
-			if ($this->upload->do_upload('gambar_kode_kemasan')) {
+			if (!$this->upload->do_upload('gambar_kode_kemasan')) {
+
+				return [
+					'status' => false,
+					'error'  => $this->upload->display_errors('', '')
+				];
+
+			} else {
+
 				$upload_data = $this->upload->data();
 				$gambar_kode_kemasan = $upload_data['file_name'];
 
-            // === Kompres gambar ===
-				$this->load->library('image_lib');
-				$resize_config['image_library'] = 'gd2';
-				$resize_config['source_image'] = './uploads/' . $upload_data['file_name'];
-				$resize_config['maintain_ratio'] = TRUE;
-            $resize_config['quality'] = '70%'; // kualitas 70%
-            $resize_config['width'] = 1280;
-            $resize_config['height'] = 1280;
-            $this->image_lib->initialize($resize_config);
-            $this->image_lib->resize();
-        } else {
-        	log_message('error', $this->upload->display_errors());
-        }
-    }
+            // Kompres hanya jika gambar (bukan pdf)
+				if (in_array($upload_data['file_ext'], ['.jpg','.jpeg','.png'])) {
 
-    // === Upload & Kompres Gambar Kondisi Kemasan ===
-    $gambar_kondisi_kemasan = $old_data->gambar_kondisi_kemasan;
-    if (!empty($_FILES['gambar_kondisi_kemasan']['name'])) {
-    	$config['file_name'] = 'gambar_kondisi_kemasan' . time();
-    	$this->upload->initialize($config);
+					$this->load->library('image_lib');
 
-    	if ($this->upload->do_upload('gambar_kondisi_kemasan')) {
-    		$upload_data = $this->upload->data();
-    		$gambar_kondisi_kemasan = $upload_data['file_name'];
+					$resize_config = [
+						'image_library'  => 'gd2',
+						'source_image'   => './uploads/'.$upload_data['file_name'],
+						'maintain_ratio' => TRUE,
+						'quality'        => '60%',
+						'width'          => 800,
+						'height'         => 800
+					];
 
-            // === Kompres gambar ===
-    		$this->load->library('image_lib');
-    		$resize_config['image_library'] = 'gd2';
-    		$resize_config['source_image'] = './uploads/' . $upload_data['file_name'];
-    		$resize_config['maintain_ratio'] = TRUE;
-    		$resize_config['quality'] = '70%';
-    		$resize_config['width'] = 1280;
-    		$resize_config['height'] = 1280;
-    		$this->image_lib->initialize($resize_config);
-    		$this->image_lib->resize();
-    	} else {
-    		log_message('error', $this->upload->display_errors());
-    	}
-    }
+					$this->image_lib->initialize($resize_config);
+					$this->image_lib->resize();
+					$this->image_lib->clear();
+				}
+			}
+		}
 
-    // === Data Update ===
-    $data = [
-    	'username' => $username,
-    	'produk_hasil' => $this->input->post('produk_hasil'),
-    	'produk_rasa' => $this->input->post('produk_rasa'),
-    	'produk_aroma' => $this->input->post('produk_aroma'),
-    	'produk_tekstur' => $this->input->post('produk_tekstur'),
-    	'produk_warna' => $this->input->post('produk_warna'),
-    	'packing_kondisi_kemasan' => $this->input->post('packing_kondisi_kemasan'),
-    	'catatan' => $this->input->post('catatan'),
-    	'gambar_kode_kemasan' => $gambar_kode_kemasan,
-    	'gambar_kondisi_kemasan' => $gambar_kondisi_kemasan,
-    	'modified_at' => date("Y-m-d H:i:s")
-    ];
+    // ===============================
+    // UPLOAD GAMBAR KONDISI KEMASAN
+    // ===============================
+		$gambar_kondisi_kemasan = $old_data->gambar_kondisi_kemasan;
 
-    $this->db->update('mixing', $data, ['uuid' => $uuid]);
+		if (!empty($_FILES['gambar_kondisi_kemasan']['name'])) {
 
-    // === Simpan Log ===
-    $new_data = $this->db->get_where('mixing', ['uuid' => $uuid])->row_array();
+			$this->upload->initialize($config);
 
-    if ($this->db->affected_rows() > 0) {
-    	$this->activity_logger->log_activity(
-    		'update',
-    		'mixing_logs',
-    		$uuid,
-    		$old_data2,
-    		$new_data
-    	);
-    	return true;
-    }
+			if (!$this->upload->do_upload('gambar_kondisi_kemasan')) {
 
-    return false;
-}
+				return [
+					'status' => false,
+					'error'  => $this->upload->display_errors('', '')
+				];
 
+			} else {
 
-public function rules_verifikasi()
-{
-	return[
-		[
-			'field' => 'status_spv',
-			'label' => 'Date',
-			'rules' => 'required'
-		],
-		[
-			'field' => 'catatan_spv',
-			'label' => 'Notes'
-		]
+				$upload_data = $this->upload->data();
+				$gambar_kondisi_kemasan = $upload_data['file_name'];
 
-	];
-}
+				if (in_array($upload_data['file_ext'], ['.jpg','.jpeg','.png'])) {
 
-public function verifikasi_update($uuid)
-{
+					$this->load->library('image_lib');
 
-	$nama_spv = $this->session->userdata('username');
-	$status_spv = $this->input->post('status_spv');
-	$catatan_spv = $this->input->post('catatan_spv');
+					$resize_config = [
+						'image_library'  => 'gd2',
+						'source_image'   => './uploads/'.$upload_data['file_name'],
+						'maintain_ratio' => TRUE,
+						'quality'        => '60%',
+						'width'          => 800,
+						'height'         => 800
+					];
 
-	$data = array(
-		'nama_spv' => $nama_spv,
-		'status_spv' => $status_spv,
-		'catatan_spv' => $catatan_spv,
-		'tgl_update' => date("Y-m-d H:i:s")
-	);
+					$this->image_lib->initialize($resize_config);
+					$this->image_lib->resize();
+					$this->image_lib->clear();
+				}
+			}
+		}
 
-	$this->db->update('mixing', $data, array('uuid' => $uuid));
-	return($this->db->affected_rows() > 0) ? true :false;
+    // ===============================
+    // UPDATE DATA
+    // ===============================
+		$data = [
+			'username' => $username,
+			'produk_hasil' => $this->input->post('produk_hasil'),
+			'produk_rasa' => $this->input->post('produk_rasa'),
+			'produk_aroma' => $this->input->post('produk_aroma'),
+			'produk_tekstur' => $this->input->post('produk_tekstur'),
+			'produk_warna' => $this->input->post('produk_warna'),
+			'packing_kondisi_kemasan' => $this->input->post('packing_kondisi_kemasan'),
+			'catatan' => $this->input->post('catatan'),
+			'gambar_kode_kemasan' => $gambar_kode_kemasan,
+			'gambar_kondisi_kemasan' => $gambar_kondisi_kemasan,
+			'modified_at' => date("Y-m-d H:i:s")
+		];
 
-}
+		$this->db->update('mixing', $data, ['uuid' => $uuid]);
 
-public function rules_diketahui()
-{
-	return[
-		[
-			'field' => 'status_produksi',
-			'label' => 'Status',
-			'rules' => 'required'
-		],
-		[
-			'field' => 'catatan_produksi',
-			'label' => 'Notes'
-		]	
-	];
-}
+		$new_data = $this->db->get_where('mixing', ['uuid' => $uuid])->row_array();
 
+		if ($this->db->affected_rows() > 0) {
 
-public function diketahui_update($uuid)
-{
+			$this->activity_logger->log_activity(
+				'update',
+				'mixing_logs',
+				$uuid,
+				$old_data2,
+				$new_data
+			);
 
-	$nama_produksi = $this->session->userdata('username');
-	$status_produksi = $this->input->post('status_produksi');
-	$catatan_produksi = $this->input->post('catatan_produksi');
+			return ['status' => true];
+		}
 
-	$data = array(
-		'nama_produksi' => $nama_produksi,
-		'status_produksi' => $status_produksi,
-		'catatan_produksi' => $catatan_produksi,
-		'tgl_update_prod' => date("Y-m-d H:i:s")
-	);
-
-	$this->db->update('mixing', $data, array('uuid' => $uuid));
-	return($this->db->affected_rows() > 0) ? true :false;
-
-}
-
-public function get_all()
-{
-	$this->db->order_by('created_at', 'DESC');
-	$data = $this->db->get('mixing')->result();
-	return $data;
-}
-
-
-public function get_produksi()
-{
-	$this->db->order_by('created_at', 'DESC');
-	$data = $this->db->get('mixing')->result();
-	return $data;
-}
-
-public function get_by_uuid($uuid)
-{
-	$data = $this->db->get_where('mixing', array('uuid' => $uuid))->row();
-	return $data;
-}
-
-public function get_by_uuid_produksi($tanggal, $nama_produk)
-{
-	if (empty($tanggal) || empty($nama_produk)) {
-		return false;
+		return ['status' => true];
 	}
-	log_message('debug', 'Tanggal yang diterima: ' . $tanggal);
-	log_message('debug', 'Nama produk yang diterima: ' . $nama_produk);
 
-	$this->db->where('DATE(date)', $tanggal);
-	$this->db->where('nama_produk', $nama_produk);
-	$this->db->order_by('date', 'ASC');
-	$query = $this->db->get('mixing');
+	public function rules_verifikasi()
+	{
+		return[
+			[
+				'field' => 'status_spv',
+				'label' => 'Date',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'catatan_spv',
+				'label' => 'Notes'
+			]
 
-	log_message('debug', 'Query yang dijalankan: ' . $this->db->last_query());
-
-	if ($query->num_rows() > 0) {
-		return $query->result();
-	}   
-	return false;  
-}
-
-
-public function get_by_uuid_produksi_verif($tanggal, $nama_produk)
-{
-	if (empty($tanggal) || empty($nama_produk)) {
-		return false;
+		];
 	}
-	$this->db->select('nama_spv, tgl_update, date, shift, date_stall, nama_produk, shift_pack, catatan, status_spv, username, premix, nama_produksi, tgl_update_prod');
-	$this->db->where('DATE(date)', $tanggal);
-	$this->db->where('nama_produk', $nama_produk);
-	$this->db->order_by('tgl_update', 'DESC');
-	$this->db->limit(1);
-	$query = $this->db->get('mixing');
 
-	return $query->row();
-}
+	public function verifikasi_update($uuid)
+	{
 
-public function get_latest_today() {
-	$plant = $this->session->userdata('plant');
+		$nama_spv = $this->session->userdata('username');
+		$status_spv = $this->input->post('status_spv');
+		$catatan_spv = $this->input->post('catatan_spv');
 
-	$this->db->where('date', date('Y-m-d'));
-	$this->db->where('plant', $plant);
-	$this->db->order_by('created_at', 'DESC');
-	$query = $this->db->get('mixing', 1);
+		$data = array(
+			'nama_spv' => $nama_spv,
+			'status_spv' => $status_spv,
+			'catatan_spv' => $catatan_spv,
+			'tgl_update' => date("Y-m-d H:i:s")
+		);
 
-	return $query->row_array();
-}
+		$this->db->update('mixing', $data, array('uuid' => $uuid));
+		return($this->db->affected_rows() > 0) ? true :false;
 
-public function count_today_same_product() {
-	$plant = $this->session->userdata('plant'); 
+	}
+
+	public function rules_diketahui()
+	{
+		return[
+			[
+				'field' => 'status_produksi',
+				'label' => 'Status',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'catatan_produksi',
+				'label' => 'Notes'
+			]	
+		];
+	}
+
+
+	public function diketahui_update($uuid)
+	{
+
+		$nama_produksi = $this->session->userdata('username');
+		$status_produksi = $this->input->post('status_produksi');
+		$catatan_produksi = $this->input->post('catatan_produksi');
+
+		$data = array(
+			'nama_produksi' => $nama_produksi,
+			'status_produksi' => $status_produksi,
+			'catatan_produksi' => $catatan_produksi,
+			'tgl_update_prod' => date("Y-m-d H:i:s")
+		);
+
+		$this->db->update('mixing', $data, array('uuid' => $uuid));
+		return($this->db->affected_rows() > 0) ? true :false;
+
+	}
+
+	public function get_all()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$data = $this->db->get('mixing')->result();
+		return $data;
+	}
+
+
+	public function get_produksi()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$data = $this->db->get('mixing')->result();
+		return $data;
+	}
+
+	public function get_by_uuid($uuid)
+	{
+		$data = $this->db->get_where('mixing', array('uuid' => $uuid))->row();
+		return $data;
+	}
+
+	public function get_by_uuid_produksi($tanggal, $nama_produk)
+	{
+		if (empty($tanggal) || empty($nama_produk)) {
+			return false;
+		}
+		log_message('debug', 'Tanggal yang diterima: ' . $tanggal);
+		log_message('debug', 'Nama produk yang diterima: ' . $nama_produk);
+
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('nama_produk', $nama_produk);
+		$this->db->order_by('date', 'ASC');
+		$query = $this->db->get('mixing');
+
+		log_message('debug', 'Query yang dijalankan: ' . $this->db->last_query());
+
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		}   
+		return false;  
+	}
+
+
+	public function get_by_uuid_produksi_verif($tanggal, $nama_produk)
+	{
+		if (empty($tanggal) || empty($nama_produk)) {
+			return false;
+		}
+		$this->db->select('nama_spv, tgl_update, date, shift, date_stall, nama_produk, shift_pack, catatan, status_spv, username, premix, nama_produksi, tgl_update_prod');
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->where('nama_produk', $nama_produk);
+		$this->db->order_by('tgl_update', 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get('mixing');
+
+		return $query->row();
+	}
+
+	public function get_latest_today() {
+		$plant = $this->session->userdata('plant');
+
+		$this->db->where('date', date('Y-m-d'));
+		$this->db->where('plant', $plant);
+		$this->db->order_by('created_at', 'DESC');
+		$query = $this->db->get('mixing', 1);
+
+		return $query->row_array();
+	}
+
+	public function count_today_same_product() {
+		$plant = $this->session->userdata('plant'); 
 
     // Ambil produk terakhir hanya untuk plant yang sesuai
-	$this->db->select('nama_produk');
-	$this->db->where('plant', $plant);
-	$this->db->order_by('created_at', 'DESC'); 
-	$this->db->limit(1); 
-	$last_updated_product = $this->db->get('mixing')->row_array();
+		$this->db->select('nama_produk');
+		$this->db->where('plant', $plant);
+		$this->db->order_by('created_at', 'DESC'); 
+		$this->db->limit(1); 
+		$last_updated_product = $this->db->get('mixing')->row_array();
 
-	if (!$last_updated_product) {
-		return 0;
-	}
+		if (!$last_updated_product) {
+			return 0;
+		}
 
     // Hitung jumlah produk yang sama hari ini dan untuk plant yang sama
-	$this->db->where('date', date('Y-m-d'));
-	$this->db->where('nama_produk', $last_updated_product['nama_produk']);
-	$this->db->where('plant', $plant);
-	return $this->db->count_all_results('mixing');
-}
+		$this->db->where('date', date('Y-m-d'));
+		$this->db->where('nama_produk', $last_updated_product['nama_produk']);
+		$this->db->where('plant', $plant);
+		return $this->db->count_all_results('mixing');
+	}
 
-public function get_data_by_plant()
-{
-	$this->db->order_by('created_at', 'DESC');
-	$plant = $this->session->userdata('plant');
-	return $this->db->get_where('mixing', ['plant' => $plant])->result();
-}
+	public function get_data_by_plant()
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$plant = $this->session->userdata('plant');
+		return $this->db->get_where('mixing', ['plant' => $plant])->result();
+	}
 
-public function count_all_by_plant($plant, $keyword = null)
-{
-    $this->db->from('mixing');
-    $this->db->where('plant', $plant);
+	public function count_all_by_plant($plant, $keyword = null)
+	{
+		$this->db->from('mixing');
+		$this->db->where('plant', $plant);
 
-    if (!empty($keyword)) {
-        $this->db->group_start();
-        $this->db->like('nama_produk', $keyword);
-        $this->db->or_like('kode_produksi', $keyword);
-        $this->db->group_end();
-    }
+		if (!empty($keyword)) {
+			$this->db->group_start();
+			$this->db->like('nama_produk', $keyword);
+			$this->db->or_like('kode_produksi', $keyword);
+			$this->db->group_end();
+		}
 
-    return $this->db->count_all_results();
-}
+		return $this->db->count_all_results();
+	}
 
-public function get_data_by_plant_paginated($plant, $limit, $start, $keyword = null)
-{
-    $this->db->order_by('created_at', 'DESC');
-    $this->db->where('plant', $plant);
+	public function get_data_by_plant_paginated($plant, $limit, $start, $keyword = null)
+	{
+		$this->db->order_by('created_at', 'DESC');
+		$this->db->where('plant', $plant);
 
-    if (!empty($keyword)) {
-        $this->db->group_start();
-        $this->db->like('nama_produk', $keyword);
-        $this->db->or_like('kode_produksi', $keyword);
-        $this->db->group_end();
-    }
+		if (!empty($keyword)) {
+			$this->db->group_start();
+			$this->db->like('nama_produk', $keyword);
+			$this->db->or_like('kode_produksi', $keyword);
+			$this->db->group_end();
+		}
 
-    $this->db->limit($limit, $start);
-    return $this->db->get('mixing')->result();
-}
+		$this->db->limit($limit, $start);
+		return $this->db->get('mixing')->result();
+	}
 
-public function delete_by_uuid($uuid)
-{
-	$this->db->where('uuid', $uuid);
-	return $this->db->delete('mixing');
-}
+	public function delete_by_uuid($uuid)
+	{
+		$this->db->where('uuid', $uuid);
+		return $this->db->delete('mixing');
+	}
 
-public function getLastKodeProduksiHariIni($plant = null)
-{
-	$today = date('Y-m-d');
-	$this->db->select('kode_produksi');
-	$this->db->from('mixing');
-	$this->db->where('DATE(created_at)', $today);
+	public function getLastKodeProduksiHariIni($plant = null)
+	{
+		$today = date('Y-m-d');
+		$this->db->select('kode_produksi');
+		$this->db->from('mixing');
+		$this->db->where('DATE(created_at)', $today);
 
     // Tambahkan filter plant jika tersedia
-	if (!empty($plant)) {
-		$this->db->where('plant', $plant); 
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$this->db->order_by('created_at', 'DESC');
+		$this->db->limit(1);
+
+		$query = $this->db->get();
+		if ($query->num_rows() > 0) {
+			return $query->row()->kode_produksi;
+		}
+		return null;
 	}
 
-	$this->db->order_by('created_at', 'DESC');
-	$this->db->limit(1);
-
-	$query = $this->db->get();
-	if ($query->num_rows() > 0) {
-		return $query->row()->kode_produksi;
+	public function get_mixing_salatiga_by_date($plant_uuid, $tanggal)
+	{
+		$this->db->where('plant', $plant_uuid);
+		$this->db->where('DATE(date)', $tanggal);
+		$this->db->order_by('id', 'DESC');
+		$query = $this->db->get('mixing');
+		return $query->row(); 
 	}
-	return null;
-}
+	public function get_latest_by_plant($plant_uuid)
+	{
+		return $this->db
+		->where('plant', $plant_uuid)
+		->order_by('id', 'DESC')
+		->get('mixing')
+		->row();
+	}
 
-public function get_mixing_salatiga_by_date($plant_uuid, $tanggal)
-{
-	$this->db->where('plant', $plant_uuid);
-	$this->db->where('DATE(date)', $tanggal);
-	$this->db->order_by('id', 'DESC');
-	$query = $this->db->get('mixing');
-	return $query->row(); 
-}
-public function get_latest_by_plant($plant_uuid)
-{
-	return $this->db
-	->where('plant', $plant_uuid)
-	->order_by('id', 'DESC')
-	->get('mixing')
-	->row();
-}
-
-public function get_produksi_by_plant_and_date($plant_uuid, $tanggal)
-{
-	$this->db->where('plant', $plant_uuid);
-	$this->db->where('date', $tanggal);
-	$query = $this->db->get('mixing'); 
-	return $query->row();
-}
-public function get_produk_by_tanggal($tanggal)
-{
-	$this->db->select('nama_produk');
-	$this->db->from('mixing');
-	$this->db->where('date', $tanggal); 
-	$this->db->group_by('nama_produk');
-	return $this->db->get()->result();
-}
+	public function get_produksi_by_plant_and_date($plant_uuid, $tanggal)
+	{
+		$this->db->where('plant', $plant_uuid);
+		$this->db->where('date', $tanggal);
+		$query = $this->db->get('mixing'); 
+		return $query->row();
+	}
+	public function get_produk_by_tanggal($tanggal)
+	{
+		$this->db->select('nama_produk');
+		$this->db->from('mixing');
+		$this->db->where('date', $tanggal); 
+		$this->db->group_by('nama_produk');
+		return $this->db->get()->result();
+	}
 
 
-public function get_data_by_tanggal_produk($tanggal, $produk)
-{
-	return $this->db->get_where('mixing', [
-		'date' => $tanggal,
-		'nama_produk' => $produk
-	])->result();
-}
+	public function get_data_by_tanggal_produk($tanggal, $produk)
+	{
+		return $this->db->get_where('mixing', [
+			'date' => $tanggal,
+			'nama_produk' => $produk
+		])->result();
+	}
 
 }

@@ -259,4 +259,16 @@ class Gosong_model extends CI_Model {
 		return $query->row();
 	}
 
+	public function get_by_month($tahun, $bulan, $plant)
+	{
+		return $this->db
+		->where('YEAR(date)', $tahun)
+		->where('MONTH(date)', $bulan)
+		->where('plant', $plant)
+		->order_by('date', 'ASC')
+		->get('roti_gosong')
+		->result();
+	}
+
+
 }

@@ -14,6 +14,7 @@ class Thermometer extends MY_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('auth_model'); 
 		$this->load->model('thermometer_model');
+		$this->load->model('list_thermometer_model');
 		$this->load->model('pegawai_model');
 		if(!$this->auth_model->current_user()){
 			redirect('login');
@@ -40,46 +41,82 @@ class Thermometer extends MY_Controller {
 		$this->render('form/thermometer/thermometer-detail', $data);
 	}
 
+	// public function tambah()
+	// {
+	// 	$rules = $this->thermometer_model->rules();
+	// 	$this->form_validation->set_rules($rules);
+
+	// 	if ($this->form_validation->run() == TRUE) {
+	// 		$insert = $this->thermometer_model->insert();
+	// 		if ($insert) {
+	// 			$this->session->set_flashdata('success_msg', 'Data Peneraan Thermometer berhasil di simpan');
+	// 			redirect('thermometer');
+	// 		}else {
+	// 			$this->session->set_flashdata('error_msg', 'Data Peneraan Thermometer gagal di simpan');
+	// 			redirect('thermometer');
+	// 		}
+	// 	}
+
+	// 	$this->active_nav = 'thermometer'; 
+	// 	$this->render('form/thermometer/thermometer-tambah');
+	// }
+
 	public function tambah()
 	{
+    // Ambil data list thermometer
+		$data['list_thermo'] = $this->list_thermometer_model->get_by_plant();
+
 		$rules = $this->thermometer_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
+
 			$insert = $this->thermometer_model->insert();
+
 			if ($insert) {
 				$this->session->set_flashdata('success_msg', 'Data Peneraan Thermometer berhasil di simpan');
 				redirect('thermometer');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Peneraan Thermometer gagal di simpan');
 				redirect('thermometer');
 			}
 		}
 
 		$this->active_nav = 'thermometer'; 
-		$this->render('form/thermometer/thermometer-tambah');
+		$this->render('form/thermometer/thermometer-tambah', $data);
 	}
 
 	public function edit($uuid)
 	{
+    // Ambil list thermometer (SAMA seperti tambah)
+		$data['list_thermo'] = $this->db
+		->order_by('kode_thermometer', 'ASC')
+		->get('list_thermometer')
+		->result();
+
+    // Ambil data yang mau diedit
+		$data['thermometer'] = $this->thermometer_model->get_by_uuid($uuid);
+
+    // Kalau data tidak ditemukan
+		if (!$data['thermometer']) {
+			show_404();
+		}
+
 		$rules = $this->thermometer_model->rules();
 		$this->form_validation->set_rules($rules);
 
 		if ($this->form_validation->run() == TRUE) {
 			
 			$update = $this->thermometer_model->update($uuid);
+
 			if ($update) {
 				$this->session->set_flashdata('success_msg', 'Data Peneraan Thermometer berhasil di Update');
-				redirect('thermometer');
-			}else {
+			} else {
 				$this->session->set_flashdata('error_msg', 'Data Peneraan Thermometer gagal di Update');
-				redirect('thermometer');
 			}
-		}
 
-		$data = array(
-			'thermometer' => $this->thermometer_model->get_by_uuid($uuid),
-		);
+			redirect('thermometer');
+		}
 
 		$this->active_nav = 'thermometer'; 
 		$this->render('form/thermometer/thermometer-edit', $data);

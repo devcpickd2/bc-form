@@ -92,32 +92,7 @@
                 </div>
                 <hr>
                 <label class="form-label font-weight-bold">KEMASAN</label>
-                <div class="form-group row">
-                    <!-- <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Nama Produk</label>
-                        <input type="text" name="packing_nama_produk" class="form-control <?= form_error('packing_nama_produk') ? 'invalid' : '' ?>" value="<?= $produksi->nama_produk; ?>" readonly>
-                        <div class="invalid-feedback <?= !empty(form_error('packing_nama_produk')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_nama_produk') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Kode Kemasan</label>
-                        <input type="text" name="packing_kode_kemasan" class="form-control <?= form_error('packing_kode_kemasan') ? 'invalid' : '' ?>" value="<?= $produksi->kode_produksi; ?>" readonly>
-                        <div class="invalid-feedback <?= !empty(form_error('packing_kode_kemasan')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_kode_kemasan') ?>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Best Before</label>
-                        <?php
-                        $bb_date = (new DateTime($produksi->date))->modify('+1 year')->format('Y-m-d');
-                        ?>
-                        <input type="date" name="packing_bb" class="form-control <?= form_error('packing_bb') ? 'invalid' : '' ?>" value="<?= $bb_date; ?>">
-
-                        <div class="invalid-feedback <?= !empty(form_error('packing_bb')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_bb') ?>
-                        </div>
-                    </div> -->
+              <!--   <div class="form-group row">
                     <div class="col-sm-4">
                         <label class="form-label" for="gambar_kode_kemasan">Aktual Nama, Kode, Best Before Kemasan</label>
                         <br>
@@ -142,104 +117,89 @@
                             <?= form_error('gambar_kode_kemasan') ?>
                         </div>
                     </div>                    
-                </div>
-                <!-- <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Suhu Produk Sebelum Packing (32 - 35°C)</label>
-                        <input type="text" name="packing_suhu_before" class="form-control <?= form_error('packing_suhu_before') ? 'invalid' : '' ?>" value="<?= $produksi->packing_suhu_before; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_suhu_before')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_suhu_before') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Kadar Air Produk (4 - 8%)</label>
-                        <input type="text" name="packing_kadar_air" class="form-control <?= form_error('packing_kadar_air') ? 'invalid' : '' ?>" value="<?= $produksi->packing_kadar_air; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_kadar_air')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_kadar_air') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Bulk Density (225 - 325 g/l)</label>
-                        <input type="text" name="packing_bulk_density" class="form-control <?= form_error('packing_bulk_density') ? 'invalid' : '' ?>" value="<?= $produksi->packing_bulk_density; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_bulk_density')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_bulk_density') ?>
-                        </div>
-                    </div>
-                </div>
-                <hr> -->
+                </div> -->
                 <div class="form-group row">
                     <div class="col-sm-4">
-                        <label class="form-label font-weight-bold">Kondisi Kemasan</label>
-                        <select class="form-control <?= form_error('packing_kondisi_kemasan') ? 'invalid' : '' ?>" name="packing_kondisi_kemasan">
-                            <option value="1" <?= set_select('packing_kondisi_kemasan', '1'); ?> <?= $produksi->packing_kondisi_kemasan == 1?'selected':'';?>>Oke</option>
-                            <option value="2" <?= set_select('packing_kondisi_kemasan', '2'); ?> <?= $produksi->packing_kondisi_kemasan == 2?'selected':'';?>>Tidak Oke</option>
-                        </select>
-                        <div class="invalid-feedback <?= !empty(form_error('packing_kondisi_kemasan')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_kondisi_kemasan') ?>
-                        </div>
-                    </div>
-                    <!-- <div class="col-sm-6">
-                        <label class="form-label" for="gambar_kondisi_kemasan">Aktual Kondisi Kemasan</label>
+                        <label class="form-label font-weight-bold" for="gambar_kode_kemasan">
+                            Aktual Nama, Kode, Best Before Kemasan
+                        </label>
                         <br>
-                        <input type="file" name="gambar_kondisi_kemasan" id="gambar_kondisi_kemasan" class="form-control no-border <?= form_error('gambar_kondisi_kemasan') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf" capture="camera">
-                        <?php if (!empty($produksi->gambar_kondisi_kemasan)): ?>
-                            <a href="<?= base_url('uploads/' . $produksi->gambar_kondisi_kemasan); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
-                            <br>
-                        <?php endif; ?>
-                        <br>
-                        <div class="invalid-feedback <?= form_error('gambar_kondisi_kemasan') ? 'd-block' : '' ; ?>">
-                            <?= form_error('gambar_kondisi_kemasan') ?>
-                        </div>
-                    </div>  --> 
-                  <!--   <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Ketepatan Labelisasi</label>
-                        <select class="form-control <?= form_error('packing_ketepatan') ? 'invalid' : '' ?>" name="packing_ketepatan">
-                            <option value="1" <?= set_select('packing_ketepatan', '1'); ?> <?= $produksi->packing_ketepatan == 1?'selected':'';?>>Oke</option>
-                            <option value="2" <?= set_select('packing_ketepatan', '2'); ?> <?= $produksi->packing_ketepatan == 2?'selected':'';?>>Tidak Oke</option>
-                        </select>
-                        <div class="invalid-feedback <?= !empty(form_error('packing_ketepatan')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_ketepatan') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Kode Supplier Kemasan</label>
-                        <input type="text" name="packing_kode_supplier" class="form-control <?= form_error('packing_kode_supplier') ? 'invalid' : '' ?>" value="<?= $produksi->packing_kode_supplier; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_kode_supplier')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_kode_supplier') ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label class="form-label font-weight-bold">Nett Weight (9,850 - 10,100 g/plastic bag)</label>
-                        <input type="text" name="packing_net_weight" class="form-control <?= form_error('packing_net_weight') ? 'invalid' : '' ?>" value="<?= $produksi->packing_net_weight; ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('packing_net_weight')) ? 'd-block' : '' ; ?>">
-                            <?= form_error('packing_net_weight') ?>
-                        </div>
-                    </div> -->
-                </div>
-                <hr>
-                <div class="form-group row">
-                    <div class="col-sm-6">
-                        <label class="form-label font-weight-bold">Catatan</label>
-                        <textarea class="form-control" name="catatan"><?= $produksi->catatan; ?></textarea>
-                        <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
-                            <?= form_error('catatan') ?>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="btn btn-md btn-success mr-2">
-                            <i class="fa fa-save"></i> Simpan
-                        </button>
-                        <a href="<?= base_url('produksi')?>" class="btn btn-md btn-danger">
-                            <i class="fa fa-times"></i> Batal
-                        </a>
+                        <div class="custom-file">
+                            <input type="file"
+                            name="gambar_kode_kemasan"
+                            id="gambar_kode_kemasan"
+                            class="custom-file-input 
+                            <?= (!empty($upload_error) || form_error('gambar_kode_kemasan')) ? 'is-invalid' : '' ?>" accept="image/*">
+
+                            <label class="custom-file-label" for="gambar_kode_kemasan">
+                                Pilih Gambar (Max 2MB)...
+                            </label>
+                        </div>
+
+                        <!-- ERROR DARI UPLOAD -->
+                        <?php if (!empty($upload_error)): ?>
+                            <div class="invalid-feedback d-block">
+                                <?= $upload_error; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- ERROR DARI FORM VALIDATION -->
+                        <?php if (form_error('gambar_kode_kemasan')): ?>
+                            <div class="invalid-feedback d-block">
+                                <?= form_error('gambar_kode_kemasan'); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($produksi->gambar_kode_kemasan)): ?>
+                            <a href="<?= base_url('uploads/' . $produksi->gambar_kode_kemasan); ?>" 
+                             target="_blank" 
+                             class="d-block mt-2">
+                             Lihat Gambar Sebelumnya
+                         </a>
+                     <?php endif; ?>
+
+                     <small class="text-danger font-italic d-block mt-1">
+                        *Format: JPG, JPEG, PNG, PDF — Maksimal 2 MB
+                    </small>
+                </div>                    
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-4">
+                    <label class="form-label font-weight-bold">Kondisi Kemasan</label>
+                    <select class="form-control <?= form_error('packing_kondisi_kemasan') ? 'invalid' : '' ?>" name="packing_kondisi_kemasan">
+                        <option value="1" <?= set_select('packing_kondisi_kemasan', '1'); ?> <?= $produksi->packing_kondisi_kemasan == 1?'selected':'';?>>Oke</option>
+                        <option value="2" <?= set_select('packing_kondisi_kemasan', '2'); ?> <?= $produksi->packing_kondisi_kemasan == 2?'selected':'';?>>Tidak Oke</option>
+                    </select>
+                    <div class="invalid-feedback <?= !empty(form_error('packing_kondisi_kemasan')) ? 'd-block' : '' ; ?>">
+                        <?= form_error('packing_kondisi_kemasan') ?>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+            <hr>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <label class="form-label font-weight-bold">Catatan</label>
+                    <textarea class="form-control" name="catatan"><?= $produksi->catatan; ?></textarea>
+                    <div class="invalid-feedback <?= !empty(form_error('catatan')) ? 'd-block' : '' ; ?> ">
+                        <?= form_error('catatan') ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-md btn-success mr-2">
+                        <i class="fa fa-save"></i> Simpan
+                    </button>
+                    <a href="<?= base_url('produksi')?>" class="btn btn-md btn-danger">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
+</div>
 </div>
 </div>
 
@@ -248,3 +208,38 @@
         background-color: #2E86C1;
     }
 </style>
+<script>
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
+
+<script>
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', async function(e){
+            const file = e.target.files[0];
+            if(!file) return;
+
+            if(file.type.startsWith('image/')){
+                const options = {
+                    maxSizeMB: 0.5,
+                    maxWidthOrHeight: 800,
+                    useWebWorker: true
+                };
+
+                try{
+                    const compressedFile = await imageCompression(file, options);
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(compressedFile);
+                    e.target.files = dataTransfer.files;
+
+                }catch(err){
+                    console.log(err);
+                }
+            }
+        });
+    });
+</script>

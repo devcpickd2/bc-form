@@ -9,8 +9,6 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-
-
 use Dompdf\Dompdf;
 setlocale(LC_TIME, 'id_ID.UTF-8');
 
@@ -345,53 +343,6 @@ class Suhu extends MY_Controller {
 		$pdf->SetFont('times', '', 8);
 		$pdf->SetTextColor(0, 0, 0);
 
-		// if ($status_verifikasi) {
-		// 	$y_verifikasi = $y_after_keterangan;
-		// 	$pdf->SetXY(25, $y_verifikasi + 5);
-		// 	$pdf->Cell(35, 5, 'Dibuat Oleh,', 0, 0, 'C');
-		// 	if (!empty($data['suhu']->nama_lengkap_qc)) {
-		// 		$update_tanggal_qc = !empty($data['suhu']->created_at)
-		// 		? (new DateTime($data['suhu']->created_at))->format('d-m-Y | H:i')
-		// 		: date('d-m-Y | H:i'); 
-
-		// 		$qr_text_qc = "Dibuat secara digital oleh,\n" .
-		// 		$data['suhu']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
-		// 		$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 35, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 		$pdf->SetXY(25, $y_verifikasi + 24);
-		// 		$pdf->Cell(35, 5, 'QC Inspector', 0, 0, 'C');
-		// 	} else {
-		// 		$pdf->SetXY(25, $y_verifikasi + 10);
-		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
-		// 	}
-
-		// 	// Diketahui oleh (Produksi)
-		// 	$pdf->SetXY(90, $y_verifikasi + 5);
-		// 	$pdf->Cell(35, 5, 'Diketahui Oleh,', 0, 0, 'C');
-		// 	if ($data['suhu']->status_produksi == 1 && !empty($data['suhu']->nama_produksi)) {
-		// 		$update_tanggal_produksi = (new DateTime($data['suhu']->tgl_update_produksi))->format('d-m-Y | H:i');
-		// 		$qr_text_produksi = "Diketahui secara digital oleh,\n" . $data['suhu']->nama_produksi . "\nForeman/Forelady Produksi\n" . $update_tanggal_produksi;
-		// 		$pdf->write2DBarcode($qr_text_produksi, 'QRCODE,L', 100, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 		$pdf->SetXY(90, $y_verifikasi + 24);
-		// 		$pdf->Cell(35, 5, 'Foreman/Forelady Produksi', 0, 0, 'C');
-		// 	} else {
-		// 		$pdf->SetXY(90, $y_verifikasi + 10);
-		// 		$pdf->Cell(35, 5, 'Belum Diverifikasi', 0, 0, 'C');
-		// 	}
-
-		// 	$pdf->SetXY(150, $y_verifikasi + 5);
-		// 	$pdf->Cell(49, 5, 'Disetujui Oleh,', 0, 0, 'C');
-		// 	$update_tanggal = (new DateTime($data['suhu']->tgl_update_spv))->format('d-m-Y | H:i');
-		// 	$qr_text = "Diverifikasi secara digital oleh,\n" . $data['suhu']->nama_lengkap_spv . "\nSPV QC Bread Crumb\n" . $update_tanggal;
-		// 	$pdf->write2DBarcode($qr_text, 'QRCODE,L', 167, $y_verifikasi + 10, 15, 15, null, 'N');
-		// 	$pdf->SetXY(150, $y_verifikasi + 24);
-		// 	$pdf->Cell(49, 5, 'Supervisor QC', 0, 0, 'C');
-		// } else {
-		// 	$pdf->SetTextColor(255, 0, 0); 
-		// 	$pdf->SetFont('times', '', 8);
-		// 	$pdf->SetXY(100, $y_after_keterangan);
-		// 	$pdf->Cell(80, 5, 'Data Belum Diverifikasi', 0, 0, 'C');
-		// }
-
 		$y_ttd   = $pdf->GetY() + 6;
 		$qr_size = 15;
 
@@ -502,7 +453,7 @@ class Suhu extends MY_Controller {
 
 		if (!$suhu_data) {
 			show_error('Data tidak ditemukan');
-		}
+		} 
 
 		$data['suhu'] = $suhu_data[0];
 		$data['suhu']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['suhu']->username ?? '');
@@ -651,6 +602,223 @@ class Suhu extends MY_Controller {
 		$writer->save('php://output');
 		exit;
 	}
+
+	public function export_excel_salatiga()
+	{
+		require_once(APPPATH . 'libraries/phpqrcode.php');
+
+		$this->load->model('suhu_model');
+		$this->load->model('pegawai_model');
+
+		$tanggal = $this->input->post('tanggal');
+		if (empty($tanggal)) {
+			show_error('Tanggal tidak boleh kosong', 404);
+		}
+
+		$plant_salatiga = '1eb341e0-1ec4-4484-ba8f-32d23352b84d';
+
+		$suhu_data_raw = $this->suhu_model->get_by_date_verif_excel($tanggal);
+
+		$suhu_data = array_values(array_filter($suhu_data_raw, function ($item) use ($plant_salatiga) {
+			return isset($item->plant) && $item->plant === $plant_salatiga;
+		}));
+
+		if (empty($suhu_data)) {
+			show_error('Data Suhu tidak ditemukan', 404);
+		}
+
+    // =========================
+    // CEK STATUS VERIFIKASI SPV
+    // =========================
+		$status_verifikasi = true;
+		foreach ($suhu_data as $item) {
+			if ((string)$item->status_spv !== '1') {
+				$status_verifikasi = false;
+				break;
+			}
+		}
+
+    // =========================
+    // LOAD TEMPLATE
+    // =========================
+		$filePath = FCPATH . 'assets/excel/Pemeriksaan Suhu Ruang.xlsx';
+		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filePath);
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$sheet->setCellValue('A2', 'Tanggal : ' . date('d-m-Y', strtotime($tanggal)));
+
+		$data = [];
+		$jamList = [];
+
+    // foreach ($suhu_data as $item) {
+    //     $jam = date('H:i', strtotime($item->pukul));
+    //     $jamList[$jam] = true;
+
+    //     foreach (json_decode($item->lokasi, true) as $lok) {
+    //         $area = $lok['nama_lokasi'];
+    //         $data[$area][$jam] = $lok['suhu'] ?? '-';
+    //     }
+    // }
+
+		foreach ($suhu_data as $item) {
+
+    // Ambil jam
+			$jam = date('H:i', strtotime($item->pukul));
+			$jamList[$jam] = true;
+
+			foreach (json_decode($item->lokasi, true) as $lok) {
+
+				$area = $lok['nama_lokasi'];
+				$suhu = trim($lok['suhu'] ?? '');
+				$rh   = $lok['rh'] ?? null;
+
+        // Simpan suhu (apa adanya, termasuk "Kosong")
+				$data[$area][$jam] = $suhu;
+
+        // Khusus Ruang Aging → RH baris bawah
+				if ($area === 'Ruang Aging' && $rh !== null) {
+					$data[$area . ' (RH)'][$jam] = $rh . '%';
+				}
+			}
+		}
+
+		$jamList = array_keys($jamList);
+		sort($jamList);
+
+		$colStart = 3;
+		$rowJam   = 5;
+
+		foreach ($jamList as $i => $jam) {
+			$col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colStart + $i);
+			$sheet->setCellValue($col . $rowJam, $jam);
+		}
+
+		$rowArea = 6;
+		foreach ($data as $area => $jamData) {
+			$sheet->setCellValue('A' . $rowArea, $area);
+
+			foreach ($jamList as $i => $jam) {
+				$col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colStart + $i);
+				$sheet->setCellValue($col . $rowArea, $jamData[$jam] ?? '-');
+			}
+			$rowArea++;
+		}
+
+    // =========================
+    // TTD / VERIFIKASI
+    // =========================
+		$ttdRow = $rowArea + 2;
+		$ttdDataRow = $ttdRow + 1;
+
+		if (!$status_verifikasi) {
+
+        // =========================
+        // DATA BELUM VERIFIKASI
+        // ========================= 
+			$sheet->mergeCells("B{$ttdRow}:J{$ttdRow}");
+			$sheet->setCellValue("B{$ttdRow}", 'Data belum terverifikasi');
+
+			$sheet->getStyle("B{$ttdRow}")->applyFromArray([
+				'font' => [
+					'color' => ['rgb' => 'FF0000'],
+					'bold'  => true,
+					'size'  => 12
+				],
+				'alignment' => [
+					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
+				]
+			]);
+
+		} else {
+
+        // =========================
+        // QR & TTD DIGITAL
+        // =========================
+			$sheet->setCellValue("B{$ttdRow}", 'Dibuat Oleh,');
+			$sheet->setCellValue("E{$ttdRow}", 'Diketahui Oleh,');
+			$sheet->setCellValue("H{$ttdRow}", 'Disetujui Oleh,');
+
+			$sheet->mergeCells("B{$ttdRow}:D{$ttdRow}");
+			$sheet->mergeCells("E{$ttdRow}:G{$ttdRow}");
+			$sheet->mergeCells("H{$ttdRow}:J{$ttdRow}");
+
+			$sheet->getRowDimension($ttdDataRow)->setRowHeight(80);
+
+        // ===== QC =====
+			$qc_users = [];
+			$qc_created_at = null;
+
+			foreach ($suhu_data as $item) {
+				if (!empty($item->username)) {
+					$qc_users[] = $item->username;
+				}
+				if (!$qc_created_at && !empty($item->created_at)) {
+					$qc_created_at = $item->created_at;
+				}
+			}
+
+			$qc_users = array_unique($qc_users);
+			$qc_names = [];
+
+			foreach ($qc_users as $u) {
+				$nama = $this->pegawai_model->get_nama_lengkap($u);
+				if ($nama) $qc_names[] = $nama;
+			}
+
+			$qc_date = $qc_created_at
+			? date('d-m-Y | H:i', strtotime($qc_created_at))
+			: '-';
+
+			$prod_date = !empty($suhu_data[0]->tgl_update_produksi)
+			? date('d-m-Y | H:i', strtotime($suhu_data[0]->tgl_update_produksi))
+			: '-';
+
+			$spv_date = !empty($suhu_data[0]->tgl_update_spv)
+			? date('d-m-Y | H:i', strtotime($suhu_data[0]->tgl_update_spv))
+			: '-';
+
+			$qrTexts = [
+				'B' => "Dibuat secara digital oleh\n" .
+				implode(', ', $qc_names) . "\nQC Inspector\n" . $qc_date,
+
+				'E' => "Diketahui secara digital oleh\nForeman / Forelady Produksi\n" . $prod_date,
+
+				'H' => "Disetujui secara digital oleh\nSupervisor QC\n" . $spv_date
+			];
+
+			foreach ($qrTexts as $col => $text) {
+				$tmpFile = sys_get_temp_dir() . '/qr_' . uniqid() . '.png';
+				QRcode::png($text, $tmpFile, QR_ECLEVEL_H, 4);
+
+				$drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+				$drawing->setPath($tmpFile);
+				$drawing->setCoordinates($col . $ttdDataRow);
+				$drawing->setHeight(80);
+				$drawing->setWorksheet($sheet);
+			}
+
+			$ketRow = $ttdDataRow + 1;
+
+			$sheet->setCellValue("B{$ketRow}", "QC Inspector");
+			$sheet->setCellValue("E{$ketRow}", "Foreman / Forelady Produksi");
+			$sheet->setCellValue("H{$ketRow}", "Supervisor QC");
+
+			$sheet->mergeCells("B{$ketRow}:D{$ketRow}");
+			$sheet->mergeCells("E{$ketRow}:G{$ketRow}");
+			$sheet->mergeCells("H{$ketRow}:J{$ketRow}");
+		}
+
+    // =========================
+    // OUTPUT
+    // =========================
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header("Content-Disposition: attachment; filename=Suhu_Ruang_{$tanggal}.xlsx");
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+		exit;
+	}
+
 
 
 }
