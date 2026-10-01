@@ -216,7 +216,7 @@
                         <label class="form-label">Upload Bukti COA</label><br>
                         <input type="file" name="bukti_coa" class="form-control <?= form_error('bukti_coa') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf">
                         <?php if(!empty($penerimaankemasan->bukti_coa)): ?>
-                            <small><a href="<?= base_url('uploads/'.$penerimaankemasan->bukti_coa) ?>" target="_blank">Link COA</a></small>
+                            <small><a href="<?= base_url('uploads/penerimaan_kemasan/'.$penerimaankemasan->bukti_coa) ?>" target="_blank">Link COA</a></small>
                         <?php endif; ?>
                         <input type="hidden" name="bukti_coa_lama" value="<?= $penerimaankemasan->bukti_coa; ?>">
                         <div class="invalid-feedback"><?= form_error('bukti_coa') ?></div>

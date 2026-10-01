@@ -275,9 +275,19 @@ class Reagen_model extends CI_Model {
 
 	public function get_data_by_plant()
 	{
-		$this->db->order_by('created_at', 'DESC');
-		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('reagen', ['plant' => $plant])->result();
+
+    $this->db->order_by('created_at', 'DESC');
+
+    $plant = $this->session->userdata('plant');
+    $type_user = $this->session->userdata('tipe_user');
+
+    // Superadmin & manager
+    if (in_array($type_user, ['9', '1', 9, 1])) {
+        return $this->db->get('reagen')->result();
+    }
+
+    // User biasa
+    return $this->db->get_where('reagen', ['plant' => $plant])->result();
 	}
 
 	public function delete_by_uuid($uuid)
@@ -298,8 +308,16 @@ class Reagen_model extends CI_Model {
 	{
 		$this->db->select('MONTH(date) as bulan, YEAR(date) as tahun');
 		$this->db->from('reagen');
-		$this->db->where('plant', $this->session->userdata('plant'));
-		$this->db->group_by(['MONTH(date)', 'YEAR(date)']);
+
+		$plant     = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+    // Kalau bukan admin / manager → filter plant
+		if (!in_array($type_user, [9,1])) {
+			$this->db->where('plant', $plant);
+		}
+
+		$this->db->group_by(['YEAR(date)', 'MONTH(date)']);
 		$this->db->order_by('YEAR(date)', 'ASC');
 		$this->db->order_by('MONTH(date)', 'ASC');
 

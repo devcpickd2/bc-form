@@ -139,28 +139,33 @@
 </style>
 
 <script>
-    $(document).ready(function(){
+        $(document).ready(function(){
 
-        let lastVolume = parseFloat("<?= $last_volume ?? 0 ?>");
+            let lastVolume = parseFloat("<?= $last_volume ?? 0 ?>");
 
-        $('input[name="volume_penggunaan"]').on('input', function(){
+            $('input[name="volume_penggunaan"]').on('input', function(){
 
-            let penggunaan = parseFloat($(this).val());
+                let penggunaan = parseFloat($(this).val().replace(',', '.'));
 
-            if (!isNaN(penggunaan)) {
+                if (!isNaN(penggunaan)) {
 
-                let volumeAkhir = lastVolume - penggunaan;
+                    let volumeAkhir = lastVolume - penggunaan;
 
-                if(volumeAkhir < 0){
-                    volumeAkhir = 0;
+                    if(volumeAkhir < 0){
+                        volumeAkhir = 0;
+                    }
+
+                    $('#volume_akhir').val(volumeAkhir.toFixed(2));
+
+                    // update tulisan small
+                    $('#last_volume_text').text(volumeAkhir.toFixed(2));
+
+                } else {
+                    $('#volume_akhir').val('');
+                    $('#last_volume_text').text(lastVolume.toFixed(2));
                 }
 
-                $('#volume_akhir').val(volumeAkhir.toFixed(2));
-            } else {
-                $('#volume_akhir').val('');
-            }
+            });
 
         });
-
-    });
 </script>

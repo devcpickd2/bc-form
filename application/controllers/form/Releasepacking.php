@@ -21,11 +21,31 @@ class Releasepacking extends MY_Controller {
 
 	public function index()
 	{
-		$data = array(
-			'releasepacking' => $this->releasepacking_model->get_data_by_plant()
-		);
+		$this->load->library('pagination');
 
-		$this->active_nav = 'releasepacking'; 
+		$plant = $this->session->userdata('plant');
+
+		$this->db->where('plant', $plant);
+		$config['total_rows'] = $this->db->count_all_results('release_packing');
+
+		$config['base_url'] = base_url('releasepacking/index');
+		$config['per_page'] = 100;
+		$config['uri_segment'] = 10;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
+		$data = [
+			'releasepacking' => $this->releasepacking_model->get_data_by_plant(
+				$config['per_page'],
+				$start
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
+		];
+
+		$this->active_nav = 'releasepacking';
 		$this->render('form/releasepacking/releasepacking', $data);
 	}
 
@@ -105,7 +125,7 @@ class Releasepacking extends MY_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'releasepacking' => $this->releasepacking_model->get_data_by_plant()
+			'releasepacking' => $this->releasepacking_model->get_data_verifikasi()
 		);
 
 		$this->active_nav = 'verifikasi-releasepacking'; 
@@ -239,11 +259,11 @@ class Releasepacking extends MY_Controller {
 		$pdf->Cell(60, 12, 'Keterangan', 1, 0, 'C');
 		$pdf->Cell(30, 12, 'QC', 1, 1, 'C');
 
+                $no = 1;
 		foreach ($releasepacking_data as $releasepacking) { 
 			$bb = $releasepacking->best_before;
 			$best_before = new DateTime($bb);
 			$formatted_bb = strftime('%d %B %Y', $best_before->getTimestamp());
-			$no = 1;
 			$pdf->SetFont('times', '', 10);
 			$pdf->Cell(10, 8, $no, 1, 0, 'C');
 			$pdf->Cell(80, 8, $releasepacking->nama_produk, 1, 0, 'C');

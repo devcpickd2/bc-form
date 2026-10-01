@@ -270,13 +270,33 @@ class Sensori_model extends CI_Model {
 		return $data_sensori; 
 	}
 
-	public function get_data_by_plant()
+	public function get_data_by_plant($limit, $start)
 	{
-		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('sensori_fg', ['plant' => $plant])->result();
+
+		return $this->db
+		->select('uuid,date,nama_produk,produk,tindakan,status_spv')
+		->from('sensori_fg')
+		->where('plant', $plant)
+		->order_by('created_at', 'DESC')
+		->limit($limit, $start)
+		->get()
+		->result();
 	}
 
+	public function get_data_verifikasi()
+	{
+		$plant = $this->session->userdata('plant');
+
+		return $this->db
+		->select('uuid,date,nama_produk,produk,tindakan,status_spv,modified_at,tgl_update_spv')
+		->from('sensori_fg')
+		->where('plant', $plant)
+		->order_by('created_at', 'DESC')
+		->get()
+		->result();
+	}
+	
 	public function delete_by_uuid($uuid)
 	{
 		$this->db->where('uuid', $uuid);

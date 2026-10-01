@@ -87,15 +87,19 @@ class List_timbangan_model extends CI_Model {
 
 	}
 
-	public function get_all() 
-	{
-		$plant = $this->session->userdata('plant');
+	public function get_all()
+{
+    $plant = $this->session->userdata('plant');
+    $type_user = (int) $this->session->userdata('tipe_user');
 
-		$this->db->where('plant', $plant);
-		$this->db->order_by('created_at', 'DESC');
+    if ($type_user !== 9) {
+        $this->db->where('plant', $plant);
+    }
 
-		return $this->db->get('list_timbangan')->result();
-	}
+    $this->db->order_by('created_at', 'DESC');
+
+    return $this->db->get('list_timbangan')->result();
+}
 
 	public function get_by_uuid($uuid)
 	{

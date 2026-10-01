@@ -85,23 +85,104 @@ class Kebersihanruang extends MY_Controller {
 
     	if ($this->form_validation->run() == TRUE) {
 
-    		$insert = $this->kebersihanruang_model->insert();
+    		$foto1 = null;
+    		$foto2 = null;
+
+    		$config['upload_path']   = './uploads/kebersihan/';
+    		$config['allowed_types'] = 'jpg|jpeg|png';
+    		$config['encrypt_name']  = true;
+    		$config['max_size']      = 2048;
+
+    		$this->load->library('upload');
+    		$this->load->library('image_lib');
+
+		// ================= FOTO 1 =================
+    		if (!empty($_FILES['foto1']['name'])) {
+
+    			$this->upload->initialize($config);
+
+    			if ($this->upload->do_upload('foto1')) {
+
+    				$upload_data = $this->upload->data();
+    				$foto1 = $upload_data['file_name'];
+
+    				$compress['image_library']  = 'gd2';
+    				$compress['source_image']   = $upload_data['full_path'];
+    				$compress['maintain_ratio'] = TRUE;
+    				$compress['quality']        = '70%';
+    				$compress['width']          = 800;
+    				$compress['height']         = 800;
+
+    				$this->image_lib->initialize($compress);
+    				$this->image_lib->resize();
+    				$this->image_lib->clear();
+
+    			} else {
+
+    				$this->session->set_flashdata(
+    					'error_msg',
+    					'Upload Foto 1 gagal : ' . $this->upload->display_errors('', '')
+    				);
+
+    				redirect('kebersihanruang/tambah');
+    			}
+    		}
+
+		// ================= FOTO 2 =================
+    		if (!empty($_FILES['foto2']['name'])) {
+
+    			$this->upload->initialize($config);
+
+    			if ($this->upload->do_upload('foto2')) {
+
+    				$upload_data = $this->upload->data();
+    				$foto2 = $upload_data['file_name'];
+
+    				$compress['image_library']  = 'gd2';
+    				$compress['source_image']   = $upload_data['full_path'];
+    				$compress['maintain_ratio'] = TRUE;
+    				$compress['quality']        = '70%';
+    				$compress['width']          = 800;
+    				$compress['height']         = 800;
+
+    				$this->image_lib->initialize($compress);
+    				$this->image_lib->resize();
+    				$this->image_lib->clear();
+
+    			} else {
+
+    				$this->session->set_flashdata(
+    					'error_msg',
+    					'Upload Foto 2 gagal : ' . $this->upload->display_errors('', '')
+    				);
+
+    				redirect('kebersihanruang/tambah');
+    			}
+    		}
+
+		// insert model
+    		$insert = $this->kebersihanruang_model->insert($foto1, $foto2);
 
     		if ($insert) {
-    			$this->session->set_flashdata('success_msg', 
-    				'Data Kebersihan Ruang Produksi berhasil disimpan');
+
+    			$this->session->set_flashdata(
+    				'success_msg',
+    				'Data Kebersihan Ruang Produksi berhasil disimpan'
+    			);
+
     		} else {
-    			$this->session->set_flashdata('error_msg', 
-    				'Data Kebersihan Ruang Produksi gagal disimpan');
+
+    			$this->session->set_flashdata(
+    				'error_msg',
+    				'Data Kebersihan Ruang Produksi gagal disimpan'
+    			);
     		}
 
     		redirect('kebersihanruang');
     	}
 
-    // ambil plant UUID dari session
     	$plant = $this->session->userdata('plant');
 
-    // 🔥 kirim ke view
     	$data['plant'] = $plant;
 
     	$data['area_list'] = $this->db
@@ -113,7 +194,11 @@ class Kebersihanruang extends MY_Controller {
     	->result();
 
     	$this->active_nav = 'kebersihanruang';
-    	$this->render('form/kebersihanruang/kebersihanruang-tambah', $data);
+
+    	$this->render(
+    		'form/kebersihanruang/kebersihanruang-tambah',
+    		$data
+    	);
     }
 
     public function edit($uuid)
@@ -124,21 +209,31 @@ class Kebersihanruang extends MY_Controller {
     	if ($this->form_validation->run() == TRUE) {
 
     		if ($this->kebersihanruang_model->update($uuid)) {
-    			$this->session->set_flashdata('success_msg', 'Data berhasil diupdate.');
+
+    			$this->session->set_flashdata(
+    				'success_msg',
+    				'Data berhasil diupdate.'
+    			);
+
     		} else {
-    			$this->session->set_flashdata('error_msg', 'Data tidak berubah atau gagal diupdate.');
+
+    			$this->session->set_flashdata(
+    				'error_msg',
+    				'Data tidak berubah atau gagal diupdate.'
+    			);
     		}
 
     		redirect('kebersihanruang');
     	}
 
-    // 🔥 ambil plant dari session
     	$plant = $this->session->userdata('plant');
 
-    // 🔥 ambil data utama
     	$row = $this->kebersihanruang_model->get_by_uuid($uuid);
 
-    // 🔥 ambil area berdasarkan plant (SAMA seperti tambah)
+    	if (!$row) {
+    		show_404();
+    	}
+
     	$area_list = $this->db
     	->select('area')
     	->where('plant', $plant)
@@ -153,9 +248,14 @@ class Kebersihanruang extends MY_Controller {
     		'plant'     => $plant
     	];
 
-    	$this->active_nav = 'kebersihanruang'; 
-    	$this->render('form/kebersihanruang/kebersihanruang-edit', $data);
+    	$this->active_nav = 'kebersihanruang';
+
+    	$this->render(
+    		'form/kebersihanruang/kebersihanruang-edit',
+    		$data
+    	);
     }
+
 
     public function delete($uuid)
     {
@@ -479,138 +579,206 @@ class Kebersihanruang extends MY_Controller {
     }
 
     public function export_excel()
-    {
-    	$tanggal = $this->input->post('tanggal');
-    	$shift   = $this->input->post('shift');
+	{
+		$tanggal = $this->input->post('tanggal');
+		$shift   = $this->input->post('shift');
 
-    	if (empty($tanggal)) {
-    		show_error('Tidak ada tanggal yang dipilih', 404);
-    	}
+		if (empty($tanggal)) {
+			show_error('Tidak ada tanggal yang dipilih', 404);
+		}
 
-    	$plant = $this->session->userdata('plant');
+		$plant = $this->session->userdata('plant');
 
-    	$kebersihanruang_data = $this->kebersihanruang_model->get_by_date($tanggal, $plant, $shift);
-    	$kebersihanruang_data_verif = $this->kebersihanruang_model->get_last_verif_by_date($tanggal, $plant, $shift);
+		$data = $this->kebersihanruang_model->get_by_date($tanggal, $plant, $shift);
+		usort($data, function ($a, $b) {
 
-    	if (!$kebersihanruang_data || !$kebersihanruang_data_verif) {
-    		show_error('Data tidak ditemukan', 404);
-    	}
+			$areaA = (int) preg_replace('/[^0-9]/', '', $a->lokasi);
+			$areaB = (int) preg_replace('/[^0-9]/', '', $b->lokasi);
 
-    	$spreadsheet = new Spreadsheet();
-    	$sheet = $spreadsheet->getActiveSheet();
+			return $areaA <=> $areaB;
+		});
+		$verif = $this->kebersihanruang_model->get_last_verif_by_date($tanggal, $plant, $shift);
 
-    	$dt = new DateTime($kebersihanruang_data_verif->date);
+		if (!$data || !$verif) {
+			show_error('Data tidak ditemukan', 404);
+		}
 
-    	$hari = [
-    		'Sunday'=>'Minggu','Monday'=>'Senin','Tuesday'=>'Selasa',
-    		'Wednesday'=>'Rabu','Thursday'=>'Kamis','Friday'=>'Jumat','Saturday'=>'Sabtu'
-    	];
-    	$bulan = [
-    		1=>'Januari','Februari','Maret','April','Mei','Juni',
-    		'Juli','Agustus','September','Oktober','November','Desember'
-    	];
+		// 🔥 LOAD TEMPLATE
+		$templatePath = FCPATH . 'assets/template/kebersihan_ruang1.xlsx';
 
-    	$formatted_date = $hari[$dt->format('l')] . ', ' .
-    	$dt->format('d') . ' ' . $bulan[(int)$dt->format('m')] . ' ' . $dt->format('Y');
+		if (!file_exists($templatePath)) {
+			show_error('Template tidak ditemukan', 500);
+		}
 
-    	$sheet->mergeCells('A1:F1');
-    	$sheet->setCellValue('A1', 'KEBERSIHAN RUANG PRODUKSI');
-    	$sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-    	$sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($templatePath);
+		$sheet = $spreadsheet->getActiveSheet();
 
-    	$sheet->setCellValue('A3', 'Hari / Tanggal');
-    	$sheet->setCellValue('C3', ': ' . $formatted_date);
-    	$sheet->setCellValue('E3', 'Shift');
-    	$sheet->setCellValue('F3', ': ' . $kebersihanruang_data_verif->shift);
+		// 🔥 FORMAT TANGGAL
+		$dt = new DateTime($verif->date);
 
-    	$sheet->mergeCells('A5:A6')->setCellValue('A5', 'Lokasi');
-    	$sheet->mergeCells('B5:C5')->setCellValue('B5', 'Kondisi');
-    	$sheet->mergeCells('D5:D6')->setCellValue('D5', 'Problem');
-    	$sheet->mergeCells('E5:E6')->setCellValue('E5', 'Tindakan Koreksi');
+		$hari = [
+			'Sunday' => 'Minggu',
+			'Monday' => 'Senin',
+			'Tuesday' => 'Selasa',
+			'Wednesday' => 'Rabu',
+			'Thursday' => 'Kamis',
+			'Friday' => 'Jumat',
+			'Saturday' => 'Sabtu'
+		];
 
-    	$sheet->setCellValue('B6', 'Bersih');
-    	$sheet->setCellValue('C6', 'Kotor');
+		$bulan = [
+			1 => 'Januari',
+			'Februari',
+			'Maret',
+			'April',
+			'Mei',
+			'Juni',
+			'Juli',
+			'Agustus',
+			'September',
+			'Oktober',
+			'November',
+			'Desember'
+		];
 
-    	$sheet->getStyle('A5:E6')->getFont()->setBold(true);
-    	$sheet->getStyle('A5:E6')->getAlignment()->setHorizontal('center')->setVertical('center');
-    	$sheet->getStyle('A5:E6')->getBorders()->getAllBorders()->setBorderStyle('thin');
+		$formatted_date = $hari[$dt->format('l')] . ', ' .
+			$dt->format('d') . ' ' . $bulan[(int)$dt->format('m')] . ' ' . $dt->format('Y');
 
-    	$row = 7;
+		// 🔥 HEADER (SESUAI TEMPLATE GAMBAR)
+		$sheet->setCellValue('C9', $formatted_date);           // Hari, tanggal
+		$sheet->setCellValue('F9', $dt->format('d-m-Y'));      // Tanggal angka
+		$sheet->setCellValue('F10', 'Waktu ' . $verif->shift); // Waktu
 
-    	foreach ($kebersihanruang_data as $data) {
+		// 🔥 MULAI DATA (SESUAI TEMPLATE)
+		$row = 13;
+		$foto1 = null;
+		$foto2 = null;
 
-    		$sheet->mergeCells("A{$row}:E{$row}");
-    		$sheet->setCellValue("A{$row}", $data->lokasi);
-    		$sheet->getStyle("A{$row}")->getFont()->setBold(true);
-    		$sheet->getStyle("A{$row}:E{$row}")->getBorders()->getAllBorders()->setBorderStyle('thin');
-    		$row++;
 
-    		$detail = json_decode($data->detail);
+		foreach ($data as $d1) {
 
-    		if ($detail && is_array($detail)) {
-    			foreach ($detail as $d) {
-    				$bersih = '-';
-    				$kotor  = '-';
+			if (!$foto1 && !empty($d1->foto1)) {
+				$foto1 = $d1->foto1;
+			}
 
-    				$kondisi = strtolower(trim($d->kondisi ?? ''));
+			if (!$foto2 && !empty($d1->foto2)) {
+				$foto2 = $d1->foto2;
+			}
 
-    				if ($kondisi === 'bersih' || $kondisi === '0') {
-    					$bersih = '✔';
-    				} elseif (in_array($kondisi, ['1','2','3','4','5','6'])) {
-    					$kotor = $kondisi;
-    				}
+			// LOKASI
+			$sheet->setCellValue("B{$row}", $d1->lokasi);
+			$row++;
 
-    				$sheet->setCellValue("A{$row}", $d->bagian ?? '-');
-    				$sheet->setCellValue("B{$row}", $bersih);
-    				$sheet->setCellValue("C{$row}", $kotor);
-    				$sheet->setCellValue("D{$row}", $d->problem ?? '-');
-    				$sheet->setCellValue("E{$row}", $d->tindakan ?? '-');
+			$detail = json_decode($d1->detail);
 
-    				$sheet->getStyle("A{$row}:E{$row}")
-    				->getBorders()->getAllBorders()->setBorderStyle('thin');
+			if ($detail && is_array($detail)) {
+				foreach ($detail as $d) {
 
-    				$sheet->getStyle("B{$row}:C{$row}")
-    				->getAlignment()->setHorizontal('center');
+					$bersih = '';
+					$kotor  = '';
+					$tidak  = '';
 
-    				$row++;
-    			}
-    		}
-    	}
+					$v_bersih = '';
+					$v_kotor  = '';
 
-    	$row += 2;
-    	$sheet->setCellValue("A{$row}", 
-    		"1 Berdebu\n2 Basah, ada genangan air\n3 Sisa produksi\n4 Noda\n5 Pertumbuhan mikroorganisme\n6 Kontaminasi non halal\n7 Higiene karyawan tidak sesuai GMP"
-    	);
+					$kondisi = strtolower(trim($d->kondisi ?? ''));
+					$verifikasi = strtolower(trim($d->verifikasi ?? ''));
 
-    	$sheet->setCellValue("D{$row}", 
-    		"✔ : Ok / Bersih\n✗ : Tidak Ok\n- : Tidak ada"
-    	);
+					// 🔥 KONDISI (V / X)
+					if ($kondisi === 'bersih' || $kondisi === '0') {
+						$bersih = 'V';
+					} elseif (in_array($kondisi, ['1', '2', '3', '4', '5', '6'])) {
+						$kotor = 'X';
+					}
 
-    	$sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setWrapText(true);
+					// 🔥 (OPSIONAL) TIDAK CLEANING
+					// kalau ada field khusus, bisa dipakai
+					// if ($kondisi === 'tidak') {
+					//     $tidak = 'X';
+					// }
 
-    	$this->load->model('pegawai_model');
-    	$row += 6;
-    	$sheet->setCellValue("A{$row}", 'Dibuat Oleh,');
-    	$sheet->setCellValue("A".($row+2), $this->pegawai_model->get_nama_lengkap($kebersihanruang_data_verif->username));
-    	$sheet->setCellValue("A".($row+3), 'QC Inspector');
+					// 🔥 VERIFIKASI ULANG
+					if ($verifikasi === 'bersih') {
+						$v_bersih = 'V';
+					} elseif ($verifikasi === 'kotor') {
+						$v_kotor = 'X';
+					}
 
-    	$sheet->setCellValue("C{$row}", 'Diketahui Oleh,');
-    	$sheet->setCellValue("C".($row+2), $kebersihanruang_data_verif->nama_produksi ?: 'Belum Diverifikasi');
-    	$sheet->setCellValue("C".($row+3), 'Foreman/Forelady Produksi');
+					// 🔥 SET KE EXCEL (SESUAI KOLOM TEMPLATE)
+					$sheet->setCellValue("B{$row}", $d->bagian ?? '');
+					$sheet->setCellValue("C{$row}", $bersih);
+					$sheet->setCellValue("D{$row}", $kotor);
+					$sheet->setCellValue("E{$row}", $tidak); // tidak cleaning (kalau dipakai)
+					$sheet->setCellValue("F{$row}", $d->problem ?? '');
+					$sheet->setCellValue("G{$row}", $d->tindakan ?? '');
+					$sheet->setCellValue("H{$row}", $v_bersih);
+					$sheet->setCellValue("I{$row}", $v_kotor);
 
-    	$sheet->setCellValue("E{$row}", 'Disetujui Oleh,');
-    	$sheet->setCellValue("E".($row+2), $this->pegawai_model->get_nama_lengkap($kebersihanruang_data_verif->nama_spv));
-    	$sheet->setCellValue("E".($row+3), 'Supervisor QC');
+					$row++;
+				}
+				// 🔥 BAGIAN BAWAH (TTD & TANGGAL)
+				$this->load->model('pegawai_model');
 
-    	$filename = "Kebersihan_Ruang_".$dt->format('d_m_Y').".xlsx";
-    	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    	header("Content-Disposition: attachment; filename=\"$filename\"");
-    	header('Cache-Control: max-age=0');
+				// format tanggal bawah
+				$formatted_tanggal_bawah =
+					$dt->format('d') . ' ' .
+					$bulan[(int)$dt->format('m')] . ' ' .
+					$dt->format('Y');
 
-    	$writer = new Xlsx($spreadsheet);
-    	$writer->save('php://output');
-    	exit;
-    }
+				// isi ke template
+				$sheet->setCellValue('C261', $formatted_tanggal_bawah);
+				$sheet->setCellValue(
+					'C267',
+					$this->pegawai_model->get_nama_lengkap($verif->username)
+				);
+				$sheet->setCellValue(
+					'I267',
+					$this->pegawai_model->get_nama_lengkap($verif->nama_spv)
+				);
+			}
+		}
+		// path folder foto
+		$pathFoto = FCPATH . 'bc/uploads/kebersihan/';
+
+		// FOTO 1
+		if (!empty($foto1) && file_exists($pathFoto . $foto1)) {
+
+			$drawing = new Drawing();
+			$drawing->setName('Foto1');
+			$drawing->setPath($pathFoto . $foto1);
+
+			$drawing->setCoordinates('D276');
+			$drawing->setResizeProportional(true);
+			$drawing->setWidth(150);
+
+			$drawing->setWorksheet($sheet);
+		}
+
+		// FOTO 2 (SEBELAHNYA)
+		if (!empty($foto2) && file_exists($pathFoto . $foto2)) {
+
+			$drawing2 = new Drawing();
+			$drawing2->setName('Foto2');
+			$drawing2->setPath($pathFoto . $foto2);
+
+			$drawing2->setCoordinates('H276'); // 🔥 ini kuncinya
+			$drawing2->setResizeProportional(true);
+			$drawing2->setWidth(150);
+
+			$drawing2->setWorksheet($sheet);
+		}
+
+		// 🔥 OUTPUT
+		$filename = "Kebersihan_Ruang_" . $dt->format('d_m_Y') . ".xlsx";
+
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header("Content-Disposition: attachment; filename=\"$filename\"");
+		header('Cache-Control: max-age=0');
+
+		$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+		$writer->save('php://output');
+		exit;
+	}
 
 }
 

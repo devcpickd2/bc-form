@@ -239,13 +239,48 @@ class Chiller_model extends CI_Model {
 
 		$data_chiller = $query->row();  
 		return $data_chiller; 
-	}
+	} 
 
-	public function get_chiller_by_plant()
+	// public function get_chiller_by_plant()
+	// {
+	// 	$this->db->order_by('created_at', 'DESC');
+	// 	$plant = $this->session->userdata('plant'); 
+	// 	$type_user = $this->session->userdata('tipe_user');
+
+	// 	if ($type_user == 0 || $type_user == 1) {
+	// 		return $this->db->get('chiller')->result();
+	// 	}
+	// 	return $this->db->get_where('chiller', ['plant' => $plant])->result();
+	// }
+
+	public function get_chiller_by_plant($limit, $start)
 	{
-		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('chiller', ['plant' => $plant])->result();
+		$type_user = $this->session->userdata('tipe_user');
+
+		$this->db->select('
+			uuid,
+			date,
+			waktu,
+			chiller_1,
+			chiller_2,
+			chiller_3,
+			chiller_4,
+			status_spv,
+			modified_at,
+			tgl_update_spv
+			');
+
+		$this->db->from('chiller');
+
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant);
+		}
+
+		$this->db->order_by('created_at', 'DESC');
+		$this->db->limit($limit, $start);
+
+		return $this->db->get()->result();
 	}
 
 	public function delete_by_uuid($uuid)

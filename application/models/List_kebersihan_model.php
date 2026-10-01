@@ -62,15 +62,20 @@ class List_kebersihan_model extends CI_Model {
 		return ($this->db->affected_rows() > 0);
 	}
 	
-	public function get_all()
-	{
-		$plant = $this->session->userdata('plant');
+        public function get_all()
+{
+    $plant = $this->session->userdata('plant');
+    $type_user = (int) $this->session->userdata('tipe_user');
 
-		$this->db->where('plant', $plant);
-		$this->db->order_by('created_at', 'DESC');
+    // Selain superadmin, filter plant
+    if ($type_user !== 9) {
+        $this->db->where('plant', $plant);
+    }
 
-		return $this->db->get('list_kebersihan')->result();
-	}
+    $this->db->order_by('created_at', 'DESC');
+
+    return $this->db->get('list_kebersihan')->result();
+}
 
 	public function get_by_uuid($uuid)
 	{

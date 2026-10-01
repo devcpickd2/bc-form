@@ -109,15 +109,34 @@
             </div>
 
             <br><hr>
-            <div class="form-group">
-                <form action="<?= base_url('kebersihankaryawan/cetak') ?>" method="post" class="form-inline">
-                    <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
-                    <input type="date" name="tanggal" class="form-control mr-2" required>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                    </button>
-                </form>
-            </div>
+			<div class="form-group">
+				<form action="<?= base_url('kebersihankaryawan/cetak') ?>" method="post" class="form-inline">
+
+					<label class="mr-2 font-weight-bold">
+						Pilih Tanggal:
+					</label>
+
+					<input type="date"
+						name="tanggal"
+						class="form-control mr-2"
+						required>
+
+					<button type="submit" class="btn btn-success mr-2">
+						<i class="fas fa-print fa-sm text-white-50"></i>
+						Cetak
+					</button>
+
+					<?php if ($this->session->userdata('plant') != '651ac623-5e48-44cc-b2f6-5d622603f53c') : ?>
+						<button type="submit"
+							formaction="<?= base_url('form/pemeriksaan_gabungan/cetak') ?>"
+							class="btn btn-primary">
+							<i class="fas fa-file-pdf fa-sm text-white-50"></i>
+							Cetak Gabungan
+						</button>
+					<?php endif; ?>
+
+				</form>
+			</div>
         </div>
     </div>
 </div>

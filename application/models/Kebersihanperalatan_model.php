@@ -240,11 +240,33 @@ class Kebersihanperalatan_model extends CI_Model {
 
 	public function get_data_by_plant()
 	{
+		$plant     = $this->session->userdata('plant');
+		$type_user = (int) $this->session->userdata('tipe_user');
+
+		$this->db->select('uuid, date, shift, status_spv, modified_at, tgl_update_spv');
+		$this->db->from('kebersihan_peralatan');
+
+		if (!in_array($type_user, [1, 9])) {
+			$this->db->where('plant', $plant);
+		}
+
 		$this->db->order_by('created_at', 'DESC');
-		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('kebersihan_peralatan', ['plant' => $plant])->result();
+
+		return $this->db->get()->result();
 	}
 
+	public function count_all_data()
+	{
+		$plant     = $this->session->userdata('plant');
+		$type_user = (int) $this->session->userdata('tipe_user');
+
+		if (!in_array($type_user, [1, 9])) {
+			$this->db->where('plant', $plant);
+		}
+
+		return $this->db->count_all_results('kebersihan_peralatan');
+	}
+	
 	public function delete_by_uuid($uuid)
 	{
 		$this->db->where('uuid', $uuid);

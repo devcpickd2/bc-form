@@ -237,19 +237,27 @@ class Retain_model extends CI_Model {
 		return $query->result();
 	}
 
+public function get_data_by_plant()
+{
+    $this->db->select('a.*, b.plant AS nama_plant'); 
+    $this->db->from('retain a');
+    $this->db->join('plant b', 'a.plant = b.uuid', 'left');
+    $this->db->order_by('a.created_at', 'DESC');
 
-	public function get_data_by_plant()
-	{
-		$this->db->order_by('a.created_at', 'DESC');
-		$this->db->select('a.*, b.plant AS nama_plant'); 
-		$this->db->from('retain a');
-		$this->db->join('plant b', 'a.plant = b.uuid', 'left');
+    $plant     = $this->session->userdata('plant');
+    $type_user = $this->session->userdata('tipe_user');
 
-		$plant = $this->session->userdata('plant');
-		$this->db->where('a.plant', $plant); 
+    // Kalau admin / superuser → ambil semua
+    if ($type_user == 9 || $type_user == 1) {
+        return $this->db->get()->result();
+    }
 
-		return $this->db->get()->result();
-	}
+    // Selain itu → filter by plant
+    $this->db->where('a.plant', $plant);
+
+    return $this->db->get()->result();
+}
+
 	public function delete_by_uuid($uuid)
 	{
 		$this->db->where('uuid', $uuid);

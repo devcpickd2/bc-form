@@ -66,56 +66,58 @@
             </table>
         </div>
     </div>
-</div>
 
-<!-- Export Excel & Cetak PDF -->
-<div class="card shadow mb-4">
-    <div class="card-header bg-info text-white">
-        <h6 class="m-0 font-weight-bold">Export / Cetak</h6>
-    </div>
-    <div class="card-body">
-        <div class="form-row">
-            <div class="form-group col-md-2">
-                <label for="tanggal"><strong>Pilih Tanggal:</strong></label>
-                <input type="date" id="tanggal" class="form-control" required>
-            </div>
-            <div class="form-group col-md-2">
-                <label for="nama_produk"><strong>Pilih Produk:</strong></label>
-                <select id="nama_produk" class="form-control" required>
-                    <option value="">-- Pilih Produk --</option>
-                </select>
-            </div>
+    <!-- Export Excel & Cetak PDF -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-info text-white">
+            <h6 class="m-0 font-weight-bold">Export / Cetak</h6>
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label for="tanggal"><strong>Pilih Tanggal:</strong></label>
+                    <input type="date" id="tanggal" class="form-control" required> 
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="nama_produk"><strong>Pilih Produk:</strong></label>
+                    <select id="nama_produk" class="form-control" required>
+                        <option value="">-- Pilih Produk --</option>
+                    </select>
+                </div>
 
-            <!-- Tombol Export Excel -->
-            <div class="form-group align-self-end col-md-2">
-                <form action="<?= base_url('produksi/export_excel') ?>" method="post">
-                    <input type="hidden" name="tanggal" id="tanggal_excel">
-                    <input type="hidden" name="nama_produk" id="produk_excel">
-                    <button type="submit" class="btn btn-success btn-block">
-                        <i class="fas fa-file-excel"></i> Export Excel
-                    </button>
-                </form>
-            </div>
+                <!-- Tombol Export Excel -->
+                <div class="form-group align-self-end col-md-2">
+                    <form id="form-export-excel" action="<?= base_url('produksi/export_excel') ?>" method="post">
+                        <input type="hidden" name="tanggal" id="tanggal_excel">
+                        <input type="hidden" name="nama_produk" id="produk_excel">
+                        <button type="submit" class="btn btn-success btn-block">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </form>
+                </div>
 
-            <!-- Tombol Cetak PDF -->
-            <div class="form-group align-self-end col-md-2">
-                <form action="<?= base_url('produksi/cetak') ?>" method="post">
-                    <input type="hidden" name="tanggal" id="tanggal_pdf_hidden">
-                    <input type="hidden" name="nama_produk" id="produk_pdf_hidden">
-                    <button type="submit" class="btn btn-danger btn-block">
-                        <i class="fas fa-file-pdf"></i> Cetak PDF
-                    </button>
-                </form>
+                <!-- Tombol Cetak PDF -->
+                <div class="form-group align-self-end col-md-2">
+                    <form id="form-cetak-pdf" action="<?= base_url('produksi/cetak') ?>" method="post">
+                        <input type="hidden" name="tanggal" id="tanggal_pdf_hidden">
+                        <input type="hidden" name="nama_produk" id="produk_pdf_hidden">
+                        <button type="submit" class="btn btn-danger btn-block">
+                            <i class="fas fa-file-pdf"></i> Cetak PDF
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        function loadProdukByTanggal(tanggal) {
+
+        function loadProdukByTanggal(tanggal, callback) {
             if (!tanggal) return;
             $.ajax({
                 type: 'POST',
@@ -128,6 +130,11 @@
                     $.each(data, function (i, item) {
                         $('#nama_produk').append('<option value="' + item.nama_produk + '">' + item.nama_produk + '</option>');
                     });
+                    // Reset hidden produk karena pilihan lama sudah tidak relevan
+                    $('#produk_excel').val('');
+                    $('#produk_pdf_hidden').val('');
+
+                    if (typeof callback === 'function') callback();
                 },
                 error: function () {
                     alert('Gagal mengambil data produk.');
@@ -135,30 +142,56 @@
             });
         }
 
-    // Trigger saat tanggal berubah
-        $('#tanggal').on('change', function () {
-            var tanggal = $(this).val();
+        // Sinkronkan semua hidden input dari nilai tanggal & produk saat ini
+        function syncHiddenInputs() {
+            var tanggal = $('#tanggal').val();
+            var produk  = ($('#nama_produk').val() || '').trim();
+
             $('#tanggal_excel').val(tanggal);
             $('#tanggal_pdf_hidden').val(tanggal);
-            loadProdukByTanggal(tanggal);
-        });
-
-    // Trigger saat produk berubah
-        $('#nama_produk').on('change', function () {
-            var produk = $(this).val();
             $('#produk_excel').val(produk);
             $('#produk_pdf_hidden').val(produk);
+
+            var formPdf = $('#form-cetak-pdf');
+            var isHalus = produk.toUpperCase().indexOf('HALUS') !== -1;
+
+            formPdf.attr('action', isHalus
+                ? '<?= base_url("produksi/cetak_halus") ?>'
+                : '<?= base_url("produksi/cetak") ?>');
+        }
+
+        // Trigger saat TANGGAL berubah -> update hidden tanggal + reload produk
+        $('#tanggal').on('change', function () {
+            var tanggal = $(this).val();
+            loadProdukByTanggal(tanggal, syncHiddenInputs);
         });
 
-    // Jika halaman di-load dan sudah ada tanggal, langsung load produk
+        // Trigger saat PRODUK berubah -> sinkronkan hidden input + routing form PDF
+        $('#nama_produk').on('change', function () {
+            syncHiddenInputs();
+        });
+
+        // Validasi sebelum submit, sekaligus jaga-jaga sinkron ulang
+        // (menutup celah kalau event 'change' tidak sempat terpicu)
+        $('#form-export-excel, #form-cetak-pdf').on('submit', function (e) {
+            syncHiddenInputs();
+
+            var tanggal = $('#tanggal').val();
+            var produk  = $('#nama_produk').val();
+
+            if (!tanggal || !produk) {
+                e.preventDefault();
+                alert('Tanggal dan produk wajib dipilih terlebih dahulu.');
+                return false;
+            }
+        });
+
+        // Jika halaman di-load dan sudah ada tanggal, langsung load produk
         var initialTanggal = $('#tanggal').val();
         if (initialTanggal) {
-            $('#tanggal_excel').val(initialTanggal);
-            $('#tanggal_pdf_hidden').val(initialTanggal);
-            loadProdukByTanggal(initialTanggal);
+            loadProdukByTanggal(initialTanggal, syncHiddenInputs);
         }
     });
-
 </script>
 
 <style>

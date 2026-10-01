@@ -28,6 +28,7 @@
                     'Proofing Room' => ['suhu' => '34 - 36', 'rh' => '78 - 82'],
                     'Aging Room 1' => ['suhu' => '35 - 45', 'rh' => '50 - 70'],
                     'Aging Room 2' => ['suhu' => '35 - 45', 'rh' => '50 - 70'],
+                    'Area Packing' => ['suhu' => '25 - 35', 'rh' => ''],
                     'Ruang Produksi (Bubble)' => ['suhu' => '25 - 35', 'rh' => '65 - 80']
                 ],
                 'Salatiga' => [

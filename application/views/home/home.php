@@ -1,755 +1,1398 @@
 <!DOCTYPE html>
 <html>
-<head> 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <?php if ($this->session->flashdata('success_msg')): ?>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      Swal.fire({
-        icon: 'success',
-        title: 'Berhasil',
-        text: '<?= $this->session->flashdata('success_msg'); ?>',
-        showConfirmButton: false,
-        timer: 2000
-      });
-    </script>
-  <?php endif; ?>
 
-  <?php if ($this->session->flashdata('error_msg')): ?>
-    <script>
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops!',
-        text: '<?= $this->session->flashdata('error_msg'); ?>'
-      });
-    </script>
-  <?php endif; ?>
+<head>
+	<meta charset="utf-8">
+	<title>Dashboard QC SPV</title>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
+	<?php if (!empty($show_modal)): ?>
+
+	<!-- =====================================================
+		MODAL INPUT DATA PRODUKSI
+	===================================================== -->
+	<div
+		class="modal fade"
+		id="produksiModal"
+		tabindex="-1"
+		role="dialog"
+		aria-labelledby="produksiModalLabel"
+		aria-hidden="true"
+		data-backdrop="static"
+		data-keyboard="false">
+
+		<div class="modal-dialog modal-dialog-top" role="document">
+
+			<form
+				action="<?= base_url('home/set_produksi_data') ?>"
+				method="post"
+				class="w-100">
+
+				<div class="modal-content">
+
+					<div class="modal-header bg-primary text-white">
+
+						<h5 class="modal-title" id="produksiModalLabel">
+							Input Data Produksi
+						</h5>
+
+					</div>
+
+					<div class="modal-body">
+
+						<!-- TANGGAL -->
+						<div class="form-group">
+
+							<label for="tanggal_produksi">
+								Tanggal Produksi
+							</label>
+
+							<input
+								type="date"
+								name="tanggal"
+								id="tanggal_produksi"
+								class="form-control"
+								required
+								value="<?= date('Y-m-d') ?>">
+
+						</div>
+
+
+						<!-- SHIFT -->
+						<div class="form-group">
+
+							<label for="shift">
+								Shift
+							</label>
+
+							<select
+								name="shift"
+								id="shift"
+								class="form-control"
+								required>
+
+								<option value="">
+									-- Pilih Shift --
+								</option>
+
+								<option value="1">
+									Shift 1
+								</option>
+
+								<option value="2">
+									Shift 2
+								</option>
+
+								<option value="3">
+									Shift 3
+								</option>
+
+							</select>
+
+						</div>
+
+
+						<!-- NAMA PRODUKSI -->
+						<div class="form-group">
+
+							<label for="nama_produksi">
+								Nama Produksi
+							</label>
+
+							<select
+								name="nama_produksi"
+								id="nama_produksi"
+								class="form-control"
+								required>
+
+								<option value="">
+									-- Pilih Nama Produksi --
+								</option>
+
+								<?php if (!empty($pegawai_produksi)): ?>
+
+									<?php foreach ($pegawai_produksi as $pegawai): ?>
+
+										<option value="<?= htmlspecialchars($pegawai->nama) ?>">
+											<?= htmlspecialchars($pegawai->nama) ?>
+										</option>
+
+									<?php endforeach; ?>
+
+								<?php endif; ?>
+
+							</select>
+
+						</div>
+
+					</div>
+
+
+					<div class="modal-footer">
+
+						<button
+							type="submit"
+							class="btn btn-primary">
+
+							Simpan
+
+						</button>
+
+					</div>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+
+	<script>
+	$(document).ready(function() {
+
+		$('#produksiModal').modal('show');
+
+	});
+	</script>
+
+	<?php endif; ?>
 <body>
-  <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <?php
-      date_default_timezone_set('Asia/Jakarta');
-      $days = array(
-        'Sunday' => 'Minggu',
-        'Monday' => 'Senin',
-        'Tuesday' => 'Selasa',
-        'Wednesday' => 'Rabu',
-        'Thursday' => 'Kamis',
-        'Friday' => 'Jumat',
-        'Saturday' => 'Sabtu'
-      );
-      $months = array(
-        'January' => 'Januari',
-        'February' => 'Februari',
-        'March' => 'Maret',
-        'April' => 'April',
-        'May' => 'Mei',
-        'June' => 'Juni',
-        'July' => 'Juli',
-        'August' => 'Agustus',
-        'September' => 'September',
-        'October' => 'Oktober',
-        'November' => 'November',
-        'December' => 'Desember'
-      );
-      $day = date("l"); 
-      $date = date("j"); 
-      $month = date("F"); 
-      $year = date("Y"); 
-      $today = $days[$day];
-      $now_month = $months[$month];
-      ?>
-      <h3 class="mb-0">Update Hari Ini <?= $today ?>, <?= $date ?> <?= $now_month ?> <?= $year ?></h3>
-    </div>
 
-    <!-- Ringkasan Produksi -->
-    <?php if ($this->session->userdata('plant') == '651ac623-5e48-44cc-b2f6-5d622603f53c'): ?>
-      <div class="row">
-        <div class="col-md-3">
-          <div class="card border-left-primary shadow py-2">
-            <div class="card-body">
-              <div class="card-title"><b>CURRENT PRODUCT</b></div>
-              <?php if (!empty($latest_today)): ?>
-                <h4 class="text-primary"><?php echo $latest_today['nama_produk']; ?></h4>
-              <?php else: ?>
-                <p>No Process Today</p>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card border-left-success shadow py-2">
-            <div class="card-body">
-              <div class="card-title"><b>LAST PRODUCT CODE</b></div>
-              <?php if (!empty($latest_today)): ?>
-                <h4 class="text-success"><?php echo $latest_today['kode_produksi']; ?></h4>
-              <?php else: ?>
-                <p>No Process Today</p>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card border-left-warning shadow py-2">
-            <div class="card-body">
-              <div class="card-title"><b>TOTAL BATCH TODAY</b></div>
-              <?php if (!empty($latest_today)): ?>
-                <h4 class="text-warning"><?php echo $count_batch; ?></h4>
-              <?php else: ?>
-                <p>No Process Today</p>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card border-left-danger shadow py-2">
-            <div class="card-body">
-              <div class="card-title"><b>PRODUCTION TIME PROCESS</b></div>
-              <?php if (!empty($latest_today)): ?>
-                <h4 class="text-danger">
-                  <?php
-                  echo date('H:i', strtotime($latest_today['created_at'])) . ' - ' . date('H:i', strtotime($latest_today['modified_at']));
-                  ?>
-                </h4>
-              <?php else: ?>
-                <p>No Process Today</p>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
-      </div>
-    <?php endif; ?>
+	<div class="container-fluid dashboard-wrapper">
 
-    <?php if ($this->session->userdata('plant') === '1eb341e0-1ec4-4484-ba8f-32d23352b84d'): ?>
-      <div class="card shadow mb-4">
-        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-          <?php
-          setlocale(LC_TIME, 'id_ID.utf8'); 
-          ?>
-          <h6 class="m-0 font-weight-bold">
-            Data Informasi Produksi (<?= strftime('%A, %d %B %Y', strtotime($tanggal_dipilih)) ?>)
-          </h6>
-          <form method="get" class="form-inline">
-            <label for="tanggal" class="mr-2 mb-0 text-white">Pilih Tanggal:</label>
-            <input type="date" name="tanggal" id="tanggal" value="<?= $tanggal_dipilih ?>" class="form-control mr-2">
-            <button type="submit" class="btn btn-light btn-sm">Tampilkan</button>
-          </form>
-        </div>
+		<div class="container-fluid dashboard-wrapper">
+			<!-- =====================================================
+				FILTER RANGE TANGGAL
+			===================================================== -->
+			<?php
+		$shift = $this->input->get('shift');
 
-        <div class="card-body">
-          <div class="row">
+		if ($shift === null || $shift === '') {
+			$shift = 'All';
+		}
+		?>
+			<div class="card shadow-sm mb-4"
+				style="border:0; border-radius:15px;">
 
-            <!-- Kadar Air -->
-            <div class="col-md-4 mb-4">
-              <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                  <h6 class="text-primary font-weight-bold">
-                    <i class="fas fa-tint"></i> Kadar Air Produk Jadi
-                  </h6>
-                  <p class="text-success mb-1">
-                    <strong>Tertinggi:</strong> <?= $kadar_air_max ?? 'N/A' ?>%
-                    <br><small><?= $kadar_air_max_produk ?? '-' ?> (<?= $kadar_air_max_kode ?? '-' ?>)</small>
-                  </p>
-                  <p class="text-danger">
-                    <strong>Terendah:</strong> <?= $kadar_air_min ?? 'N/A' ?>%
-                    <br><small><?= $kadar_air_min_produk ?? '-' ?> (<?= $kadar_air_min_kode ?? '-' ?>)</small>
-                  </p>
-                </div>
-              </div>
-            </div>
+				<div class="card-body">
 
-            <!-- Suhu Produk -->
-            <div class="col-md-4 mb-4">
-              <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                  <h6 class="text-warning font-weight-bold">
-                    <i class="fas fa-thermometer-half"></i> Suhu Pusat Produk
-                  </h6>
-                  <p class="text-success mb-1">
-                    <strong>Tertinggi:</strong> <?= $suhu_produk_max ?? 'N/A' ?>°C
-                    <br><small><?= $suhu_produk_max_produk ?? '-' ?> (<?= $suhu_produk_max_kode ?? '-' ?>)</small>
-                  </p>
-                  <p class="text-danger">
-                    <strong>Terendah:</strong> <?= $suhu_produk_min ?? 'N/A' ?>°C
-                    <br><small><?= $suhu_produk_min_produk ?? '-' ?> (<?= $suhu_produk_min_kode ?? '-' ?>)</small>
-                  </p>
-                </div>
-              </div>
-            </div>
+					<form method="GET" action="<?= current_url(); ?>">
 
-            <!-- Bulk Density -->
-            <div class="col-md-4 mb-4">
-              <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                  <h6 class="text-danger font-weight-bold">
-                    <i class="fas fa-balance-scale"></i> Bulk Density
-                  </h6>
-                  <p class="text-success mb-1">
-                    <strong>Tertinggi:</strong> <?= $bulk_density_max ?? 'N/A' ?>
-                    <br><small><?= $bulk_density_max_produk ?? '-' ?> (<?= $bulk_density_max_kode ?? '-' ?>)</small>
-                  </p>
-                  <p class="text-danger">
-                    <strong>Terendah:</strong> <?= $bulk_density_min ?? 'N/A' ?>
-                    <br><small><?= $bulk_density_min_produk ?? '-' ?> (<?= $bulk_density_min_kode ?? '-' ?>)</small>
-                  </p>
-                </div>
-              </div>
-            </div>
+						<div class="row align-items-end">
 
-          </div> <!-- End row -->
-        </div> <!-- End card-body -->
-      </div> <!-- End card -->
-    <?php else: ?>
-      <!-- <div class="alert alert-info shadow-sm">
-        Dashboard khusus kadar air, suhu, dan bulk density hanya tersedia untuk <strong>Plant Salatiga</strong>.
-      </div> -->
-    <?php endif; ?>
+							<!-- DARI TANGGAL -->
+							<div class="col-md-3 mb-3 mb-md-0">
 
-    <div class="card shadow mb-4 mt-4">
-      <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold">GRAFIK PEMANTAUAN SUHU RUANGAN (<?= date('d M Y', strtotime($tanggal_dipilih)) ?>)</h6>
+								<label class="font-weight-bold">
+									<i class="fas fa-calendar-alt mr-1"></i>
+									Dari Tanggal
+								</label>
 
-        <!-- Filter Tanggal -->
-        <form method="get" class="form-inline">
-          <label for="tanggal" class="mr-2 font-weight-bold text-white">Pilih Tanggal:</label>
-          <input type="date" id="tanggal" name="tanggal" class="form-control mr-2"
-          value="<?= $tanggal_dipilih ?>">
-          <button type="submit" class="btn btn-light btn-sm">Tampilkan</button>
-        </form>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <canvas id="chartSuhu" style="max-height: 400px;"></canvas>
-        </div>
-      </div>
-    </div>
+								<input
+									type="date"
+									name="from_date"
+									class="form-control"
+									value="<?= htmlspecialchars($from_date); ?>"
+									required>
 
-    <br>
-    <div class="card mb-4">
-      <?php
-      $bulanIndo = [
-        '01' => 'JANUARI', '02' => 'FEBRUARI', '03' => 'MARET', '04' => 'APRIL',
-        '05' => 'MEI', '06' => 'JUNI', '07' => 'JULI', '08' => 'AGUSTUS',
-        '09' => 'SEPTEMBER', '10' => 'OKTOBER', '11' => 'NOVEMBER', '12' => 'DESEMBER'
-      ];
-      $bulanSekarang = $bulanIndo[date('m')] . ' ' . date('Y');
-      ?>
-
-      <div class="card-header font-weight-bold">TEMUAN KONTAMINASI BENDA ASING – <?= $bulanSekarang; ?></div>
-      <div class="card-body">
-        <div class="row">
-          <!-- Grafik -->
-          <div class="col-md-6">
-            <canvas id="kontaminasiChart" height="120"></canvas>
-          </div>
-
-          <!-- Tabel Temuan -->
-          <div class="col-md-6">
-            <table class="table table-bordered table-sm">
-              <thead class="thead-light">
-                <tr>
-                  <th>Jenis Kontaminasi</th>
-                  <th>Nama Produk</th>
-                  <th>Kode Produksi</th>
-                  <th>Jumlah</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($temuan as $row): ?>
-                  <tr>
-                    <td><?= $row['jenis_kontaminasi']; ?></td>
-                    <td><?= $row['nama_produk']; ?></td>
-                    <td><?= $row['kode_produksi']; ?></td>
-                    <td><?= $row['jumlah_temuan']; ?></td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-    <br>
-
-<!-- Status Loading -->
-<div class="row">
-  <div class="col-md-6">
-    <div class="card mb-4">
-      <div class="card-header"><b>Pemeriksaan Loading Produk</b></div>
-      <div class="card-body">
-        <table class="table table-bordered table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th>Tanggal</th>
-              <th>Jam Mulai</th>
-              <th>Jam Selesai</th>
-              <th>Tujuan</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (!empty($loading)): ?>
-              <?php foreach ($loading as $k): ?>
-                <tr>
-                  <td><?= date('d-m-Y', strtotime($k['date'])); ?></td>
-                  <td><?= $k['start_loading']; ?></td>
-                  <td><?= $k['finish_loading']; ?></td>
-                  <td><?= $k['tujuan']; ?></td>
-                </tr>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <tr><td colspan="4" class="text-center">Tidak ada data</td></tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="card mb-4">
-      <div class="card-header"><b>Penerimaan Kemasan dari Supplier</b></div>
-      <div class="card-body">
-        <table class="table table-bordered table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th>Nama Kemasan</th>
-              <th>Kode Produksi</th>
-              <th>Pemasok</th>
-              <th>Jumlah</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (!empty($packaging)): ?>
-              <?php foreach ($packaging as $k): ?>
-                <tr>
-                  <td><?= $k['jenis_kemasan']; ?></td>
-                  <td><?= $k['kode_produksi']; ?></td>
-                  <td><?= $k['pemasok']; ?></td>
-                  <td><?= $k['jumlah_datang']; ?></td>
-                </tr>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <tr><td colspan="4" class="text-center">Tidak ada data</td></tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="card mb-4">
-      <div class="card-header"><b>Pemeriksaan Seasoning dari Pemasok</b></div>
-      <div class="card-body">
-        <table class="table table-bordered table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th>Nama Bahan</th>
-              <th>Kode Produksi</th>
-              <th>Pemasok</th>
-              <th>Jumlah Barang</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($seasoning as $row): ?>
-              <tr>
-                <td><?= htmlspecialchars($row['jenis_seasoning']) ?></td>
-                <td><?= htmlspecialchars($row['kode_produksi']) ?></td>
-                <td><?= htmlspecialchars($row['pemasok']) ?></td>
-                <td><?= htmlspecialchars($row['jumlah_barang']) ?></td>
-              </tr>
-            <?php endforeach; ?>
-            <?php if (empty($seasoning)): ?>
-              <tr>
-                <td colspan="4" class="text-center text-muted">Tidak ada data.</td>
-              </tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="card mb-4">
-      <div class="card-header"><b>Pemeriksaan Chemical dari Supplier</b></div>
-      <div class="card-body">
-        <table class="table table-bordered table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th>Nama Chemical</th>
-              <th>Kode Produksi</th>
-              <th>Pemasok</th>
-              <th>Jumlah Datang</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($chemical as $row): ?>
-              <tr>
-                <td><?= htmlspecialchars($row['jenis_chemical']) ?></td>
-                <td><?= htmlspecialchars($row['kode_produksi']) ?></td>
-                <td><?= htmlspecialchars($row['pemasok']) ?></td>
-                <td><?= htmlspecialchars($row['jumlah_barang']) ?></td>
-              </tr>
-            <?php endforeach; ?>
-            <?php if (empty($chemical)): ?>
-              <tr>
-                <td colspan="4" class="text-center text-muted">Tidak ada data.</td>
-              </tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-</div>
-</div>
-</div>
-
-<canvas id="chartSuhu" height="100"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const suhuData = <?= json_encode($suhu_data) ?>;
-
-  const groupedData = {};
-  const labels = [];
-
-  // Warna acak per lokasi
-  function getRandomColor() {
-    const r = Math.floor(Math.random() * 200);
-    const g = Math.floor(Math.random() * 200);
-    const b = Math.floor(Math.random() * 200);
-    return `rgb(${r}, ${g}, ${b})`;
-  }
-
-  // Proses data suhu
-  suhuData.forEach(entry => {
-    const jam = entry.pukul?.substring(0, 5);
-    if (!jam) return;
-
-    if (!labels.includes(jam)) {
-      labels.push(jam);
-    }
-
-    if (Array.isArray(entry.lokasi)) {
-      entry.lokasi.forEach(item => {
-        const nama_lokasi = item.nama_lokasi;
-        const suhu = parseFloat(item.suhu);
-        const rh = item.rh || '-';
-
-        if (isNaN(suhu)) return;
-
-        if (!groupedData[nama_lokasi]) {
-          groupedData[nama_lokasi] = {
-            label: nama_lokasi,
-            data: [],
-            borderColor: getRandomColor(),
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0.3
-          };
-        }
-
-        groupedData[nama_lokasi].data.push({
-          x: jam,
-          y: suhu,
-          info: {
-            lokasi: nama_lokasi,
-            jam: jam,
-            suhu: item.suhu,
-            rh: rh
-          }
-        });
-      });
-    }
-  });
-
-  labels.sort();
-  const datasets = Object.values(groupedData);
-
-  const ctx = document.getElementById('chartSuhu').getContext('2d');
-  const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: datasets
-    },
-    options: {
-      responsive: true,
-      interaction: {
-        mode: 'nearest',
-        intersect: true
-      },
-      plugins: {
-        tooltip: {
-          mode: 'nearest',
-          intersect: true,
-          callbacks: {
-            label: function(context) {
-              const info = context.raw.info;
-              return [
-                `Lokasi : ${info.lokasi}`,
-                `Jam    : ${info.jam}`,
-                `Suhu   : ${info.suhu} °C`,
-                `RH     : ${info.rh} %`
-              ];
-            }
-          }
-        },
-        legend: {
-          position: 'bottom'
-        },
-        title: {
-          display: true,
-          text: 'Grafik Suhu Tiap Lokasi'
-        }
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: 'Jam'
-          }
-        },
-        y: {
-          title: {
-            display: true,
-            text: 'Suhu (°C)'
-          },
-          suggestedMin: 0
-        }
-      }
-    }
-  });
-</script>
+							</div>
 
 
-<script>
-  const ctx = document.getElementById('lineChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [1,2,3,4,5,6,7,8,9,10],
-      datasets: [{
-        label: 'Produksi',
-        data: [4, 5, 6, 6, 7, 7, 8, 9, 10, 11],
-        borderColor: '#4e73df',
-        borderWidth: 2,
-        fill: false
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-</script>
+							<!-- SAMPAI TANGGAL -->
+							<div class="col-md-3 mb-3 mb-md-0">
 
-<script>
-  const rawData = <?= json_encode($jumlah_temuan) ?>;
+								<label class="font-weight-bold">
+									<i class="fas fa-calendar-alt mr-1"></i>
+									Sampai Tanggal
+								</label>
 
-  // Buat label tanggal 1 - 31
-  const labels = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
-  const data = [];
-  const detailMap = {};
+								<input
+									type="date"
+									name="to_date"
+									class="form-control"
+									value="<?= htmlspecialchars($to_date); ?>"
+									required>
 
-  // Petakan data ke tanggal
-  rawData.forEach(item => {
-    const tgl = parseInt(item.tanggal.split('-')[2]);
-    data[tgl - 1] = parseInt(item.jumlah_temuan);
-    detailMap[tgl] = {
-      jumlah: item.jumlah_temuan,
-      produk: item.nama_produk,
-      kontaminasi: item.jenis_kontaminasi
-    };
-  });
+							</div>
 
-  // Pastikan semua 31 hari terisi
-  for (let i = 0; i < 31; i++) {
-    if (!data[i]) data[i] = 0;
-    if (!detailMap[i + 1]) {
-      detailMap[i + 1] = {
-        jumlah: 0,
-        produk: '-',
-        kontaminasi: '-'
-      };
-    }
-  }
 
-  new Chart(document.getElementById('kontaminasiChart'), {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Jumlah Temuan',
-        data: data,
-        fill: true,
-        borderColor: '#e74a3b',
-        backgroundColor: 'rgba(231, 74, 59, 0.1)',
-        tension: 0.3,
-        pointRadius: 5,
-        pointHoverRadius: 6,
-        pointBackgroundColor: '#e74a3b',
-        pointBorderColor: '#fff',
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          min: 0,
-          max: 10,
-          ticks: { stepSize: 1 }
-        }
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const day = parseInt(context.label);
-              const d = detailMap[day];
-              return [
-                `Jumlah: ${d.jumlah}`,
-                `Produk: ${d.produk}`,
-                `Kontaminasi: ${d.kontaminasi}`
-              ];
-            }
-          }
-        }
-      }
-    } 
-  });
-</script>
+							<!-- SHIFT -->
+							<div class="col-md-2 mb-3 mb-md-0">
 
-<?php if ($show_modal): ?>
-<!-- Modal Input Produksi -->
-<div class="modal fade" id="produksiModal" tabindex="-1" role="dialog" aria-labelledby="produksiModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog" role="document">
-    <form action="<?= base_url('home/set_produksi_data') ?>" method="post">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Input Data Produksi</h5>
-        </div> 
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="tanggal">Tanggal Produksi</label>
-            <input type="date" name="tanggal" id="tanggal" class="form-control" required value="<?= date('Y-m-d') ?>">
-          </div>
-          <div class="form-group">
-            <label for="shift">Shift</label>
-            <select name="shift" id="shift" class="form-control" required>
-              <option value="">-- Pilih Shift --</option>
-              <option value="1">Shift 1</option>
-              <option value="2">Shift 2</option>
-              <option value="3">Shift 3</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="nama_produksi">Nama Produksi</label>
-            <select name="nama_produksi" id="nama_produksi" class="form-control" required>
-              <option value="">-- Pilih Nama Produksi --</option>
-              <?php foreach ($pegawai_produksi as $pegawai): ?>
-                <option value="<?= $pegawai->nama ?>"><?= $pegawai->nama ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
+								<label class="font-weight-bold">
+									<i class="fas fa-clock mr-1"></i>
+									Shift
+								</label>
 
-<!-- Trigger modal otomatis -->
-<script>
-  $(document).ready(function() {
-    $('#produksiModal').modal('show');
-  });
-</script>
-<?php endif; ?>
+								<select name="shift" class="form-control">
+
+									<option value="All" <?= $shift === 'All' ? 'selected' : ''; ?>>
+										Semua Shift
+									</option>
+
+									<option value="1" <?= $shift === '1' ? 'selected' : ''; ?>>
+										Shift 1
+									</option>
+
+									<option value="2" <?= $shift === '2' ? 'selected' : ''; ?>>
+										Shift 2
+									</option>
+
+									<option value="3" <?= $shift === '3' ? 'selected' : ''; ?>>
+										Shift 3
+									</option>
+
+								</select>
+
+							</div>
+
+
+							<!-- TAMPILKAN -->
+							<div class="col-md-2 mb-3 mb-md-0">
+
+								<button
+									type="submit"
+									class="btn btn-primary btn-block">
+
+									<i class="fas fa-filter mr-1"></i>
+									Tampilkan
+
+								</button>
+
+							</div>
+
+
+							<!-- RESET -->
+							<div class="col-md-2">
+
+								<a
+									href="<?= current_url(); ?>"
+									class="btn btn-light btn-block">
+
+									<i class="fas fa-sync-alt mr-1"></i>
+									Reset
+
+								</a>
+
+							</div>
+
+						</div>
+
+					</form>
+
+				</div>
+
+			</div>
+
+			<!-- =====================================================
+				KPI
+			===================================================== -->
+			<div class="row section-gap">
+
+				<!-- KADAR AIR -->
+				<div class="col-lg-4 mb-4">
+					<div class="kpi-card grafana-kpi-card">
+
+						<div class="kpi-title">
+							<img
+								src="<?= base_url('assets/dashboard/icons/Kadar Air.png') ?>"
+								class="kpi-icon">
+							KADAR AIR FINISH GOOD (%)
+						</div>
+
+						<div class="grafana-kpi-wrapper">
+							<iframe
+								src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=panel-21&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+								loading="lazy">
+							</iframe>
+						</div>
+						<div class="grafana-kpi-menu-cover"></div>
+					</div>
+				</div>
+
+
+				<!-- SUHU PUSAT -->
+				<div class="col-lg-4 mb-4">
+					<div class="kpi-card grafana-kpi-card">
+
+						<div class="kpi-title">
+							<img
+								src="<?= base_url('assets/dashboard/icons/Suhu Pusat.png') ?>"
+								class="kpi-icon">
+							SUHU PUSAT PRODUK (°C)
+						</div>
+
+						<div class="grafana-kpi-wrapper">
+							<iframe
+								src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=panel-22&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+								loading="lazy">
+							</iframe>
+						</div>
+						<div class="grafana-kpi-menu-cover"></div>
+					</div>
+				</div>
+
+
+				<!-- BULK DENSITY -->
+				<div class="col-lg-4 mb-4">
+					<div class="kpi-card grafana-kpi-card">
+
+						<div class="kpi-title">
+							<img
+								src="<?= base_url('assets/dashboard/icons/Sensori FG.png') ?>"
+								class="kpi-icon">
+							BULK DENSITY (g/L)
+						</div>
+
+						<div class="grafana-kpi-wrapper">
+							<iframe
+								src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=panel-23&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+								loading="lazy">
+							</iframe>
+						</div>
+
+						<div class="grafana-kpi-menu-cover"></div>
+
+					</div>
+				</div>
+
+			</div>
+
+
+			<!-- =====================================================
+				MONITORING
+			===================================================== -->
+			<div class="row section-gap">
+
+				<!-- ROTI GOSONG -->
+				<!-- ROTI GOSONG -->
+				<?php if ($plant_uuid !== '651ac623-5e48-44cc-b2f6-5d622603f53c'): ?>
+
+					<div class="col-lg-4 mb-4">
+						<div class="monitor-card">
+
+							<div class="monitor-title">
+								<img
+									src="<?= base_url('assets/dashboard/icons/Roti Gosong.png') ?>"
+									class="kpi-icon">
+								TOTAL ROTI GOSONG (Kg)
+							</div>
+
+							<div class="grafana-wrapper">
+								<iframe
+									src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=panel-24&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+									loading="lazy">
+								</iframe>
+							</div>
+
+							<div class="grafana-monitor-menu-cover"></div>
+
+						</div>
+					</div>
+
+				<?php else: ?>
+
+					<!-- KONTAMINASI MENGISI SLOT ROTI GOSONG -->
+					<div class="col-lg-4 mb-4">
+						<div class="monitor-card">
+
+							<div class="monitor-title">
+								KONTAMINASI
+							</div>
+
+							<div class="grafana-wrapper">
+								<iframe
+									src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=panel-27&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+									loading="lazy">
+								</iframe>
+
+								<div class="kontaminasi-menu-cover"></div>
+							</div>
+
+						</div>
+					</div>
+
+				<?php endif; ?>
+
+				<!-- KETIDAKSESUAIAN MD -->
+				<div class="col-lg-4 mb-4">
+					<div class="monitor-card">
+
+						<div class="monitor-title">
+							KETIDAKSESUAIAN MD
+						</div>
+
+						<div class="grafana-wrapper">
+							<iframe
+								src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&timezone=browser&refresh=1m&theme=light&panelId=panel-19&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&kiosk=true&hideLogo=true&fullscreen=true&transparent=true"
+								loading="lazy">
+							</iframe>
+						</div>
+
+						<div class="grafana-monitor-menu-cover"></div>
+
+					</div>
+				</div>
+
+				<!-- ELECTRICAL BAKING -->
+				<div class="col-lg-4 mb-4">
+					<div class="monitor-card">
+
+						<div class="monitor-title">
+							ELECTRICAL BAKING
+						</div>
+
+						<?php if ($plant_uuid === '651ac623-5e48-44cc-b2f6-5d622603f53c'): ?>
+
+							<!-- CIKANDE : BELUM TERSEDIA -->
+							<div class="monitor-no-data">
+								<div class="monitor-no-data-icon">
+									<i class="fas fa-info-circle"></i>
+								</div>
+
+								<div class="monitor-no-data-title">
+									Data belum tersedia
+								</div>
+
+								<div class="monitor-no-data-text">
+									Monitoring Electrical Baking<br>
+									belum tersedia untuk Plant Cikande
+								</div>
+							</div>
+
+						<?php else: ?>
+
+							<!-- SALATIGA : GRAFANA -->
+							<div class="grafana-wrapper">
+								<iframe
+									src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=20&var-id_plant=<?= urlencode($plant_uuid) ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+									loading="lazy">
+								</iframe>
+							</div>
+
+							<div class="grafana-monitor-menu-cover"></div>
+
+						<?php endif; ?>
+
+					</div>
+				</div>
+
+			</div>
+
+
+			<!-- =====================================================
+    KONTAMINASI + REKAP SUHU
+===================================================== -->
+			<div class="row">
+
+				<?php if ($plant_uuid !== '651ac623-5e48-44cc-b2f6-5d622603f53c'): ?>
+
+					<!-- KONTAMINASI - SALATIGA -->
+					<div class="col-lg-4 mb-4 d-flex">
+						<div class="monitor-card kontaminasi-card">
+
+							<div class="monitor-title">
+								KONTAMINASI
+							</div>
+
+							<div class="grafana-wrapper">
+
+								<iframe
+									src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&panelId=panel-27&var-id_plant=<?= urlencode($plant_uuid) ?>&var-Shift=<?= urlencode($shift) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&theme=light&transparent=true&timezone=browser&refresh=1m"
+									loading="lazy">
+								</iframe>
+
+								<div class="kontaminasi-menu-cover"></div>
+
+							</div>
+
+						</div>
+					</div>
+
+				<?php endif; ?>
+
+
+				<!-- REKAP SUHU -->
+				<div class="<?= ($plant_uuid === '651ac623-5e48-44cc-b2f6-5d622603f53c') ? 'col-lg-12' : 'col-lg-8' ?> mb-4 d-flex">
+					<div class="breadcrumb-card">
+
+						<div class="breadcrumb-title">
+							REKAP SUHU RUANG BREADCRUMB
+						</div>
+
+						<div class="grafana-breadcrumb-wrapper">
+							<iframe
+								src="http://10.71.3.27:3001/d-solo/adpn5jz/paperless-bc?orgId=1&timezone=browser&refresh=1m&theme=light&panelId=panel-2&var-id_plant=<?= urlencode($plant_uuid) ?>&from=<?= urlencode($from_date . ' 00:00:00') ?>&to=<?= urlencode($to_date . ' 23:59:59') ?>&kiosk=true&hideLogo=true&fullscreen=true&transparent=true"
+								loading="lazy">
+							</iframe>
+						</div>
+
+						<div class="grafana-breadcrumb-menu-cover"></div>
+
+					</div>
+				</div>
+
+			</div>
+
 
 </body>
-</html>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
 
-<style type="text/css">
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
+		const grafanaIframes = document.querySelectorAll(
+			'.grafana-kpi-wrapper iframe, ' +
+			'.grafana-wrapper iframe, ' +
+			'.grafana-breadcrumb-wrapper iframe'
+		);
 
-  .text-xs {
-    font-size: 17px;
-  }
-  p {
-    font-size: 17px;
-  }
-  li {
-    font-size: 17px;
-  }
-  .h3{
-    font-size: 23px;
-    font-weight: bold;
-    font-style: italic;
-  }
-  .chart2 {
-    padding: 5px;
-  }
-  #chart {
-    width: 100%;
-  }
-  canvas {
-    cursor: pointer;
-  }
+		grafanaIframes.forEach(function(iframe) {
 
-  .table-limited {
-    width: 100%;
-    max-width: 100%;
-    table-layout: fixed;
-    overflow-x: auto; 
-  }
+			const wrapper = iframe.parentElement;
 
-  .table-limited thead, .table-limited tbody {
-    display: block; 
-  }
+			wrapper.style.position = 'relative';
 
-  .table-limited thead {
-    overflow-y: auto; 
-    width: calc(100% - 1em); 
-  }
+			// Buat loading line
+			const loadingLine = document.createElement('div');
+			loadingLine.className = 'grafana-loading-line';
 
-  .table-limited tbody {
-    max-height: 185px; 
-    overflow-y: auto; 
-  }
+			wrapper.appendChild(loadingLine);
 
-  .table-limited th, .table-limited td {
-    padding: 2px 10px;
-    text-align: left;
-  }
-  #chartSuhu {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  .transition {
-    transition: transform 0.2s ease-in-out;
-  }
-  .transition:hover {
-    transform: scale(1.02);
-  }
+			// Waktu mulai loading
+			const startTime = Date.now();
+
+			iframe.addEventListener('load', function() {
+
+				const elapsed = Date.now() - startTime;
+
+				// Minimal tampil 1000ms
+				const remaining = Math.max(1000 - elapsed, 0);
+
+				setTimeout(function() {
+
+					loadingLine.classList.add('loaded');
+
+					setTimeout(function() {
+						loadingLine.remove();
+					}, 500);
+
+				}, remaining);
+
+			}, {
+				once: true
+			});
+
+		});
+
+	});
+</script>
+<style>
+	/* =====================================================
+	   GLOBAL
+	===================================================== */
+
+	body {
+		background: #FFF5A5;
+		font-family: 'Segoe UI', sans-serif;
+	}
+
+	.dashboard-wrapper {
+		padding: 20px;
+	}
+
+	.section-gap {
+		margin-bottom: 20px;
+	}
+
+	canvas {
+		max-width: 100%;
+	}
+
+
+	/* =====================================================
+	   KPI CARD
+	===================================================== */
+
+	.kpi-card {
+		background: #fff;
+		border-radius: 28px;
+		padding: 20px;
+		height: 240px;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, .15);
+		position: relative;
+	}
+
+	.kpi-title {
+		text-align: center;
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 15px;
+		color: #333;
+	}
+
+	.kpi-grid {
+		display: flex;
+		justify-content: space-around;
+		text-align: center;
+	}
+
+	.kpi-label {
+		font-size: 13px;
+		color: #666;
+	}
+
+	.kpi-value {
+		font-size: 32px;
+		font-weight: 700;
+	}
+
+	.kpi-icon {
+		width: 42px;
+		height: 42px;
+		object-fit: contain;
+		margin-right: 10px;
+		flex-shrink: 0;
+	}
+
+	.kpi-product {
+		font-size: 11px;
+		color: #666;
+		margin-top: 8px;
+		line-height: 1.2;
+	}
+
+	.kpi-code {
+		font-size: 10px;
+		color: #777;
+		line-height: 1.2;
+	}
+
+	.min {
+		color: #d32f2f;
+	}
+
+	.max {
+		color: #2e7d32;
+	}
+
+	.avg {
+		color: #222;
+	}
+
+
+	/* =====================================================
+	   GRAFANA KPI
+	===================================================== */
+
+	.grafana-kpi-card {
+		overflow: hidden;
+	}
+
+	.grafana-kpi-wrapper {
+		position: relative;
+		width: 100%;
+		height: 110px;
+		overflow: hidden;
+		background: #fff;
+	}
+
+	.grafana-kpi-wrapper iframe {
+		position: absolute;
+		top: -5px;
+		left: -5px;
+		width: calc(100% + 10px);
+		height: calc(100% + 10px);
+		border: none;
+	}
+
+	.grafana-menu-cover {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 60px;
+		height: 40px;
+		background: #fff;
+		z-index: 20;
+		pointer-events: none;
+	}
+
+	/* Tutup titik tiga / menu Grafana KPI */
+	.grafana-kpi-menu-cover {
+		position: absolute;
+		top: 75px;
+		right: 0;
+		width: 65px;
+		height: 35px;
+		background: #fff;
+		z-index: 20;
+		pointer-events: none;
+	}
+
+
+	/* =====================================================
+	   MONITORING CARD
+	===================================================== */
+
+	.monitor-card {
+		background: #fff;
+		border-radius: 20px;
+		padding: 20px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+		height: 320px;
+		overflow: hidden;
+	}
+
+	.monitor-title {
+		text-align: center;
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 15px;
+		color: #333;
+	}
+
+	.monitor-card canvas {
+		max-height: 170px;
+	}
+
+	.monitor-no-data {
+		height: 220px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 20px;
+	}
+
+	.monitor-no-data-icon {
+		font-size: 32px;
+		margin-bottom: 12px;
+		opacity: 0.6;
+	}
+
+	.monitor-no-data-title {
+		font-size: 16px;
+		font-weight: 600;
+		margin-bottom: 6px;
+	}
+
+	.monitor-no-data-text {
+		font-size: 13px;
+		line-height: 1.6;
+		opacity: 0.65;
+	}
+
+	.monitor-no-data {
+		height: 220px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 20px;
+	}
+
+	.monitor-no-data-icon {
+		font-size: 32px;
+		margin-bottom: 12px;
+		opacity: 0.6;
+	}
+
+	.monitor-no-data-title {
+		font-size: 16px;
+		font-weight: 600;
+		margin-bottom: 6px;
+	}
+
+	.monitor-no-data-text {
+		font-size: 13px;
+		line-height: 1.6;
+		opacity: 0.65;
+	}
+
+	/* =====================================================
+   GRAFANA MONITORING
+===================================================== */
+
+	.grafana-wrapper {
+		position: relative;
+		width: 100%;
+		height: 250px;
+		overflow: hidden;
+		border-radius: 10px;
+		background: #fff;
+	}
+
+	.grafana-wrapper iframe {
+		position: absolute;
+		top: -5px;
+		left: -5px;
+		width: calc(100% + 10px);
+		height: calc(100% + 10px);
+		border: none;
+		display: block;
+	}
+
+	.grafana-monitor-menu-cover {
+		position: absolute;
+		top: 62px;
+		right: 12px;
+		width: 60px;
+		height: 90px;
+		background: #ffffff;
+		border-radius: 0 0 0 5px;
+		z-index: 20;
+		pointer-events: none;
+	}
+
+	/* =====================================================
+   KONTAMINASI
+===================================================== */
+
+	.kontaminasi-card {
+		height: 100%;
+		min-height: 570px;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	.kontaminasi-card .grafana-wrapper {
+		position: relative;
+		width: 100%;
+		height: calc(100% - 55px);
+		min-height: 480px;
+		overflow: hidden;
+		border-radius: 10px;
+		background: #fff;
+	}
+
+	.kontaminasi-card .grafana-wrapper iframe {
+		position: absolute;
+		top: -5px;
+		left: -5px;
+
+		/* PENTING */
+		width: calc(100% + 10px);
+		height: calc(100% + 10px);
+
+		border: none;
+		display: block;
+	}
+
+	.kontaminasi-menu-cover {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 65px;
+		height: 45px;
+		background: #fff;
+		z-index: 20;
+		pointer-events: none;
+	}
+
+
+	/* =====================================================
+      ELECTRICAL BAKING - RESPONSIVE
+    ===================================================== */
+
+	.electrical-card {
+		background: #fff;
+		border-radius: 20px;
+		padding: 20px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+		height: 100%;
+		min-height: 320px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.electrical-card .monitor-title {
+		text-align: center;
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 15px;
+		color: #333;
+		flex-shrink: 0;
+	}
+
+	.electrical-card .grafana-wrapper {
+		position: relative;
+		width: 100%;
+		flex: 1;
+		min-height: 240px;
+		overflow: hidden;
+		border-radius: 10px;
+	}
+
+	.electrical-card .grafana-wrapper iframe {
+		width: 100%;
+		height: 100%;
+		min-height: 240px;
+		border: none;
+		display: block;
+	}
+
+
+	/* =====================================================
+   RESPONSIVE TABLET
+===================================================== */
+
+	@media (max-width: 991px) {
+
+		.electrical-card {
+			min-height: 320px;
+		}
+
+		.electrical-card .grafana-wrapper {
+			min-height: 250px;
+		}
+
+		.electrical-card .grafana-wrapper iframe {
+			min-height: 250px;
+		}
+
+	}
+
+
+	/* =====================================================
+   RESPONSIVE MOBILE
+===================================================== */
+
+	@media (max-width: 576px) {
+
+		.electrical-card {
+			min-height: 300px;
+			padding: 15px;
+		}
+
+		.electrical-card .monitor-title {
+			font-size: 16px;
+			margin-bottom: 10px;
+		}
+
+		.electrical-card .grafana-wrapper {
+			min-height: 230px;
+		}
+
+		.electrical-card .grafana-wrapper iframe {
+			min-height: 230px;
+		}
+
+	}
+
+
+	/* =====================================================
+	   METAL DETECTOR
+	===================================================== */
+
+	.md-card {
+		background: white;
+		border-radius: 25px;
+		padding: 20px;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, .15);
+		margin-bottom: 20px;
+	}
+
+	.md-title {
+		text-align: center;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.md-row {
+		margin-bottom: 15px;
+	}
+
+	.md-bar {
+		height: 22px;
+		border-radius: 6px;
+	}
+
+	.bar-green {
+		background: #69bf45;
+	}
+
+	.bar-dark {
+		background: #3f8f2f;
+	}
+
+
+	/* =====================================================
+	   REKAP
+	===================================================== */
+
+	.rekap-card {
+		background: white;
+		border-radius: 35px;
+		padding: 25px;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, .15);
+	}
+
+	.rekap-title {
+		text-align: center;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.rekap-item {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 15px;
+	}
+
+	.rekap-badge {
+		background: #ffe0e0;
+		padding: 5px 10px;
+		border-radius: 5px;
+		font-weight: bold;
+	}
+
+
+	/* =====================================================
+	   BREADCRUMB / REKAP SUHU
+	===================================================== */
+	.breadcrumb-title {
+		text-align: center;
+		font-weight: 700;
+		font-size: 18px;
+		margin-bottom: 20px;
+		color: #333;
+	}
+
+	.breadcrumb-card {
+		background: #efefef;
+		border-radius: 25px;
+		padding: 25px;
+		width: 100%;
+		height: 100%;
+		min-height: 570px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+	}
+
+	.grafana-breadcrumb-wrapper {
+		position: relative;
+		width: 100%;
+		height: 500px;
+		overflow: hidden;
+		border-radius: 12px;
+	}
+
+	.grafana-breadcrumb-wrapper iframe {
+		width: 100%;
+		height: 100%;
+		border: none;
+		display: block;
+	}
+
+	.chart-footer {
+		text-align: center;
+		margin-top: 15px;
+		font-weight: bold;
+	}
+
+	.grafana-breadcrumb-menu-cover {
+		position: absolute;
+		top: 75px;
+		right: 40px;
+		width: 65px;
+		height: 45px;
+		background: #ffffff;
+		z-index: 20;
+		pointer-events: none;
+	}
+
+
+	/* =====================================================
+	   CHART
+	===================================================== */
+
+	#keluhanChart {
+		width: 100%;
+		height: 250px !important;
+	}
+
+	#kontaminasiChart {
+		width: 100% !important;
+		height: 240px !important;
+	}
+
+
+	/* =====================================================
+	   MONITORING GRID
+	===================================================== */
+
+	.monitoring-wrapper {
+		margin: 20px 0;
+	}
+
+	.monitoring-grid {
+		display: grid;
+		grid-template-columns: repeat(8, 1fr);
+		gap: 16px;
+		margin: 25px 0;
+	}
+
+	.monitoring-card {
+		background: #fff;
+		border-radius: 32px;
+		min-height: 205px;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
+
+		padding: 12px 10px;
+
+		font-size: 11px;
+		font-weight: 700;
+
+		box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+
+		transition: .2s;
+		cursor: pointer;
+	}
+
+	.monitoring-card:hover {
+		transform: translateY(-3px);
+	}
+
+	.monitoring-card img {
+		width: 140px;
+		height: 120px;
+		object-fit: contain;
+		margin-bottom: 12px;
+	}
+
+	.monitoring-card span {
+		text-align: center;
+		font-size: 18px;
+		line-height: 1.1;
+		font-weight: 400;
+		color: #4b4b4b;
+	}
+
+
+	/* =====================================================
+	   RESPONSIVE
+	===================================================== */
+
+	@media (max-width: 991px) {
+
+		.kpi-card,
+		.monitor-card,
+		.electrical-card {
+			margin-bottom: 20px;
+		}
+
+		.grafana-breadcrumb-wrapper {
+			height: 400px;
+		}
+
+	}
+
+	@media (max-width: 576px) {
+
+		.dashboard-wrapper {
+			padding: 10px;
+		}
+
+		.grafana-breadcrumb-wrapper {
+			height: 300px;
+		}
+
+		.monitor-card,
+		.electrical-card {
+			height: 320px;
+		}
+
+	}
+
+	.kontaminasi-card {
+		height: 100%;
+		min-height: 570px;
+	}
+
+	.kontaminasi-card .grafana-wrapper {
+		height: calc(100% - 55px);
+		min-height: 480px;
+	}
+
+	.kontaminasi-card .grafana-wrapper iframe {
+		width: 100%;
+		height: 100%;
+	}
+
+
+	/* REKAP SUHU */
+
+	.breadcrumb-card {
+		width: 100%;
+		height: 100%;
+		min-height: 570px;
+	}
+
+	.grafana-breadcrumb-wrapper {
+		width: 100%;
+		height: 500px;
+	}
+
+	/* =====================================================
+	GRAFANA LAZY LOADING - BLUE FLOW LINE
+	===================================================== */
+
+	.grafana-loading-line {
+		position: absolute !important;
+		top: 0 !important;
+		left: 0 !important;
+		width: 100% !important;
+		height: 5px !important;
+		background: #70a3f0 !important;
+		z-index: 100 !important;
+		overflow: hidden !important;
+		pointer-events: none !important;
+		opacity: 1;
+		transition: opacity 0.5s ease;
+	}
+
+
+	/* Cahaya biru yang mengalir */
+	.grafana-loading-line::before {
+		content: "";
+
+		position: absolute;
+
+		top: 0;
+		left: -40%;
+
+		width: 40%;
+		height: 100%;
+
+		background: linear-gradient(90deg,
+				transparent 0%,
+				#5dade2 20%,
+				#ffffff 50%,
+				#5dade2 80%,
+				transparent 100%);
+
+		animation: grafana-loading-flow 1s linear infinite;
+	}
+
+
+	/* Saat Grafana selesai */
+	.grafana-loading-line.loaded {
+		opacity: 0;
+	}
+
+
+	/* Animasi cahaya berjalan kiri -> kanan */
+	@keyframes grafana-loading-flow {
+
+		0% {
+			transform: translateX(0);
+		}
+
+		100% {
+			transform: translateX(350%);
+		}
+
+	}
+
+	/* =====================================================
+	MODAL INPUT PRODUKSI
+	===================================================== */
+
+	#produksiModal .modal-content {
+		border: none;
+		border-radius: 15px;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+		overflow: hidden;
+	}
+
+	#produksiModal .modal-header {
+		padding: 18px 22px;
+	}
+
+	#produksiModal .modal-title {
+		font-size: 18px;
+		font-weight: 700;
+	}
+
+	#produksiModal .modal-body {
+		padding: 25px;
+	}
+
+	#produksiModal .modal-footer {
+		padding: 15px 25px;
+	}
+
+	#produksiModal label {
+		font-weight: 600;
+		font-size: 14px;
+		color: #444;
+	}
+
+	#produksiModal .form-control {
+		border-radius: 8px;
+		min-height: 42px;
+	}
+
+	#produksiModal .btn-primary {
+		border-radius: 8px;
+		padding: 9px 25px;
+		font-weight: 600;
+	}
+	/* =====================================================
+	MODAL DI ATAS LAZY LOADING GRAFANA
+	===================================================== */
+
+	/* Backdrop modal */
+	#produksiModal {
+		z-index: 1055 !important;
+	}
+
+	/* Isi modal */
+	#produksiModal .modal-dialog,
+	#produksiModal .modal-content {
+		position: relative;
+		z-index: 1056 !important;
+	}
+
+	/* Backdrop tetap di bawah modal */
+	.modal-backdrop {
+		z-index: 1050 !important;
+	}
+
+	/* Loading Grafana harus di belakang modal */
+	.grafana-loading-line {
+		z-index: 100 !important;
+	}
+	/* =====================================================
+	MODAL INPUT PRODUKSI DI ATAS GRAFANA LAZY LOAD
+	===================================================== */
+
+	#produksiModal {
+		z-index: 1055 !important;
+	}
+
+	#produksiModal .modal-dialog {
+		position: relative;
+		z-index: 1056 !important;
+	}
+
+	#produksiModal .modal-content {
+		position: relative;
+		z-index: 1057 !important;
+	}
+
+	.modal-backdrop {
+		z-index: 1050 !important;
+	}
 </style>
+
+</html>

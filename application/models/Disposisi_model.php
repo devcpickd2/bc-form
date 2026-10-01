@@ -288,6 +288,11 @@ class Disposisi_model extends CI_Model {
 	{
 		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user == 9 || $type_user == 1) {
+			return $this->db->get('disposisi')->result();
+		}
 		return $this->db->get_where('disposisi', ['plant' => $plant])->result();
 	}
 

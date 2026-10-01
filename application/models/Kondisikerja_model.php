@@ -30,7 +30,7 @@ class Kondisikerja_model extends CI_Model {
 			],
 			[
 				'field' => 'kondisi_higiene',
-				'label' => 'Condition',
+				'label' => 'Condition', 
 				'rules' => 'required'
 			],
 			[
@@ -322,11 +322,52 @@ class Kondisikerja_model extends CI_Model {
 		return $data_kondisikerja; 
 	}
 
-	public function get_data_by_plant()
+	// public function get_data_by_plant()
+	// {
+	// 	$this->db->order_by('created_at', 'DESC');
+	// 	$plant = $this->session->userdata('plant');
+	// 	$type_user = $this->session->userdata('tipe_user');
+
+	// 	if ($type_user == 9 || $type_user == 1) {
+	// 		return $this->db->get('kondisi_kerja')->result();
+	// 	}
+	// 	return $this->db->get_where('kondisi_kerja', ['plant' => $plant])->result();
+	// }
+
+	public function get_data_by_plant($limit, $start, $plant, $type_user)
 	{
+		$this->db->select('
+			uuid,
+			date,
+			shift,
+			area,
+			kondisi_higiene,
+			problem_higiene,
+			tindakan_higiene,
+			verifikasi_higiene,
+			kondisi_peralatan,
+			problem_peralatan,
+			tindakan_peralatan,
+			verifikasi_peralatan,
+			kondisi_kebersihan,
+			problem_kebersihan,
+			tindakan_kebersihan,
+			verifikasi_kebersihan,
+			status_spv,
+			modified_at,
+			tgl_update_spv
+			');
+
+		$this->db->from('kondisi_kerja');
+
+		if ($type_user != 9 && $type_user != 1) {
+			$this->db->where('plant', $plant);
+		}
+
 		$this->db->order_by('created_at', 'DESC');
-		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('kondisi_kerja', ['plant' => $plant])->result();
+		$this->db->limit($limit, $start);
+
+		return $this->db->get()->result();
 	}
 
 	public function delete_by_uuid($uuid)

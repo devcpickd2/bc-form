@@ -22,11 +22,31 @@ class Sensori extends MY_Controller {
 
 	public function index()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+
+		$this->db->where('plant', $plant);
+		$config['total_rows'] = $this->db->count_all_results('sensori_fg');
+
+		$config['base_url'] = base_url('sensori/index');
+		$config['per_page'] = 50;
+		$config['uri_segment'] = 5;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'sensori' => $this->sensori_model->get_data_by_plant()
+			'sensori' => $this->sensori_model->get_data_by_plant(
+				$config['per_page'],
+				$start
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
-		$this->active_nav = 'sensori'; 
+		$this->active_nav = 'sensori';
 		$this->render('form/sensori/sensori', $data);
 	}
 
@@ -108,7 +128,7 @@ class Sensori extends MY_Controller {
 	public function verifikasi()
 	{
 		$data = array(
-			'sensori' => $this->sensori_model->get_data_by_plant()
+			'sensori' => $this->sensori_model->get_data_verifikasi()
 		);
 
 		$this->active_nav = 'verifikasi-sensori'; 

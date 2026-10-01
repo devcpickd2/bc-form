@@ -25,7 +25,7 @@ class Kebersihanruang_model extends CI_Model {
 
 			[
 				'field' => 'lokasi',
-				'label' => 'Lokasi',
+				'label' => 'Lokasi', 
 				'rules' => 'required'
 			],
 
@@ -37,7 +37,7 @@ class Kebersihanruang_model extends CI_Model {
 		];
 	}
 
-	public function insert()
+	public function insert($foto1 = null, $foto2 = null)
 	{
 		$produksi_data = $this->session->userdata('produksi_data');
 		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
@@ -59,33 +59,40 @@ class Kebersihanruang_model extends CI_Model {
 
 		foreach ($bagian as $index => $nama_bagian) {
 
-			if (!isset($kondisi[$index])) {
-				return false; 
-			}
-
 			$detail[] = [
-				'bagian'   => $nama_bagian,
-				'kondisi'  => is_array($kondisi[$index]) 
-				? implode(',', $kondisi[$index]) 
-				: $kondisi[$index],
-				'problem'  => $problem[$index]  ?? '',
+
+				'bagian' => $nama_bagian,
+
+				'kondisi' => isset($kondisi[$index])
+				? implode(',', $kondisi[$index])
+				: '',
+
+				'problem' => $problem[$index] ?? '',
+
 				'tindakan' => $tindakan[$index] ?? '',
 			];
 		}
 
 		$data = [
-			'uuid'             => $uuid,
-			'username'         => $username,
-			'plant'            => $plant,
-			'date'             => $date,
-			'shift'            => $shift,
-			'lokasi'           => $lokasi,
-			'detail'           => json_encode($detail),
-			'status_produksi'  => 1,
-			'status_spv'       => 0,
-			'nama_produksi'    => $nama_produksi,
-			'created_at'       => date("Y-m-d H:i:s"),
-			'modified_at'      => date("Y-m-d H:i:s"),
+
+			'uuid'            => $uuid,
+			'username'        => $username,
+			'plant'           => $plant,
+			'date'            => $date,
+			'shift'           => $shift,
+			'lokasi'          => $lokasi,
+			'detail'          => json_encode($detail),
+
+			'foto1'           => $foto1,
+			'foto2'           => $foto2,
+
+			'status_produksi' => 1,
+			'status_spv'      => 0,
+
+			'nama_produksi'   => $nama_produksi,
+
+			'created_at'      => date("Y-m-d H:i:s"),
+			'modified_at'     => date("Y-m-d H:i:s"),
 		];
 
 		$this->db->insert('kebersihan_ruang', $data);
@@ -93,15 +100,73 @@ class Kebersihanruang_model extends CI_Model {
 		return ($this->db->affected_rows() > 0);
 	}
 
+	// public function insert()
+	// {
+	// 	$produksi_data = $this->session->userdata('produksi_data');
+	// 	$nama_produksi = $produksi_data['nama_produksi'] ?? '';
+
+	// 	$uuid     = \Ramsey\Uuid\Uuid::uuid4()->toString();
+	// 	$username = $this->session->userdata('username');
+	// 	$plant    = $this->session->userdata('plant');
+
+	// 	$date   = $this->input->post('date');
+	// 	$shift  = $this->input->post('shift');
+	// 	$lokasi = $this->input->post('lokasi');
+
+	// 	$bagian   = $this->input->post('bagian') ?? [];
+	// 	$kondisi  = $this->input->post('kondisi') ?? [];
+	// 	$problem  = $this->input->post('problem') ?? [];
+	// 	$tindakan = $this->input->post('tindakan') ?? [];
+
+	// 	$detail = [];
+
+	// 	foreach ($bagian as $index => $nama_bagian) {
+
+	// 		if (!isset($kondisi[$index])) {
+	// 			return false; 
+	// 		}
+
+	// 		$detail[] = [
+	// 			'bagian'   => $nama_bagian,
+	// 			'kondisi'  => is_array($kondisi[$index]) 
+	// 			? implode(',', $kondisi[$index]) 
+	// 			: $kondisi[$index],
+	// 			'problem'  => $problem[$index]  ?? '',
+	// 			'tindakan' => $tindakan[$index] ?? '',
+	// 		];
+	// 	}
+
+	// 	$data = [
+	// 		'uuid'             => $uuid,
+	// 		'username'         => $username,
+	// 		'plant'            => $plant,
+	// 		'date'             => $date,
+	// 		'shift'            => $shift,
+	// 		'lokasi'           => $lokasi,
+	// 		'detail'           => json_encode($detail),
+	// 		'status_produksi'  => 1,
+	// 		'status_spv'       => 0,
+	// 		'nama_produksi'    => $nama_produksi,
+	// 		'created_at'       => date("Y-m-d H:i:s"),
+	// 		'modified_at'      => date("Y-m-d H:i:s"),
+	// 	];
+
+	// 	$this->db->insert('kebersihan_ruang', $data);
+
+	// 	return ($this->db->affected_rows() > 0);
+	// }
+
+
 	public function update($uuid)
 	{
-		$bagian    = $this->input->post('bagian') ?? [];
-		$kondisi   = $this->input->post('kondisi') ?? [];
-		$problem   = $this->input->post('problem') ?? [];
-		$tindakan  = $this->input->post('tindakan') ?? [];
+		$bagian     = $this->input->post('bagian') ?? [];
+		$kondisi    = $this->input->post('kondisi') ?? [];
+		$problem    = $this->input->post('problem') ?? [];
+		$tindakan   = $this->input->post('tindakan') ?? [];
+		$verifikasi = $this->input->post('verifikasi') ?? [];
 
 		$old_data = $this->db
-		->get_where('kebersihan_ruang', ['uuid'=>$uuid])
+		->get_where('kebersihan_ruang', ['uuid' => $uuid])
 		->row_array();
 
 		$detail = [];
@@ -109,51 +174,117 @@ class Kebersihanruang_model extends CI_Model {
 		foreach ($bagian as $i => $b) {
 
 			$detail[] = [
-				'bagian'   => $b,
 
-            // ✅ PERBAIKAN PENTING DI SINI
-				'kondisi'  => isset($kondisi[$i]) 
-				? (is_array($kondisi[$i]) 
-					? implode(',', $kondisi[$i]) 
-					: $kondisi[$i])
+				'bagian' => $b,
+
+				'kondisi' => isset($kondisi[$i])
+				? (
+					is_array($kondisi[$i])
+					? implode(',', $kondisi[$i])
+					: $kondisi[$i]
+				)
 				: 'bersih',
 
-				'problem'  => $problem[$i] ?? '',
+				'problem' => $problem[$i] ?? '',
+
 				'tindakan' => $tindakan[$i] ?? '',
+
+				'verifikasi' => $verifikasi[$i] ?? '',
 			];
 		}
 
 		$updateData = [
+
 			'date'        => $this->input->post('date'),
 			'shift'       => $this->input->post('shift'),
-			'lokasi'      => $this->input->post('lokasi'), 
+			'lokasi'      => $this->input->post('lokasi'),
+
 			'username'    => $this->session->userdata('username'),
+
 			'detail'      => json_encode($detail),
+
 			'modified_at' => date('Y-m-d H:i:s'),
 		];
 
 		$this->db->where('uuid', $uuid);
 		$this->db->update('kebersihan_ruang', $updateData);
 
-		if ($this->db->affected_rows() > 0) {
+		$new_data = $this->db
+		->get_where('kebersihan_ruang', ['uuid' => $uuid])
+		->row_array();
 
-			$new_data = $this->db
-			->get_where('kebersihan_ruang', ['uuid' => $uuid])
-			->row_array();
+		$this->activity_logger->log_activity(
+			'update',
+			'kebersihan_ruang_logs',
+			$uuid,
+			$old_data,
+			$new_data
+		);
 
-			$this->activity_logger->log_activity(
-				'update',
-				'kebersihan_ruang_logs',
-				$uuid,
-				$old_data,
-				$new_data
-			);
-
-			return true;
-		}
-
-		return false;
+		return true;
 	}
+
+	// public function update($uuid)
+	// {
+	// 	$bagian    = $this->input->post('bagian') ?? [];
+	// 	$kondisi   = $this->input->post('kondisi') ?? [];
+	// 	$problem   = $this->input->post('problem') ?? [];
+	// 	$tindakan  = $this->input->post('tindakan') ?? [];
+
+	// 	$old_data = $this->db
+	// 	->get_where('kebersihan_ruang', ['uuid'=>$uuid])
+	// 	->row_array();
+
+	// 	$detail = [];
+
+	// 	foreach ($bagian as $i => $b) {
+
+	// 		$detail[] = [
+	// 			'bagian'   => $b,
+
+    //         // ✅ PERBAIKAN PENTING DI SINI
+	// 			'kondisi'  => isset($kondisi[$i]) 
+	// 			? (is_array($kondisi[$i]) 
+	// 				? implode(',', $kondisi[$i]) 
+	// 				: $kondisi[$i])
+	// 			: 'bersih',
+
+	// 			'problem'  => $problem[$i] ?? '',
+	// 			'tindakan' => $tindakan[$i] ?? '',
+	// 		];
+	// 	}
+
+	// 	$updateData = [
+	// 		'date'        => $this->input->post('date'),
+	// 		'shift'       => $this->input->post('shift'),
+	// 		'lokasi'      => $this->input->post('lokasi'), 
+	// 		'username'    => $this->session->userdata('username'),
+	// 		'detail'      => json_encode($detail),
+	// 		'modified_at' => date('Y-m-d H:i:s'),
+	// 	];
+
+	// 	$this->db->where('uuid', $uuid);
+	// 	$this->db->update('kebersihan_ruang', $updateData);
+
+	// 	if ($this->db->affected_rows() > 0) {
+
+	// 		$new_data = $this->db
+	// 		->get_where('kebersihan_ruang', ['uuid' => $uuid])
+	// 		->row_array();
+
+	// 		$this->activity_logger->log_activity(
+	// 			'update',
+	// 			'kebersihan_ruang_logs',
+	// 			$uuid,
+	// 			$old_data,
+	// 			$new_data
+	// 		);
+
+	// 		return true;
+	// 	}
+
+	// 	return false;
+	// }
 
 
 	public function rules_verifikasi()
@@ -282,9 +413,34 @@ class Kebersihanruang_model extends CI_Model {
 
 	public function get_data_by_plant()
 	{
+		$plant     = $this->session->userdata('plant');
+		$type_user = (int) $this->session->userdata('tipe_user');
+
+		$this->db->select('
+			uuid,
+			date,
+			shift,
+			lokasi,
+			detail,
+			status_spv,
+			foto1,
+			foto2,
+			modified_at,
+			tgl_update_spv
+			');
+
+		$this->db->from('kebersihan_ruang');
+
+		if (!in_array($type_user, [1, 9])) {
+			$this->db->where('plant', $plant);
+		}
+
 		$this->db->order_by('created_at', 'DESC');
-		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('kebersihan_ruang', ['plant' => $plant])->result();
+
+    // batasi data awal biar ringan
+		$this->db->limit(50);
+
+		return $this->db->get()->result();
 	}
 
 	public function delete_by_uuid($uuid)

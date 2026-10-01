@@ -52,8 +52,19 @@
             $salatiga_uuid = '1eb341e0-1ec4-4484-ba8f-32d23352b84d';
             ?>
 
-            <!-- MASTER DATA (hanya tipe_user 0 & 1) -->
-            <?php if ($tipe_user == 0): ?>
+            <?php if ($tipe_user == 9): ?>
+
+				<li class="nav-item <?= $active_nav == 'akses_plant' ? 'active' : ''; ?>">
+					<a class="nav-link" href="<?= base_url('akses-plant'); ?>">
+						<i class="fas fa-user-lock"></i>
+						<span>Akses Plant</span>
+					</a>
+				</li>
+
+			<?php endif; ?>
+
+            <!-- MASTER DATA (hanya tipe_user 0 & 9 superadmin) -->
+            <?php if (in_array($tipe_user, [0, 9])): ?>
                 <hr class="sidebar-divider">
                 <div class="sidebar-heading">MASTER DATA</div>
                 <li class="nav-item <?= $active_nav == 'data_master' | $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' | $active_nav == 'list_thermometer' | $active_nav == 'list_timbangan' | $active_nav == 'list_kebersihan' ?'active':'';?>">
@@ -65,9 +76,9 @@
 
                 <div id="collapseDataMaster" class="collapse <?= $active_nav == 'pegawai' | $active_nav == 'departemen' | $active_nav == 'plant' | $active_nav == 'alatqc' | $active_nav == 'bendapecah' | $active_nav == 'peralatan' | $active_nav == 'produk' | $active_nav == 'material' | $active_nav == 'area_kebersihan' | $active_nav == 'list_thermometer' | $active_nav == 'list_timbangan' | $active_nav == 'list_kebersihan' ?'show':'';?>" aria-labelledby="headingDataMaster" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <!-- <a class="collapse-item <?= $active_nav == 'pegawai' ?'active':'';?>" href="<?= base_url('pegawai')?>">Pegawai</a>
+                        <!-- <a class="collapse-item <?= $active_nav == 'pegawai' ?'active':'';?>" href="<?= base_url('pegawai')?>">Pegawai</a> -->
                         <a class="collapse-item <?= $active_nav == 'departemen' ?'active':'';?>" href="<?= base_url('departemen')?>">Departemen</a>
-                        <a class="collapse-item <?= $active_nav == 'plant' ?'active':'';?>" href="<?= base_url('plant')?>">Plant</a> -->
+                        <a class="collapse-item <?= $active_nav == 'plant' ?'active':'';?>" href="<?= base_url('plant')?>">Plant</a>
                         <a class="collapse-item <?= $active_nav == 'produk' ?'active':'';?>" href="<?= base_url('produk')?>">List Produk</a>
                         <a class="collapse-item <?= $active_nav == 'material' ?'active':'';?>" href="<?= base_url('material')?>">List Material</a>
                         <a class="collapse-item <?= $active_nav == 'alatqc' ?'active':'';?>" href="<?= base_url('alatqc')?>">Alat QC</a>
@@ -83,8 +94,28 @@
         <?php endif; ?>
         <!-- Awal Form QC -->
 
+        <!-- MASTER DATA PRODUKSI (hanya tipe_user 0 & 1) -->
+        <?php if (in_array($tipe_user, [0, 1, 2])): ?>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">DATA PRODUKSI</div>
+            <li class="nav-item <?= $active_nav == 'data_produksi' | $active_nav == 'produksi_baru' ?'active':'';?>">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDataProduksi"
+                aria-expanded="true" aria-controls="collapseDataProduksi">
+                <i class="fas fa-briefcase"></i>
+                <span>Data Produksi</span>
+            </a>
+
+            <div id="collapseDataProduksi" class="collapse <?= $active_nav == 'produksi_baru' ?'show':'';?>" aria-labelledby="headingDataMaster" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item <?= $active_nav == 'produksi_baru' ?'active':'';?>" href="<?= base_url('produksi_baru')?>">Data Produksi</a>
+                </div>
+            </div>
+        </li>
+    <?php endif; ?>
+    <!-- Akhir Data Produksi -->
+
 <!-- FORM QC (hanya user_type 0,1,4) -->
-<?php if (in_array($tipe_user, [0, 1, 4, 8])): ?>
+<?php if (in_array($tipe_user, [0, 4, 8, 9])): ?>
     <hr class="sidebar-divider">
     <div class="sidebar-heading">FORM QC</div>
     <li class="nav-item <?= $active_nav == 'form_qc' | $active_nav == 'pengayakan' | $active_nav == 'produksi' | $active_nav == 'metal' |  $active_nav == 'falserejection' |  $active_nav == 'kontaminasi' |  $active_nav == 'kekuatanmagnet' |  $active_nav == 'verifikasimagnet' |  $active_nav == 'thermometer' |  $active_nav == 'timbangan' |  $active_nav == 'releasepacking' |  $active_nav == 'pengemasan' |  $active_nav == 'chiller' |  $active_nav == 'sanitasi' |  $active_nav == 'ketidaksesuaian' |  $active_nav == 'pemusnahan' |  $active_nav == 'kondisikerja' |  $active_nav == 'retain' |  $active_nav == 'kebersihankaryawan' |  $active_nav == 'kebersihanperalatan' |  $active_nav == 'penerimaankemasan' |  $active_nav == 'pemeriksaanpengiriman' |  $active_nav == 'pembuatanlarutan' |  $active_nav == 'pemeriksaanchemical' |  $active_nav == 'seasoning' |  $active_nav == 'kebersihanruang' |  $active_nav == 'sanitasiwarehouse' |  $active_nav == 'loading' |  $active_nav == 'disposisi' |  $active_nav == 'magnettrap' |  $active_nav == 'kebersihanmesin' |  $active_nav == 'sensori' |  $active_nav == 'reagen' |  $active_nav == 'residu' |  $active_nav == 'larutan' |  $active_nav == 'analisis' |  $active_nav == 'inventaris' |  $active_nav == 'pecahbelah' |  $active_nav == 'suhu' | $active_nav == 'proses' ? 'active' : ''; ?>">
@@ -101,7 +132,10 @@
                 <a class="collapse-item <?= $active_nav == 'kebersihankaryawan' ?'active':'';?>" href="<?= base_url('kebersihankaryawan')?>">Kebersihan Karyawan</a>
                 <a class="collapse-item <?= $active_nav == 'kebersihanperalatan' ?'active':'';?>" href="<?= base_url('kebersihanperalatan')?>">Kebersihan Peralatan</a>
                 <a class="collapse-item <?= $active_nav == 'kebersihanruang' ?'active':'';?>" href="<?= base_url('kebersihanruang')?>">Kebersihan Ruang Produksi</a>
-                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isSuperadmin = ($tipe_user == 9); 
+                ?>
+                <?php if ($isSuperadmin || $plant_uuid == $salatiga_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'kebersihanmesin' ?'active':'';?>" href="<?= base_url('kebersihanmesin')?>">Pemeriksaan Kebersihan Mesin</a> 
                     <a class="collapse-item <?= $active_nav == 'pembuatanlarutan' ?'active':'';?>" href="<?= base_url('pembuatanlarutan')?>">Pembuatan Larutan</a>
                     <a class="collapse-item <?= $active_nav == 'reagen' ?'active':'';?>" href="<?= base_url('reagen')?>">Verifikasi Penggunaan Reagen Klorin</a>
@@ -127,17 +161,20 @@
                 <a class="collapse-item <?= $active_nav == 'verifikasimagnet' ? 'active' : ''; ?>" href="<?= base_url('verifikasimagnet') ?>">Verifikasi Magnet Trap</a>
                 <a class="collapse-item <?= $active_nav == 'thermometer' ? 'active' : ''; ?>" href="<?= base_url('thermometer') ?>">Peneraan Thermometer</a>
                 <a class="collapse-item <?= $active_nav == 'timbangan' ? 'active' : ''; ?>" href="<?= base_url('timbangan') ?>">Pemeriksaan Timbangan</a>
-                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isSuperadmin = ($tipe_user == 9);
+                ?>
+                <?php if ($isSuperadmin || $plant_uuid == $salatiga_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'magnettrap' ? 'active' : ''; ?>" href="<?= base_url('magnettrap') ?>">Pemeriksaan Magnet Trap</a>
                 <?php endif; ?>
 
-                <?php if ($plant_uuid == $cikande_uuid): ?>
+                <?php if ($isSuperadmin || $plant_uuid == $cikande_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'produksi' ? 'active' : ''; ?>" href="<?= base_url('produksi') ?>">Verifikasi Proses Produksi</a>
                 <?php endif; ?>
 
                 <a class="collapse-item <?= $active_nav == 'ketidaksesuaian' ? 'active' : ''; ?>" href="<?= base_url('ketidaksesuaian') ?>">Ketidaksesuaian Produk</a>
 
-                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php if ($isSuperadmin || $plant_uuid == $salatiga_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'proses' ? 'active' : ''; ?>" href="<?= base_url('proses') ?>">Verifikasi Proses Produksi</a>
                     <a class="collapse-item <?= $active_nav == 'inventaris' ? 'active' : ''; ?>" href="<?= base_url('inventaris') ?>">Checklist Inventaris Peralatan QC</a>
                     <a class="collapse-item <?= $active_nav == 'pecahbelah' ? 'active' : ''; ?>" href="<?= base_url('pecahbelah') ?>">Pemeriksaan Benda Mudah Pecah</a>
@@ -145,7 +182,7 @@
                 <a class="collapse-item <?= $active_nav == 'disposisi' ?'active':'';?>" href="<?= base_url('disposisi')?>">Disposisi Produk dan Prosedur</a>
                 <a class="collapse-item <?= $active_nav == 'pemusnahan' ?'active':'';?>" href="<?= base_url('pemusnahan')?>">Pemusnahan Barang / Produk</a>
                 <a class="collapse-item <?= $active_nav == 'retain' ?'active':'';?>" href="<?= base_url('retain')?>">Retain Sample Report</a>
-                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php if ($isSuperadmin || $plant_uuid == $salatiga_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'gosong' ?'active':'';?>" href="<?= base_url('gosong')?>">Laporan Roti Gosong</a>
                 <?php endif; ?>
             </div>
@@ -161,7 +198,10 @@
                 <a class="collapse-item <?= $active_nav == 'falserejection' ?'active':'';?>" href="<?= base_url('falserejection')?>">Monitoring False Rejection</a>
                 <a class="collapse-item <?= $active_nav == 'kontaminasi' ?'active':'';?>" href="<?= base_url('kontaminasi')?>">Kontaminasi Benda Asing</a>
                 <a class="collapse-item <?= $active_nav == 'sensori' ?'active':'';?>" href="<?= base_url('sensori')?>">Sensori Finish Good</a>
-                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isSuperadmin = ($tipe_user == 9);
+                ?>
+                <?php if ($isSuperadmin || $plant_uuid == $salatiga_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'pengemasan' ?'active':'';?>" href="<?= base_url('pengemasan')?>">Pemeriksaan Proses Pengemasan</a>
                 <?php endif; ?>
                 <a class="collapse-item <?= $active_nav == 'releasepacking' ?'active':'';?>" href="<?= base_url('releasepacking')?>">Release Packing</a>
@@ -175,7 +215,10 @@
         <div id="collapseQC4" class="collapse <?=  $active_nav == 'penerimaankemasan' |  $active_nav == 'pemeriksaanpengiriman' |  $active_nav == 'pemeriksaanchemical' |  $active_nav == 'seasoning' |  $active_nav == 'sanitasiwarehouse' |  $active_nav == 'loading' |  $active_nav == 'analisis' ?'show':'';?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item <?= $active_nav == 'sanitasiwarehouse' ?'active':'';?>" href="<?= base_url('sanitasiwarehouse')?>">Pemeriksaan Sanitasi Warehouse</a>
-                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isSuperadmin = ($tipe_user == 9);
+                ?>
+                <?php if ($isSuperadmin || $plant_uuid == $salatiga_uuid): ?>
                     <a class="collapse-item <?= $active_nav == 'analisis' ?'active':'';?>" href="<?= base_url('analisis')?>">Permohonan Analisis Sampel Lab</a>
                 <?php endif; ?>
                 <a class="collapse-item <?= $active_nav == 'penerimaankemasan' ?'active':'';?>" href="<?= base_url('penerimaankemasan')?>">Penerimaan Kemasan</a>
@@ -191,7 +234,7 @@
 
 <!-- Verifikasi SPV -->
 <!-- VERIFIKASI SPV (hanya tipe_user 0,1,2) -->
-<?php if (in_array($tipe_user, [0, 1, 2])): ?>
+<?php if (in_array($tipe_user, [0, 1, 2, 9])): ?>
     <hr class="sidebar-divider">
     <div class="sidebar-heading">VERIFIKASI SUPERVISOR</div>
     <li class="nav-item <?= ($active_nav == 'verifikasi' || $active_nav == 'verifikasi-pengayakan' || $active_nav == 'verifikasi-produksi' || $active_nav == 'verifikasi-metal' || $active_nav == 'verifikasi-falserejection' || $active_nav == 'verifikasi-kontaminasi' || $active_nav == 'verifikasi-kekuatanmagnet' || $active_nav == 'verifikasi-verifikasimagnet' || $active_nav == 'verifikasi-thermometer' || $active_nav == 'verifikasi-timbangan' || $active_nav == 'verifikasi-releasepacking' || $active_nav == 'verifikasi-pengemasan' || $active_nav == 'verifikasi-chiller' || $active_nav == 'verifikasi-sanitasi' || $active_nav == 'verifikasi-ketidaksesuaian' || $active_nav == 'verifikasi-pemusnahan' || $active_nav == 'verifikasi-kondisikerja' || $active_nav == 'verifikasi-retain' || $active_nav == 'verifikasi-kebersihankaryawan' || $active_nav == 'verifikasi-kebersihanperalatan' || $active_nav == 'verifikasi-penerimaankemasan' || $active_nav == 'verifikasi-pemeriksaanpengiriman' || $active_nav == 'verifikasi-pembuatanlarutan' || $active_nav == 'verifikasi-pemeriksaanchemical' || $active_nav == 'verifikasi-seasoning' || $active_nav == 'verifikasi-kebersihanruang' || $active_nav == 'verifikasi-sanitasiwarehouse' || $active_nav == 'verifikasi-loading' || $active_nav == 'verifikasi-disposisi' || $active_nav == 'verifikasi-magnettrap' || $active_nav == 'verifikasi-kebersihanmesin' || $active_nav == 'verifikasi-sensori' || $active_nav == 'verifikasi-reagen' || $active_nav == 'verifikasi-residu' || $active_nav == 'verifikasi-larutan' || $active_nav == 'verifikasi-analisis' || $active_nav == 'verifikasi-inventaris' || $active_nav == 'verifikasi-pecahbelah' || $active_nav == 'verifikasi-suhu' || $active_nav == 'verifikasi-proses' ) ? 'active' : ''; ?>">
@@ -208,7 +251,10 @@
                     <a class="collapse-item <?= $active_nav == 'verifikasi-kebersihankaryawan' ? 'active' : ''; ?>" href="<?= base_url('kebersihankaryawan/verifikasi')?>">Kebersihan Karyawan</a>
                     <a class="collapse-item <?= $active_nav == 'verifikasi-kebersihanperalatan' ? 'active' : ''; ?>" href="<?= base_url('kebersihanperalatan/verifikasi')?>">Kebersihan Peralatan</a>
                     <a class="collapse-item <?= $active_nav == 'verifikasi-kebersihanruang' ? 'active' : ''; ?>" href="<?= base_url('kebersihanruang/verifikasi')?>">Kebersihan Ruang Produksi</a>
-                    <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isAdminManager = in_array($tipe_user, [9,1]); 
+                ?>
+                    <?php if ($isAdminManager || $plant_uuid == $salatiga_uuid): ?>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-kebersihanmesin' ? 'active' : ''; ?>" href="<?= base_url('kebersihanmesin/verifikasi')?>">Pemeriksaan Kebersihan Mesin</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-pembuatanlarutan' ? 'active' : ''; ?>" href="<?= base_url('pembuatanlarutan/verifikasi')?>">Pembuatan Larutan</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-reagen' ? 'active' : ''; ?>" href="<?= base_url('reagen/verifikasi')?>">Verifikasi Penggunaan Reagen Klorin</a>
@@ -228,17 +274,20 @@
                         <a class="collapse-item <?= $active_nav == 'verifikasi-verifikasimagnet' ? 'active' : ''; ?>" href="<?= base_url('verifikasimagnet/verifikasi')?>">Verifikasi Magnet Trap</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-thermometer' ? 'active' : ''; ?>" href="<?= base_url('thermometer/verifikasi')?>">Peneraan Thermometer</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-timbangan' ? 'active' : ''; ?>" href="<?= base_url('timbangan/verifikasi')?>">Pemeriksaan Timbangan</a>
-                        <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isAdminManager = in_array($tipe_user, [9,1]); 
+                ?>
+                        <?php if ($isAdminManager || $plant_uuid == $salatiga_uuid): ?>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-magnettrap' ? 'active' : ''; ?>" href="<?= base_url('magnettrap/verifikasi')?>">Pemeriksaan Magnet Trap</a>
                         <?php endif; ?>
 
-                        <?php if ($plant_uuid == $cikande_uuid): ?>
+                        <?php if ($isAdminManager || $plant_uuid == $cikande_uuid): ?>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-produksi' ? 'active' : ''; ?>" href="<?= base_url('produksi/verifikasi')?>">Verifikasi Proses Produksi</a>
                         <?php endif; ?>
 
                         <a class="collapse-item <?= $active_nav == 'verifikasi-ketidaksesuaian' ? 'active' : ''; ?>" href="<?= base_url('ketidaksesuaian/verifikasi')?>">Ketidaksesuaian Produk</a>
 
-                        <?php if ($plant_uuid == $salatiga_uuid): ?>
+                        <?php if ($isAdminManager || $plant_uuid == $salatiga_uuid): ?>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-proses' ? 'active' : ''; ?>" href="<?= base_url('proses/verifikasi')?>">Verifikasi Proses Produksi</a>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-inventaris' ? 'active' : ''; ?>" href="<?= base_url('inventaris/verifikasi')?>">Checklist Inventaris Peralatan QC</a>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-pecahbelah' ? 'active' : ''; ?>" href="<?= base_url('pecahbelah/verifikasi')?>">Pemeriksaan Benda Mudah Pecah</a>
@@ -247,7 +296,7 @@
                         <a class="collapse-item <?= $active_nav == 'verifikasi-disposisi' ? 'active' : ''; ?>" href="<?= base_url('disposisi/verifikasi')?>">Disposisi Produk dan Prosedur</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-pemusnahan' ? 'active' : ''; ?>" href="<?= base_url('pemusnahan/verifikasi')?>">Pemusnahan Barang / Produk</a>
                         <a class="collapse-item <?= $active_nav == 'verifikasi-retain' ? 'active' : ''; ?>" href="<?= base_url('retain/verifikasi')?>">Retain Sample Report</a>
-                        <?php if ($plant_uuid == $salatiga_uuid): ?>
+                        <?php if ($isAdminManager || $plant_uuid == $salatiga_uuid): ?>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-gosong' ? 'active' : ''; ?>" href="<?= base_url('gosong/verifikasi')?>">Laporan Roti Gosong</a>
                         <?php endif; ?>
                     </div>
@@ -262,7 +311,10 @@
                             <a class="collapse-item <?= $active_nav == 'verifikasi-falserejection' ? 'active' : ''; ?>" href="<?= base_url('falserejection/verifikasi')?>">Monitoring False Rejection</a>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-kontaminasi' ? 'active' : ''; ?>" href="<?= base_url('kontaminasi/verifikasi')?>">Kontaminasi Benda Asing</a>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-sensori' ? 'active' : ''; ?>" href="<?= base_url('sensori/verifikasi')?>">Sensori Finish Good</a>
-                            <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isAdminManager = in_array($tipe_user, [9,1]); 
+                ?>
+                            <?php if ($isAdminManager || $plant_uuid == $salatiga_uuid): ?>
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-pengemasan' ? 'active' : ''; ?>" href="<?= base_url('pengemasan/verifikasi')?>">Pemeriksaan Proses Pengemasan</a>
                             <?php endif; ?>
                             <a class="collapse-item <?= $active_nav == 'verifikasi-releasepacking' ? 'active' : ''; ?>" href="<?= base_url('releasepacking/verifikasi')?>">Release Packing</a>
@@ -275,7 +327,10 @@
                         <div id="collapseQC24" class="collapse <?= ( $active_nav == 'verifikasi-penerimaankemasan' || $active_nav == 'verifikasi-pemeriksaanpengiriman' || $active_nav == 'verifikasi-pemeriksaanchemical' || $active_nav == 'verifikasi-seasoning' || $active_nav == 'verifikasi-sanitasiwarehouse' || $active_nav == 'verifikasi-loading' || $active_nav == 'verifikasi-analisis') ? 'show' : ''; ?>" aria-labelledby="headingQC" data-parent="#accordionSidebar">
                             <div class="bg-white py-2 collapse-inner rounded">
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-sanitasiwarehouse' ? 'active' : ''; ?>" href="<?= base_url('sanitasiwarehouse/verifikasi')?>">Pemeriksaan Sanitasi Warehouse</a>
-                                <?php if ($plant_uuid == $salatiga_uuid): ?>
+                <?php 
+                $isAdminManager = in_array($tipe_user, [9,1]); 
+                ?>
+                                <?php if ($isAdminManager || $plant_uuid == $salatiga_uuid): ?>
                                     <a class="collapse-item <?= $active_nav == 'verifikasi-analisis' ? 'active' : ''; ?>" href="<?= base_url('analisis/verifikasi')?>">Permohonan Analisis Sampel Lab</a>
                                 <?php endif; ?>
                                 <a class="collapse-item <?= $active_nav == 'verifikasi-penerimaankemasan' ? 'active' : ''; ?>" href="<?= base_url('penerimaankemasan/verifikasi')?>">Penerimaan Kemasan</a>
@@ -289,7 +344,7 @@
                     <!-- Batas SPV -->
                 <?php endif; ?>
 
-                <?php if (in_array($tipe_user, [0])): ?>
+                <?php if (in_array($tipe_user, [9])): ?>
                     <hr class="sidebar-divider">
                     <div class="sidebar-heading">LOGS</div>
                     <li class="nav-item <?= ($active_nav == 'logs_disposisi' | $active_nav == 'logs_analisis' | $active_nav == 'logs_chiller' | $active_nav == 'logs_falserejection' | $active_nav == 'logs_gosong' | $active_nav == 'logs_inventaris' | $active_nav == 'logs_kebersihankaryawan' | $active_nav == 'logs_kebersihanmesin' | $active_nav == 'logs_kebersihanperalatan' | $active_nav == 'logs_kebersihanruang' | $active_nav == 'logs_kebersihanmagnet' | $active_nav == 'logs_ketidaksesuaian' | $active_nav == 'logs_kondisikerja' | $active_nav == 'logs_kontaminasi' | $active_nav == 'logs_larutan' | $active_nav == 'logs_loading' | $active_nav == 'logs_magnettrap' | $active_nav == 'logs_metal' | $active_nav == 'logs_pecahbelah' | $active_nav == 'logs_pembuatanlarutan' | $active_nav == 'logs_pemeriksaanchemical' | $active_nav == 'logs_pemeriksaanpengiriman' | $active_nav == 'logs_pemusnahan' | $active_nav == 'logs_penerimaankemasan' | $active_nav == 'logs_pengayakan' | $active_nav == 'logs_pengemasan' | $active_nav == 'logs_produksi' | $active_nav == 'logs_proses' | $active_nav == 'logs_reagen' | $active_nav == 'logs_releasepacking' | $active_nav == 'logs_residu' | $active_nav == 'logs_retain' | $active_nav == 'logs_sanitasi' | $active_nav == 'logs_sanitasiwarehouse' | $active_nav == 'logs_seasoning' | $active_nav == 'logs_sensori' | $active_nav == 'logs_suhu' | $active_nav == 'logs_thermometer' | $active_nav == 'logs_timbangan' | $active_nav == 'logs_verifikasimagnet') ? 'active' : ''; ?>">
@@ -345,6 +400,19 @@
                 <?php endif; ?>
 
                 <hr class="sidebar-divider">
+
+                    <div class="sidebar-heading">
+                        MONITORING
+                    </div>
+
+                    <li class="nav-item <?= $active_nav == 'traceability' ? 'active' : ''; ?>">
+                        <a class="nav-link" href="<?= base_url('traceability'); ?>">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Traceability</span>
+                        </a>
+                    </li>
+
+                <hr class="sidebar-divider">
                 <div class="text-center d-none d-md-inline">
                     <button class="rounded-circle border-0" id="sidebarToggle"></button>
                 </div>
@@ -353,51 +421,141 @@
             <div id="content-wrapper" class="d-flex flex-column">
                 <div id="content">
                   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
+					<!-- Sidebar Toggle (Topbar) -->
+					<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+						<i class="fa fa-bars"></i>
+					</button>
 
-                    <!-- Nama Perusahaan -->
-                    <div class="d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 nama-pt">
-                        <strong>PT. CHAROEN POKPHAND INDONESIA - FOOD DIVISION</strong>
-                    </div>
+					<!-- Nama Perusahaan -->
+					<div class="d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 nama-pt">
+						<strong>PT. CHAROEN POKPHAND INDONESIA - FOOD DIVISION</strong>
+					</div>
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <?php
-                        $foto = $this->session->userdata('foto') ?? 'profil.png';
-                        $foto_url = base_url('uploads/foto/' . $foto);
-                        ?>
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <!-- Nama User -->
-                                <span class="mr-2 d-none d-lg-inline text-dark small font-weight-bold">
-                                    Hallo, <?= $this->session->userdata('nama'); ?>
-                                </span>
-                                <!-- Foto Profil -->
-                                <img class="img-profile rounded-circle" 
-                                src="<?= $foto_url ?>" 
-                                width="40" height="40" 
-                                onerror="this.onerror=null;this.src='<?= base_url('uploads/foto/profil.png') ?>';" 
-                                alt="Foto Profil">
-                            </a>
+					<!-- Topbar Navbar -->
+					<ul class="navbar-nav ml-auto">
 
-                            <!-- Dropdown Menu -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <!-- <a class="dropdown-item" href="<?= base_url('profil'); ?>">
-                                <i class="fas fa-user-edit fa-sm fa-fw mr-2 text-primary"></i> 
-                                <span class="text-dark">Profil</span>
-                            </a>
-                            <div class="dropdown-divider"></div> -->
-                            <a class="dropdown-item" href="<?= base_url('logout'); ?>">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-danger"></i>
-                                <span class="text-dark">Logout</span>
-                            </a>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
+						<?php
+						$foto = $this->session->userdata('foto') ?? 'profil.png';
+						$foto_url = base_url('uploads/foto/' . $foto);
+
+						$user_uuid = $this->session->userdata('user_uuid');
+						$user_plants = $this->auth_model->get_user_plants($user_uuid);
+						?>
+
+						<!-- SWITCH PLANT -->
+						<?php if (count($user_plants) > 1): ?>
+							<li class="nav-item dropdown no-arrow mr-2">
+
+								<a class="nav-link dropdown-toggle d-flex align-items-center"
+									href="#"
+									id="plantDropdown"
+									role="button"
+									data-toggle="dropdown"
+									aria-haspopup="true"
+									aria-expanded="false">
+
+									<i class="fas fa-building mr-2"></i>
+
+									<span class="text-dark small font-weight-bold">
+										<?php
+										$active_plant = $this->session->userdata('plant');
+										$active_plant_name = '';
+
+										foreach ($user_plants as $plant) {
+											if ($plant->uuid == $active_plant) {
+												$active_plant_name = $plant->plant;
+												break;
+											}
+										}
+										?>
+
+										<?= htmlspecialchars($active_plant_name); ?>
+									</span>
+
+								</a>
+
+								<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+									aria-labelledby="plantDropdown">
+
+									<h6 class="dropdown-header">
+										<i class="fas fa-industry fa-sm mr-2"></i>
+										Pilih Plant
+									</h6>
+
+									<?php foreach ($user_plants as $plant): ?>
+
+										<form action="<?= base_url('auth/switch_plant'); ?>" method="POST">
+
+											<input type="hidden"
+												name="plant_uuid"
+												value="<?= $plant->uuid; ?>">
+
+											<input type="hidden"
+												name="redirect_url"
+												value="<?= current_url(); ?>">
+
+											<button type="submit"
+												class="dropdown-item d-flex align-items-center <?= $plant->uuid == $active_plant ? 'active' : ''; ?>">
+
+												<i class="fas fa-industry fa-sm fa-fw mr-2"></i>
+
+												<span>
+													<?= htmlspecialchars($plant->plant); ?>
+												</span>
+
+												<?php if ($plant->uuid == $active_plant): ?>
+													<i class="fas fa-check ml-auto"></i>
+												<?php endif; ?>
+
+											</button>
+
+										</form>
+
+									<?php endforeach; ?>
+
+								</div>
+							</li>
+						<?php endif; ?>
+
+
+						<!-- USER -->
+						<li class="nav-item dropdown no-arrow">
+
+							<a class="nav-link dropdown-toggle d-flex align-items-center"
+								href="#"
+								id="userDropdown"
+								role="button"
+								data-toggle="dropdown"
+								aria-haspopup="true"
+								aria-expanded="false">
+
+								<span class="mr-2 d-none d-lg-inline text-dark small font-weight-bold">
+									Hallo, <?= $this->session->userdata('nama'); ?>
+								</span>
+
+								<img class="img-profile rounded-circle"
+									src="<?= $foto_url ?>"
+									width="40"
+									height="40"
+									onerror="this.onerror=null;this.src='<?= base_url('uploads/foto/profil.png') ?>';"
+									alt="Foto Profil">
+
+							</a>
+
+							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+								aria-labelledby="userDropdown">
+
+								<a class="dropdown-item" href="<?= base_url('logout'); ?>">
+									<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-danger"></i>
+									<span class="text-dark">Logout</span>
+								</a>
+
+							</div>
+
+						</li>
+
+					</ul>
+				</nav>
 
 
             <style type="text/css">

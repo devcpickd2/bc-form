@@ -22,11 +22,35 @@ class Sanitasi extends MY_Controller {
 
 	public function index()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant);
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('sanitasi');
+
+		$config['base_url'] = base_url('sanitasi/index');
+		$config['per_page'] = 50;
+		$config['uri_segment'] = 5;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_data_by_plant()
+			'sanitasi' => $this->sanitasi_model->get_data_by_plant(
+				$config['per_page'],
+				$start
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
-		$this->active_nav = 'sanitasi'; 
+		$this->active_nav = 'sanitasi';
 		$this->render('form/sanitasi/sanitasi', $data);
 	}
 
@@ -106,8 +130,32 @@ class Sanitasi extends MY_Controller {
 	
 	public function verifikasi()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant);
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('sanitasi');
+
+		$config['base_url'] = base_url('sanitasi/index');
+		$config['per_page'] = 50;
+		$config['uri_segment'] = 5;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'sanitasi' => $this->sanitasi_model->get_data_by_plant()
+			'sanitasi' => $this->sanitasi_model->get_data_by_plant(
+				$config['per_page'],
+				$start
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
 		$this->active_nav = 'verifikasi-sanitasi'; 

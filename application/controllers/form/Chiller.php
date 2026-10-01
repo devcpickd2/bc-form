@@ -22,11 +22,35 @@ class Chiller extends MY_Controller {
 
 	public function index()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('chiller');
+
+		$config['base_url'] = base_url('chiller/index');
+		$config['per_page'] = 100;
+		$config['uri_segment'] = 10;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'chiller' => $this->chiller_model->get_chiller_by_plant()
+			'chiller' => $this->chiller_model->get_chiller_by_plant(
+				$config['per_page'],
+				$start
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
-		$this->active_nav = 'chiller'; 
+		$this->active_nav = 'chiller';
 		$this->render('form/chiller/chiller', $data);
 	}
 
@@ -105,8 +129,32 @@ class Chiller extends MY_Controller {
 
 	public function verifikasi()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant); 
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('chiller');
+
+		$config['base_url'] = base_url('chiller/index');
+		$config['per_page'] = 100;
+		$config['uri_segment'] = 10;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'chiller' => $this->chiller_model->get_chiller_by_plant()
+			'chiller' => $this->chiller_model->get_chiller_by_plant(
+				$config['per_page'],
+				$start
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
 		$this->active_nav = 'verifikasi-chiller'; 

@@ -171,11 +171,11 @@ class Kebersihankaryawan_model extends CI_Model {
 		if ($this->db->affected_rows() > 0) {
 			$this->activity_logger->log_activity(
 				'update',
-                'kebersihan_karyawan_logs',
-                $uuid,
-                $old_data,
-                $new_data
-            );
+				'kebersihan_karyawan_logs',
+				$uuid,
+				$old_data,
+				$new_data
+			);
 			return true;
 		}
 		return false;
@@ -295,11 +295,37 @@ class Kebersihankaryawan_model extends CI_Model {
 		return $data_kebersihan_karyawan; 
 	}
 
-	public function get_data_by_plant()
+	public function get_data_by_plant($limit, $start, $plant, $type_user)
 	{
+		$this->db->select('
+			uuid,
+			date,
+			nama,
+			bagian,
+			seragam,
+			apron,
+			tangan_kuku,
+			kosmetik,
+			perhiasan,
+			masker,
+			topi_hairnet,
+			sepatu,
+			tindakan,
+			status_spv,
+			modified_at,
+			tgl_update_spv
+			');
+
+		$this->db->from('kebersihan_karyawan');
+
+		if ($type_user != 9 && $type_user != 1) {
+			$this->db->where('plant', $plant);
+		}
+
 		$this->db->order_by('created_at', 'DESC');
-		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('kebersihan_karyawan', ['plant' => $plant])->result();
+		$this->db->limit($limit, $start);
+
+		return $this->db->get()->result();
 	}
 
 	public function delete_by_uuid($uuid)
@@ -308,7 +334,7 @@ class Kebersihankaryawan_model extends CI_Model {
 		return $this->db->delete('kebersihan_karyawan');
 	}
 
-	public function get_by_date($tanggal, $plant = null)
+public function get_by_date($tanggal, $plant = null, $shift = null)
 	{
 		if (empty($tanggal)) {
 			return false;
@@ -317,7 +343,11 @@ class Kebersihankaryawan_model extends CI_Model {
 		$this->db->where('DATE(date)', $tanggal);
 
 		if (!empty($plant)) {
-			$this->db->where('plant', $plant); 
+			$this->db->where('plant', $plant);
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
 		}
 
 		$this->db->order_by('date', 'ASC');
@@ -330,6 +360,22 @@ class Kebersihankaryawan_model extends CI_Model {
 		}
 
 		return false;
+	}
+
+	public function get_shift_by_date($tanggal, $plant = null)
+	{
+		$this->db->select('shift');
+		$this->db->from('kebersihan_karyawan');
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant);
+		}
+
+		$this->db->group_by('shift');
+		$this->db->order_by('shift', 'ASC');
+
+		return $this->db->get()->result();
 	}
 
 	public function get_last_verif_by_date($tanggal, $plant = null)

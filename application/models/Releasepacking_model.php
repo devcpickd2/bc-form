@@ -226,11 +226,39 @@ class Releasepacking_model extends CI_Model {
 		return $data_release_packing; 
 	}
 
-	public function get_data_by_plant()
+	public function get_data_by_plant($limit, $start)
 	{
-		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('release_packing', ['plant' => $plant])->result();
+
+		$this->db->select('
+			uuid,
+			date,
+			nama_produk,
+			kode_produksi,
+			best_before,
+			jumlah,
+			status_spv
+			');
+
+		$this->db->from('release_packing');
+		$this->db->where('plant', $plant);
+		$this->db->order_by('created_at', 'DESC');
+		$this->db->limit($limit, $start);
+
+		return $this->db->get()->result();
+	}
+
+	public function get_data_verifikasi()
+	{
+		$plant = $this->session->userdata('plant');
+
+		return $this->db
+		->select('uuid,date,nama_produk,kode_produksi,best_before,jumlah,status_spv,modified_at,tgl_update_spv')
+		->from('release_packing')
+		->where('plant', $plant)
+		->order_by('created_at', 'DESC')
+		->get()
+		->result();
 	}
 
 	public function delete_by_uuid($uuid)
@@ -270,7 +298,7 @@ class Releasepacking_model extends CI_Model {
 
 		if (!empty($plant)) {
 			$this->db->where('plant', $plant); 
-		}
+		} 
 
 		$this->db->order_by('tgl_update_spv', 'DESC');
 		$this->db->limit(1);

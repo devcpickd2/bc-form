@@ -118,7 +118,7 @@
                         <tr>
                             <td colspan="3"><b>COA</b></td>
                             <td colspan="2"><?= icon_check($pemeriksaanchemical->coa=='ada'?'sesuai':'tidak sesuai', 'sesuai'); ?></td>
-                            <td colspan="2"><?= !empty($pemeriksaanchemical->bukti_coa) ? '<a href="'.base_url('uploads/'.$pemeriksaanchemical->bukti_coa).'" target="_blank">Link COA</a>' : '−'; ?></td>
+                            <td colspan="2"><?= !empty($pemeriksaanchemical->bukti_coa) ? '<a href="'.base_url('uploads/penerimaan_chemical/'.$pemeriksaanchemical->bukti_coa).'" target="_blank">Link COA</a>' : '−'; ?></td>
                         </tr>
                         <tr>
                             <td colspan="3"><b>Keterangan</b></td>

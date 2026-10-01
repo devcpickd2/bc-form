@@ -26,10 +26,11 @@ class Kebersihanperalatan extends MY_Controller {
 			'kebersihanperalatan' => $this->kebersihanperalatan_model->get_data_by_plant()
 		);
 
-		$this->active_nav = 'kebersihanperalatan'; 
+		$this->active_nav = 'kebersihanperalatan';
+
 		$this->render('form/kebersihanperalatan/kebersihanperalatan', $data);
 	}
-
+	
 	public function detail($uuid)
 	{
 		$data = array(

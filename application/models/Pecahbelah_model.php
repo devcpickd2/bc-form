@@ -276,6 +276,12 @@ class Pecahbelah_model extends CI_Model {
 	{
 		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user == 9 || $type_user == 1) {
+			return $this->db->get('benda_pecah')->result();
+		}
+
 		return $this->db->get_where('benda_pecah', ['plant' => $plant])->result();
 	}
 
@@ -283,5 +289,50 @@ class Pecahbelah_model extends CI_Model {
 	{
 		$this->db->where('uuid', $uuid);
 		return $this->db->delete('benda_pecah');
+	}
+
+	public function get_by_date($tanggal, $plant = null, $shift = null)
+	{
+		if (empty($tanggal)) {
+			return [];
+		}
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant);
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('created_at', 'ASC');
+
+		return $this->db->get('benda_pecah')->result();
+	}
+
+	public function get_by_date_verif($tanggal, $plant = null, $shift = null)
+	{
+		if (empty($tanggal)) {
+			return null;
+		}
+
+		$this->db->select('nama_spv, tgl_update_spv, username, date, qc_update, shift, created_at, modified_at, nama_produksi, status_produksi, tgl_update_produksi');
+
+		$this->db->where('DATE(date)', $tanggal);
+
+		if (!empty($plant)) {
+			$this->db->where('plant', $plant);
+		}
+
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		$this->db->order_by('tgl_update_spv', 'DESC');
+		$this->db->limit(1);
+
+		return $this->db->get('benda_pecah')->row();
 	}
 }

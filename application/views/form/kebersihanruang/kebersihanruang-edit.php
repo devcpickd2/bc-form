@@ -101,6 +101,7 @@
                     $kondisi_array = !empty($d['kondisi']) 
                     ? explode(',', $d['kondisi']) 
                             : ['bersih']; // default jika kosong
+                            $isOnlyBersih = count($kondisi_array) === 1 && in_array('bersih', $kondisi_array);
                             ?>
 
                             <div class="form-group row mt-3">
@@ -112,7 +113,7 @@
                                     value="<?= $d['bagian'] ?>" readonly>
                                 </div>
 
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label class="font-weight-bold d-block">Kondisi</label>
 
                                     <?php 
@@ -139,12 +140,34 @@
                                     value="<?= $d['problem'] ?>">
                                 </div>
 
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <label class="font-weight-bold">Tindakan</label>
                                     <input type="text" name="tindakan[]" 
                                     class="form-control"
                                     value="<?= $d['tindakan'] ?>">
                                 </div>
+
+                                <div class="col-sm-2 verifikasi-ulang"
+								data-index="<?= $index ?>"
+								style="<?= $isOnlyBersih ? 'display:none;' : '' ?>">
+
+								<label class="font-weight-bold d-block">Verifikasi Ulang</label>
+
+								<div class="form-check form-check-inline">
+									<input type="radio" name="verifikasi[<?= $index ?>]" value="bersih"
+										class="form-check-input"
+										<?= ($d['verifikasi'] ?? '') == 'bersih' ? 'checked' : '' ?>>
+									<label class="form-check-label">Bersih</label>
+								</div>
+
+								<div class="form-check form-check-inline">
+									<input type="radio" name="verifikasi[<?= $index ?>]" value="kotor"
+										class="form-check-input"
+										<?= ($d['verifikasi'] ?? '') == 'kotor' ? 'checked' : '' ?>>
+									<label class="form-check-label">Kotor</label>
+								</div>
+
+							</div>
 
                             </div>
 
@@ -173,6 +196,11 @@
     .breadcrumb{
         background-color:#2E86C1;
     }
+
+    .form-check-input[type="radio"] {
+		border-radius: 2px !important;
+		/* bikin kotak */
+	}
 </style>
 
 <script>
@@ -208,11 +236,32 @@
                             bersih.prop('checked',true); 
                         }
                     }
+                    toggleVerifikasi();
                 });
             });
         }
 
         initCheckboxLogic();
+        toggleVerifikasi();
 
     });
+
+    function toggleVerifikasi() {
+		$('[class^="kondisi-group-"]').each(function() {
+
+			let className = $(this).attr('class').split(' ')[1];
+			let group = $('.' + className);
+			let index = className.split('-')[2];
+			let container = $('.verifikasi-ulang[data-index="' + index + '"]');
+
+			let selainBersihChecked = group.not('[value="bersih"]:checked').length > 0;
+
+			if (selainBersihChecked) {
+				container.show();
+			} else {
+				container.hide();
+				container.find('input').prop('checked', false);
+			}
+		});
+	}
 </script>

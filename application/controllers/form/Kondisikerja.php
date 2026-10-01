@@ -21,11 +21,37 @@ class Kondisikerja extends MY_Controller {
 
 	public function index()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user != 9 && $type_user != 1) {
+			$this->db->where('plant', $plant);
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('kondisi_kerja');
+
+		$config['base_url'] = base_url('kondisikerja/index');
+		$config['per_page'] = 50;
+		$config['uri_segment'] = 3;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'kondisikerja' => $this->kondisikerja_model->get_data_by_plant()
+			'kondisikerja' => $this->kondisikerja_model->get_data_by_plant(
+				$config['per_page'],
+				$start,
+				$plant,
+				$type_user
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
-		$this->active_nav = 'kondisikerja'; 
+		$this->active_nav = 'kondisikerja';
 		$this->render('form/kondisikerja/kondisikerja', $data);
 	}
 
@@ -105,8 +131,34 @@ class Kondisikerja extends MY_Controller {
 	
 	public function verifikasi()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user != 9 && $type_user != 1) {
+			$this->db->where('plant', $plant);
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('kondisi_kerja');
+
+		$config['base_url'] = base_url('kondisikerja/index');
+		$config['per_page'] = 50;
+		$config['uri_segment'] = 3;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'kondisikerja' => $this->kondisikerja_model->get_data_by_plant()
+			'kondisikerja' => $this->kondisikerja_model->get_data_by_plant(
+				$config['per_page'],
+				$start,
+				$plant,
+				$type_user
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
 		$this->active_nav = 'verifikasi-kondisikerja'; 
@@ -157,7 +209,7 @@ class Kondisikerja extends MY_Controller {
 	// 	$this->form_validation->set_rules($rules);
 
 	// 	if ($this->form_validation->run() == TRUE) {
-			
+
 	// 		$update = $this->kondisikerja_model->diketahui_update($uuid);
 	// 		if ($update) {
 	// 			$this->session->set_flashdata('success_msg', 'Status Kondisi Kerja Selama Produksi berhasil di Update');

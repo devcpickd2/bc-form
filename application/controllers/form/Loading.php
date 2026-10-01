@@ -271,70 +271,104 @@ class Loading extends MY_Controller {
 		$pdf->Ln(2);
 
 		foreach ($loading_data as $loading) {
-			$pdf->SetFont('times', '', 8);
-			$kondisi_mobil_array = json_decode($loading->kondisi_mobil);
 
-			if ($kondisi_mobil_array && is_array($kondisi_mobil_array)) {
+			$pdf->SetFont('times', '', 8);
+
+			$kondisi_mobil_array = json_decode($loading->kondisi_mobil, true);
+
+			if (!empty($kondisi_mobil_array) && is_array($kondisi_mobil_array)) {
+
 				$pdf->Ln(3);
-				$pdf->SetFont('times', 'B', 9);
+
 				$baris_kondisi = [];
 				$baris_nilai = [];
+				$kolom_kondisi_sudah_tampil = false;
 
-				foreach ($kondisi_mobil_array as $item) {
-					$list_kondisi = isset($item->list_kondisi) ? $item->list_kondisi : '-';
-					$kondisi_raw = isset($item->kondisi_mobil_keterangan) ? strtolower(trim($item->kondisi_mobil_keterangan)) : '';
+				foreach ($kondisi_mobil_array as $kondisi => $status) {
 
-					$nilai = '-';
-					if ($kondisi_raw === 'bersih' || $kondisi_raw === 'ok') {
+					$status = strtolower(trim($status));
+
+					if ($status === 'ok' || $status === 'bersih') {
 						$nilai = '✔';
-					} elseif ($kondisi_raw === 'tidak' || $kondisi_raw === 'kotor') {
+					} elseif ($status === 'tidak' || $status === 'kotor') {
 						$nilai = '✘';
-					} elseif (in_array($kondisi_raw, ['1', '2', '3'])) {
-						$nilai = $kondisi_raw;
+					} else {
+						$nilai = $status;
 					}
 
-					$baris_kondisi[] = $list_kondisi;
+					$baris_kondisi[] = ucwords(str_replace('_', ' ', $kondisi));
 					$baris_nilai[] = $nilai;
 
-					if (count($baris_kondisi) === 5) {
+            // Tampilkan setiap 5 kolom
+					if (count($baris_kondisi) == 5) {
+
 						$pdf->SetFont('times', '', 7);
-						$pdf->Cell(28, 8, 'Kondisi Mobil', 1, 0, 'C');
-						foreach ($baris_kondisi as $kondisi) {
-							$pdf->Cell(33, 4, $kondisi, 1, 0, 'C');
+
+						if (!$kolom_kondisi_sudah_tampil) {
+							$pdf->Cell(28, 16, 'Kondisi Mobil', 1, 0, 'C');
+							$kolom_kondisi_sudah_tampil = true;
+						} else {
+							$pdf->Cell(28, 4, '', 0, 0, 'C');
 						}
+
+						foreach ($baris_kondisi as $item) {
+							$pdf->Cell(33, 4, $item, 1, 0, 'C');
+						}
+
 						$pdf->Ln();
+
 						$pdf->SetFont('dejavusans', '', 7);
 						$pdf->Cell(28, 4, '', 0, 0, 'C');
+
 						foreach ($baris_nilai as $nilai) {
 							$pdf->Cell(33, 4, $nilai, 1, 0, 'C');
 						}
+
 						$pdf->Ln();
+
 						$baris_kondisi = [];
 						$baris_nilai = [];
 					}
 				}
 
-				if (count($baris_kondisi) > 0) {
+        // Sisa data yang kurang dari 5 kolom
+				if (!empty($baris_kondisi)) {
+
 					$pdf->SetFont('times', '', 7);
-					$pdf->Cell(28, 8, '', 1, 0, 'C');
-					foreach ($baris_kondisi as $kondisi) {
-						$pdf->Cell(33, 4, $kondisi, 1, 0, 'C');
+
+					if (!$kolom_kondisi_sudah_tampil) {
+						$pdf->Cell(28, 12, 'Kondisi Mobil', 1, 0, 'C');
+						$kolom_kondisi_sudah_tampil = true;
+					} else {
+						$pdf->Cell(28, 4, '', 0, 0, 'C');
 					}
+
+					foreach ($baris_kondisi as $item) {
+						$pdf->Cell(33, 4, $item, 1, 0, 'C');
+					}
+
 					for ($i = count($baris_kondisi); $i < 5; $i++) {
-						$pdf->Cell(30, 4, '', 1, 0, 'C');
+						$pdf->Cell(33, 4, '', 1, 0, 'C');
 					}
+
 					$pdf->Ln();
+
 					$pdf->SetFont('dejavusans', '', 7);
-					$pdf->Cell(28, 5, '', 0, 0, 'C');
+					$pdf->Cell(28, 4, '', 0, 0, 'C');
+
 					foreach ($baris_nilai as $nilai) {
 						$pdf->Cell(33, 4, $nilai, 1, 0, 'C');
 					}
+
 					for ($i = count($baris_nilai); $i < 5; $i++) {
-						$pdf->Cell(30, 4, '', 1, 0, 'C');
+						$pdf->Cell(33, 4, '', 1, 0, 'C');
 					}
+
 					$pdf->Ln();
 				}
+
 			} else {
+
 				$pdf->Cell(0, 6, 'Data kondisi mobil tidak tersedia.', 0, 1, 'L');
 			}
 		}
@@ -372,21 +406,32 @@ class Loading extends MY_Controller {
 					$expired = isset($loading->expired) ? $loading->expired : '-';
 					$keterangan = isset($loading->keterangan) ? $loading->keterangan : '-';
 
-					$pdf->SetFont('times', '', 8);
-					$pdf->Cell(7, 5, $no, 1, 0, 'C');
-					$pdf->Cell(43, 5, "$nama_produk", 1, 0, 'L');
-					$pdf->Cell(20, 5, "$kondisi_produk", 1, 0, 'C');
-					$pdf->Cell(20, 5, "$kondisi_kemasan", 1, 0, 'C');
-					$pdf->Cell(40, 5, "$kode_produksi", 1, 0, 'C');
-					$pdf->Cell(40, 5, "$expired", 1, 0, 'C');
-					$pdf->Cell(23, 5, "$keterangan", 1, 1, 'C');
+                                        $pdf->SetFont('times', '', 8);
+
+					$h1 = $pdf->getStringHeight(43, $nama_produk);
+					$h2 = $pdf->getStringHeight(40, $kode_produksi);
+					$h3 = $pdf->getStringHeight(23, $keterangan);
+
+					$tinggi = max($h1, $h2, $h3, 5);
+
+					$x = $pdf->GetX();
+					$y = $pdf->GetY();
+
+					$pdf->MultiCell(7, $tinggi, $no, 1, 'C', 0, 0, '', '', true);
+					$pdf->MultiCell(43, $tinggi, $nama_produk, 1, 'L', 0, 0, '', '', true);
+					$pdf->MultiCell(20, $tinggi, $kondisi_produk, 1, 'C', 0, 0, '', '', true);
+					$pdf->MultiCell(20, $tinggi, $kondisi_kemasan, 1, 'C', 0, 0, '', '', true);
+					$pdf->MultiCell(40, $tinggi, $kode_produksi, 1, 'C', 0, 0, '', '', true);
+					$pdf->MultiCell(40, $tinggi, $expired, 1, 'C', 0, 0, '', '', true);
+					$pdf->MultiCell(23, $tinggi, $keterangan, 1, 'C', 0, 1, '', '', true);
+
 					$no++;
 				}
 			}
 		}
 
 		$pdf->SetFont('times', 'I', 7);
-		$pdf->Cell(190, 5, 'QW 05/00', 0, 1, 'R'); 
+		$pdf->Cell(193, 5, 'QW 07/02', 0, 1, 'R'); 
 
 		$y_last = $pdf->GetY();
 		$y_last += 1; 

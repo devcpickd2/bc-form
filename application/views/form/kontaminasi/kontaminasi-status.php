@@ -64,7 +64,7 @@
                             <td>Bukti Temuan</td>
                             <td>
                                 <?php if (!empty($kontaminasi->bukti)): ?>
-                                    <img src="<?= base_url('uploads/' . $kontaminasi->bukti); ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
+                                    <img src="<?= base_url('uploads/kontaminasi/' . $kontaminasi->bukti); ?>" alt="Bukti Temuan" style="max-width: 200px; max-height: 150px;">
                                 <?php else: ?>
                                     <p>Tidak ada gambar</p>
                                 <?php endif; ?>

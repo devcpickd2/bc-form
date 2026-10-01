@@ -60,7 +60,7 @@
                             <button type="submit" class="btn btn-md btn-success mr-2">
                                 <i class="fa fa-save"></i> Simpan
                             </button>
-                            <a href="<?= base_url('kontaminasi')?>" class="btn btn-md btn-danger">
+                            <a href="<?= base_url('kekuatanmagnet')?>" class="btn btn-md btn-danger">
                                 <i class="fa fa-times"></i> Batal
                             </a>
                         </div>

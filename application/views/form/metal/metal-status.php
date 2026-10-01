@@ -45,6 +45,10 @@
                             <td colspan="4"><?= $metal->shift; ?></td>
                         </tr>
                         <tr>
+                            <td>Pukul</td>
+                            <td colspan="4"><?= $timing; ?></td>
+                        </tr>
+                        <tr>
                             <td>Jenis Produk</td>
                             <td colspan="4"><?= $metal->nama_produk; ?></td>
                         </tr>
@@ -64,30 +68,26 @@
                         </tr>
                         <tr class="table-primary text-center">
                             <td><b>STD. Spesimen</b></td>
-                            <td><b>Pukul</b></td>
+                            <td class="text-center"><b>Depan</b></td>
+                            <td class="text-center"><b>Tengah</b></td>
+                            <td class="text-center"><b>Belakang</b></td>
+                        </tr>
+                        <tr>
                             <td><b>Fe <?= $metal->std_fe; ?></b></td>
-                            <td><b>Non Fe <?= $metal->std_nonfe; ?></b></td>
-                            <td><b>SUS 304 <?= $metal->std_sus304; ?></b></td>
-                        </tr>
-                        <tr>
-                            <td>Deteksi Pertama</td>
-                            <td><?= $timing; ?></td>
                             <td class="text-center"><?= tampilkanIkon($metal->fe_d); ?></td>
-                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_d); ?></td>
-                            <td class="text-center"><?= tampilkanIkon($metal->sus_d); ?></td>
-                        </tr>
-                        <tr>
-                            <td>Deteksi Kedua</td>
-                            <td><?= $timing2; ?></td>
                             <td class="text-center"><?= tampilkanIkon($metal->fe_t); ?></td>
-                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_t); ?></td>
-                            <td class="text-center"><?= tampilkanIkon($metal->sus_t); ?></td>
+                            <td class="text-center"><?= tampilkanIkon($metal->fe_b); ?></td>
                         </tr>
                         <tr>
-                            <td>Deteksi Terakhir</td>
-                            <td><?= $timing3; ?></td>
-                            <td class="text-center"><?= tampilkanIkon($metal->fe_b); ?></td>
+                            <td><b>Non Fe <?= $metal->std_nonfe; ?></b></td>
+                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_d); ?></td>
+                            <td class="text-center"><?= tampilkanIkon($metal->nonfe_t); ?></td>
                             <td class="text-center"><?= tampilkanIkon($metal->nonfe_b); ?></td>
+                        </tr>
+                        <tr>
+                            <td><b>SUS 304 <?= $metal->std_sus304; ?></b></td>
+                            <td class="text-center"><?= tampilkanIkon($metal->sus_d); ?></td>
+                            <td class="text-center"><?= tampilkanIkon($metal->sus_t); ?></td>
                             <td class="text-center"><?= tampilkanIkon($metal->sus_b); ?></td>
                         </tr>
                         <tr>

@@ -54,6 +54,9 @@ $route['login'] = 'auth/login';
 $route['home'] = 'home';
 $route['profil'] = 'profil/index';
 
+//sso
+$route['sso/login'] = 'sso/login';
+
 // $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
@@ -107,6 +110,8 @@ $route['produksi/stalling/(:any)'] = 'form/produksi/stalling/$1';
 $route['produksi/grinding/(:any)'] = 'form/produksi/grinding/$1';
 $route['produksi/drying/(:any)'] = 'form/produksi/drying/$1';
 $route['produksi/packing/(:any)'] = 'form/produksi/packing/$1';
+$route['produksi/halus/(:any)'] = 'form/produksi/halus/$1';
+$route['produksi/cetak_halus'] = 'form/produksi/cetak_halus';
 $route['produksi/verifikasi'] = 'form/produksi/verifikasi';
 $route['produksi/status/(:any)'] = 'form/produksi/status/$1';
 $route['produksi/diketahui'] = 'form/produksi/diketahui';
@@ -576,3 +581,12 @@ $route['gosong/delete/(:any)'] = 'form/gosong/delete/$1';
 $route['gosong/export-excel'] = 'form/gosong/export_excel';
 $route['gosong/logs'] = 'form/gosong_logs/index';
 $route['gosong/export_excel'] = 'form/gosong/export_excel';
+
+// akses plant
+$route['akses-plant'] = 'akses_plant/index';
+$route['akses-plant/save'] = 'akses_plant/save';
+
+	// traceability
+$route['traceability'] = 'traceability/index';
+$route['traceability/search'] = 'traceability/search';
+$route['traceability/form-details'] = 'traceability/form_details';

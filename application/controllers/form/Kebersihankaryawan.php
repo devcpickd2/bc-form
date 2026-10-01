@@ -21,11 +21,37 @@ class Kebersihankaryawan extends MY_Controller {
 
 	public function index()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user != 9 && $type_user != 1) {
+			$this->db->where('plant', $plant);
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('kebersihan_karyawan');
+
+		$config['base_url'] = base_url('kebersihankaryawan/index');
+		$config['per_page'] = 100;
+		$config['uri_segment'] = 3;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'kebersihankaryawan' => $this->kebersihankaryawan_model->get_data_by_plant(),
+			'kebersihankaryawan' => $this->kebersihankaryawan_model->get_data_by_plant(
+				$config['per_page'],
+				$start,
+				$plant,
+				$type_user
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
 
-		$this->active_nav = 'kebersihankaryawan'; 
+		$this->active_nav = 'kebersihankaryawan';
 		$this->render('form/kebersihankaryawan/kebersihankaryawan', $data);
 	}
 
@@ -142,9 +168,36 @@ class Kebersihankaryawan extends MY_Controller {
 	
 	public function verifikasi()
 	{
+		$this->load->library('pagination');
+
+		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user != 9 && $type_user != 1) {
+			$this->db->where('plant', $plant);
+		}
+
+		$config['total_rows'] = $this->db->count_all_results('kebersihan_karyawan');
+
+		$config['base_url'] = base_url('kebersihankaryawan/index');
+		$config['per_page'] = 100;
+		$config['uri_segment'] = 3;
+
+		$this->pagination->initialize($config);
+
+		$start = $this->uri->segment(3) ?? 0;
+
 		$data = array(
-			'kebersihankaryawan' => $this->kebersihankaryawan_model->get_data_by_plant(),
+			'kebersihankaryawan' => $this->kebersihankaryawan_model->get_data_by_plant(
+				$config['per_page'],
+				$start,
+				$plant,
+				$type_user
+			),
+			'pagination' => $this->pagination->create_links(),
+			'start' => $start
 		);
+		
 		$this->active_nav = 'verifikasi-kebersihankaryawan'; 
 		$this->render('form/kebersihankaryawan/kebersihankaryawan-verifikasi', $data);
 	}
@@ -193,7 +246,7 @@ class Kebersihankaryawan extends MY_Controller {
 	// 	$this->form_validation->set_rules($rules);
 
 	// 	if ($this->form_validation->run() == TRUE) {
-			
+
 	// 		$update = $this->kebersihankaryawan_model->diketahui_update($uuid);
 	// 		if ($update) {
 	// 			$this->session->set_flashdata('success_msg', 'Status Kebersihan Karyawan berhasil di Update');

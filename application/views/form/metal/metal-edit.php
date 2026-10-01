@@ -91,8 +91,8 @@
                 <input type="hidden" name="std_fe" value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '2.5 mm' : '1.5 mm' ?>">
               </td>
               <td>
-                <input type="text" readonly class="form-control text-center" value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '3.0 mm' : '2.0 mm' ?>">
-                <input type="hidden" name="std_nonfe" value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '3.0 mm' : '2.0 mm' ?>">
+                <input type="text" readonly class="form-control text-center" value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '2.5 mm' : '2.0 mm' ?>">
+                <input type="hidden" name="std_nonfe" value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '2.5 mm' : '2.0 mm' ?>">
               </td>
               <td>
                 <input type="text" readonly class="form-control text-center" value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '3.0 mm' : '2.5 mm' ?>">

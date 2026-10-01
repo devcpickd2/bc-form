@@ -79,7 +79,7 @@ class Reagen extends MY_Controller {
 
 		$data = array(
 			'last_no_lot' => $last_lot->no_lot ?? '',
-			'last_volume' => $last_volume->volume_akhir ?? 0
+			'last_volume' => 22
 		);
 
 		$this->active_nav = 'reagen';

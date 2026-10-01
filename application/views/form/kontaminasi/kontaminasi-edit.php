@@ -71,7 +71,7 @@
                             <br>
                             <input type="file" name="bukti" id="bukti" class="form-control no-border <?= form_error('bukti') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf" capture="camera">
                             <?php if (!empty($kontaminasi->bukti)): ?>
-                                <a href="<?= base_url('uploads/' . $kontaminasi->bukti); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
+                                <a href="<?= base_url('uploads/kontaminasi/' . $kontaminasi->bukti); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
                                 <br>
                             <?php endif; ?>
                             <br>

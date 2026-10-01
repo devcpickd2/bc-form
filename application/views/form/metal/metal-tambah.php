@@ -20,8 +20,7 @@
       $tanggal_sess  = $produksi_data['tanggal'] ?? date('Y-m-d');
       $shift_sess    = $produksi_data['shift'] ?? '';
       $plant_uuid    = $this->session->userdata('plant');
-
-      $last_metal = $last_metal ?? null;
+      $last_metal    = $last_metal ?? null;
 
       $plant_map = [
         '651ac623-5e48-44cc-b2f6-5d622603f53c' => 'Cikande 2 Bread Crumb',
@@ -29,6 +28,16 @@
       ];
 
       $plant_name = $plant_map[$plant_uuid] ?? 'unknown';
+
+      // =========================
+      // AUTO FILL KHUSUS SALATIGA
+      // =========================
+      $salatiga_uuid = '1eb341e0-1ec4-4484-ba8f-32d23352b84d';
+      $is_salatiga   = ($plant_uuid === $salatiga_uuid);
+
+      $nama_produk_auto   = $is_salatiga ? ($last_metal->nama_produk ?? '') : '';
+      $kode_produksi_auto = $is_salatiga ? ($last_metal->kode_produksi ?? '') : '';
+      $no_program_auto    = $is_salatiga ? ($last_metal->no_program ?? '') : '';
       ?>
 
       <form method="post" action="<?= base_url('metal/tambah'); ?>">
@@ -41,9 +50,9 @@
               <td><strong>Tanggal</strong></td>
               <td colspan="3">
                 <input type="date" 
-                       name="date_metal"
-                       class="form-control <?= form_error('date_metal') ? 'is-invalid' : '' ?>"
-                       value="<?= set_value('date_metal', $tanggal_sess) ?>">
+                  name="date_metal"
+                  class="form-control <?= form_error('date_metal') ? 'is-invalid' : '' ?>"
+                  value="<?= set_value('date_metal', $tanggal_sess) ?>">
                 <div class="invalid-feedback"><?= form_error('date_metal') ?></div>
               </td>
             </tr>
@@ -64,9 +73,9 @@
               <td><strong>Pukul</strong></td>
               <td>
                 <input type="time"
-                       name="time"
-                       class="form-control <?= form_error('time') ? 'is-invalid' : '' ?>"
-                       value="<?= set_value('time', date('H:i')) ?>">
+                  name="time"
+                  class="form-control <?= form_error('time') ? 'is-invalid' : '' ?>"
+                  value="<?= set_value('time', date('H:i')) ?>">
                 <div class="invalid-feedback"><?= form_error('time') ?></div>
               </td>
             </tr>
@@ -76,18 +85,18 @@
               <td><strong>Nama Produk</strong></td>
               <td>
                 <input type="text"
-                       name="nama_produk"
-                       class="form-control <?= form_error('nama_produk') ? 'is-invalid' : '' ?>"
-                       value="<?= set_value('nama_produk', $last_metal->nama_produk ?? '') ?>">
+                  name="nama_produk"
+                  class="form-control <?= form_error('nama_produk') ? 'is-invalid' : '' ?>"
+                  value="<?= set_value('nama_produk', $nama_produk_auto) ?>">
                 <div class="invalid-feedback"><?= form_error('nama_produk') ?></div>
               </td>
 
               <td><strong>Kode Produksi</strong></td>
               <td>
                 <input type="text"
-                       name="kode_produksi"
-                       class="form-control <?= form_error('kode_produksi') ? 'is-invalid' : '' ?>"
-                       value="<?= set_value('kode_produksi', $last_metal->kode_produksi ?? '') ?>">
+                  name="kode_produksi"
+                  class="form-control <?= form_error('kode_produksi') ? 'is-invalid' : '' ?>"
+                  value="<?= set_value('kode_produksi', $kode_produksi_auto) ?>">
                 <div class="invalid-feedback"><?= form_error('kode_produksi') ?></div>
               </td>
             </tr>
@@ -96,9 +105,9 @@
               <td><strong>No. Program</strong></td>
               <td>
                 <input type="text"
-                       name="no_program"
-                       class="form-control <?= form_error('no_program') ? 'is-invalid' : '' ?>"
-                       value="<?= set_value('no_program', $last_metal->no_program ?? '') ?>">
+                  name="no_program"
+                  class="form-control <?= form_error('no_program') ? 'is-invalid' : '' ?>"
+                  value="<?= set_value('no_program', $no_program_auto) ?>">
                 <div class="invalid-feedback"><?= form_error('no_program') ?></div>
               </td>
 
@@ -124,20 +133,25 @@
             <tr>
               <td><strong>Standar</strong></td>
               <td>
-                <input type="text" readonly class="form-control text-center"
-                       value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '2.5 mm' : '1.5 mm' ?>">
+                <?php $std_fe = ($plant_name == 'Cikande 2 Bread Crumb') ? '2.5 mm' : '1.5 mm'; ?>
+                <input type="text" readonly class="form-control text-center" value="<?= $std_fe ?>">
+                <input type="hidden" name="std_fe" value="<?= $std_fe ?>">
               </td>
+
               <td>
-                <input type="text" readonly class="form-control text-center"
-                       value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '3.0 mm' : '2.0 mm' ?>">
+                <?php $std_nonfe = ($plant_name == 'Cikande 2 Bread Crumb') ? '2.5 mm' : '2.0 mm'; ?>
+                <input type="text" readonly class="form-control text-center" value="<?= $std_nonfe ?>">
+                <input type="hidden" name="std_nonfe" value="<?= $std_nonfe ?>">
               </td>
+
               <td>
-                <input type="text" readonly class="form-control text-center"
-                       value="<?= $plant_name == 'Cikande 2 Bread Crumb' ? '3.0 mm' : '2.5 mm' ?>">
+                <?php $std_sus = ($plant_name == 'Cikande 2 Bread Crumb') ? '3.0 mm' : '2.5 mm'; ?>
+                <input type="text" readonly class="form-control text-center" value="<?= $std_sus ?>">
+                <input type="hidden" name="std_sus304" value="<?= $std_sus ?>">
               </td>
             </tr>
 
-            <!-- DETEKSI -->
+            <!-- DETEKSI (tidak diubah) -->
             <tr class="bg-light text-center">
               <th></th>
               <th>Depan</th>
@@ -159,10 +173,10 @@
                 <?php foreach (["d","t","b"] as $pos): ?>
                   <td class="text-center">
                     <input type="checkbox"
-                           style="width:25px;height:25px;"
-                           name="<?= $key.'_'.$pos ?>"
-                           value="terdeteksi"
-                           <?= set_checkbox($key.'_'.$pos,'terdeteksi') ?>>
+                      style="width:25px;height:25px;"
+                      name="<?= $key.'_'.$pos ?>"
+                      value="terdeteksi"
+                      <?= set_checkbox($key.'_'.$pos,'terdeteksi') ?>>
                   </td>
                 <?php endforeach; ?>
               </tr>
@@ -201,6 +215,6 @@
 </div>
 
 <style>
-.breadcrumb { background-color:#2E86C1; }
-.table td, .table th { vertical-align:middle; }
+  .breadcrumb { background-color:#2E86C1; }
+  .table td, .table th { vertical-align:middle; }
 </style>

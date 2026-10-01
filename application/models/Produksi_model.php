@@ -946,6 +946,216 @@ class Produksi_model extends CI_Model {
 		return ['status' => true];
 	}
 
+	public function rules_halus()
+	{
+		return [
+			[
+				'field' => 'produk_hasil',
+				'label' => 'Product result',
+				'rules' => 'required',
+			],
+			[
+				'field' => 'produk_rasa',
+				'label' => 'Product Taste',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'produk_aroma',
+				'label' => 'Product aroma',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'produk_tekstur',
+				'label' => 'Product Texture',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'produk_warna',
+				'label' => 'Product Color',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'packing_kondisi_kemasan',
+				'label' => 'Packaging condition',
+				'rules' => 'required',
+			],
+			[
+				'field' => 'dry_rotasi',
+				'label' => 'Dry Speed',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'dry_kadar_air',
+				'label' => 'Water Contain',
+				'rules' => 'required'
+			],
+			[
+				'field' => 'gambar_kode_kemasan',
+				'label' => 'Evidence Kode Kemasan',
+				'rules' => 'callback_file_check_kode'
+			],
+			[
+				'field' => 'catatan',
+				'label' => 'Notes'
+			]
+		];
+	}
+
+	public function halus($uuid)
+	{
+		$username = $this->session->userdata('username');
+
+		$old_data = $this->db
+		->get_where('mixing', ['uuid' => $uuid])
+		->row();
+
+		$old_data2 = $old_data;
+
+		$config = [
+			'upload_path'   => './uploads/',
+			'allowed_types' => 'jpg|jpeg|png|pdf',
+			'max_size'      => 2048,
+			'encrypt_name'  => TRUE
+		];
+
+		$this->load->library('upload');
+
+    // ===============================
+    // GAMBAR KODE KEMASAN
+    // ===============================
+		$gambar_kode_kemasan = $old_data->gambar_kode_kemasan;
+
+		if (!empty($_FILES['gambar_kode_kemasan']['name'])) {
+
+			$this->upload->initialize($config);
+
+			if (!$this->upload->do_upload('gambar_kode_kemasan')) {
+
+				return [
+					'status' => false,
+					'error'  => $this->upload->display_errors('', '')
+				];
+			}
+
+			$upload_data = $this->upload->data();
+			$gambar_kode_kemasan = $upload_data['file_name'];
+
+			if (in_array(
+				strtolower($upload_data['file_ext']),
+				['.jpg', '.jpeg', '.png']
+			)) {
+
+				$this->load->library('image_lib');
+
+				$resize_config = [
+					'image_library'  => 'gd2',
+					'source_image'   => './uploads/' . $upload_data['file_name'],
+					'maintain_ratio' => TRUE,
+					'quality'        => '60%',
+					'width'          => 800,
+					'height'         => 800
+				];
+
+				$this->image_lib->initialize($resize_config);
+				$this->image_lib->resize();
+				$this->image_lib->clear();
+			}
+		}
+
+    // ===============================
+    // GAMBAR KONDISI KEMASAN
+    // ===============================
+		$gambar_kondisi_kemasan = $old_data->gambar_kondisi_kemasan;
+
+		if (!empty($_FILES['gambar_kondisi_kemasan']['name'])) {
+
+			$this->upload->initialize($config);
+
+			if (!$this->upload->do_upload('gambar_kondisi_kemasan')) {
+
+				return [
+					'status' => false,
+					'error'  => $this->upload->display_errors('', '')
+				];
+			}
+
+			$upload_data = $this->upload->data();
+			$gambar_kondisi_kemasan = $upload_data['file_name'];
+
+			if (in_array(
+				strtolower($upload_data['file_ext']),
+				['.jpg', '.jpeg', '.png']
+			)) {
+
+				$this->load->library('image_lib');
+
+				$resize_config = [
+					'image_library'  => 'gd2',
+					'source_image'   => './uploads/' . $upload_data['file_name'],
+					'maintain_ratio' => TRUE,
+					'quality'        => '60%',
+					'width'          => 800,
+					'height'         => 800
+				];
+
+				$this->image_lib->initialize($resize_config);
+				$this->image_lib->resize();
+				$this->image_lib->clear();
+			}
+		}
+
+    // ===============================
+    // UPDATE DATA HALUS
+    // ===============================
+		$data = [
+			'username' => $username,
+
+			'produk_hasil' => $this->input->post('produk_hasil'),
+			'produk_rasa' => $this->input->post('produk_rasa'),
+			'produk_aroma' => $this->input->post('produk_aroma'),
+			'produk_tekstur' => $this->input->post('produk_tekstur'),
+			'produk_warna' => $this->input->post('produk_warna'),
+			'packing_kondisi_kemasan' => $this->input->post('packing_kondisi_kemasan'),
+			'dry_rotasi' => $this->input->post('dry_rotasi'),
+			'dry_kadar_air' => $this->input->post('dry_kadar_air'),
+			'catatan' => $this->input->post('catatan'),
+			'gambar_kode_kemasan' => $gambar_kode_kemasan,
+			'gambar_kondisi_kemasan' => $gambar_kondisi_kemasan,
+			'modified_at' => date("Y-m-d H:i:s")
+		];
+
+		$this->db->update(
+			'mixing',
+			$data,
+			['uuid' => $uuid]
+		);
+
+    // ===============================
+    // DATA BARU
+    // ===============================
+		$new_data = $this->db
+		->get_where('mixing', ['uuid' => $uuid])
+		->row_array();
+
+    // ===============================
+    // ACTIVITY LOGGER
+    // ===============================
+		if ($this->db->affected_rows() > 0) {
+
+			$this->activity_logger->log_activity(
+				'update',
+				'mixing_logs',
+				$uuid,
+				$old_data2,
+				$new_data
+			);
+		}
+
+		return [
+			'status' => true
+		];
+	}
+
 	public function rules_verifikasi()
 	{
 		return[
@@ -1196,15 +1406,19 @@ class Produksi_model extends CI_Model {
 		$query = $this->db->get('mixing'); 
 		return $query->row();
 	}
-	public function get_produk_by_tanggal($tanggal)
-	{
-		$this->db->select('nama_produk');
-		$this->db->from('mixing');
-		$this->db->where('date', $tanggal); 
-		$this->db->group_by('nama_produk');
-		return $this->db->get()->result();
-	}
+	
+public function get_produk_by_tanggal($tanggal)
+{
+    $plant = $this->session->userdata('plant');
 
+    $this->db->select('nama_produk');
+    $this->db->from('mixing');
+    $this->db->where('date', $tanggal);
+    $this->db->where('plant', $plant);
+    $this->db->group_by('nama_produk');
+
+    return $this->db->get()->result();
+}
 
 	public function get_data_by_tanggal_produk($tanggal, $produk)
 	{
@@ -1212,6 +1426,109 @@ class Produksi_model extends CI_Model {
 			'date' => $tanggal,
 			'nama_produk' => $produk
 		])->result();
+	}
+
+	public function get_bc_mix()
+	{
+    // Ambil semua kode produksi yang sudah pernah
+    // dipakai oleh produk HALUS
+		$data_terpakai = $this->db
+		->select('kode_produksi')
+		->from('mixing')
+		->where('nama_produk', 'BREADCRUMBS MIX SINTETIS HALUS (CPI)')
+		->get()
+		->result();
+
+		$kode_terpakai = [];
+		foreach ($data_terpakai as $row) {
+			if (empty($row->kode_produksi)) {
+				continue;
+			}
+        // Pecah jika multiple:
+        // BC001,BC002,BC003
+			$kode_list = explode(',', $row->kode_produksi);
+			foreach ($kode_list as $kode) {
+				$kode = trim($kode);
+				if ($kode !== '') {
+					$kode_terpakai[] = $kode;
+				}
+			}
+		}
+    // Hilangkan duplicate
+		$kode_terpakai = array_unique($kode_terpakai);
+    // Ambil kode BC MIX yang tersedia
+		$this->db
+		->select('kode_produksi')
+		->from('mixing')
+		->where('nama_produk', 'BREADCRUMBS MIX SINTETIS (CPI)');
+
+    // Buang SEMUA kode yang sudah pernah dipakai
+		if (!empty($kode_terpakai)) {
+			$this->db->where_not_in(
+				'kode_produksi',
+				$kode_terpakai
+			);
+		}
+
+		return $this->db
+		->group_by('kode_produksi')
+		->order_by('kode_produksi', 'DESC')
+		->get()
+		->result();
+	}
+
+	public function cekDuplikatKodeProduksi($nama_produk, array $kode_list)
+	{
+		$nama_produk = trim($nama_produk);
+		$kode_list   = array_values(array_unique(array_filter(array_map('trim', $kode_list))));
+
+		if ($nama_produk === '' || empty($kode_list)) {
+			return [];
+		}
+
+		$this->db->select('kode_produksi');
+		$this->db->from('mixing');
+		$this->db->where('TRIM(nama_produk)', $nama_produk);
+
+		$this->db->group_start();
+		foreach ($kode_list as $i => $kode) {
+			$condition = "FIND_IN_SET(" . $this->db->escape($kode) . ", kode_produksi) > 0";
+			if ($i === 0) {
+				$this->db->where($condition, null, false);
+			} else {
+				$this->db->or_where($condition, null, false);
+			}
+		}
+		$this->db->group_end();
+
+		$rows = $this->db->get()->result();
+
+    // Cocokkan kode mana saja dari $kode_list yang benar-benar sudah dipakai
+		$duplicates = [];
+		foreach ($rows as $row) {
+			if (empty($row->kode_produksi)) {
+				continue;
+			}
+			$existing_codes = array_map('trim', explode(',', $row->kode_produksi));
+			foreach ($existing_codes as $existing_kode) {
+				if (in_array($existing_kode, $kode_list, true) && !in_array($existing_kode, $duplicates, true)) {
+					$duplicates[] = $existing_kode;
+				}
+			}
+		}
+
+		return $duplicates;
+	}
+
+	public function get_base_by_kode_produksi($kode_produksi)
+	{
+		return $this->db
+		->where('TRIM(nama_produk)', 'BREADCRUMBS MIX SINTETIS (CPI)')
+		->where('TRIM(kode_produksi)', trim($kode_produksi))
+		->order_by('created_at', 'DESC')
+		->limit(1)
+		->get('mixing')
+		->row();
 	}
 
 }

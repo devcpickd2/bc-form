@@ -101,7 +101,7 @@
                     <tr>
                         <td colspan="3"><b>COA</b></td>
                         <td colspan="3"><?= icon_check($penerimaankemasan->coa=='ada'?'sesuai':($penerimaankemasan->coa=='tidak ada'?'tidak sesuai':'')); ?></td>
-                        <td colspan="3"><?= !empty($penerimaankemasan->bukti_coa) ? '<a href="'.base_url('uploads/'.$penerimaankemasan->bukti_coa).'" target="_blank">Link COA</a>' : '−'; ?></td>
+                        <td colspan="3"><?= !empty($penerimaankemasan->bukti_coa) ? '<a href="'.base_url('uploads/penerimaan_kemasan/'.$penerimaankemasan->bukti_coa).'" target="_blank">Link COA</a>' : '−'; ?></td>
                     </tr>
                     <tr>
                         <td colspan="3"><b>Keterangan</b></td>

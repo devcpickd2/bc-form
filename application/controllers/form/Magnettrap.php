@@ -361,48 +361,83 @@ class Magnettrap extends MY_Controller {
 		$pdf->Cell(35, 10, 'Keterangan', 1, 1, 'C');
 
 		foreach ($magnettrap_data as $magnettrap) {
+
 			$formattedTime = date('H:i', strtotime($magnettrap->time));
-			$pdf->Cell(15, 20, $formattedTime, 1, 0, 'C');
-			$pdf->Cell(35, 20, $magnettrap->tahapan, 1, 0, 'L');
-			$pdf->Cell(50, 20, $magnettrap->kontaminasi, 1, 0, 'C');
 
-			$colWidth = 45;
-			$colHeight = 20;
-			$maxWidthImage = 22;  
-			$maxHeightImage = 12; 
+    // Simpan posisi awal baris
+			$startX = $pdf->GetX();
+			$startY = $pdf->GetY();
 
-			$image_path = FCPATH . 'uploads/' . $magnettrap->bukti;
-			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $colWidth, $colHeight);
+			$w1 = 15; 
+			$w2 = 35; 
+			$w3 = 50; 
+			$w4 = 45; 
+			$w5 = 55;
+			$w6 = 50; 
+			$w7 = 35; 
+			$w8 = 35; 
 
-			if (file_exists($image_path)) {
+    // Hitung tinggi yang dibutuhkan teks
+			$hAnalisis   = $pdf->getStringHeight($w5, $magnettrap->analisis);
+			$hTindakan   = $pdf->getStringHeight($w6, $magnettrap->tindakan);
+			$hVerifikasi = $pdf->getStringHeight($w7, $magnettrap->verifikasi);
+			$hKet        = $pdf->getStringHeight($w8, !empty($magnettrap->keterangan) ? $magnettrap->keterangan : '-');
+
+    // Tinggi minimum row
+			$rowHeight = max(20, $hAnalisis, $hTindakan, $hVerifikasi, $hKet);
+
+    // Kolom Pukul
+			$pdf->MultiCell($w1, $rowHeight, $formattedTime, 1, 'C', false, 0);
+
+    // Kolom Tahapan
+			$pdf->MultiCell($w2, $rowHeight, $magnettrap->tahapan, 1, 'L', false, 0);
+
+    // Kolom Jenis Kontaminasi
+			$pdf->MultiCell($w3, $rowHeight, $magnettrap->kontaminasi, 1, 'C', false, 0);
+
+    // Simpan posisi kolom bukti
+			$xBukti = $pdf->GetX();
+			$yBukti = $pdf->GetY();
+
+    // Border kolom bukti
+			$pdf->Rect($xBukti, $yBukti, $w4, $rowHeight);
+
+			$image_path = FCPATH . 'uploads/magnettrap/' . $magnettrap->bukti;
+
+			if (!empty($magnettrap->bukti) && file_exists($image_path)) {
+
+				$maxWidthImage  = 22;
+				$maxHeightImage = min(12, $rowHeight - 2);
+
 				list($width, $height) = getimagesize($image_path);
+
 				$aspectRatio = $width / $height;
-				if ($width > $maxWidthImage || $height > $maxHeightImage) {
-					if ($width > $height) {
-						$newWidth = $maxWidthImage;
-						$newHeight = $newWidth / $aspectRatio;
-					} else {
-						$newHeight = $maxHeightImage;
-						$newWidth = $newHeight * $aspectRatio; 
-					}
+
+				if ($width > $height) {
+					$newWidth = $maxWidthImage;
+					$newHeight = $newWidth / $aspectRatio;
 				} else {
-					$newWidth = $width;
-					$newHeight = $height;
+					$newHeight = $maxHeightImage;
+					$newWidth = $newHeight * $aspectRatio;
 				}
-				$xPos = $pdf->GetX() + ($colWidth - $newWidth) / 2; 
-				$yPos = $pdf->GetY() + ($colHeight - $newHeight) / 2; 
+
+				$xPos = $xBukti + (($w4 - $newWidth) / 2);
+				$yPos = $yBukti + (($rowHeight - $newHeight) / 2);
+
 				$pdf->Image($image_path, $xPos, $yPos, $newWidth, $newHeight);
-				$pdf->SetX($pdf->GetX() + $colWidth);
+
 			} else {
-				$pdf->Cell($colWidth, $colHeight, 'Gambar Tidak Ada', 1, 0, 'C');
-				$pdf->SetX($pdf->GetX() + $colWidth);
+
+				$pdf->SetXY($xBukti, $yBukti);
+				$pdf->MultiCell($w4, $rowHeight, 'Gambar Tidak Ada', 0, 'C', false, 0);
+
 			}
 
-			$pdf->Cell(55, 20, $magnettrap->analisis, 1, 0, 'C');
-			$pdf->Cell(50, 20, $magnettrap->tindakan, 1, 0, 'C');
-			$pdf->Cell(35, 20, $magnettrap->verifikasi, 1, 0, 'C');
-			$pdf->Cell(35, 20, !empty($magnettrap->keterangan) ? $magnettrap->keterangan : '-', 1, 0, 'C');
-			$pdf->Ln();
+			$pdf->SetXY($xBukti + $w4, $yBukti);
+			$pdf->MultiCell($w5, $rowHeight, $magnettrap->analisis, 1, 'C', false, 0);
+			$pdf->MultiCell($w6, $rowHeight, $magnettrap->tindakan, 1, 'C', false, 0);
+			$pdf->MultiCell($w7, $rowHeight, $magnettrap->verifikasi, 1, 'C', false, 0);
+			$pdf->MultiCell($w8, $rowHeight, !empty($magnettrap->keterangan) ? $magnettrap->keterangan : '-', 1, 'C', false, 1);
 		}
 
 		$pdf->SetY($pdf->GetY() + 3); 
@@ -490,132 +525,174 @@ class Magnettrap extends MY_Controller {
 
 	}
 
-	public function export_excel()
-	{
-		$this->load->model('magnettrap_model');
+public function export_excel()
+{
+    $this->load->model('magnettrap_model');
 
-		$bulan = $this->input->post('bulan');
-		if (!$bulan) show_error('Bulan tidak dipilih', 404);
+    $bulan = $this->input->post('bulan');
+    if (!$bulan) show_error('Bulan tidak dipilih', 404);
 
-		[$tahun, $bulanAngka] = explode('-', $bulan);
-		$plant = $this->session->userdata('plant');
+    [$tahun, $bulanAngka] = explode('-', $bulan);
+    $plant = $this->session->userdata('plant');
 
-		$data = $this->magnettrap_model->get_by_month($tahun, $bulanAngka, $plant);
-		if (!$data) show_error('Data kosong', 404);
+    $data = $this->magnettrap_model->get_by_month($tahun, $bulanAngka, $plant);
+    if (!$data) show_error('Data kosong', 404);
 
-		$template = FCPATH.'assets/excel/Pemeriksaan Magnet.xlsx';
-		if (!file_exists($template)) {
-			show_error('Template Excel tidak ditemukan', 404);
-		}
+    $template = FCPATH.'assets/excel/Pemeriksaan Magnet.xlsx';
+    if (!file_exists($template)) {
+        show_error('Template Excel tidak ditemukan', 404);
+    }
 
-		$spreadsheet = IOFactory::load($template);
-		$sheet = $spreadsheet->getActiveSheet();
+    $spreadsheet = IOFactory::load($template);
+    $sheet = $spreadsheet->getActiveSheet();
 
     // ================= JUDUL =================
-		$namaBulan = [
-			'01'=>'JANUARI','02'=>'FEBRUARI','03'=>'MARET','04'=>'APRIL',
-			'05'=>'MEI','06'=>'JUNI','07'=>'JULI','08'=>'AGUSTUS',
-			'09'=>'SEPTEMBER','10'=>'OKTOBER','11'=>'NOVEMBER','12'=>'DESEMBER'
-		];
+    $namaBulan = [
+        '01'=>'JANUARI','02'=>'FEBRUARI','03'=>'MARET','04'=>'APRIL',
+        '05'=>'MEI','06'=>'JUNI','07'=>'JULI','08'=>'AGUSTUS',
+        '09'=>'SEPTEMBER','10'=>'OKTOBER','11'=>'NOVEMBER','12'=>'DESEMBER'
+    ];
 
-		$sheet->setCellValue('A3', "{$namaBulan[$bulanAngka]} {$tahun}");
-		$sheet->getStyle('A3')->getFont()->setBold(true);
+    $sheet->setCellValue('A3', "{$namaBulan[$bulanAngka]} {$tahun}");
 
-    // ================= TAHAPAN UNIQUE =================
-		$tahapanList = [];
-		foreach ($data as $d) {
-			$tahapanList[$d->tahapan] = true;
-		}
-		$tahapanList = array_keys($tahapanList);
+    // ================= TAHAPAN FIX =================
+    $tahapanList = [
+        'Sparator magnet transfer conveyor',
+        'Sparator magnet cooling conveyor',
+        'Kontaminasi logam dari hopper 1',
+        'Kontaminasi logam dari hopper 2',
+    ];
 
-		$rowStart = 6;
-		foreach ($tahapanList as $i => $t) {
-			$sheet->setCellValue('A'.($rowStart + $i), $t);
-		}
+    $rowStart = 6;
 
-    // ================= TANGGAL UNIQUE =================
-		$tanggalList = [];
-		foreach ($data as $d) {
-			$tanggalList[$d->date] = true;
-		}
-		$tanggalList = array_keys($tanggalList);
-		sort($tanggalList);
+    foreach ($tahapanList as $i => $t) {
+        $sheet->setCellValue('A'.($rowStart + $i), $t);
+    }
+
+    // ================= MAPPING =================
+    $tahapanMap = [
+        'sparator magnet transfer conveyor' => 0,
+        'sparator magnet cooling conveyor' => 1,
+        'kontaminasi logam dari hopper 1' => 2,
+        'kontaminasi logam dari hopper 2' => 3,
+    ];
+
+    // ================= TANGGAL =================
+    $tanggalList = [];
+    foreach ($data as $d) {
+        $tanggalList[$d->date] = true;
+    }
+    $tanggalList = array_keys($tanggalList);
+    sort($tanggalList);
 
     // ================= HEADER TANGGAL =================
-    $colIndex = 2; // kolom B
+    $colIndex = 2;
 
     foreach ($tanggalList as $tgl) {
-    	$colStart = Coordinate::stringFromColumnIndex($colIndex);
-    	$colEnd   = Coordinate::stringFromColumnIndex($colIndex + 2);
+        $colStart = Coordinate::stringFromColumnIndex($colIndex);
+        $colEnd   = Coordinate::stringFromColumnIndex($colIndex + 2);
 
-    	$sheet->mergeCells("{$colStart}4:{$colEnd}4");
-    	$sheet->setCellValue("{$colStart}4", date('d', strtotime($tgl)));
-    	$sheet->getStyle("{$colStart}4")->getAlignment()
-    	->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->mergeCells("{$colStart}4:{$colEnd}4");
+        $sheet->setCellValue("{$colStart}4", date('d', strtotime($tgl)));
 
-    	$colIndex += 3;
+        $colIndex += 3;
+    }
+
+    // ================= HEADER SHIFT =================
+    $colIndex = 2;
+
+    foreach ($tanggalList as $tgl) {
+
+        $colA = Coordinate::stringFromColumnIndex($colIndex);
+        $colB = Coordinate::stringFromColumnIndex($colIndex + 1);
+        $colC = Coordinate::stringFromColumnIndex($colIndex + 2);
+
+        $sheet->setCellValue($colA.'5', 'A');
+        $sheet->setCellValue($colB.'5', 'B');
+        $sheet->setCellValue($colC.'5', 'C');
+
+        $colIndex += 3;
     }
 
     // ================= ISI DATA =================
     foreach ($data as $d) {
 
-    	$row = $rowStart + array_search($d->tahapan, $tahapanList);
+        $key = strtolower(trim($d->tahapan));
+        $key = preg_replace('/\s+/', ' ', $key);
 
-    	$tglIndex = array_search($d->date, $tanggalList);
-    	if ($tglIndex === false) continue;
+        // fallback data lama
+        if ($key === 'kontaminasi logam dari hopper') {
+            $key = 'kontaminasi logam dari hopper 1';
+        }
 
-        $shiftAngka = (int) substr($d->shift, 0, 1); // 1–3
+        if (!isset($tahapanMap[$key])) continue;
+
+        $row = $rowStart + $tahapanMap[$key];
+
+        $tglIndex = array_search($d->date, $tanggalList);
+        if ($tglIndex === false) continue;
+
+        $shiftAngka = (int) substr($d->shift, 0, 1);
         $col = 2 + ($tglIndex * 3) + ($shiftAngka - 1);
+
         $colLetter = Coordinate::stringFromColumnIndex($col);
 
         $val = preg_replace('/[^0-9,\.]/', '', $d->keterangan);
         $val = str_replace(',', '.', $val);
-        $val = floatval($val);
 
-        $sheet->setCellValue($colLetter.$row, $val);
+        $sheet->setCellValue($colLetter.$row, (float)$val);
     }
 
-    // ================= POSISI FIX =================
-    $totalRow  = 10;   // TOTAL KOLOM HARUS DI BARIS 10
-    $colTotal  = 'BM'; // TOTAL PER BARIS
-    $colPersen = 'BN'; // TOTAL PERSENTASE
+    // ================= TOTAL HARIAN (MERGE A+B+C) =================
+    $lastRow = $rowStart + count($tahapanList);
 
-    // ================= TOTAL KOLOM (BARIS 10) =================
+    $sheet->setCellValue("A{$lastRow}", "Total Harian");
+
     foreach ($tanggalList as $i => $tgl) {
-    	for ($s = 0; $s < 3; $s++) {
 
-    		$col = 2 + ($i * 3) + $s;
-    		$colL = Coordinate::stringFromColumnIndex($col);
+        $colStartIndex = 2 + ($i * 3);
 
-    		$sheet->setCellValue(
-    			$colL.$totalRow,
-    			"=SUM({$colL}{$rowStart}:{$colL}".($totalRow - 1).")"
-    		);
-    	}
+        $colA = Coordinate::stringFromColumnIndex($colStartIndex);
+        $colB = Coordinate::stringFromColumnIndex($colStartIndex + 1);
+        $colC = Coordinate::stringFromColumnIndex($colStartIndex + 2);
+
+        $sheet->mergeCells("{$colA}{$lastRow}:{$colC}{$lastRow}");
+
+        $sheet->setCellValue(
+            $colA.$lastRow,
+            "=SUM({$colA}{$rowStart}:{$colA}".($lastRow - 1).")"
+            ."+SUM({$colB}{$rowStart}:{$colB}".($lastRow - 1).")"
+            ."+SUM({$colC}{$rowStart}:{$colC}".($lastRow - 1).")"
+        );
+
+        $sheet->getStyle("{$colA}{$lastRow}")
+            ->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     }
 
-    // ================= TOTAL PER BARIS & PERSENTASE =================
+    // ================= TOTAL PER BARIS =================
     $lastDataCol = Coordinate::stringFromColumnIndex(1 + count($tanggalList) * 3);
 
+    $colTotal  = 'BM';
+    $colPersen = 'BN';
+
     for ($i = 0; $i < count($tahapanList); $i++) {
-    	$r = $rowStart + $i;
 
-    // TOTAL PER BARIS → BM
-    	$sheet->setCellValue(
-    		"BM{$r}",
-    		"=SUM(B{$r}:{$lastDataCol}{$r})"
-    	);
+        $r = $rowStart + $i;
 
-    // PERSENTASE → BN (1.14 / 100 = 0.0114)
-    	$sheet->setCellValue(
-    		"BN{$r}",
-    		"=BM{$r}/100"
-    	);
+        $sheet->setCellValue(
+            "{$colTotal}{$r}",
+            "=SUM(B{$r}:{$lastDataCol}{$r})"
+        );
 
-    // FORMAT NUMBER BIASA (BUKAN %)
-    	$sheet->getStyle("BN{$r}")
-    	->getNumberFormat()
-    	->setFormatCode('0.0000');
+        $sheet->setCellValue(
+            "{$colPersen}{$r}",
+            "={$colTotal}{$r}/100"
+        );
+
+        $sheet->getStyle("{$colPersen}{$r}")
+            ->getNumberFormat()
+            ->setFormatCode('0.0000');
     }
 
     // ================= OUTPUT =================

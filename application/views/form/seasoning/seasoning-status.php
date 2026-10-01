@@ -100,7 +100,7 @@
                         <tr><td><b>Bukti COA</b></td>
                             <td colspan="6">
                                 <?php if (!empty($seasoning->bukti_coa)): ?>
-                                    <a href="<?= base_url('uploads/' . $seasoning->bukti_coa); ?>" target="_blank">Link COA</a>
+                                    <a href="<?= base_url('uploads/seasoning/' . $seasoning->bukti_coa); ?>" target="_blank">Link COA</a>
                                 <?php else: ?>
                                     <span class="text-muted">Tidak ada file</span>
                                 <?php endif; ?>
@@ -141,7 +141,7 @@
                         <button type="submit" class="btn btn-success mr-2">
                             <i class="fa fa-save"></i> Simpan
                         </button>
-                        <a href="<?= base_url('seasoning-verifikasi'); ?>" class="btn btn-danger">
+                        <a href="<?= base_url('seasoning/verifikasi'); ?>" class="btn btn-danger">
                             <i class="fa fa-times"></i> Batal
                         </a>
                     </div>

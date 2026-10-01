@@ -15,7 +15,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post" action="<?= base_url('kebersihanruang/tambah');?>">
+            <form method="post" action="<?= base_url('kebersihanruang/tambah');?>" enctype="multipart/form-data">
                 <div style="display: flex; gap: 20px;">
                     <table border="1" cellpadding="5" cellspacing="0" 
                     style="border-collapse: collapse; width: 35%; font-size: 12px;">
@@ -203,6 +203,20 @@
 
                         </div>`;
                     });
+
+                    html += `
+                        <hr>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label class="font-weight-bold">Foto 1 (Opsional boleh kosong)</label>
+                                <input type="file" name="foto1" class="form-control" accept="image/*" capture="environment">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="font-weight-bold">Foto 2 (Opsional boleh kosong)</label>
+                                <input type="file" name="foto2" class="form-control" accept="image/*" capture="environment">
+                            </div>
+                        </div>
+                        `;
 
                     $('#dynamicFormArea').html(html);
 

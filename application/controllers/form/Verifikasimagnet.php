@@ -233,20 +233,59 @@ class Verifikasimagnet extends MY_Controller {
 
 		foreach ($verifikasimagnet_data as $verifikasimagnet) {
 			setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
+
 			$tanggal = $verifikasimagnet->date;
 			$date = new DateTime($tanggal);
 			$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
+
+			$keterangan = !empty($verifikasimagnet->keterangan)
+			? $verifikasimagnet->keterangan
+			: '-';
+
 			$pdf->SetFont('times', '', 8);
-			
-			$pdf->Cell(32, 6, $formatted_date, 1, 0, 'C');
-			$pdf->Cell(10, 6, $verifikasimagnet->shift, 1, 0, 'C');
-			$pdf->Cell(30, 6, $verifikasimagnet->nama_produk, 1, 0, 'C');
-			$pdf->Cell(35, 6, $verifikasimagnet->kode_produksi, 1, 0, 'C');
-			$pdf->Cell(15, 6, $verifikasimagnet->jumlah_temuan, 1, 0, 'C');
-			$pdf->Cell(38, 6, !empty($verifikasimagnet->keterangan) ? $verifikasimagnet->keterangan : '-', 1, 0, 'C');
-			$pdf->Cell(18, 6, $verifikasimagnet->username, 1, 0, 'C');
-			$pdf->Cell(18, 6, $verifikasimagnet->nama_produksi, 1, 0, 'C');
-			$pdf->Ln();
+
+    // Posisi awal
+			$x = $pdf->GetX();
+			$y = $pdf->GetY();
+
+    // Hitung tinggi masing-masing kolom
+			$h1 = $pdf->getStringHeight(32, $formatted_date);
+			$h2 = $pdf->getStringHeight(10, $verifikasimagnet->shift);
+			$h3 = $pdf->getStringHeight(30, $verifikasimagnet->nama_produk);
+			$h4 = $pdf->getStringHeight(35, $verifikasimagnet->kode_produksi);
+			$h5 = $pdf->getStringHeight(15, $verifikasimagnet->jumlah_temuan);
+			$h6 = $pdf->getStringHeight(38, $keterangan);
+			$h7 = $pdf->getStringHeight(18, $verifikasimagnet->username);
+			$h8 = $pdf->getStringHeight(18, $verifikasimagnet->nama_produksi);
+
+    // Tinggi baris mengikuti konten tertinggi
+			$rowHeight = max($h1, $h2, $h3, $h4, $h5, $h6, $h7, $h8);
+
+			$pdf->MultiCell(32, $rowHeight, $formatted_date, 1, 'C', false, 0, $x, $y);
+
+			$x += 32;
+			$pdf->MultiCell(10, $rowHeight, $verifikasimagnet->shift, 1, 'C', false, 0, $x, $y);
+
+			$x += 10;
+			$pdf->MultiCell(30, $rowHeight, $verifikasimagnet->nama_produk, 1, 'C', false, 0, $x, $y);
+
+			$x += 30;
+			$pdf->MultiCell(35, $rowHeight, $verifikasimagnet->kode_produksi, 1, 'C', false, 0, $x, $y);
+
+			$x += 35;
+			$pdf->MultiCell(15, $rowHeight, $verifikasimagnet->jumlah_temuan, 1, 'C', false, 0, $x, $y);
+
+			$x += 15;
+			$pdf->MultiCell(38, $rowHeight, $keterangan, 1, 'C', false, 0, $x, $y);
+
+			$x += 38;
+			$pdf->MultiCell(18, $rowHeight, $verifikasimagnet->username, 1, 'C', false, 0, $x, $y);
+
+			$x += 18;
+			$pdf->MultiCell(18, $rowHeight, $verifikasimagnet->nama_produksi, 1, 'C', false, 1, $x, $y);
+
+    // Pindah ke baris berikutnya
+			$pdf->SetY($y + $rowHeight);
 		}
 
 		$pdf->SetFont('times', 'I', 7);

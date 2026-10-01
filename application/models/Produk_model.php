@@ -62,6 +62,12 @@ class Produk_model extends CI_Model
 	{
 		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
+
+		if ($type_user == 9) {
+			return $this->db->get('produk')->result();
+		}
+
 		return $this->db->get_where('produk', ['plant' => $plant])->result();
 	}
 

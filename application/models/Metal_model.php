@@ -118,7 +118,7 @@ class Metal_model extends CI_Model {
 		$nama_produk = $this->input->post('nama_produk');
 		$kode_produksi = $this->input->post('kode_produksi');
 		$no_program = $this->input->post('no_program');
-		$deteksi_ng = $this->input->post('deteksi_ng');
+ 		$deteksi_ng = $this->input->post('deteksi_ng');
 		$std_fe = $this->input->post('std_fe');
 		$std_nonfe = $this->input->post('std_nonfe');
 		$std_sus304 = $this->input->post('std_sus304');
@@ -508,11 +508,41 @@ class Metal_model extends CI_Model {
 		return $data_metal; 
 	}
 
-	public function get_data_by_plant()
+	public function get_data_by_plant($limit, $start)
 	{
-		$this->db->order_by('created_at', 'DESC');
 		$plant = $this->session->userdata('plant');
-		return $this->db->get_where('metal', ['plant' => $plant])->result();
+		$type_user = $this->session->userdata('tipe_user');
+
+		$this->db->select('
+			uuid,
+			date_metal,
+			time,
+			nama_produk,
+			kode_produksi,
+			fe_d,
+			nonfe_d,
+			sus_d,
+			fe_t,
+			nonfe_t,
+			sus_t,
+			fe_b,
+			nonfe_b,
+			sus_b,
+			status_spv,
+			modified_at,
+			tgl_update_spv_metal
+			');
+
+		$this->db->from('metal');
+
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant);
+		}
+
+		$this->db->order_by('created_at', 'DESC');
+		$this->db->limit($limit, $start);
+
+		return $this->db->get()->result();
 	}
 
 	public function delete_by_uuid($uuid)
@@ -521,7 +551,7 @@ class Metal_model extends CI_Model {
 		return $this->db->delete('metal');
 	}
 
-	public function get_by_date($tanggal, $plant = null)
+public function get_by_date($tanggal, $plant = null, $shift = null)
 	{
 		if (empty($tanggal)) {
 			return false;
@@ -530,10 +560,28 @@ class Metal_model extends CI_Model {
 		$this->db->where('DATE(date_metal)', $tanggal);
 
 		if (!empty($plant)) {
-			$this->db->where('plant', $plant); 
+			$this->db->where('plant', $plant);
 		}
 
-		$this->db->order_by('date_metal', 'ASC');
+		if (!empty($shift)) {
+			$this->db->where('shift', $shift);
+		}
+
+		// Urut berdasarkan jam pemeriksaan
+		//$this->db->order_by('time', 'ASC');
+		if ($shift == 3) {
+			$this->db->order_by("
+				CASE
+					WHEN TIME(time) >= '23:00:00' THEN 0
+					ELSE 1
+				END
+			", "", false);
+
+			$this->db->order_by('time', 'ASC');
+		} else {
+			$this->db->order_by('time', 'ASC');
+		}
+
 		$query = $this->db->get('metal');
 
 		log_message('debug', 'Query get_by_date: ' . $this->db->last_query());

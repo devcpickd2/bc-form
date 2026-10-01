@@ -100,7 +100,7 @@
                         <tr><td><b>Bukti COA</b></td>
                             <td colspan="6">
                                 <?php if (!empty($seasoning->bukti_coa)): ?>
-                                    <a href="<?= base_url('uploads/' . $seasoning->bukti_coa); ?>" target="_blank">Link COA</a>
+                                    <a href="<?= base_url('uploads/seasoning/' . $seasoning->bukti_coa); ?>" target="_blank">Link COA</a>
                                 <?php else: ?>
                                     <span class="text-muted">Tidak ada file</span>
                                 <?php endif; ?>

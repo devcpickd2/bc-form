@@ -248,99 +248,153 @@ class Proses extends MY_Controller
 	{
 		error_reporting(0);
 
-		// Ambil input tanggal dan shift dari form
 		$tanggal = $this->input->post('tanggal');
-		$shift = $this->input->post('shift');
 
-		if (empty($tanggal) || empty($shift)) {
+		if (empty($tanggal)) {
 			redirect('produksi?error=nodata');
 			return;
 		}
 
-		// Ambil data produksi dan verifikasi berdasarkan tanggal + shift
-		$proses_data = $this->proses_model->get_by_tanggal_shift($tanggal, $shift);
-		$proses_data_verif = $this->proses_model->get_by_tanggal_shift_verif($tanggal, $shift);
+		$allData = [];
 
-		if (empty($proses_data) || empty($proses_data_verif)) {
+		foreach ([1, 2, 3] as $shift) {
+
+			$detail = $this->proses_model->get_by_tanggal_shift($tanggal, $shift);
+			$verif  = $this->proses_model->get_by_tanggal_shift_verif($tanggal, $shift);
+
+			if (!empty($detail)) {
+
+				$this->load->model('pegawai_model');
+
+				if ($verif) {
+					$verif->nama_lengkap_qc =
+						$this->pegawai_model->get_nama_lengkap($verif->username);
+
+					$verif->nama_lengkap_spv =
+						$this->pegawai_model->get_nama_lengkap($verif->nama_spv);
+
+					$verif->nama_lengkap_produksi =
+						$verif->nama_produksi;
+				}
+
+				$allData[] = [
+					'shift'  => $shift,
+					'detail' => $detail,
+					'verif'  => $verif
+				];
+			}
+		}
+
+		if (empty($allData)) {
 			redirect('produksi?error=notfound');
 			return;
 		}
 
-		$data['proses'] = $proses_data_verif;
+		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
 
-		// Ambil nama lengkap pegawai
-		$this->load->model('pegawai_model');
-		$data['proses']->nama_lengkap_qc = $this->pegawai_model->get_nama_lengkap($data['proses']->username);
-		$data['proses']->nama_lengkap_spv = $this->pegawai_model->get_nama_lengkap($data['proses']->nama_spv);
-		$data['proses']->nama_lengkap_produksi = $data['proses']->nama_produksi;
+		$pdf = new TCPDF('L', PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
+		$pdf->SetMargins(9, 10, 8);
 
-		$proses_packing_all = [];
-		foreach ($proses_data as $pd) {
-			$packing = json_decode($pd->proses_packing ?? '{}', true);
-			if (!empty($packing)) {
-				foreach ($packing as $key => $item) {
-					if (is_numeric($key)) { // hanya ambil batch numeric
-						$proses_packing_all[] = $item;
+		foreach ($allData as $shiftData) {
+
+			$data['proses'] = $shiftData['verif'];
+			$proses_data    = $shiftData['detail'];
+
+			$proses_packing_all = [];
+
+			//========================
+			// HALAMAN PRODUKSI
+			//========================
+			foreach ($proses_data as $pd) {
+
+				$proses_produksi = json_decode($pd->proses_produksi ?? '[]', true);
+
+				if (empty($proses_produksi)) {
+					continue;
+				}
+
+				$pdf->AddPage();
+
+				// nanti tambahkan tulisan SHIFT 1/2/3 di helper
+				$this->_generate_halaman_produksi(
+					$pdf,
+					$data,
+					[$pd],
+					$proses_produksi,
+					$shiftData['shift']
+				);
+
+				$packing = json_decode($pd->proses_packing ?? '{}', true);
+
+				if (!empty($packing)) {
+					foreach ($packing as $key => $item) {
+						if (is_numeric($key)) {
+							$proses_packing_all[] = $item;
+						}
 					}
 				}
 			}
+
+			//========================
+			// HALAMAN PACKING
+			//========================
+			$packing_chunks = array_chunk($proses_packing_all, 12);
+
+			foreach ($packing_chunks as $chunk) {
+
+				$pdf->AddPage();
+
+				$this->_generate_halaman_packing(
+					$pdf,
+					$data,
+					$chunk,
+					$proses_data,
+					$shiftData['shift']
+				);
+			}
 		}
 
-		// Jika packing lebih dari 12, pecah menjadi beberapa halaman
-		$packing_chunks = array_chunk($proses_packing_all, 12);
+		$filename = 'Verifikasi_Proses_Produksi_' . $tanggal . '.pdf';
 
-		// Load TCPDF
-		require_once APPPATH . 'third_party/tcpdf/tcpdf.php';
-		$pdf = new TCPDF('L', PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
-		$pdf->setPrintHeader(false);
-		$pdf->SetMargins(9, 10, 8);
-		$pdf->setPrintFooter(false);
-
-		// -----------------------------
-		// Halaman Produksi
-		// -----------------------------
-		foreach ($proses_data as $index => $pd) {
-			$proses_produksi = json_decode($pd->proses_produksi ?? '[]', true);
-			if (empty($proses_produksi)) continue; // ← skip empty rows
-			$pdf->AddPage();
-			$this->_generate_halaman_produksi($pdf, $data, [$pd], $proses_produksi);
-		}
-
-		foreach ($packing_chunks as $chunk) {
-			$pdf->AddPage();
-			$this->_generate_halaman_packing($pdf, $data, $chunk, $proses_data);
-		}
-
-
-		// Output PDF
-		$filename = 'Verifikasi_Proses_Produksi_' . date('d-m-Y') . '.pdf';
 		$pdf->Output($filename, 'I');
 	}
 
-
-	private function _generate_halaman_produksi($pdf, $data, $proses_data, $proses_produksi)
+	private function _generate_halaman_produksi($pdf, $data, $proses_data, $proses_produksi, $shift)
 	{
 		$pdf->SetFont('times', 'B', 13);
 		$pdf->SetTextColor(0, 0, 0);
-		$logo_path = FCPATH . 'assets/img/logo.jpg';
+		$logo_path = FCPATH . 'assets/img/cpi-logo.png';
 		if (file_exists($logo_path)) {
-			$pdf->Image($logo_path, 10, 10, 35);
+			$pdf->Image($logo_path, 10, 10, 10);
 		}
 
-		$pdf->Write(11, "\n");
+		$pdf->SetFont('times', 'B', 7);
+
+		$pdf->SetXY(25, 10);
+		$pdf->Cell(0, 3, 'PT. CHAROEN POKPHAND INDONESIA', 0, 1);
+
+		$pdf->SetXY(25, 13);
+		$pdf->Cell(0, 3, 'FOOD DIVISION', 0, 1);
+
+		$pdf->Ln(2);
+
+		$pdf->SetFont('times', 'B', 13);
+		$pdf->SetY(18); // ubah sesuai kebutuhan
 		$pdf->MultiCell(0, 5, 'VERIFIKASI PROSES PRODUKSI', 0, 'C');
 		$pdf->Ln(3);
 
 		setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
 		$tanggal = $data['proses']->date;
 		$date = new DateTime($tanggal);
-		$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
+		$formatted_date = date('l, d F Y', $date->getTimestamp());
 
 		$pdf->SetFont('times', '', 10);
 		$pdf->SetX(10);
 		$pdf->Write(0, 'Hari / Tanggal: ' . $formatted_date);
 		$pdf->SetX($pdf->GetX() + 10);
-		$pdf->Write(0, 'Shift: ' . $data['proses']->shift);
+		$pdf->Write(0, 'Shift: ' . $shift);
 		$pdf->Ln(5);
 
 		$pdf->SetFont('times', '', 9);
@@ -606,11 +660,11 @@ class Proses extends MY_Controller
 			$pdf->Cell(55, 5, 'Dibuat Oleh,', 0, 0, 'C');
 			if (!empty($data['proses']->nama_lengkap_qc)) {
 				$update_tanggal_qc = !empty($data['proses']->created_at)
-				? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
-				: date('d-m-Y | H:i');
+					? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
+					: date('d-m-Y | H:i');
 
 				$qr_text_qc = "Dibuat secara digital oleh,\n" .
-				$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+					$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
 				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 65, $y_verifikasi + 10, 15, 15, null, 'N');
 				$pdf->SetXY(45, $y_verifikasi + 24);
 				$pdf->Cell(55, 5, 'QC Inspector', 0, 0, 'C');
@@ -649,30 +703,41 @@ class Proses extends MY_Controller
 		}
 	}
 
-	private function _generate_halaman_packing($pdf, $data, $proses_packing, $proses_data)
+	private function _generate_halaman_packing($pdf, $data, $proses_packing, $proses_data, $shift)
 	{
 		$pdf->SetFont('times', 'B', 13);
-
-		$logo_path = FCPATH . 'assets/img/logo.jpg';
+		$pdf->SetTextColor(0, 0, 0);
+		
+		$logo_path = FCPATH . 'assets/img/cpi-logo.png';
 		if (file_exists($logo_path)) {
-			$pdf->Image($logo_path, 10, 10, 35);
+			$pdf->Image($logo_path, 10, 10, 10);
 		}
 
-		$pdf->SetTextColor(0, 0, 0);
-		$pdf->Write(11, "\n");
+		$pdf->SetFont('times', 'B', 7);
+
+		$pdf->SetXY(25, 10);
+		$pdf->Cell(0, 3, 'PT. CHAROEN POKPHAND INDONESIA', 0, 1);
+
+		$pdf->SetXY(25, 13);
+		$pdf->Cell(0, 3, 'FOOD DIVISION', 0, 1);
+
+		$pdf->Ln(2);
+
+		$pdf->SetFont('times', 'B', 13);
+		$pdf->SetY(18); // ubah sesuai kebutuhan
 		$pdf->MultiCell(0, 5, 'VERIFIKASI PROSES PRODUKSI', 0, 'C');
 		$pdf->Ln(3);
 
 		setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
 		$tanggal = $data['proses']->date;
 		$date = new DateTime($tanggal);
-		$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
+		$formatted_date = date('l, d F Y', $date->getTimestamp());
 
 		$pdf->SetFont('times', '', 10);
 		$pdf->SetX(10);
 		$pdf->Write(0, 'Hari / Tanggal: ' . $formatted_date);
 		$pdf->SetX($pdf->GetX() + 10);
-		$pdf->Write(0, 'Shift: ' . $data['proses']->shift_pack);
+		$pdf->Write(0, 'Shift: ' . $shift);
 		$pdf->Ln(5);
 
 		$pdf->SetFont('times', '', 9);
@@ -729,7 +794,7 @@ class Proses extends MY_Controller
 		}
 
 		// === STALLING / AGING ===
-		$pdf->SetFont('times', 'B', 9);
+		$pdf->SetFont('times', ' ', 7);
 		$pdf->Cell(40 + ($jumlah_batch * 25), 5, 'STALLING / AGING', 1, 1, 'L');
 		$pdf->SetFont('times', '', 8);
 
@@ -752,7 +817,7 @@ class Proses extends MY_Controller
 		}
 
 		// === GRINDING ===
-		$pdf->SetFont('times', 'B', 9);
+		$pdf->SetFont('times', ' ', 7);
 		$pdf->Cell(40 + ($jumlah_batch * 25), 5, 'GRINDING', 1, 1, 'L');
 		$pdf->SetFont('times', '', 8);
 		$pdf->Cell(40, 5, 'Hasil Grinding', 1);
@@ -767,12 +832,12 @@ class Proses extends MY_Controller
 		$pdf->Ln();
 
 		// === DRYING ===
-		$pdf->SetFont('times', 'B', 9);
+		$pdf->SetFont('times', ' ', 7);
 		$pdf->Cell(40 + ($jumlah_batch * 25), 5, 'DRYING', 1, 1, 'L');
 		$pdf->SetFont('times', '', 8);
 
 		$params_drying = [
-			'Suhu Setting / Aktual (85° - 90°C)' => ['suhu_setting', 'suhu_aktual'],
+			'Suhu Setting / Aktual (85°-90°C)' => ['suhu_setting', 'suhu_aktual'],
 			'Dryer Speed (4 - 6 rpm)' => ['dryer_speed']
 		];
 
@@ -789,7 +854,7 @@ class Proses extends MY_Controller
 		}
 
 		// === PEMERIKSAAN FINISHED PRODUCT ===
-		$pdf->SetFont('times', 'B', 9);
+		$pdf->SetFont('times', ' ', 7);
 		$pdf->Cell(40 + ($jumlah_batch * 25), 5, 'PEMERIKSAAN FINISHED PRODUCT', 1, 1, 'L');
 		$pdf->SetFont('times', '', 7);
 
@@ -797,7 +862,7 @@ class Proses extends MY_Controller
 			'Nama Produk' => 'nama_produk',
 			'Kode Produksi' => 'kode_produksi',
 			'Best Before' => 'best_before',
-			'Suhu Produk Sebelum Packing (32 - 35°C)' => 'suhu_sebelum_packing',
+			"Suhu Produk Sebelum Packing\n(32 - 35°C)" => 'suhu_sebelum_packing',
 			'Kadar Air Produk (4 - 8%)' => 'kadar_air_produk',
 			'Bulk Density (225 - 325 g/l)' => 'bulk_density',
 			'Sensori Produk' => 'sensori_produk',
@@ -809,12 +874,40 @@ class Proses extends MY_Controller
 
 		$cell_width_default = 25;
 		$cell_width_image = 25;
-		$cell_height_image = 20;
+		$cell_height_image = 15;
 
 		foreach ($params_fp as $label => $field) {
 			$pdf->SetFont('times', '', 8);
 			$cell_height = ($field === 'bukti_labelisasi') ? $cell_height_image : 5;
-			$pdf->Cell(40, $cell_height, $label, 1, 0, 'L');
+			$x = $pdf->GetX();
+			$y = $pdf->GetY();
+
+			if ($field === 'suhu_sebelum_packing') {
+
+				$cell_height = 10;
+
+				$pdf->Cell(40, 10, '', 1, 0);
+
+				$pdf->SetXY($x + 1, $y + 1);
+				$pdf->Cell(38, 4, 'Suhu Produk Sebelum Packing', 0, 2, 'L');
+				$pdf->Cell(38, 4, '(32 - 35°C)', 0, 0, 'L');
+
+				$pdf->SetXY($x + 40, $y);
+			} elseif (is_array($field) && in_array('kondisi_kemasan', $field)) {
+
+				$cell_height = 10;
+
+				$pdf->Cell(40, 10, '', 1, 0);
+
+				$pdf->SetXY($x + 1, $y + 1);
+				$pdf->Cell(38, 4, 'Kondisi Kemasan', 0, 2, 'L');
+				$pdf->Cell(38, 4, 'Ketepatan Labelisasi', 0, 0, 'L');
+
+				$pdf->SetXY($x + 40, $y);
+			} else {
+
+				$pdf->Cell(40, $cell_height, $label, 1, 0, 'L');
+			}
 
 			for ($i = 0; $i < $jumlah_batch; $i++) {
 				$val = '';
@@ -865,13 +958,15 @@ class Proses extends MY_Controller
 			}
 			$pdf->Ln();
 		}
-
-		$pdf->Ln(2);
-		$pdf->SetFont('times', '', 8);
-		$pdf->Cell(10, 5, 'Catatan :', 0, 1, 'L');
-		foreach ($data['proses_data'] ?? [] as $item) {
-			if (!empty($item->catatan)) {
-				$pdf->Cell(50, 5, ' - ' . $item->catatan, 0, 1, 'L');
+			
+		$pdf->Ln(1);
+		$pdf->Cell(10,5,'Catatan :',0,1);
+		
+		if (!empty($data['proses_data'])) {
+			foreach ($data['proses_data'] as $item) {
+				if (!empty($item->catatan)) {
+					$pdf->Cell(50,5,'- '.$item->catatan,0,1);
+				}
 			}
 		}
 
@@ -893,11 +988,11 @@ class Proses extends MY_Controller
 			$pdf->Cell(55, 5, 'Dibuat Oleh,', 0, 0, 'C');
 			if (!empty($data['proses']->nama_lengkap_qc)) {
 				$update_tanggal_qc = !empty($data['proses']->created_at)
-				? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
-				: date('d-m-Y | H:i');
+					? (new DateTime($data['proses']->created_at))->format('d-m-Y | H:i')
+					: date('d-m-Y | H:i');
 
 				$qr_text_qc = "Dibuat secara digital oleh,\n" .
-				$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
+					$data['proses']->nama_lengkap_qc . "\nQC Inspector\n" . $update_tanggal_qc;
 				$pdf->write2DBarcode($qr_text_qc, 'QRCODE,L', 65, $y_verifikasi + 10, 15, 15, null, 'N');
 				$pdf->SetXY(45, $y_verifikasi + 24);
 				$pdf->Cell(55, 5, 'QC Inspector', 0, 0, 'C');

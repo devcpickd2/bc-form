@@ -47,6 +47,33 @@ class Auth_model extends CI_Model
 		return $this->session->has_userdata(self::SESSION_KEY);
 	}
 
+	public function login_via_sso($uuid)
+    {
+        $this->db->where('uuid', $uuid);
+
+        $query = $this->db->get($this->_table);
+
+        $user = $query->row();
+
+        if (!$user) {
+            return FALSE;
+        }
+
+        // Session dibuat SAMA dengan login manual
+        $this->session->set_userdata([
+            self::SESSION_KEY => $user->uuid,
+            'username'       => $user->username,
+            'nama'           => $user->nama,
+            'tipe_user'      => $user->tipe_user,
+            'plant'          => $user->plant,
+            'foto'           => $user->foto ?? 'profil.png'
+        ]);
+
+        return $this->session->has_userdata(
+            self::SESSION_KEY
+        );
+    }
+
 	public function current_user()
 	{
 		if (!$this->session->has_userdata(self::SESSION_KEY)) {
@@ -64,13 +91,131 @@ class Auth_model extends CI_Model
 		return $this->db->get()->row();
 	}
 
+	/**
+	 * Cek apakah user mempunyai akses ke plant tertentu
+	 */
+	public function user_has_plant($user_uuid, $plant_uuid)
+	{
+		return $this->db
+			->where('user_uuid', $user_uuid)
+			->where('plant_uuid', $plant_uuid)
+			->get('user_plant')
+			->num_rows() > 0;
+	}
+
+	/**
+	 * Ambil semua plant yang bisa diakses user
+	 *
+	 * Plant utama selalu dimasukkan.
+	 */
+	public function get_user_plants($user_uuid)
+	{
+		$user = $this->db
+			->select('plant')
+			->where('uuid', $user_uuid)
+			->get('pegawai')
+			->row();
+
+		if (!$user) {
+			return [];
+		}
+
+		$this->db->select('plant.*');
+		$this->db->from('plant');
+		$this->db->where('plant.uuid', $user->plant);
+
+		// Tambahkan plant dari akses user_plant
+		$this->db->or_where(
+			'plant.uuid IN (
+				SELECT plant_uuid
+				FROM user_plant
+				WHERE user_uuid = ' . $this->db->escape($user_uuid) . '
+			)',
+			null,
+			false
+		);
+
+		$this->db->order_by('plant.plant', 'ASC');
+
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Ganti plant aktif
+	 */
+	public function switch_plant($plant_uuid)
+	{
+		$user_uuid = $this->session->userdata(self::SESSION_KEY);
+
+		if (!$user_uuid) {
+			return FALSE;
+		}
+
+		// Plant utama
+		$user = $this->db
+			->where('uuid', $user_uuid)
+			->get('pegawai')
+			->row();
+
+		if (!$user) {
+			return FALSE;
+		}
+
+		$allowed = ($user->plant === $plant_uuid);
+
+		// Atau plant tambahan dari user_plant
+		if (!$allowed) {
+			$allowed = $this->user_has_plant($user_uuid, $plant_uuid);
+		}
+
+		if (!$allowed) {
+			return FALSE;
+		}
+
+		$this->session->set_userdata('plant', $plant_uuid);
+
+		return TRUE;
+	}
+
 	public function logout()
 	{
+		// Ambil UUID user sebelum session dihapus
+		$user_uuid = $this->session->userdata(self::SESSION_KEY);
+
+		// Report logout ke SSO
+		if ($user_uuid) {
+			$url = $this->config->item('employee_api_url') . '/sso/report-logout';
+
+			$data = [
+				'user_uuid'    => $user_uuid,
+				'project_uuid' => $this->config->item('this_project_uuid'),
+			];
+
+			$ch = curl_init($url);
+
+			curl_setopt_array($ch, [
+				CURLOPT_POST           => true,
+				CURLOPT_POSTFIELDS     => json_encode($data),
+				CURLOPT_HTTPHEADER     => [
+					'Content-Type: application/json',
+					'Accept: application/json',
+					'Authorization: Bearer ' . $this->config->item('sso_verify_secret'),
+				],
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_TIMEOUT        => 5,
+			]);
+
+			curl_exec($ch);
+			curl_close($ch);
+		}
+
+		// Hapus session lokal BC-Form
 		$this->session->unset_userdata([
 			self::SESSION_KEY,
 			'show_produksi_modal',
 			'produksi_data'
 		]);
+
 		return !$this->session->has_userdata(self::SESSION_KEY);
 	}
 

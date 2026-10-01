@@ -67,6 +67,8 @@
                                                     <th>Kondisi</th>
                                                     <th>Problem</th>
                                                     <th>Tindakan</th>
+                                                    <th>Verifikasi Ulang</th>
+                                                    <th>Foto</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -77,6 +79,53 @@
                                                         <td class="text-center"><?= $kondisiMap[$row['kondisi']] ?? htmlspecialchars($row['kondisi']) ?></td>
                                                         <td><?= !empty($row['problem']) ? htmlspecialchars($row['problem']) : '-' ?></td>
                                                         <td><?= !empty($row['tindakan']) ? htmlspecialchars($row['tindakan']) : '-' ?></td>
+                                                        <td class="text-center">
+																<?php
+																$verifikasi = $row['verifikasi'] ?? null;
+
+																if ($verifikasi == 'bersih') {
+																	echo '<span style="color:green; font-weight:bold;">✔ Bersih</span>';
+																} elseif ($verifikasi == 'kotor') {
+																	echo '<span style="color:red; font-weight:bold;">✖ Kotor</span>';
+																} else {
+																	echo '-';
+																}
+																?>
+															</td>
+                                                            <?php if ($i == 0): ?>
+                                                            <td class="text-center align-middle" rowspan="<?= count($details); ?>">
+
+                                                                <div style="
+                                                                    display:flex;
+                                                                    flex-direction:column;
+                                                                    justify-content:center;
+                                                                    align-items:center;
+                                                                    height:100%;
+                                                                    gap:8px;
+                                                                ">
+
+                                                                    <?php if (!empty($val->foto1)): ?>
+                                                                        <a href="<?= base_url('uploads/kebersihan/' . $val->foto1); ?>" target="_blank">
+                                                                            <img src="<?= base_url('uploads/kebersihan/' . $val->foto1); ?>" 
+                                                                                style="width:70px;height:70px;object-fit:cover;border-radius:6px;">
+                                                                        </a>
+                                                                    <?php endif; ?>
+
+                                                                    <?php if (!empty($val->foto2)): ?>
+                                                                        <a href="<?= base_url('uploads/kebersihan/' . $val->foto2); ?>" target="_blank">
+                                                                            <img src="<?= base_url('uploads/kebersihan/' . $val->foto2); ?>" 
+                                                                                style="width:70px;height:70px;object-fit:cover;border-radius:6px;">
+                                                                        </a>
+                                                                    <?php endif; ?>
+
+                                                                    <?php if (empty($val->foto1) && empty($val->foto2)): ?>
+                                                                        <span>-</span>
+                                                                    <?php endif; ?>
+
+                                                                </div>
+
+                                                            </td>
+                                                            <?php endif; ?>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
@@ -113,11 +162,18 @@
         <br><hr>
         <!-- Form Cetak PDF -->
         <div class="form-group">
-            <form action="<?= base_url('kebersihanruang/cetak') ?>" method="post" class="form-inline">
-                <label for="tanggal" class="mr-2 font-weight-bold">Pilih Tanggal:</label>
+            <form method="post" class="form-inline" id="formExport">
+
+                <label for="tanggal" class="mr-2 font-weight-bold">
+                    Pilih Tanggal:
+                </label>
+
                 <input type="date" name="tanggal" class="form-control mr-2" required>
 
-                <label for="shift" class="mr-2 font-weight-bold">Shift:</label>
+                <label for="shift" class="mr-2 font-weight-bold">
+                    Shift:
+                </label>
+
                 <select name="shift" class="form-control mr-2" required>
                     <option value="">-- Pilih Shift --</option>
                     <option value="1">Shift 1</option>
@@ -125,26 +181,22 @@
                     <option value="3">Shift 3</option>
                 </select>
 
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-print fa-sm text-white-50"></i> Cetak PDF
-                </button>
-            </form>
-            <br>
-            <form action="<?= base_url('kebersihanruang/export_excel') ?>" method="post" class="form-inline">
-                <input type="date" name="tanggal" class="form-control mr-2" required>
-                <select name="shift" class="form-control mr-2" required>
-                    <option value="">-- Pilih Shift --</option>
-                    <option value="1">Shift 1</option>
-                    <option value="2">Shift 2</option>
-                    <option value="3">Shift 3</option>
-                </select>
+                <button type="submit"
+                formaction="<?= base_url('kebersihanruang/cetak') ?>"
+                class="btn btn-success mr-2">
+                <i class="fas fa-print fa-sm text-white-50"></i>
+                Cetak PDF
+            </button>
 
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-file-excel"></i> Export Excel
-                </button>
-            </form>
+            <button type="submit"
+            formaction="<?= base_url('kebersihanruang/export_excel') ?>"
+            class="btn btn-success">
+            <i class="fas fa-file-excel"></i>
+            Export Excel
+        </button>
 
-        </div>
+    </form>
+</div>
 
     </div>
 </div>

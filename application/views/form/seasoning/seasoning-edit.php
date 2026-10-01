@@ -304,7 +304,7 @@
                         <br>
                         <input type="file" name="bukti_coa" id="bukti_coa" class="form-control no-border <?= form_error('bukti_coa') ? 'is-invalid' : '' ?>" accept="image/*,application/pdf" capture="camera">
                         <?php if (!empty($seasoning->bukti_coa)): ?>
-                            <a href="<?= base_url('uploads/' . $seasoning->bukti_coa); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
+                            <a href="<?= base_url('uploads/seasoning/' . $seasoning->bukti_coa); ?>" target="_blank">Lihat Gambar Sebelumnya</a>
                             <br>
                         <?php endif; ?>
                         <br>

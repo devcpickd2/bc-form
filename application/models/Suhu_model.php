@@ -37,7 +37,7 @@ class Suhu_model extends CI_Model {
 		$produksi_data = $this->session->userdata('produksi_data');
 		$nama_produksi = $produksi_data['nama_produksi'] ?? '';
 
-		$uuid = Uuid::uuid4()->toString();
+		$uuid = Uuid::uuid4()->toString(); 
 		$username = $this->session->userdata('username');
 		$plant = $this->session->userdata('plant');
 		$date = $this->input->post('date');
@@ -65,7 +65,7 @@ class Suhu_model extends CI_Model {
 		$this->db->insert('suhu', $data);
 		return $this->db->affected_rows() > 0;
 	}
-
+	
 	public function update($uuid)
 	{
 		$username = $this->session->userdata('username');
@@ -219,28 +219,58 @@ class Suhu_model extends CI_Model {
 		return $data_suhu; 
 	}
 
-	public function get_suhu_by_plant()
+	// public function get_suhu_by_plant()
+	// { 
+	// 	$plant = $this->session->userdata('plant');
+
+	// 	$this->db->select('*');
+	// 	$this->db->from('suhu');
+	// 	$this->db->where('plant', $plant);
+
+    // // Urut tanggal terbaru dulu
+	// 	$this->db->order_by('date', 'DESC');
+
+    // // Urut shift perhari: Shift 2 → Shift 1 → Shift 3
+	// 	$this->db->order_by("
+	// 		CASE
+	// 		WHEN TIME(pukul) >= '15:00:00' AND TIME(pukul) < '23:00:00' THEN 1  -- Shift 2
+	// 		WHEN TIME(pukul) >= '07:00:00' AND TIME(pukul) < '15:00:00' THEN 2  -- Shift 1
+	// 		WHEN TIME(pukul) >= '23:00:00' OR TIME(pukul) < '07:00:00' THEN 3   -- Shift 3
+	// 		END
+	// 		", '', false);
+
+    // // Urut jam kronologis di dalam shift
+	// 	$this->db->order_by('pukul', 'DESC');
+
+	// 	return $this->db->get()->result(); 
+	// }
+
+
+	public function get_suhu_by_plant($limit, $start)
 	{
 		$plant = $this->session->userdata('plant');
+		$type_user = $this->session->userdata('tipe_user');
 
-		$this->db->select('*');
+		$this->db->select('uuid,date,shift,pukul,status_spv, modified_at, tgl_update_spv');
 		$this->db->from('suhu');
-		$this->db->where('plant', $plant);
 
-    // Urut tanggal terbaru dulu
+		if (!in_array($type_user, [9, 1])) {
+			$this->db->where('plant', $plant);
+		}
+
 		$this->db->order_by('date', 'DESC');
-
-    // Urut shift perhari: Shift 2 → Shift 1 → Shift 3
+ 
 		$this->db->order_by("
 			CASE
-			WHEN TIME(pukul) >= '15:00:00' AND TIME(pukul) < '23:00:00' THEN 1  -- Shift 2
-			WHEN TIME(pukul) >= '07:00:00' AND TIME(pukul) < '15:00:00' THEN 2  -- Shift 1
-			WHEN TIME(pukul) >= '23:00:00' OR TIME(pukul) < '07:00:00' THEN 3   -- Shift 3
+			WHEN TIME(pukul) >= '15:00:00' AND TIME(pukul) < '23:00:00' THEN 1
+			WHEN TIME(pukul) >= '07:00:00' AND TIME(pukul) < '15:00:00' THEN 2
+			WHEN TIME(pukul) >= '23:00:00' OR TIME(pukul) < '07:00:00' THEN 3
 			END
 			", '', false);
 
-    // Urut jam kronologis di dalam shift
 		$this->db->order_by('pukul', 'DESC');
+
+		$this->db->limit($limit, $start);
 
 		return $this->db->get()->result();
 	}

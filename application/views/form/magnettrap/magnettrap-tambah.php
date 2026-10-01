@@ -30,9 +30,9 @@
                         <label class="font-weight-bold">Shift</label>
                         <select name="shift" class="form-control <?= form_error('shift') ? 'is-invalid' : '' ?>">
                             <option disabled <?= empty($shift_sess) ? 'selected' : '' ?>>Pilih Shift</option>
-                            <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>Shift 1</option>
-                            <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>Shift 2</option>
-                            <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>Shift 3</option>
+                            <option value="1" <?= set_select('shift', '1', $shift_sess == '1') ?>>A</option>
+                            <option value="2" <?= set_select('shift', '2', $shift_sess == '2') ?>>B</option>
+                            <option value="3" <?= set_select('shift', '3', $shift_sess == '3') ?>>C</option>
                         </select>
                         <div class="invalid-feedback"><?= form_error('shift') ?></div>
                     </div>
@@ -47,8 +47,29 @@
                     </div>
                     <div class="col-sm-6">
                         <label class="form-label font-weight-bold">Tahapan</label>
-                        <input type="text" name="tahapan" class="form-control <?= form_error('tahapan') ? 'invalid' : '' ?> " value="<?= set_value('tahapan'); ?>">
-                        <div class="invalid-feedback <?= !empty(form_error('tahapan')) ? 'd-block' : '' ; ?> ">
+
+                        <select name="tahapan" class="form-control <?= form_error('tahapan') ? 'invalid' : '' ?>">
+                            <option value="">-- Pilih Tahapan --</option>
+
+                            <option value="sparator magnet transfer conveyor" <?= set_value('tahapan') == 'sparator magnet transfer conveyor' ? 'selected' : '' ?>>
+                                Sparator magnet transfer conveyor
+                            </option>
+
+                            <option value="sparator magnet cooling conveyor" <?= set_value('tahapan') == 'sparator magnet cooling conveyor' ? 'selected' : '' ?>>
+                                Sparator magnet cooling conveyor
+                            </option>
+
+                            <option value="kontaminasi logam dari hopper 1" <?= set_value('tahapan') == 'kontaminasi logam dari hopper 1' ? 'selected' : '' ?>>
+                                Kontaminasi logam dari hopper 1
+                            </option>
+
+                            <option value="kontaminasi logam dari hopper 2" <?= set_value('tahapan') == 'kontaminasi logam dari hopper 2' ? 'selected' : '' ?>>
+                                Kontaminasi logam dari hopper 2
+                            </option>
+
+                        </select>
+
+                        <div class="invalid-feedback <?= !empty(form_error('tahapan')) ? 'd-block' : '' ; ?>">
                             <?= form_error('tahapan') ?>
                         </div>
                     </div>  

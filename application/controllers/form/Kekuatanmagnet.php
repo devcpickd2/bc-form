@@ -231,17 +231,54 @@ class Kekuatanmagnet extends MY_Controller {
 
 		foreach ($kekuatanmagnet_data as $kekuatanmagnet) {
 			setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
+
 			$tanggal = $kekuatanmagnet->date;
 			$date = new DateTime($tanggal);
 			$formatted_date = strftime('%A, %d %B %Y', $date->getTimestamp());
+
+    // Simpan posisi awal
+			$x = $pdf->GetX();
+			$y = $pdf->GetY();
+
+    // Tentukan tinggi baris berdasarkan kolom yang bisa wrap
+			$keterangan = !empty($kekuatanmagnet->keterangan) ? $kekuatanmagnet->keterangan : '-';
+
+			$h1 = $pdf->getStringHeight(30, $formatted_date);
+			$h2 = $pdf->getStringHeight(51, $kekuatanmagnet->nama_alat);
+			$h3 = $pdf->getStringHeight(35, $kekuatanmagnet->nilai);
+			$h4 = $pdf->getStringHeight(40, $keterangan);
+			$h5 = $pdf->getStringHeight(19, $kekuatanmagnet->username);
+			$h6 = $pdf->getStringHeight(19, $kekuatanmagnet->nama_produksi);
+
+			$rowHeight = max($h1, $h2, $h3, $h4, $h5, $h6);
+
 			$pdf->SetFont('times', '', 8);
-			$pdf->Cell(30, 6, $formatted_date, 1, 0, 'C');
-			$pdf->Cell(51, 6, $kekuatanmagnet->nama_alat, 1, 0, 'C');
-			$pdf->Cell(35, 6, $kekuatanmagnet->nilai, 1, 0, 'C');
-			$pdf->Cell(40, 6, !empty($kekuatanmagnet->keterangan) ? $kekuatanmagnet->keterangan : '-', 1, 0, 'C');
-			$pdf->Cell(19, 6, $kekuatanmagnet->username, 1, 0, 'C');
-			$pdf->Cell(19, 6, $kekuatanmagnet->nama_produksi, 1, 0, 'C');
-			$pdf->Ln();
+
+    // Tanggal
+			$pdf->MultiCell(30, $rowHeight, $formatted_date, 1, 'C', false, 0, $x, $y);
+
+    // Nama Alat
+			$x += 30;
+			$pdf->MultiCell(51, $rowHeight, $kekuatanmagnet->nama_alat, 1, 'C', false, 0, $x, $y);
+
+    // Nilai
+			$x += 51;
+			$pdf->MultiCell(35, $rowHeight, $kekuatanmagnet->nilai, 1, 'C', false, 0, $x, $y);
+
+    // Keterangan
+			$x += 35;
+			$pdf->MultiCell(40, $rowHeight, $keterangan, 1, 'C', false, 0, $x, $y);
+
+    // Username
+			$x += 40;
+			$pdf->MultiCell(19, $rowHeight, $kekuatanmagnet->username, 1, 'C', false, 0, $x, $y);
+
+    // Produksi
+			$x += 19;
+			$pdf->MultiCell(19, $rowHeight, $kekuatanmagnet->nama_produksi, 1, 'C', false, 1, $x, $y);
+
+    // Pindah ke baris berikutnya
+			$pdf->SetY($y + $rowHeight);
 		}
 
 		$pdf->SetFont('times', 'I', 7);
